@@ -1,5 +1,6 @@
 /* ===================================
    NAVBAR COMPONENT - MOBILE FIRST
+   Theme-Aware with Proper Dark/Light Support
    ================================ */
 
 .navbar {
@@ -11,17 +12,16 @@
     max-width: 100%;
     z-index: 1000;
 
-    /* Premium Glass */
+    /* Premium Glass - Theme Aware */
     background: var(--glass-base);
     backdrop-filter: blur(var(--glass-blur));
     -webkit-backdrop-filter: blur(var(--glass-blur));
     border: 1px solid var(--glass-border);
-    border-top: 1px solid var(--glass-highlight);
     box-shadow: var(--shadow-lg);
 
     border-radius: var(--radius-2xl);
     padding: 0.5rem 0.5rem;
-    transition: all var(--duration-normal) var(--ease-spring);
+    transition: all var(--duration-normal) var(--ease-in-out);
 }
 
 /* Desktop: Wider navbar */
@@ -30,7 +30,7 @@
         top: var(--space-4);
         width: calc(100% - var(--space-8));
         max-width: 1200px;
-        border-radius: var(--radius-full);
+        border-radius: var(--radius-pill);
         padding: 0.5rem 0.75rem;
     }
 }
@@ -67,8 +67,6 @@
     /* MOBILE: Full-Screen Overlay */
     position: fixed;
     inset: 0;
-    
-    /* Remove transform scaling (causes jitter) */
     transform: none;
 
     /* Vertical stack, full-bleed */
@@ -78,10 +76,8 @@
     padding: 80px var(--space-6) var(--space-6);
     gap: var(--space-2);
 
-    /* Solid background for stability */
-    background: var(--glass-base);
-    backdrop-filter: blur(var(--glass-blur));
-    -webkit-backdrop-filter: blur(var(--glass-blur));
+    /* Solid background for mobile menu - Theme Aware */
+    background: var(--bento-bg);
     border: none;
     box-shadow: none;
     border-radius: 0;
@@ -92,8 +88,9 @@
     visibility: hidden;
     pointer-events: none;
 
-    /* Simple fade, no layout shift */
-    transition: opacity 0.2s ease, visibility 0.2s;
+    /* Smooth fade transition */
+    transition: opacity var(--duration-normal) var(--ease-in-out),
+                visibility var(--duration-normal) var(--ease-in-out);
 }
 
 .navbar-links.active {
@@ -135,36 +132,33 @@
     font-weight: 500;
     font-size: 1.1rem;
     border-radius: var(--radius-xl);
-    transition: all var(--duration-fast);
+    transition: all var(--duration-normal) var(--ease-in-out);
     text-decoration: none;
     white-space: nowrap;
     min-height: 56px;
+    background: transparent;
 }
 
-/* DESKTOP: Smaller, inline links */
+/* DESKTOP: Smaller, inline links (pill-shaped) */
 @media (min-width: 901px) {
     .navbar-link {
         padding: 0.5rem 1rem;
         font-size: 0.9rem;
-        border-radius: var(--radius-full);
+        border-radius: var(--radius-pill);
         min-height: auto;
     }
 }
 
 .navbar-link:hover {
     color: var(--primary);
-    background: rgba(37, 99, 235, 0.08);
+    background: var(--glass-surface);
 }
 
 .navbar-link.active {
     color: var(--primary);
-    background: white;
+    background: var(--bento-card);
     box-shadow: var(--shadow-sm);
     font-weight: 600;
-}
-
-[data-theme='dark'] .navbar-link.active {
-    background: rgba(255, 255, 255, 0.1);
 }
 
 /* Right Section - MOBILE FIRST */
@@ -193,6 +187,7 @@
     }
 }
 
+/* Icon Buttons - Theme Aware */
 .theme-toggle-btn,
 .lang-btn,
 .navbar-toggle {
@@ -201,36 +196,27 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
-    border: none;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--glass-border);
     background: transparent;
     color: var(--text-secondary);
     cursor: pointer;
-    transition: all var(--duration-fast);
-}
-
-.lang-btn {
-    width: auto;
-    padding: 0 0.75rem;
-    border-radius: var(--radius-lg);
-    gap: 4px;
-    font-size: 0.85rem;
+    transition: all var(--duration-normal) var(--ease-in-out);
 }
 
 .theme-toggle-btn:hover,
 .lang-btn:hover,
 .navbar-toggle:hover {
-    background: rgba(0, 0, 0, 0.05);
+    background: var(--glass-surface);
     color: var(--primary);
+    border-color: var(--primary);
 }
 
-[data-theme='dark'] .theme-toggle-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
-}
-
-/* Lang Dropdown */
-.lang-switcher {
-    position: relative;
+.lang-btn {
+    width: auto;
+    padding: 0 0.75rem;
+    gap: 4px;
+    font-size: 0.85rem;
 }
 
 /* Hide lang button text on mobile, show icon only */
@@ -244,13 +230,16 @@
     }
 }
 
+/* Language Dropdown - Theme Aware */
+.lang-switcher {
+    position: relative;
+}
+
 .lang-dropdown {
     position: absolute;
     top: calc(100% + 12px);
     right: 0;
-    background: var(--glass-base);
-    backdrop-filter: blur(var(--glass-blur));
-    -webkit-backdrop-filter: blur(var(--glass-blur));
+    background: var(--bento-card);
     border: 1px solid var(--glass-border);
     border-radius: var(--radius-xl);
     padding: 0.5rem;
@@ -272,33 +261,56 @@
     background: transparent;
     color: var(--text-secondary);
     cursor: pointer;
-    transition: all var(--duration-fast);
+    transition: all var(--duration-normal) var(--ease-in-out);
     min-height: 44px;
+    font-family: inherit;
 }
 
 .lang-option:hover {
-    background: rgba(0, 0, 0, 0.05);
+    background: var(--glass-surface);
     color: var(--primary);
 }
 
-/* Mobile Responsive - MOBILE FIRST APPROACH */
+/* Mobile Toggle Button */
 .navbar-toggle {
-    display: flex; /* Show hamburger by default on mobile */
+    display: flex;
 }
 
 @media (min-width: 901px) {
     .navbar-toggle {
-        display: none; /* Hide hamburger on desktop */
+        display: none;
     }
 }
 
-/* Legacy media query kept for explicit mobile overrides */
-@media (max-width: 900px) {
-    .navbar-toggle {
-        display: flex;
-    }
+/* Logout Button in Mobile Menu */
+.logout-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 1rem 1.5rem;
+    margin-top: auto;
+    color: var(--accent-rose);
+    font-weight: 500;
+    font-size: 1rem;
+    border: none;
+    background: transparent;
+    border-radius: var(--radius-xl);
+    cursor: pointer;
+    transition: all var(--duration-normal) var(--ease-in-out);
+    min-height: 56px;
+    width: 100%;
+    text-align: left;
+}
 
-    .navbar-link {
-        justify-content: flex-start;
+.logout-btn:hover {
+    background: rgba(251, 113, 133, 0.1);
+}
+
+@media (min-width: 901px) {
+    .logout-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+        min-height: auto;
+        width: auto;
     }
 }

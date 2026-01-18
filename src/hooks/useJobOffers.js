@@ -137,7 +137,8 @@ export function useJobOffers() {
                         description: job.description,
                         skills: [],
                         isExternal: true,
-                        externalUrl: job.url,
+                        externalUrl: job.original_url, // Direct link to job posting
+                        sourceWebsite: job.source_website,
                         matchScore: null
                     }))
                 }

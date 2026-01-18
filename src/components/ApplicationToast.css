@@ -99,3 +99,12 @@
         transform: none;
     }
 }
+
+/* External job variant - coral/orange gradient */
+.application-toast.external {
+    background: linear-gradient(135deg, #ff7043 0%, #e64a19 100%);
+}
+
+.application-toast.external .toast-message strong {
+    color: #ffccbc;
+}

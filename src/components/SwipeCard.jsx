@@ -1,5 +1,5 @@
 import { motion, useMotionValue, useTransform, useSpring, useAnimation } from 'framer-motion'
-import { MapPin, Briefcase, DollarSign, Clock, Info, Sparkles } from 'lucide-react'
+import { MapPin, Briefcase, DollarSign, Clock, Info, Sparkles, ExternalLink } from 'lucide-react'
 import VerificationBadge from './VerificationBadge'
 import './SwipeCard.css'
 
@@ -69,10 +69,10 @@ function SwipeCard({ offer, onSwipe, isTop, onViewDetails }) {
         >
             {/* Swipe Indicators */}
             <motion.div
-                className="swipe-indicator like"
+                className={`swipe-indicator like ${offer.isExternal ? 'apply' : ''}`}
                 style={{ opacity: likeOpacity }}
             >
-                LIKE
+                {offer.isExternal ? 'APPLY' : 'LIKE'}
             </motion.div>
             <motion.div
                 className="swipe-indicator pass"
@@ -103,6 +103,14 @@ function CardContent({ offer }) {
                 <div className="match-score-badge">
                     <Sparkles size={14} />
                     <span>{matchPercent}% Match</span>
+                </div>
+            )}
+
+            {/* External Source Badge */}
+            {offer.isExternal && (
+                <div className="external-source-badge">
+                    <ExternalLink size={12} />
+                    <span>{offer.sourceWebsite || 'External'}</span>
                 </div>
             )}
 

@@ -10,7 +10,9 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest",
-    "test:run": "vitest run"
+    "test:run": "vitest run",
+    "scrape": "node scripts/crawler/kernel.js",
+    "scrape:cleanup": "node scripts/crawler/cleanup-dead-links.js"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",

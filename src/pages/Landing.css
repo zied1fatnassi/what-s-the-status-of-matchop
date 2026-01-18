@@ -1,13 +1,14 @@
 /* ===================================
-   LANDING PAGE - MOBILE FIRST
+   LANDING PAGE - BENTO GRID LAYOUT
+   Theme-Aware with Premium Animations
    ================================ */
 
 .landing-page {
-    /* MOBILE FIRST: Smaller top padding on mobile */
     padding-top: 50px;
-    background: var(--bg-main);
+    background: var(--bento-bg);
     color: var(--text-primary);
     overflow-x: hidden;
+    min-height: 100vh;
 }
 
 @media (min-width: 768px) {
@@ -16,9 +17,8 @@
     }
 }
 
-/* Hero Section - MOBILE FIRST */
+/* Hero Section - Bento Main Stage */
 .hero {
-    /* Mobile: Auto height, no fixed min-height */
     min-height: auto;
     padding: var(--space-8) 0 var(--space-12);
     display: flex;
@@ -39,9 +39,10 @@
     position: absolute;
     inset: 0;
     overflow: hidden;
+    pointer-events: none;
 }
 
-/* Gradient orbs - MOBILE: Hidden for performance */
+/* Gradient orbs - Theme Aware */
 .gradient-orb {
     display: none;
 }
@@ -51,8 +52,9 @@
         display: block;
         position: absolute;
         border-radius: 50%;
-        filter: blur(80px);
-        opacity: 0.3;
+        filter: blur(100px);
+        opacity: 0.2;
+        transition: opacity var(--duration-slow) var(--ease-in-out);
     }
     
     .orb-1 {
@@ -61,7 +63,7 @@
         background: var(--primary);
         top: -200px;
         right: -100px;
-        animation: float 8s ease-in-out infinite;
+        animation: float 8s var(--ease-in-out) infinite;
     }
 
     .orb-2 {
@@ -70,7 +72,7 @@
         background: var(--accent-teal);
         bottom: -100px;
         left: -100px;
-        animation: float 10s ease-in-out infinite reverse;
+        animation: float 10s var(--ease-in-out) infinite reverse;
     }
 
     .orb-3 {
@@ -79,11 +81,11 @@
         background: var(--accent-purple);
         top: 50%;
         left: 50%;
-        animation: float 12s ease-in-out infinite;
+        animation: float 12s var(--ease-in-out) infinite;
     }
 }
 
-/* Hero Content - MOBILE FIRST */
+/* Hero Content - Bento Card Style */
 .hero-content {
     position: relative;
     z-index: 1;
@@ -115,22 +117,28 @@
     }
 }
 
-/* Hero Badge - MOBILE FIRST */
+/* Hero Badge - Pill Shape, Theme Aware */
 .hero-badge {
     display: inline-flex;
     align-items: center;
     gap: var(--space-1);
     padding: var(--space-1) var(--space-3);
-    background: var(--glass-base);
+    background: var(--glass-surface);
     backdrop-filter: blur(var(--glass-blur));
     -webkit-backdrop-filter: blur(var(--glass-blur));
     border: 1px solid var(--glass-border);
-    border-radius: var(--radius-full);
+    border-radius: var(--radius-pill);
     font-size: 0.8rem;
     font-weight: 600;
     color: var(--primary);
     box-shadow: var(--shadow-sm);
     margin-bottom: var(--space-4);
+    transition: all var(--duration-normal) var(--ease-in-out);
+}
+
+.hero-badge:hover {
+    background: var(--glass-surface-hover);
+    border-color: var(--primary);
 }
 
 @media (min-width: 768px) {
@@ -141,7 +149,7 @@
     }
 }
 
-/* Hero Stats - MOBILE FIRST: Vertical stack */
+/* Hero Stats - Bento Widget Style */
 .hero-stats {
     display: flex;
     flex-direction: column;
@@ -152,12 +160,16 @@
     width: 100%;
     max-width: 300px;
 
-    background: var(--glass-base);
-    backdrop-filter: blur(var(--glass-blur));
-    border: 1px solid var(--glass-border);
-    border-top: 1px solid var(--glass-highlight);
+    background: var(--bento-card);
+    border: 1px solid var(--bento-card-border-subtle);
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-lg);
+    transition: all var(--duration-normal) var(--ease-in-out);
+}
+
+.hero-stats:hover {
+    box-shadow: var(--shadow-xl);
+    border-color: var(--bento-card-border);
 }
 
 @media (min-width: 640px) {
@@ -171,49 +183,51 @@
     }
 }
 
-/* Step Card */
+/* Step Card - Bento Widget */
 .step-card {
     padding: var(--space-8);
     text-align: center;
     position: relative;
-    transition: all var(--duration-normal) var(--ease-out);
+    transition: all var(--duration-normal) var(--ease-in-out);
 
-    background: var(--glass-base);
-    backdrop-filter: blur(var(--glass-blur));
-    border: 1px solid var(--glass-border);
+    background: var(--bento-card);
+    border: 1px solid var(--bento-card-border-subtle);
     border-radius: var(--radius-2xl);
     box-shadow: var(--shadow-md);
 }
 
 .step-card:hover {
-    transform: translateY(-8px);
+    transform: translateY(-4px);
     box-shadow: var(--shadow-xl);
-    background: var(--glass-base-hover);
-    border-color: var(--primary-light);
+    background: var(--bento-card-hover);
+    border-color: var(--primary);
 }
 
-/* Dashboard Mockup */
+/* Dashboard Mockup - Bento Card */
 .dashboard-mockup {
     max-width: 400px;
     margin: 0 auto;
-    background: var(--glass-base);
-    backdrop-filter: blur(var(--glass-blur));
-    border: 1px solid var(--glass-border);
+    background: var(--bento-card);
+    border: 1px solid var(--bento-card-border-subtle);
     border-radius: var(--radius-xl);
     overflow: hidden;
     box-shadow: var(--shadow-xl);
 }
 
-/* CTA Card */
+/* CTA Card - Large Bento Section */
 .cta-card {
     padding: var(--space-12);
     text-align: center;
-    background: linear-gradient(135deg, rgba(37, 99, 235, 0.05) 0%, rgba(13, 148, 136, 0.05) 100%);
-    border: 1px solid var(--glass-border);
+    background: var(--bento-card);
+    border: 1px solid var(--bento-card-border-subtle);
     border-radius: var(--radius-3xl);
-    backdrop-filter: blur(40px);
-    /* Custom heavy blur for large area */
     box-shadow: var(--shadow-lg);
+    transition: all var(--duration-normal) var(--ease-in-out);
+}
+
+.cta-card:hover {
+    box-shadow: var(--shadow-xl);
+    border-color: var(--bento-card-border);
 }
 
 /* Footer Content */
@@ -391,20 +405,14 @@
     }
 }
 
-
-
 .step-number {
     position: absolute;
     top: var(--space-4);
     right: var(--space-4);
     font-size: 2rem;
     font-weight: 800;
-    color: rgba(0, 0, 0, 0.15); /* Increased opacity for better visibility */
-
-    /* Light watermark */
-    [data-theme='dark'] & {
-        color: rgba(255, 255, 255, 0.15); /* Increased opacity for dark mode */
-    }
+    color: var(--text-muted);
+    opacity: 0.3;
 }
 
 .step-icon {
@@ -417,6 +425,11 @@
     background: var(--primary);
     border-radius: var(--radius-xl);
     color: white;
+    transition: transform var(--duration-normal) var(--ease-in-out);
+}
+
+.step-card:hover .step-icon {
+    transform: scale(1.1);
 }
 
 .step-card h3 {
@@ -432,17 +445,25 @@
     line-height: 1.6;
 }
 
-/* Features */
+/* Features - Bento Grid Layout */
 .features {
     padding: var(--space-20) 0;
 }
 
 .features-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-12);
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
     align-items: center;
-    margin-bottom: var(--space-20);
+    margin-bottom: var(--space-12);
+}
+
+@media (min-width: 768px) {
+    .features-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-12);
+        margin-bottom: var(--space-20);
+    }
 }
 
 .features-grid.reverse {
@@ -453,30 +474,35 @@
     direction: ltr;
 }
 
+/* Feature Badge - Pill Shape */
 .feature-badge {
     display: inline-flex;
     align-items: center;
     gap: var(--space-2);
     padding: var(--space-2) var(--space-4);
-    background: rgba(37, 99, 235, 0.15); /* Slightly darker background */
-    color: #1e40af; /* darker blue for contrast */
-    [data-theme='dark'] & {
-      color: #60a5fa; /* Lighter blue for dark mode contrast */
-      background: rgba(37, 99, 235, 0.25);
-    }
+    background: var(--glass-surface);
+    border: 1px solid var(--primary);
+    color: var(--primary);
     font-size: 0.9rem;
     font-weight: 600;
-    border-radius: var(--radius-full);
+    border-radius: var(--radius-pill);
     margin-bottom: var(--space-4);
+    transition: all var(--duration-normal) var(--ease-in-out);
+}
+
+.feature-badge:hover {
+    background: var(--primary);
+    color: white;
 }
 
 .feature-badge.company {
-    background: rgba(13, 148, 136, 0.15);
-    color: #0f766e; /* Darker teal for contrast */
-    [data-theme='dark'] & {
-        color: #2dd4bf; /* Lighter teal for dark mode */
-        background: rgba(13, 148, 136, 0.25);
-    }
+    border-color: var(--accent-teal);
+    color: var(--accent-teal);
+}
+
+.feature-badge.company:hover {
+    background: var(--accent-teal);
+    color: white;
 }
 
 .feature-content h2 {

@@ -1,17 +1,17 @@
 /* ===================================
-   STUDENT SWIPE PAGE - MOBILE FIRST
+   STUDENT SWIPE PAGE - BENTO LAYOUT
+   Theme-Aware with Premium Styling
    ================================ */
 
 .swipe-page {
     min-height: 100vh;
     min-height: -webkit-fill-available;
-    /* MOBILE FIRST: Smaller top padding on mobile */
     padding-top: 70px;
     padding-bottom: var(--space-4);
     display: flex;
     align-items: center;
     justify-content: center;
-    /* Prevent horizontal overflow */
+    background: var(--bento-bg);
     overflow-x: hidden;
 }
 
@@ -22,10 +22,35 @@
     }
 }
 
+/* Loading State */
+.swipe-page.loading {
+    flex-direction: column;
+    gap: var(--space-4);
+    color: var(--text-secondary);
+}
+
+.swipe-page.loading .animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Error State */
+.swipe-page.error {
+    padding: var(--space-4);
+}
+
+.swipe-page.error .glass-card {
+    text-align: center;
+    padding: var(--space-8);
+}
+
 .swipe-container {
     width: 100%;
     max-width: 100%;
-    /* MOBILE FIRST: Minimal padding on mobile */
     padding: var(--space-2);
     display: flex;
     flex-direction: column;
@@ -47,11 +72,10 @@
     }
 }
 
-/* MOBILE FIRST: Card stack height based on viewport */
+/* Card Stack */
 .cards-stack {
     position: relative;
     width: 100%;
-    /* Mobile: Use viewport height for better fit */
     height: calc(100vh - 220px);
     min-height: 400px;
     max-height: 520px;
@@ -73,13 +97,12 @@
     }
 }
 
-/* Swipe Actions - MOBILE FIRST */
+/* Swipe Actions - Theme Aware */
 .swipe-actions {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: var(--space-3);
-    /* Safe area padding for bottom gesture bar */
     padding-bottom: env(safe-area-inset-bottom);
 }
 
@@ -89,21 +112,19 @@
     }
 }
 
-/* Action Buttons - MOBILE FIRST */
+/* Action Buttons - Theme Aware */
 .action-btn {
-    /* Mobile: Slightly smaller buttons */
     width: 48px;
     height: 48px;
-    border-radius: var(--radius-full);
+    border-radius: var(--radius-pill);
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: all var(--duration-normal) var(--ease-in-out);
     border: 2px solid;
-    background: var(--glass-surface, rgba(255, 255, 255, 0.8));
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    background: var(--bento-card);
+    box-shadow: var(--shadow-sm);
     cursor: pointer;
-    /* Prevent double-tap zoom */
     touch-action: manipulation;
 }
 
@@ -115,11 +136,10 @@
     
     .action-btn:hover:not(:disabled) {
         transform: scale(1.1);
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        box-shadow: var(--shadow-lg);
     }
 }
 
-/* Mobile: Active state instead of hover */
 .action-btn:active:not(:disabled) {
     transform: scale(0.95);
 }
@@ -127,14 +147,15 @@
 .action-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-    background: var(--bg-main);
+    background: var(--bento-card);
     box-shadow: none;
 }
 
+/* Undo Button */
 .action-btn.undo {
     width: 40px;
     height: 40px;
-    border-color: var(--glass-border);
+    border-color: var(--bento-card-border-subtle);
     color: var(--text-secondary);
 }
 
@@ -148,13 +169,15 @@
 .action-btn.undo:hover:not(:disabled) {
     color: var(--text-primary);
     border-color: var(--text-primary);
+    background: var(--bento-card-hover);
 }
 
+/* Pass Button */
 .action-btn.pass {
     width: 56px;
     height: 56px;
-    border-color: var(--accent-red, #ef4444);
-    color: var(--accent-red, #ef4444);
+    border-color: var(--accent-red);
+    color: var(--accent-red);
 }
 
 @media (min-width: 768px) {
@@ -162,21 +185,23 @@
         width: 64px;
         height: 64px;
     }
-    
-    .action-btn.pass:hover {
-        background: rgba(220, 38, 38, 0.1);
-    }
 }
 
+.action-btn.pass:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--accent-red) 10%, transparent);
+}
+
+/* Super Like Button */
 .action-btn.super-like {
     border-color: var(--primary);
     color: var(--primary);
 }
 
-.action-btn.super-like:hover {
-    background: rgba(37, 99, 235, 0.1);
+.action-btn.super-like:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--primary) 10%, transparent);
 }
 
+/* Like Button */
 .action-btn.like {
     width: 56px;
     height: 56px;
@@ -189,22 +214,22 @@
         width: 64px;
         height: 64px;
     }
-    
-    .action-btn.like:hover {
-        background: rgba(13, 148, 136, 0.1);
-    }
 }
 
-/* No More Offers - MOBILE FIRST */
+.action-btn.like:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--accent-teal) 10%, transparent);
+}
+
+/* No More Offers - Bento Card */
 .no-more-offers {
     text-align: center;
     padding: var(--space-8);
     max-width: 100%;
     margin: 0 var(--space-4);
-    background: var(--glass-surface, rgba(255, 255, 255, 0.8));
-    backdrop-filter: blur(8px);
+    background: var(--bento-card);
+    border: 1px solid var(--bento-card-border-subtle);
     border-radius: var(--radius-xl);
-    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-md);
 }
 
 @media (min-width: 480px) {

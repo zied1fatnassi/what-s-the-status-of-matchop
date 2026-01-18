@@ -1,10 +1,11 @@
-import React, { createContext, useContext, useEffect, useState } from 'react'
+import React, { createContext, useContext, useEffect, useState, useMemo } from 'react'
 
 const ThemeContext = createContext()
 
 /**
  * Manages the application theme (light, dark, system).
  * Applies 'data-theme' attribute to the document root.
+ * Provides reactive isDark value for components.
  */
 export const ThemeProvider = ({ children }) => {
     // Default to 'light' as requested by user
@@ -12,18 +13,23 @@ export const ThemeProvider = ({ children }) => {
         const saved = localStorage.getItem('matchop-theme')
         return saved || 'light'
     })
+    
+    // Track the actual applied theme (resolved from 'system' if needed)
+    const [appliedTheme, setAppliedTheme] = useState('light')
 
     useEffect(() => {
         const root = window.document.documentElement
         const systemDark = window.matchMedia('(prefers-color-scheme: dark)')
 
         const applyTheme = (targetTheme) => {
+            let resolvedTheme
             if (targetTheme === 'system') {
-                const systemMode = systemDark.matches ? 'dark' : 'light'
-                root.setAttribute('data-theme', systemMode)
+                resolvedTheme = systemDark.matches ? 'dark' : 'light'
             } else {
-                root.setAttribute('data-theme', targetTheme)
+                resolvedTheme = targetTheme
             }
+            root.setAttribute('data-theme', resolvedTheme)
+            setAppliedTheme(resolvedTheme)
         }
 
         applyTheme(theme)
@@ -32,18 +38,22 @@ export const ThemeProvider = ({ children }) => {
         // Listener for system changes if in system mode
         if (theme === 'system') {
             const listener = (e) => {
-                root.setAttribute('data-theme', e.matches ? 'dark' : 'light')
+                const newTheme = e.matches ? 'dark' : 'light'
+                root.setAttribute('data-theme', newTheme)
+                setAppliedTheme(newTheme)
             }
             systemDark.addEventListener('change', listener)
             return () => systemDark.removeEventListener('change', listener)
         }
     }, [theme])
 
-    const value = {
+    // Memoize value to prevent unnecessary re-renders
+    const value = useMemo(() => ({
         theme,
         setTheme,
-        isDark: document.documentElement.getAttribute('data-theme') === 'dark' // precise check
-    }
+        isDark: appliedTheme === 'dark',
+        appliedTheme
+    }), [theme, appliedTheme])
 
     return (
         <ThemeContext.Provider value={value}>

@@ -1,21 +1,27 @@
-/* Theme Toggle Button - Add to Navbar.css */
+/* ===================================
+   THEME TOGGLE BUTTON
+   Theme-Aware with Premium Animations
+   ================================ */
+
 .theme-toggle-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     padding: 0;
     background: transparent;
     border: 1px solid var(--glass-border);
-    border-radius: 50%;
-    color: var(--text-primary);
+    border-radius: var(--radius-pill);
+    color: var(--text-secondary);
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--duration-normal) var(--ease-in-out);
 }
 
 .theme-toggle-btn:hover {
-    background: rgba(var(--primary-rgb, 37, 99, 235), 0.1);
+    background: var(--glass-surface);
+    border-color: var(--primary);
+    color: var(--primary);
     transform: scale(1.05);
 }
 
@@ -23,12 +29,21 @@
     transform: scale(0.95);
 }
 
-/* Dark mode specific styling */
-[data-theme='dark'] .theme-toggle-btn {
-    color: #fbbf24;
-    border-color: rgba(251, 191, 36, 0.3);
+/* Sun icon for light mode */
+.theme-toggle-btn .sun-icon {
+    color: var(--accent-amber);
 }
 
-[data-theme='dark'] .theme-toggle-btn:hover {
-    background: rgba(251, 191, 36, 0.1);
+/* Moon icon for dark mode */
+.theme-toggle-btn .moon-icon {
+    color: var(--accent-purple);
+}
+
+/* Icon rotation animation on theme change */
+.theme-toggle-btn svg {
+    transition: transform var(--duration-normal) var(--ease-in-out);
+}
+
+.theme-toggle-btn:hover svg {
+    transform: rotate(15deg);
 }

@@ -22,6 +22,7 @@ function StudentSwipe() {
     const [selectedOffer, setSelectedOffer] = useState(null)
     const [showToast, setShowToast] = useState(false)
     const [toastCompany, setToastCompany] = useState('')
+    const [toastIsExternal, setToastIsExternal] = useState(false)
 
     useEffect(() => {
         if (realOffers.length > 0) {
@@ -46,20 +47,28 @@ function StudentSwipe() {
         const nextIndex = currentIndex + 1
         setCurrentIndex(nextIndex)
 
-        // Call Supabase
-        await swipe(offerToSwipe.id, direction)
+        // Call Supabase (skip for external jobs as they don't need DB tracking)
+        if (!offerToSwipe.isExternal) {
+            await swipe(offerToSwipe.id, direction)
+        }
 
-        // On right swipe (like) or super like - send application
+        // On right swipe (like) or super like - open job and send application
         if (direction === 'right' || direction === 'super') {
-            // Add application (sends profile to company)
+            // For external jobs, open the job URL directly to apply
+            if (offerToSwipe.isExternal && offerToSwipe.externalUrl) {
+                window.open(offerToSwipe.externalUrl, '_blank', 'noopener,noreferrer')
+            }
+
+            // Add application (sends profile to company for internal jobs)
             addApplication(offerToSwipe, user?.profile)
 
             // Show toast notification
             setToastCompany(offerToSwipe.company)
+            setToastIsExternal(offerToSwipe.isExternal || false)
             setShowToast(true)
 
-            // Check if it's a match
-            if (offerToSwipe.hasMatched) {
+            // Check if it's a match (internal jobs only)
+            if (!offerToSwipe.isExternal && offerToSwipe.hasMatched) {
                 setMatchedOffer(offerToSwipe)
 
                 // Send email notification (fire and forget)
@@ -176,6 +185,7 @@ function StudentSwipe() {
             {showToast && (
                 <ApplicationToast
                     companyName={toastCompany}
+                    isExternal={toastIsExternal}
                     onClose={() => setShowToast(false)}
                 />
             )}

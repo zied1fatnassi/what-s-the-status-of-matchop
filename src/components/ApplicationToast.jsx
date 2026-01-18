@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
-import { Send, CheckCircle } from 'lucide-react'
+import { Send, CheckCircle, ExternalLink } from 'lucide-react'
 import './ApplicationToast.css'
 
 /**
  * Toast notification that appears when student applies to a company
  */
-function ApplicationToast({ companyName, onClose }) {
+function ApplicationToast({ companyName, isExternal = false, onClose }) {
     const [isVisible, setIsVisible] = useState(false)
     const [isExiting, setIsExiting] = useState(false)
 
@@ -30,14 +30,20 @@ function ApplicationToast({ companyName, onClose }) {
     }, [onClose])
 
     return (
-        <div className={`application-toast ${isVisible ? 'visible' : ''} ${isExiting ? 'exiting' : ''}`}>
+        <div className={`application-toast ${isVisible ? 'visible' : ''} ${isExiting ? 'exiting' : ''} ${isExternal ? 'external' : ''}`}>
             <div className="toast-icon">
-                <Send size={20} />
+                {isExternal ? <ExternalLink size={20} /> : <Send size={20} />}
             </div>
             <div className="toast-content">
-                <span className="toast-title">Application Sent! 📤</span>
+                <span className="toast-title">
+                    {isExternal ? 'Opening Job Page! 🚀' : 'Application Sent! 📤'}
+                </span>
                 <span className="toast-message">
-                    Your profile was sent to <strong>{companyName}</strong>
+                    {isExternal ? (
+                        <>Redirecting to <strong>{companyName}</strong> to apply</>
+                    ) : (
+                        <>Your profile was sent to <strong>{companyName}</strong></>
+                    )}
                 </span>
             </div>
             <div className="toast-check">

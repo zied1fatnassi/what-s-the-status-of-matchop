@@ -1,12 +1,13 @@
 /* ===================================
-   STUDENT PROFILE - MOBILE FIRST
+   STUDENT PROFILE - BENTO GRID LAYOUT
+   Theme-Aware with Premium Styling
    ================================ */
 
 .profile-page {
-    /* MOBILE FIRST: Smaller padding on mobile */
     padding-top: 80px;
     padding-bottom: var(--space-8);
     min-height: 100vh;
+    background: var(--bento-bg);
 }
 
 @media (min-width: 768px) {
@@ -29,17 +30,22 @@
     }
 }
 
-/* Profile Header - MOBILE FIRST */
+/* Profile Header - Bento Main Card */
 .profile-header {
     text-align: center;
     margin-bottom: var(--space-6);
     position: relative;
-    background: var(--glass-surface, rgba(255, 255, 255, 0.8));
-    backdrop-filter: blur(20px);
+    background: var(--bento-card);
+    border: 1px solid var(--bento-card-border-subtle);
     border-radius: var(--radius-xl);
     padding: var(--space-4);
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--glass-shadow, var(--shadow-md));
+    box-shadow: var(--shadow-md);
+    transition: all var(--duration-normal) var(--ease-in-out);
+}
+
+.profile-header:hover {
+    box-shadow: var(--shadow-lg);
+    border-color: var(--bento-card-border);
 }
 
 @media (min-width: 768px) {
@@ -61,10 +67,11 @@
     display: inline-flex;
     align-items: center;
     gap: var(--space-2);
-    background: rgba(16, 185, 129, 0.1);
+    background: var(--glass-surface);
+    border: 1px solid var(--accent-teal);
     color: var(--accent-teal);
     padding: var(--space-1) var(--space-3);
-    border-radius: var(--radius-full);
+    border-radius: var(--radius-pill);
     font-size: 0.875rem;
     font-weight: 600;
     margin-top: var(--space-2);
@@ -72,8 +79,8 @@
 
 .completion-bar-wrapper {
     height: 6px;
-    background: var(--bg-main);
-    border-radius: var(--radius-full);
+    background: var(--glass-border);
+    border-radius: var(--radius-pill);
     overflow: hidden;
     margin-top: var(--space-6);
     position: relative;
@@ -82,8 +89,8 @@
 .completion-bar-fill {
     height: 100%;
     background: linear-gradient(90deg, var(--accent-teal), var(--primary));
-    border-radius: var(--radius-full);
-    transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: var(--radius-pill);
+    transition: width 1s var(--ease-in-out);
 }
 
 /* Photo Section - MOBILE FIRST */
@@ -190,7 +197,7 @@
     outline: none;
 }
 
-/* Skills Tags */
+/* Skills Tags - Pill Shape */
 .skills-container {
     display: flex;
     flex-wrap: wrap;
@@ -199,37 +206,40 @@
 }
 
 .skill-chip {
-    background: rgba(37, 99, 235, 0.1);
+    background: var(--glass-surface);
     padding: 0.5rem 1rem;
-    border-radius: var(--radius-full);
+    border-radius: var(--radius-pill);
     display: flex;
     align-items: center;
     gap: 0.5rem;
     font-size: 0.9rem;
-    border: 1px solid transparent;
-    transition: all 0.2s;
+    border: 1px solid var(--glass-border);
+    transition: all var(--duration-normal) var(--ease-in-out);
     color: var(--primary);
 }
 
 .skill-chip:hover {
-    background: rgba(37, 99, 235, 0.2);
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
 }
 
 .skill-chip button {
     display: flex;
     align-items: center;
-    color: var(--primary);
+    color: inherit;
     border: none;
     background: transparent;
     cursor: pointer;
     font-weight: bold;
+    transition: color var(--duration-fast) var(--ease-in-out);
 }
 
 .skill-chip button:hover {
     color: var(--accent-red);
 }
 
-/* Items List (Experience, Edu) */
+/* Items List (Experience, Edu) - Bento Widgets */
 .items-list {
     display: flex;
     flex-direction: column;
@@ -237,25 +247,28 @@
 }
 
 .item-card {
-    background: var(--glass-surface);
+    background: var(--bento-card);
     padding: var(--space-4);
     border-radius: var(--radius-lg);
-    border: 1px solid var(--glass-border);
+    border: 1px solid var(--bento-card-border-subtle);
     display: flex;
     gap: var(--space-4);
     position: relative;
-    transition: transform 0.2s;
+    transition: all var(--duration-normal) var(--ease-in-out);
 }
 
 .item-card:hover {
-    background: var(--glass-surface-hover);
+    background: var(--bento-card-hover);
+    border-color: var(--bento-card-border);
     transform: translateX(4px);
+    box-shadow: var(--shadow-md);
 }
 
 .item-icon {
     width: 48px;
     height: 48px;
-    background: rgba(37, 99, 235, 0.1);
+    background: var(--glass-surface);
+    border: 1px solid var(--glass-border);
     border-radius: var(--radius-md);
     display: flex;
     align-items: center;
