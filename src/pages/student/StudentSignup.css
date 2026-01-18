@@ -1,33 +1,61 @@
+/* ===================================
+   AUTH PAGES - MOBILE FIRST
+   ================================ */
+
 .auth-page {
     min-height: 100vh;
-    padding-top: 60px;
+    /* MOBILE FIRST: Smaller top padding on mobile */
+    padding-top: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: var(--space-6);
+    padding: var(--space-4);
 }
 
+@media (min-width: 768px) {
+    .auth-page {
+        padding-top: 60px;
+        padding: var(--space-6);
+    }
+}
+
+/* Auth Container - MOBILE FIRST: Single column on mobile */
 .auth-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    max-width: 1000px;
+    display: flex;
+    flex-direction: column;
+    max-width: 100%;
     width: 100%;
-    background: var(--glass-surface);
+    background: var(--glass-surface, rgba(255, 255, 255, 0.8));
     backdrop-filter: blur(20px);
     border: 1px solid var(--glass-border);
-    border-radius: var(--radius-2xl);
+    border-radius: var(--radius-xl);
     overflow: hidden;
-    box-shadow: var(--glass-shadow);
+    box-shadow: var(--glass-shadow, var(--shadow-lg));
 }
 
+@media (min-width: 768px) {
+    .auth-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        max-width: 1000px;
+        border-radius: var(--radius-2xl);
+    }
+}
+
+/* Auth Visual - MOBILE: Hidden */
 .auth-visual {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--accent-purple) 100%);
-    padding: var(--space-10);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    /* Always white on gradient */
+    display: none;
+}
+
+@media (min-width: 768px) {
+    .auth-visual {
+        display: flex;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--accent-purple) 100%);
+        padding: var(--space-10);
+        align-items: center;
+        justify-content: center;
+        color: white;
+    }
 }
 
 .visual-content {
@@ -36,9 +64,9 @@
 }
 
 .visual-icon {
-    width: 100px;
-    height: 100px;
-    margin: 0 auto var(--space-6);
+    width: 80px;
+    height: 80px;
+    margin: 0 auto var(--space-4);
     background: rgba(255, 255, 255, 0.2);
     border-radius: var(--radius-xl);
     display: flex;
@@ -47,18 +75,33 @@
     color: white;
 }
 
+@media (min-width: 768px) {
+    .visual-icon {
+        width: 100px;
+        height: 100px;
+        margin: 0 auto var(--space-6);
+    }
+}
+
 .visual-content h2 {
-    font-size: 2rem;
+    font-size: clamp(1.5rem, 4vw, 2rem);
     font-weight: 700;
     margin-bottom: var(--space-3);
     color: white;
 }
 
 .visual-content p {
-    font-size: 1.1rem;
+    font-size: 1rem;
     opacity: 0.9;
-    margin-bottom: var(--space-8);
+    margin-bottom: var(--space-6);
     color: rgba(255, 255, 255, 0.9);
+}
+
+@media (min-width: 768px) {
+    .visual-content p {
+        font-size: 1.1rem;
+        margin-bottom: var(--space-8);
+    }
 }
 
 .visual-features {
@@ -76,16 +119,29 @@
     color: white;
 }
 
+/* Auth Form Container - MOBILE FIRST */
 .auth-form-container {
-    padding: var(--space-10);
+    padding: var(--space-4);
+}
+
+@media (min-width: 768px) {
+    .auth-form-container {
+        padding: var(--space-10);
+    }
 }
 
 .auth-header {
-    margin-bottom: var(--space-8);
+    margin-bottom: var(--space-4);
+}
+
+@media (min-width: 768px) {
+    .auth-header {
+        margin-bottom: var(--space-8);
+    }
 }
 
 .auth-header h1 {
-    font-size: 2rem;
+    font-size: clamp(1.5rem, 4vw, 2rem);
     font-weight: 700;
     margin-bottom: var(--space-2);
     color: var(--text-primary);
@@ -188,29 +244,24 @@
 }
 
 .auth-terms {
-    margin-top: var(--space-6);
-    font-size: 0.85rem;
+    margin-top: var(--space-4);
+    font-size: 0.8rem;
     color: var(--text-muted);
     text-align: center;
+}
+
+@media (min-width: 768px) {
+    .auth-terms {
+        margin-top: var(--space-6);
+        font-size: 0.85rem;
+    }
 }
 
 .auth-terms a {
     color: var(--primary);
 }
 
-@media (max-width: 768px) {
-    .auth-container {
-        grid-template-columns: 1fr;
-    }
-
-    .auth-visual {
-        display: none;
-    }
-
-    .auth-form-container {
-        padding: var(--space-6);
-    }
-}
+/* Legacy media query - Now handled with mobile-first above */
 
 /* Auth Error */
 .auth-error {

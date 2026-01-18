@@ -127,7 +127,7 @@
   /* Heavier shadows */
 }
 
-/* --- Base Reset --- */
+/* --- Base Reset (MOBILE-FIRST) --- */
 *,
 *::before,
 *::after {
@@ -138,6 +138,14 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+html {
+  /* Prevent horizontal scroll on mobile */
+  overflow-x: hidden;
+  /* iOS safe area support */
+  height: 100%;
+  height: -webkit-fill-available;
+}
+
 body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   background: var(--bg-main);
@@ -146,7 +154,15 @@ body {
   color: var(--text-primary);
   line-height: 1.6;
   min-height: 100vh;
+  min-height: -webkit-fill-available;
   overflow-x: hidden;
+  /* iOS Safe Areas */
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+  /* Prevent iOS bounce */
+  -webkit-overflow-scrolling: touch;
 }
 
 #root {
@@ -318,7 +334,21 @@ textarea:focus {
   max-width: 1200px;
   /* Tighter container for readability */
   margin: 0 auto;
+  /* MOBILE-FIRST: Start with mobile padding, scale up */
   padding: 0 var(--space-4);
+}
+
+/* Responsive container padding */
+@media (min-width: 640px) {
+  .container {
+    padding: 0 var(--space-6);
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    padding: 0 var(--space-8);
+  }
 }
 
 .animate-fade-in {
@@ -360,76 +390,125 @@ textarea:focus {
 }
 
 /* ===================================
-   MOBILE STABILIZATION OVERRIDES
+   MOBILE-FIRST RESPONSIVE SYSTEM
    ================================ */
 
-@media (max-width: 768px) {
+/* MOBILE BASE (320px+) - Default styles */
+:root {
+  --glass-blur: 12px; /* Lighter blur for mobile performance */
+  --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-xl: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
 
-  /* Freeze Glass for Performance */
-  :root {
-    --glass-blur: 12px;
-    /* Reduce heavy blur on mobile */
-    --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.08);
-    /* Lighter shadows */
-    --shadow-xl: 0 8px 20px rgba(0, 0, 0, 0.1);
-  }
-
-  /* Kill All Layout-Affecting Animations */
+/* Kill All Layout-Affecting Animations on mobile */
+@media (max-width: 767px) {
   * {
     animation-duration: 0ms !important;
     animation-delay: 0ms !important;
   }
 
-  /* Disable Hover Effects (Stick on Mobile) */
+  /* Disable Hover Effects (Prevents stuck state on touch) */
   .glass-card:hover,
   .btn-primary:hover,
   .btn-secondary:hover {
     transform: none;
   }
 
+  /* No Translatey on Hover */
+  .hover-lift:hover {
+    transform: none;
+  }
+}
+
+/* SM Breakpoint (640px+) - Small tablets */
+@media (min-width: 640px) {
+  :root {
+    --glass-blur: 16px;
+    --shadow-lg: 0 12px 24px -4px rgba(0, 0, 0, 0.06);
+  }
+}
+
+/* MD Breakpoint (768px+) - Tablets */
+@media (min-width: 768px) {
+  :root {
+    --glass-blur: 20px;
+    --shadow-lg: 0 16px 32px -4px rgba(0, 0, 0, 0.06);
+    --shadow-xl: 0 24px 48px -8px rgba(0, 0, 0, 0.08);
+  }
+}
+
+/* LG Breakpoint (1024px+) - Desktop */
+@media (min-width: 1024px) {
+  :root {
+    --glass-blur: 24px; /* Full premium blur on desktop */
+    --shadow-lg: 0 20px 40px -8px rgba(0, 0, 0, 0.08), 0 8px 12px -4px rgba(37, 99, 235, 0.1);
+    --shadow-xl: 0 30px 60px -12px rgba(0, 0, 0, 0.15), 0 12px 24px -6px rgba(0, 0, 0, 0.08);
+  }
+}
+
+/* MOBILE TYPOGRAPHY - Responsive font sizes */
+h1 {
+  font-size: clamp(1.75rem, 6vw, 3.5rem);
+}
+
+h2 {
+  font-size: clamp(1.5rem, 5vw, 2.5rem);
+}
+
+h3 {
+  font-size: clamp(1.25rem, 4vw, 1.75rem);
+}
+
+h4 {
+  font-size: clamp(1rem, 3vw, 1.25rem);
+}
+
+/* MOBILE TOUCH TARGETS - Minimum 44px for accessibility */
+.btn {
+  min-height: 44px;
+  padding: 0.75rem 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .btn {
+    min-height: auto;
+  }
+}
+
+/* MOBILE INPUTS - Prevent iOS zoom (16px minimum) */
+.input,
+select,
+textarea {
+  min-height: 48px;
+  font-size: 16px; /* Prevents iOS zoom on focus */
+}
+
+@media (min-width: 768px) {
+  .input,
+  select,
+  textarea {
+    min-height: 44px;
+    font-size: 1rem;
+  }
+}
+
+/* ===================================
+   LEGACY MOBILE STABILIZATION OVERRIDES
+   (Kept for backwards compatibility)
+   ================================ */
+
+@media (max-width: 768px) {
+
   /* Increase Container Breathing Room */
   .container {
-    padding: 0 var(--space-6);
-    /* 1.5rem = 24px */
-  }
-
-  /* Typography: Prevent Massive Text */
-  h1 {
-    font-size: clamp(2.5rem, 8vw, 3.5rem);
-  }
-
-  h2 {
-    font-size: clamp(1.75rem, 6vw, 2.5rem);
-  }
-
-  h3 {
-    font-size: clamp(1.25rem, 4vw, 1.75rem);
+    padding: 0 var(--space-4);
   }
 
   /* Touch Targets: Minimum 44px */
-  .btn {
-    min-height: 44px;
-    padding: 0.75rem 1.5rem;
-  }
-
   .btn-sm {
     min-height: 44px;
     /* Override the "small" size */
     padding: 0.75rem 1.25rem;
-  }
-
-  /* No Translatey on Hover (Prevents Stuck State) */
-  .hover-lift:hover {
-    transform: none;
-  }
-
-  /* Inputs: Larger for Thumb-Friendly */
-  .input,
-  select,
-  textarea {
-    min-height: 48px;
-    font-size: 16px;
-    /* Prevents iOS zoom on focus */
   }
 }
 
@@ -440,12 +519,83 @@ textarea:focus {
     /* Reduce base spacing */
     --space-6: 1rem;
   }
+}
 
-  h1 {
-    font-size: 2rem;
+/* ===================================
+   MOBILE UTILITY CLASSES
+   ================================ */
+
+/* Responsive flex utilities */
+.flex-col-mobile {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 768px) {
+  .flex-col-mobile {
+    flex-direction: row;
   }
+}
 
-  h2 {
-    font-size: 1.5rem;
+/* Responsive grid utilities */
+.grid-mobile-1 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+}
+
+@media (min-width: 640px) {
+  .grid-mobile-1 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid-mobile-1 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Full-width on mobile, auto on larger */
+.w-full-mobile {
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .w-full-mobile {
+    width: auto;
+  }
+}
+
+/* Hide on mobile, show on desktop */
+.hide-mobile {
+  display: none !important;
+}
+
+@media (min-width: 768px) {
+  .hide-mobile {
+    display: flex !important;
+  }
+}
+
+/* Show on mobile, hide on desktop */
+.show-mobile {
+  display: flex !important;
+}
+
+@media (min-width: 768px) {
+  .show-mobile {
+    display: none !important;
+  }
+}
+
+/* Safe scroll padding for fixed headers */
+.page-with-navbar {
+  padding-top: calc(80px + env(safe-area-inset-top));
+}
+
+@media (max-width: 767px) {
+  .page-with-navbar {
+    padding-top: calc(70px + env(safe-area-inset-top));
   }
 }

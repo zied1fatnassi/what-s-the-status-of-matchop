@@ -1,52 +1,106 @@
+/* ===================================
+   STUDENT MATCHES - MOBILE FIRST
+   ================================ */
+
 .matches-page {
     min-height: 100vh;
-    padding-top: 100px;
-    padding-bottom: var(--space-10);
+    /* MOBILE FIRST: Smaller padding on mobile */
+    padding-top: 80px;
+    padding-bottom: var(--space-6);
     background: transparent;
 }
 
+@media (min-width: 768px) {
+    .matches-page {
+        padding-top: 100px;
+        padding-bottom: var(--space-10);
+    }
+}
+
 .matches-header {
-    margin-bottom: var(--space-8);
+    margin-bottom: var(--space-4);
+    padding: 0 var(--space-2);
+}
+
+@media (min-width: 768px) {
+    .matches-header {
+        margin-bottom: var(--space-8);
+        padding: 0;
+    }
 }
 
 .matches-header h1 {
-    font-size: 2rem;
+    font-size: clamp(1.5rem, 5vw, 2rem);
     font-weight: 700;
-    margin-bottom: var(--space-2);
+    margin-bottom: var(--space-1);
     color: var(--text-primary);
 }
 
 .matches-header p {
     color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+@media (min-width: 768px) {
+    .matches-header p {
+        font-size: 1rem;
+    }
 }
 
 .matches-list {
     display: flex;
     flex-direction: column;
-    gap: var(--space-4);
-    max-width: 800px;
+    gap: var(--space-3);
+    max-width: 100%;
 }
 
+@media (min-width: 768px) {
+    .matches-list {
+        gap: var(--space-4);
+        max-width: 800px;
+    }
+}
+
+/* Match Card - MOBILE FIRST */
 .match-card {
     display: flex;
     align-items: flex-start;
-    gap: var(--space-4);
-    padding: var(--space-5);
-    background: var(--glass-surface);
+    gap: var(--space-3);
+    padding: var(--space-3);
+    background: var(--glass-surface, rgba(255, 255, 255, 0.8));
     backdrop-filter: blur(12px);
     border: 1px solid var(--glass-border);
-    border-radius: var(--radius-xl);
-    box-shadow: var(--glass-shadow);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--glass-shadow, var(--shadow-sm));
     transition: all 0.2s;
     position: relative;
     text-decoration: none;
     color: inherit;
 }
 
-.match-card:hover {
-    transform: translateX(4px);
-    background: var(--glass-surface-hover);
-    border-color: var(--primary);
+@media (min-width: 768px) {
+    .match-card {
+        gap: var(--space-4);
+        padding: var(--space-5);
+        border-radius: var(--radius-xl);
+    }
+    
+    .match-card:hover {
+        transform: translateX(4px);
+        background: var(--glass-surface-hover);
+        border-color: var(--primary);
+    }
+}
+
+/* Mobile: No hover transform */
+@media (max-width: 767px) {
+    .match-card:hover {
+        transform: none;
+    }
+    
+    .match-card:active {
+        background: var(--glass-surface-hover, rgba(255, 255, 255, 0.9));
+    }
 }
 
 .match-card.unread {
@@ -54,19 +108,29 @@
     border-color: var(--primary);
 }
 
+/* Match Avatar - MOBILE FIRST */
 .match-avatar {
-    width: 60px;
-    height: 60px;
-    border-radius: var(--radius-lg);
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
     background: var(--primary);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     font-weight: 700;
     flex-shrink: 0;
     overflow: hidden;
     color: white;
+}
+
+@media (min-width: 768px) {
+    .match-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: var(--radius-lg);
+        font-size: 1.5rem;
+    }
 }
 
 .match-avatar img {

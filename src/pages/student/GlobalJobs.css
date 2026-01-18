@@ -1,70 +1,112 @@
-/* GlobalJobs.css - Synchronized with Design System */
+/* ===================================
+   GLOBAL JOBS PAGE - MOBILE FIRST
+   ================================ */
 
 .global-jobs-page {
     min-height: 100vh;
-    padding-top: 100px;
-    padding-bottom: var(--space-8);
+    /* MOBILE FIRST: Smaller padding on mobile */
+    padding-top: 70px;
+    padding-bottom: var(--space-6);
     background: transparent;
 }
 
-/* --- Stats / Header Section --- */
+@media (min-width: 768px) {
+    .global-jobs-page {
+        padding-top: 100px;
+        padding-bottom: var(--space-8);
+    }
+}
+
+/* --- Stats / Header Section - MOBILE FIRST --- */
 .page-header {
-    background: var(--glass-surface);
+    background: var(--glass-surface, rgba(255, 255, 255, 0.8));
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--glass-border);
-    padding: var(--space-8) var(--space-4);
+    padding: var(--space-4) var(--space-3);
     text-align: center;
-    margin-bottom: var(--space-8);
-    border-radius: 0 0 var(--radius-2xl) var(--radius-2xl);
-    box-shadow: var(--glass-shadow);
+    margin-bottom: var(--space-4);
+    border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+    box-shadow: var(--glass-shadow, var(--shadow-md));
+}
+
+@media (min-width: 768px) {
+    .page-header {
+        padding: var(--space-8) var(--space-4);
+        margin-bottom: var(--space-8);
+        border-radius: 0 0 var(--radius-2xl) var(--radius-2xl);
+    }
 }
 
 .header-content h1 {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: var(--space-3);
+    gap: var(--space-2);
     margin: 0 0 var(--space-2);
-    font-size: 2.5rem;
+    font-size: clamp(1.5rem, 5vw, 2.5rem);
     color: var(--primary);
     font-weight: 800;
 }
 
 .header-content p {
     color: var(--text-secondary);
-    font-size: 1.1rem;
+    font-size: 0.95rem;
     max-width: 600px;
     margin: 0 auto;
 }
 
-/* --- Filters --- */
+@media (min-width: 768px) {
+    .header-content p {
+        font-size: 1.1rem;
+    }
+}
+
+/* --- Filters - MOBILE FIRST --- */
 .filters-bar {
-    max-width: 900px;
-    margin: -50px auto 40px;
-    background: var(--glass-surface);
+    max-width: 100%;
+    margin: 0 var(--space-3) var(--space-4);
+    background: var(--glass-surface, rgba(255, 255, 255, 0.8));
     backdrop-filter: blur(16px);
     border: 1px solid var(--glass-border);
-    padding: var(--space-4);
-    border-radius: var(--radius-xl);
-    box-shadow: var(--glass-shadow);
+    padding: var(--space-3);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--glass-shadow, var(--shadow-md));
     display: flex;
-    gap: var(--space-4);
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: var(--space-3);
     position: relative;
     z-index: 10;
 }
 
+@media (min-width: 768px) {
+    .filters-bar {
+        max-width: 900px;
+        margin: -50px auto 40px;
+        padding: var(--space-4);
+        border-radius: var(--radius-xl);
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: var(--space-4);
+    }
+}
+
 .search-input {
     flex: 1;
-    min-width: 250px;
+    min-width: 100%;
     position: relative;
     display: flex;
     align-items: center;
-    background: var(--input-bg);
-    border: 1px solid var(--input-border);
+    background: var(--input-bg, rgba(255, 255, 255, 0.5));
+    border: 1px solid var(--input-border, var(--glass-border));
     border-radius: var(--radius-lg);
     transition: all 0.2s;
+}
+
+@media (min-width: 768px) {
+    .search-input {
+        min-width: 250px;
+    }
 }
 
 .search-input:focus-within {
@@ -73,7 +115,7 @@
 }
 
 .search-input svg {
-    margin-left: var(--space-4);
+    margin-left: var(--space-3);
     color: var(--text-muted);
 }
 
@@ -82,7 +124,7 @@
     padding: var(--space-3);
     border: none;
     background: transparent;
-    font-size: 1rem;
+    font-size: 16px; /* Prevent iOS zoom */
     color: var(--text-primary);
     outline: none;
 }
@@ -91,13 +133,29 @@
     color: var(--text-muted);
 }
 
-/* --- Grid & Cards --- */
+/* --- Grid & Cards - MOBILE FIRST --- */
 .jobs-grid {
     max-width: 1280px;
     margin: 0 auto;
+    padding: 0 var(--space-3);
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-    gap: var(--space-6);
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+}
+
+@media (min-width: 640px) {
+    .jobs-grid {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        padding: 0 var(--space-4);
+    }
+}
+
+@media (min-width: 768px) {
+    .jobs-grid {
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+        gap: var(--space-6);
+    }
+}
     padding: 0 var(--space-4);
 }
 

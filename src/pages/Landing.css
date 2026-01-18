@@ -1,18 +1,38 @@
+/* ===================================
+   LANDING PAGE - MOBILE FIRST
+   ================================ */
+
 .landing-page {
-    padding-top: 60px;
+    /* MOBILE FIRST: Smaller top padding on mobile */
+    padding-top: 50px;
     background: var(--bg-main);
     color: var(--text-primary);
+    overflow-x: hidden;
 }
 
-/* Hero Section */
+@media (min-width: 768px) {
+    .landing-page {
+        padding-top: 60px;
+    }
+}
+
+/* Hero Section - MOBILE FIRST */
 .hero {
-    min-height: calc(100vh - 60px);
+    /* Mobile: Auto height, no fixed min-height */
+    min-height: auto;
+    padding: var(--space-8) 0 var(--space-12);
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
     overflow: hidden;
-    padding: var(--space-10) 0;
+}
+
+@media (min-width: 768px) {
+    .hero {
+        min-height: calc(100vh - 60px);
+        padding: var(--space-10) 0;
+    }
 }
 
 .hero-bg {
@@ -21,89 +41,134 @@
     overflow: hidden;
 }
 
+/* Gradient orbs - MOBILE: Hidden for performance */
 .gradient-orb {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(80px);
-    opacity: 0.3;
+    display: none;
 }
 
-.orb-1 {
-    width: 600px;
-    height: 600px;
-    background: var(--primary);
-    top: -200px;
-    right: -100px;
-    animation: float 8s ease-in-out infinite;
+@media (min-width: 768px) {
+    .gradient-orb {
+        display: block;
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(80px);
+        opacity: 0.3;
+    }
+    
+    .orb-1 {
+        width: 600px;
+        height: 600px;
+        background: var(--primary);
+        top: -200px;
+        right: -100px;
+        animation: float 8s ease-in-out infinite;
+    }
+
+    .orb-2 {
+        width: 400px;
+        height: 400px;
+        background: var(--accent-teal);
+        bottom: -100px;
+        left: -100px;
+        animation: float 10s ease-in-out infinite reverse;
+    }
+
+    .orb-3 {
+        width: 300px;
+        height: 300px;
+        background: var(--accent-purple);
+        top: 50%;
+        left: 50%;
+        animation: float 12s ease-in-out infinite;
+    }
 }
 
-.orb-2 {
-    width: 400px;
-    height: 400px;
-    background: var(--accent-teal);
-    bottom: -100px;
-    left: -100px;
-    animation: float 10s ease-in-out infinite reverse;
-}
-
-.orb-3 {
-    width: 300px;
-    height: 300px;
-    background: var(--accent-purple);
-    top: 50%;
-    left: 50%;
-    animation: float 12s ease-in-out infinite;
-}
-
+/* Hero Content - MOBILE FIRST */
 .hero-content {
     position: relative;
     z-index: 1;
     text-align: center;
-    max-width: 900px;
+    max-width: 100%;
     margin: 0 auto;
-    padding-top: var(--space-16);
+    padding: var(--space-6) var(--space-4) 0;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
+@media (min-width: 768px) {
+    .hero-content {
+        max-width: 900px;
+        padding: var(--space-16) var(--space-4) 0;
+    }
+}
+
 .hero-logo {
-    margin-bottom: var(--space-8);
+    margin-bottom: var(--space-4);
     display: flex;
     justify-content: center;
 }
 
-/* Hero Badge */
+@media (min-width: 768px) {
+    .hero-logo {
+        margin-bottom: var(--space-8);
+    }
+}
+
+/* Hero Badge - MOBILE FIRST */
 .hero-badge {
     display: inline-flex;
     align-items: center;
-    gap: var(--space-2);
-    padding: var(--space-2) var(--space-4);
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-3);
     background: var(--glass-base);
     backdrop-filter: blur(var(--glass-blur));
     -webkit-backdrop-filter: blur(var(--glass-blur));
     border: 1px solid var(--glass-border);
     border-radius: var(--radius-full);
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     font-weight: 600;
     color: var(--primary);
     box-shadow: var(--shadow-sm);
+    margin-bottom: var(--space-4);
 }
 
-/* Hero Stats - Glass Card */
+@media (min-width: 768px) {
+    .hero-badge {
+        gap: var(--space-2);
+        padding: var(--space-2) var(--space-4);
+        font-size: 0.9rem;
+    }
+}
+
+/* Hero Stats - MOBILE FIRST: Vertical stack */
 .hero-stats {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: var(--space-6);
-    margin-top: var(--space-12);
-    padding: var(--space-6) var(--space-8);
+    gap: var(--space-3);
+    margin-top: var(--space-8);
+    padding: var(--space-4);
+    width: 100%;
+    max-width: 300px;
 
     background: var(--glass-base);
     backdrop-filter: blur(var(--glass-blur));
     border: 1px solid var(--glass-border);
     border-top: 1px solid var(--glass-highlight);
-    border-radius: var(--radius-2xl);
+    border-radius: var(--radius-xl);
     box-shadow: var(--shadow-lg);
+}
+
+@media (min-width: 640px) {
+    .hero-stats {
+        flex-direction: row;
+        gap: var(--space-6);
+        max-width: 100%;
+        padding: var(--space-6) var(--space-8);
+        border-radius: var(--radius-2xl);
+        margin-top: var(--space-12);
+    }
 }
 
 /* Step Card */
@@ -168,12 +233,14 @@
     box-shadow: var(--shadow-lg);
 }
 
+/* Hero Title - MOBILE FIRST with clamp */
 .hero-title {
-    font-size: 4rem;
+    font-size: clamp(1.75rem, 8vw, 4rem);
     font-weight: 800;
     line-height: 1.1;
     letter-spacing: -0.02em;
     color: var(--text-primary);
+    margin-bottom: var(--space-4);
 }
 
 .gradient-text {
@@ -183,22 +250,55 @@
     background-clip: text;
 }
 
+/* Hero Subtitle - MOBILE FIRST */
 .hero-subtitle {
-    font-size: 1.25rem;
+    font-size: 1rem;
     color: var(--text-secondary);
-    max-width: 600px;
-    line-height: 1.6;
+    max-width: 100%;
+    line-height: 1.5;
+    margin-bottom: var(--space-6);
+    padding: 0 var(--space-2);
 }
 
+@media (min-width: 768px) {
+    .hero-subtitle {
+        font-size: 1.25rem;
+        max-width: 600px;
+        line-height: 1.6;
+    }
+}
+
+/* Hero CTA - MOBILE FIRST: Full width buttons */
 .hero-cta {
     display: flex;
-    gap: var(--space-4);
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: var(--space-3);
+    width: 100%;
+    padding: 0;
+}
+
+.hero-cta .btn {
+    width: 100%;
     justify-content: center;
 }
 
+@media (min-width: 640px) {
+    .hero-cta {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: var(--space-4);
+        width: auto;
+    }
+    
+    .hero-cta .btn {
+        width: auto;
+    }
+}
 
 
+
+/* Stats - MOBILE FIRST */
 .stat-item {
     display: flex;
     flex-direction: column;
@@ -207,7 +307,7 @@
 }
 
 .stat-number {
-    font-size: 2rem;
+    font-size: 1.5rem;
     font-weight: 800;
     background: linear-gradient(135deg, var(--primary) 0%, var(--accent-teal) 100%);
     -webkit-background-clip: text;
@@ -215,34 +315,80 @@
     background-clip: text;
 }
 
+@media (min-width: 640px) {
+    .stat-number {
+        font-size: 2rem;
+    }
+}
+
 .stat-label {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     color: var(--text-secondary);
 }
 
+@media (min-width: 640px) {
+    .stat-label {
+        font-size: 0.9rem;
+    }
+}
+
 .stat-divider {
-    width: 1px;
-    height: 40px;
+    width: 60px;
+    height: 1px;
     background: var(--glass-border);
 }
 
-/* How It Works */
+@media (min-width: 640px) {
+    .stat-divider {
+        width: 1px;
+        height: 40px;
+    }
+}
+
+/* How It Works - MOBILE FIRST */
 .how-it-works {
-    padding: var(--space-20) 0;
+    padding: var(--space-12) 0;
+}
+
+@media (min-width: 768px) {
+    .how-it-works {
+        padding: var(--space-20) 0;
+    }
 }
 
 .section-title {
-    font-size: 2.5rem;
+    font-size: clamp(1.5rem, 5vw, 2.5rem);
     font-weight: 700;
     text-align: center;
-    margin-bottom: var(--space-12);
+    margin-bottom: var(--space-8);
     color: var(--text-primary);
 }
 
+@media (min-width: 768px) {
+    .section-title {
+        margin-bottom: var(--space-12);
+    }
+}
+
+/* Steps Grid - MOBILE FIRST: Single column */
 .steps-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-6);
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+}
+
+@media (min-width: 640px) {
+    .steps-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-5);
+    }
+}
+
+@media (min-width: 1024px) {
+    .steps-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--space-6);
+    }
 }
 
 

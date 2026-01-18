@@ -1,14 +1,14 @@
 /* ===================================
-   NAVBAR COMPONENT
+   NAVBAR COMPONENT - MOBILE FIRST
    ================================ */
 
 .navbar {
     position: fixed;
-    top: var(--space-4);
+    top: var(--space-2);
     left: 50%;
     transform: translateX(-50%);
-    width: calc(100% - var(--space-8));
-    max-width: 1200px;
+    width: calc(100% - var(--space-4));
+    max-width: 100%;
     z-index: 1000;
 
     /* Premium Glass */
@@ -19,9 +19,20 @@
     border-top: 1px solid var(--glass-highlight);
     box-shadow: var(--shadow-lg);
 
-    border-radius: var(--radius-full);
-    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius-2xl);
+    padding: 0.5rem 0.5rem;
     transition: all var(--duration-normal) var(--ease-spring);
+}
+
+/* Desktop: Wider navbar */
+@media (min-width: 768px) {
+    .navbar {
+        top: var(--space-4);
+        width: calc(100% - var(--space-8));
+        max-width: 1200px;
+        border-radius: var(--radius-full);
+        padding: 0.5rem 0.75rem;
+    }
 }
 
 .navbar-container {
@@ -29,39 +40,115 @@
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    padding: 0 var(--space-2);
+    padding: 0 var(--space-1);
+}
+
+@media (min-width: 768px) {
+    .navbar-container {
+        padding: 0 var(--space-2);
+    }
 }
 
 .navbar-logo {
     display: flex;
     align-items: center;
     flex-shrink: 0;
-    margin-right: var(--space-4);
+    margin-right: var(--space-2);
 }
 
-/* Center Links */
-.navbar-links {
-    display: flex;
-    align-items: center;
-    gap: var(--space-1);
+@media (min-width: 768px) {
+    .navbar-logo {
+        margin-right: var(--space-4);
+    }
+}
 
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
+/* Center Links - MOBILE FIRST (hidden on mobile by default) */
+.navbar-links {
+    /* MOBILE: Full-Screen Overlay */
+    position: fixed;
+    inset: 0;
+    
+    /* Remove transform scaling (causes jitter) */
+    transform: none;
+
+    /* Vertical stack, full-bleed */
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    padding: 80px var(--space-6) var(--space-6);
+    gap: var(--space-2);
+
+    /* Solid background for stability */
+    background: var(--glass-base);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
+
+    /* Hidden by default */
+    display: flex;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+
+    /* Simple fade, no layout shift */
+    transition: opacity 0.2s ease, visibility 0.2s;
+}
+
+.navbar-links.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+/* DESKTOP: Horizontal centered links */
+@media (min-width: 901px) {
+    .navbar-links {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        inset: auto;
+        
+        flex-direction: row;
+        align-items: center;
+        gap: var(--space-1);
+        padding: 0;
+        
+        background: transparent;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+    }
 }
 
 .navbar-link {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.5rem 1rem;
+    /* MOBILE: Larger tap targets */
+    padding: 1rem 1.5rem;
     color: var(--text-secondary);
     font-weight: 500;
-    font-size: 0.9rem;
-    border-radius: var(--radius-full);
+    font-size: 1.1rem;
+    border-radius: var(--radius-xl);
     transition: all var(--duration-fast);
     text-decoration: none;
     white-space: nowrap;
+    min-height: 56px;
+}
+
+/* DESKTOP: Smaller, inline links */
+@media (min-width: 901px) {
+    .navbar-link {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+        border-radius: var(--radius-full);
+        min-height: auto;
+    }
 }
 
 .navbar-link:hover {
@@ -80,18 +167,30 @@
     background: rgba(255, 255, 255, 0.1);
 }
 
-/* Right Section */
+/* Right Section - MOBILE FIRST */
 .navbar-right {
     display: flex;
     align-items: center;
-    gap: var(--space-2);
+    gap: var(--space-1);
 }
 
-/* Auth Buttons */
+@media (min-width: 768px) {
+    .navbar-right {
+        gap: var(--space-2);
+    }
+}
+
+/* Auth Buttons - MOBILE FIRST */
 .navbar-auth {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
+    display: none; /* Hide on mobile - too cluttered */
+}
+
+@media (min-width: 768px) {
+    .navbar-auth {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+    }
 }
 
 .theme-toggle-btn,
@@ -134,6 +233,17 @@
     position: relative;
 }
 
+/* Hide lang button text on mobile, show icon only */
+.lang-btn span {
+    display: none;
+}
+
+@media (min-width: 768px) {
+    .lang-btn span {
+        display: inline;
+    }
+}
+
 .lang-dropdown {
     position: absolute;
     top: calc(100% + 12px);
@@ -171,59 +281,24 @@
     color: var(--primary);
 }
 
-/* Mobile Responsive */
+/* Mobile Responsive - MOBILE FIRST APPROACH */
 .navbar-toggle {
-    display: none;
+    display: flex; /* Show hamburger by default on mobile */
 }
 
+@media (min-width: 901px) {
+    .navbar-toggle {
+        display: none; /* Hide hamburger on desktop */
+    }
+}
+
+/* Legacy media query kept for explicit mobile overrides */
 @media (max-width: 900px) {
     .navbar-toggle {
         display: flex;
     }
 
-    /* MOBILE STABILIZATION: Full-Screen Overlay */
-    .navbar-links {
-        /* Lock to viewport, no floating */
-        position: fixed;
-        inset: 0;
-
-        /* Remove transform scaling (causes jitter) */
-        transform: none;
-
-        /* Vertical stack, full-bleed */
-        flex-direction: column;
-        align-items: stretch;
-        justify-content: flex-start;
-        padding: 80px var(--space-6) var(--space-6);
-
-        /* Solid background for stability */
-        background: var(--glass-base);
-        backdrop-filter: blur(var(--glass-blur));
-        border: none;
-        box-shadow: none;
-        border-radius: 0;
-
-        /* Hidden by default */
-        opacity: 0;
-        visibility: hidden;
-        pointer-events: none;
-
-        /* Simple fade, no layout shift */
-        transition: opacity 0.2s ease, visibility 0.2s;
-    }
-
-    .navbar-links.active {
-        opacity: 1;
-        visibility: visible;
-        pointer-events: auto;
-    }
-
     .navbar-link {
         justify-content: flex-start;
-        padding: 1rem 1.5rem;
-        font-size: 1.1rem;
-        min-height: 56px;
-        /* Larger tap target */
-        border-radius: var(--radius-xl);
     }
 }

@@ -1,3 +1,7 @@
+/* ===================================
+   OFFER DETAIL MODAL - MOBILE FIRST
+   ================================ */
+
 .offer-modal-overlay {
     position: fixed;
     top: 0;
@@ -7,62 +11,111 @@
     background: rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(8px);
     display: flex;
-    align-items: center;
+    align-items: flex-end; /* MOBILE: Slide from bottom */
     justify-content: center;
     z-index: 2000;
-    padding: var(--space-4);
+    padding: 0;
     animation: fadeIn 0.2s ease;
+}
+
+@media (min-width: 768px) {
+    .offer-modal-overlay {
+        align-items: center;
+        padding: var(--space-4);
+    }
 }
 
 .offer-modal {
     background: linear-gradient(135deg, rgba(15, 12, 41, 0.98) 0%, rgba(48, 43, 99, 0.98) 100%);
     border: 1px solid var(--glass-border);
-    border-radius: var(--radius-2xl);
-    max-width: 550px;
+    /* MOBILE: Full-width, rounded top only */
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    max-width: 100%;
     width: 100%;
-    max-height: 85vh;
+    max-height: 90vh;
     overflow-y: auto;
     position: relative;
-    padding: var(--space-6);
+    padding: var(--space-4);
+    padding-bottom: calc(var(--space-6) + env(safe-area-inset-bottom));
     animation: slideUp 0.3s ease;
+}
+
+@media (min-width: 768px) {
+    .offer-modal {
+        border-radius: var(--radius-2xl);
+        max-width: 550px;
+        max-height: 85vh;
+        padding: var(--space-6);
+    }
 }
 
 .modal-close {
     position: absolute;
-    top: var(--space-4);
-    right: var(--space-4);
+    top: var(--space-3);
+    right: var(--space-3);
     padding: var(--space-2);
     color: rgba(255, 255, 255, 0.75);
     border-radius: 9999px;
     transition: all var(--transition-fast);
     z-index: 10;
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+@media (min-width: 768px) {
+    .modal-close {
+        top: var(--space-4);
+        right: var(--space-4);
+    }
 }
 
 .modal-close:hover {
     color: white;
-    background: var(--glass-bg);
+    background: var(--glass-bg, rgba(255, 255, 255, 0.1));
 }
 
-/* Header */
+/* Header - MOBILE FIRST */
 .offer-modal-header {
     display: flex;
     align-items: center;
-    gap: var(--space-4);
-    margin-bottom: var(--space-4);
+    gap: var(--space-3);
+    margin-bottom: var(--space-3);
+}
+
+@media (min-width: 768px) {
+    .offer-modal-header {
+        gap: var(--space-4);
+        margin-bottom: var(--space-4);
+    }
 }
 
 .offer-modal-header .company-logo {
-    width: 64px;
-    height: 64px;
-    border-radius: var(--radius-xl);
-    background: var(--accent-gradient);
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-lg);
+    background: var(--accent-gradient, linear-gradient(135deg, var(--primary) 0%, var(--accent-purple) 100%));
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: var(--font-size-2xl);
+    font-size: 1.25rem;
     font-weight: 700;
     color: white;
     flex-shrink: 0;
+}
+
+@media (min-width: 768px) {
+    .offer-modal-header .company-logo {
+        width: 64px;
+        height: 64px;
+        border-radius: var(--radius-xl);
+        font-size: 1.5rem;
+    }
 }
 
 .offer-modal-header .company-logo img {
@@ -104,15 +157,25 @@
     margin-bottom: var(--space-5);
 }
 
-/* Quick Info */
+/* Quick Info - MOBILE FIRST: Single column on mobile */
 .offer-quick-info {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-3);
-    padding: var(--space-4);
-    background: var(--glass-bg);
-    border-radius: var(--radius-xl);
-    margin-bottom: var(--space-5);
+    grid-template-columns: 1fr;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    background: var(--glass-bg, rgba(255, 255, 255, 0.1));
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-4);
+}
+
+@media (min-width: 480px) {
+    .offer-quick-info {
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-3);
+        padding: var(--space-4);
+        border-radius: var(--radius-xl);
+        margin-bottom: var(--space-5);
+    }
 }
 
 .info-item {

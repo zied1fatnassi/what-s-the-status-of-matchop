@@ -1,3 +1,7 @@
+/* ===================================
+   MATCH MODAL - MOBILE FIRST
+   ================================ */
+
 .match-modal-overlay {
     position: fixed;
     inset: 0;
@@ -10,6 +14,7 @@
     opacity: 0;
     transition: opacity 0.3s ease;
     overflow: hidden;
+    padding: var(--space-4);
 }
 
 .match-modal-overlay.visible {
@@ -25,39 +30,70 @@
     animation: confetti 4s ease-in-out forwards;
 }
 
+/* MOBILE FIRST: Full-width modal with smaller padding */
 .match-modal {
     position: relative;
-    width: 90%;
-    max-width: 450px;
-    background: var(--card-gradient);
+    width: 100%;
+    max-width: 100%;
+    background: var(--card-gradient, linear-gradient(135deg, rgba(15, 12, 41, 0.95) 0%, rgba(48, 43, 99, 0.95) 100%));
     backdrop-filter: blur(20px);
     border: 1px solid var(--glass-border);
-    border-radius: var(--radius-2xl);
-    padding: var(--space-10);
+    border-radius: var(--radius-xl);
+    padding: var(--space-6);
     text-align: center;
     animation: slideUp 0.5s ease forwards;
 }
 
+@media (min-width: 640px) {
+    .match-modal {
+        width: 90%;
+        max-width: 450px;
+        border-radius: var(--radius-2xl);
+        padding: var(--space-10);
+    }
+}
+
 .close-btn {
     position: absolute;
-    top: var(--space-4);
-    right: var(--space-4);
+    top: var(--space-3);
+    right: var(--space-3);
     color: rgba(255, 255, 255, 0.7);
     padding: var(--space-2);
     border-radius: var(--radius-full);
-    transition: all var(--transition-base);
+    transition: all var(--transition-base, 0.2s);
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+@media (min-width: 640px) {
+    .close-btn {
+        top: var(--space-4);
+        right: var(--space-4);
+    }
 }
 
 .close-btn:hover {
     color: white;
-    background: var(--glass-bg);
+    background: var(--glass-bg, rgba(255, 255, 255, 0.1));
 }
 
 .match-content {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--space-6);
+    gap: var(--space-4);
+}
+
+@media (min-width: 640px) {
+    .match-content {
+        gap: var(--space-6);
+    }
 }
 
 .match-hearts {

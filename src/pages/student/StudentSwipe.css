@@ -1,56 +1,125 @@
+/* ===================================
+   STUDENT SWIPE PAGE - MOBILE FIRST
+   ================================ */
+
 .swipe-page {
     min-height: 100vh;
-    padding-top: 80px;
-    padding-bottom: var(--space-6);
+    min-height: -webkit-fill-available;
+    /* MOBILE FIRST: Smaller top padding on mobile */
+    padding-top: 70px;
+    padding-bottom: var(--space-4);
     display: flex;
     align-items: center;
     justify-content: center;
+    /* Prevent horizontal overflow */
+    overflow-x: hidden;
+}
+
+@media (min-width: 768px) {
+    .swipe-page {
+        padding-top: 80px;
+        padding-bottom: var(--space-6);
+    }
 }
 
 .swipe-container {
     width: 100%;
-    max-width: 450px;
-    padding: var(--space-4);
+    max-width: 100%;
+    /* MOBILE FIRST: Minimal padding on mobile */
+    padding: var(--space-2);
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--space-8);
+    gap: var(--space-4);
 }
 
+@media (min-width: 480px) {
+    .swipe-container {
+        max-width: 450px;
+        padding: var(--space-4);
+        gap: var(--space-6);
+    }
+}
+
+@media (min-width: 768px) {
+    .swipe-container {
+        gap: var(--space-8);
+    }
+}
+
+/* MOBILE FIRST: Card stack height based on viewport */
 .cards-stack {
     position: relative;
     width: 100%;
-    height: 520px;
+    /* Mobile: Use viewport height for better fit */
+    height: calc(100vh - 220px);
+    min-height: 400px;
+    max-height: 520px;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
+@media (min-width: 480px) {
+    .cards-stack {
+        height: 480px;
+        max-height: 520px;
+    }
+}
+
+@media (min-width: 768px) {
+    .cards-stack {
+        height: 520px;
+    }
+}
+
+/* Swipe Actions - MOBILE FIRST */
 .swipe-actions {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: var(--space-4);
+    gap: var(--space-3);
+    /* Safe area padding for bottom gesture bar */
+    padding-bottom: env(safe-area-inset-bottom);
 }
 
+@media (min-width: 768px) {
+    .swipe-actions {
+        gap: var(--space-4);
+    }
+}
+
+/* Action Buttons - MOBILE FIRST */
 .action-btn {
-    width: 56px;
-    height: 56px;
+    /* Mobile: Slightly smaller buttons */
+    width: 48px;
+    height: 48px;
     border-radius: var(--radius-full);
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     border: 2px solid;
-    background: var(--glass-surface);
+    background: var(--glass-surface, rgba(255, 255, 255, 0.8));
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    /* Prevent double-tap zoom */
+    touch-action: manipulation;
 }
 
-.action-btn:hover:not(:disabled) {
-    transform: scale(1.1);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+@media (min-width: 768px) {
+    .action-btn {
+        width: 56px;
+        height: 56px;
+    }
+    
+    .action-btn:hover:not(:disabled) {
+        transform: scale(1.1);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
 }
 
+/* Mobile: Active state instead of hover */
 .action-btn:active:not(:disabled) {
     transform: scale(0.95);
 }
@@ -63,10 +132,17 @@
 }
 
 .action-btn.undo {
-    width: 44px;
-    height: 44px;
+    width: 40px;
+    height: 40px;
     border-color: var(--glass-border);
     color: var(--text-secondary);
+}
+
+@media (min-width: 768px) {
+    .action-btn.undo {
+        width: 44px;
+        height: 44px;
+    }
 }
 
 .action-btn.undo:hover:not(:disabled) {
@@ -75,14 +151,21 @@
 }
 
 .action-btn.pass {
-    width: 64px;
-    height: 64px;
-    border-color: var(--accent-red);
-    color: var(--accent-red);
+    width: 56px;
+    height: 56px;
+    border-color: var(--accent-red, #ef4444);
+    color: var(--accent-red, #ef4444);
 }
 
-.action-btn.pass:hover {
-    background: rgba(220, 38, 38, 0.1);
+@media (min-width: 768px) {
+    .action-btn.pass {
+        width: 64px;
+        height: 64px;
+    }
+    
+    .action-btn.pass:hover {
+        background: rgba(220, 38, 38, 0.1);
+    }
 }
 
 .action-btn.super-like {
@@ -95,56 +178,93 @@
 }
 
 .action-btn.like {
-    width: 64px;
-    height: 64px;
+    width: 56px;
+    height: 56px;
     border-color: var(--accent-teal);
     color: var(--accent-teal);
 }
 
-.action-btn.like:hover {
-    background: rgba(13, 148, 136, 0.1);
+@media (min-width: 768px) {
+    .action-btn.like {
+        width: 64px;
+        height: 64px;
+    }
+    
+    .action-btn.like:hover {
+        background: rgba(13, 148, 136, 0.1);
+    }
 }
 
+/* No More Offers - MOBILE FIRST */
 .no-more-offers {
     text-align: center;
-    padding: var(--space-12);
-    max-width: 400px;
-    background: var(--glass-surface);
+    padding: var(--space-8);
+    max-width: 100%;
+    margin: 0 var(--space-4);
+    background: var(--glass-surface, rgba(255, 255, 255, 0.8));
     backdrop-filter: blur(8px);
     border-radius: var(--radius-xl);
     border: 1px solid var(--glass-border);
 }
 
+@media (min-width: 480px) {
+    .no-more-offers {
+        padding: var(--space-12);
+        max-width: 400px;
+        margin: 0;
+    }
+}
+
 .empty-icon {
-    font-size: 64px;
-    margin-bottom: var(--space-4);
+    font-size: 48px;
+    margin-bottom: var(--space-3);
     color: var(--text-muted);
 }
 
+@media (min-width: 768px) {
+    .empty-icon {
+        font-size: 64px;
+        margin-bottom: var(--space-4);
+    }
+}
+
 .no-more-offers h2 {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     font-weight: 700;
     margin-bottom: var(--space-2);
     color: var(--text-primary);
 }
 
-.no-more-offers p {
-    color: var(--text-secondary);
-    margin-bottom: var(--space-6);
+@media (min-width: 768px) {
+    .no-more-offers h2 {
+        font-size: 1.5rem;
+    }
 }
 
-@media (max-width: 480px) {
-    .swipe-container {
-        padding: var(--space-2);
-    }
+.no-more-offers p {
+    color: var(--text-secondary);
+    margin-bottom: var(--space-4);
+    font-size: 0.9rem;
+}
 
-    .cards-stack {
-        height: 480px;
+@media (min-width: 768px) {
+    .no-more-offers p {
+        margin-bottom: var(--space-6);
+        font-size: 1rem;
     }
+}
 
-    .action-btn.pass,
-    .action-btn.like {
-        width: 56px;
-        height: 56px;
-    }
+/* Loading/Error States - MOBILE FIRST */
+.swipe-page.loading,
+.swipe-page.error {
+    flex-direction: column;
+    gap: var(--space-4);
+    padding: var(--space-4);
+    text-align: center;
+}
+
+.swipe-page.loading p,
+.swipe-page.error p {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
 }
