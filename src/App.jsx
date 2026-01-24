@@ -1,5 +1,5 @@
 import { useState, useEffect, lazy, Suspense } from 'react'
-import { Routes, Route, useLocation, Navigate } from 'react-router-dom'
+import { Routes, Route, useLocation, Navigate, useNavigate } from 'react-router-dom'
 import { SpeedInsights } from '@vercel/speed-insights/react'
 import { Analytics } from '@vercel/analytics/react'
 import Navbar from './components/Navbar'
@@ -106,6 +106,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(true)
   const [toast, setToast] = useState(null)
   const location = useLocation()
+  const navigate = useNavigate()
 
   // Detect auth events from URL hash (email verification, password reset, errors)
   useEffect(() => {
@@ -118,6 +119,7 @@ function App() {
     const error = params.get('error')
     const errorDescription = params.get('error_description')
     const type = params.get('type')
+    const refreshToken = params.get('refresh_token')
 
     // Handle successful email verification
     if (accessToken && type === 'signup') {
@@ -131,8 +133,18 @@ function App() {
     else if (accessToken && type === 'recovery') {
       setToast({
         type: 'success',
-        message: '✅ Password reset successful! Please set your new password.'
+        message: '✅ Reset link confirmed. Please set your new password.'
       })
+      // Keep the Supabase session from the link and move user to the reset form
+      if (refreshToken) {
+        // Store tokens in location.state to avoid re-parsing hash on navigation
+        navigate('/reset-password', {
+          replace: true,
+          state: { accessToken, refreshToken }
+        })
+      } else {
+        navigate('/reset-password', { replace: true })
+      }
       window.history.replaceState(null, '', window.location.pathname)
     }
     // Handle successful sign in via magic link

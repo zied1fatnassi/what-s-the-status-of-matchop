@@ -20,13 +20,8 @@ export default function GlobalJobs() {
 
     const [applyingId, setApplyingId] = useState(null)
 
-    // Simplified One-Click Apply (sends email to the scraped contact email if exists)
+    // Simplified One-Click Apply (opens email client or job link)
     const handleSmartApply = async (job) => {
-        if (!job.contact_email) {
-            window.open(job.original_url, '_blank')
-            return
-        }
-
         if (!profile?.cv_url) {
             showError('Please upload your CV in your profile first!')
             return
@@ -34,45 +29,23 @@ export default function GlobalJobs() {
 
         setApplyingId(job.id)
         try {
-            // EmailJS Configuration
-            const SERVICE_ID = 'service_4y9cxmr'
-            const PUBLIC_KEY = 'vtEyts7G1cQCTGouY'
-            const TEMPLATE_COMPANY = 'template_qfyvb36'
-            const TEMPLATE_STUDENT = 'template_2t3mdf9'
+            if (job.contact_email) {
+                const subject = `Application for ${job.title} at ${job.company_name}`
+                const body = [
+                    `Hello ${job.company_name},`,
+                    '',
+                    `I am interested in the ${job.title} role.`,
+                    profile.cv_url ? `My CV: ${profile.cv_url}` : '',
+                    `Profile: ${window.location.origin}/profile/${user.id}`,
+                    '',
+                    'Thank you!'
+                ].join('%0D%0A')
 
-            const commonParams = {
-                job_title: job.title,
-                company_name: job.company_name,
-                candidate_name: profile.display_name,
-                candidate_email: user.email,
+                window.location.href = `mailto:${job.contact_email}?subject=${encodeURIComponent(subject)}&body=${body}`
+                showSuccess('Opening your email app to apply')
+            } else {
+                window.open(job.original_url, '_blank')
             }
-
-            // 1. Send Application to Company (if email exists) - mapped to Template 1 vars
-            const companyParams = {
-                ...commonParams,
-                to_email: job.contact_email,
-                message: `I am interested in the ${job.title} role at ${job.company_name}. Please find my CV attached.`,
-                profile_link: `${window.location.origin}/profile/${user.id}`,
-                cv_link: profile.cv_url
-            }
-
-            // 2. Send Confirmation to Student - mapped to Template 2 vars
-            const studentParams = {
-                ...commonParams,
-                to_email: user.email, // Send to the student
-            }
-
-            // Execute sends in parallel
-            const promises = [
-                emailjs.send(SERVICE_ID, TEMPLATE_COMPANY, companyParams, PUBLIC_KEY)
-            ]
-
-            // We also send confirmation to student
-            promises.push(emailjs.send(SERVICE_ID, TEMPLATE_STUDENT, studentParams, PUBLIC_KEY))
-
-            await Promise.all(promises)
-
-            showSuccess(`Application sent to ${job.company_name}!`)
         } catch (err) {
             console.error('Apply error:', err)
             showError('Failed to send application. Opened original link instead.')

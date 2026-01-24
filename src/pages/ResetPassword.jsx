@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { Lock, Eye, EyeOff, CheckCircle, Loader2, KeyRound } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { validatePassword, getAuthErrorMessage } from '../lib/validation'
@@ -11,16 +11,68 @@ import '../pages/student/StudentSignup.css'
  */
 function ResetPassword() {
     const navigate = useNavigate()
+    const location = useLocation()
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
     const [showPassword, setShowPassword] = useState(false)
     const [error, setError] = useState('')
     const [isLoading, setIsLoading] = useState(false)
     const [isSuccess, setIsSuccess] = useState(false)
+    const [isSessionValid, setIsSessionValid] = useState(true)
+    const [isCheckingSession, setIsCheckingSession] = useState(true)
+
+    // Ensure the recovery session from Supabase exists before allowing reset
+    useEffect(() => {
+        let active = true
+
+        const ensureSession = async () => {
+            try {
+                const { data } = await supabase.auth.getSession()
+
+                // If no session yet but tokens were passed via navigation state, set it
+                if (!data?.session && location.state?.accessToken && location.state?.refreshToken) {
+                    await supabase.auth.setSession({
+                        access_token: location.state.accessToken,
+                        refresh_token: location.state.refreshToken
+                    })
+                }
+
+                const { data: refreshed } = await supabase.auth.getSession()
+
+                if (!refreshed?.session) {
+                    if (active) {
+                        setError('Your reset link is invalid or has expired. Please request a new one.')
+                        setIsSessionValid(false)
+                    }
+                } else if (active) {
+                    setIsSessionValid(true)
+                }
+            } catch (err) {
+                if (active) {
+                    setError(getAuthErrorMessage(err))
+                    setIsSessionValid(false)
+                }
+            } finally {
+                if (active) {
+                    setIsCheckingSession(false)
+                }
+            }
+        }
+
+        ensureSession()
+        return () => {
+            active = false
+        }
+    }, [location.state])
 
     const handleSubmit = async (e) => {
         e.preventDefault()
         setError('')
+
+        if (!isSessionValid) {
+            setError('Your reset link is invalid or has expired. Please request a new one.')
+            return
+        }
 
         // Validate password
         const passwordValidation = validatePassword(password)
@@ -243,7 +295,7 @@ function ResetPassword() {
                         <button
                             type="submit"
                             className="btn btn-primary btn-lg w-full"
-                            disabled={isLoading || !password || !confirmPassword || password !== confirmPassword}
+                            disabled={isLoading || isCheckingSession || !isSessionValid || !password || !confirmPassword || password !== confirmPassword}
                             style={{ marginTop: '1.5rem' }}
                         >
                             {isLoading ? (
@@ -252,7 +304,7 @@ function ResetPassword() {
                                     Updating...
                                 </>
                             ) : (
-                                'Update Password'
+                                isCheckingSession ? 'Checking link...' : 'Update Password'
                             )}
                         </button>
 
