@@ -137,6 +137,10 @@
     color: white;
 }
 
+[data-theme='light'] .company-name {
+    color: var(--text-primary);
+}
+
 .offer-type-badge {
     display: inline-block;
     padding: var(--space-1) var(--space-3);
@@ -157,6 +161,10 @@
     margin-bottom: var(--space-5);
 }
 
+[data-theme='light'] .offer-title {
+    color: var(--text-primary);
+}
+
 /* Quick Info - MOBILE FIRST: Single column on mobile */
 .offer-quick-info {
     display: grid;
@@ -166,6 +174,11 @@
     background: var(--glass-bg, rgba(255, 255, 255, 0.1));
     border-radius: var(--radius-lg);
     margin-bottom: var(--space-4);
+}
+
+[data-theme='light'] .offer-quick-info {
+    background: rgba(59, 130, 246, 0.08);
+    border: 1px solid rgba(59, 130, 246, 0.15);
 }
 
 @media (min-width: 480px) {
@@ -184,6 +197,10 @@
     gap: var(--space-2);
     color: rgba(255, 255, 255, 0.85);
     font-size: var(--font-size-sm);
+}
+
+[data-theme='light'] .info-item {
+    color: var(--text-secondary);
 }
 
 .info-item svg {
@@ -232,10 +249,18 @@
     margin-bottom: var(--space-2);
 }
 
+[data-theme='light'] .offer-section h4 {
+    color: var(--primary);
+}
+
 .offer-section p {
     color: rgba(255, 255, 255, 0.85);
     font-size: var(--font-size-sm);
     line-height: 1.7;
+}
+
+[data-theme='light'] .offer-section p {
+    color: var(--text-secondary);
 }
 
 /* Skills */
@@ -253,6 +278,12 @@
     font-weight: 500;
     border-radius: 9999px;
     border: 1px solid rgba(33, 150, 243, 0.3);
+}
+
+[data-theme='light'] .offer-skills .skill-tag {
+    background: rgba(59, 130, 246, 0.12);
+    color: var(--primary);
+    border-color: rgba(59, 130, 246, 0.25);
 }
 
 /* Actions */
@@ -278,4 +309,10 @@
     .offer-quick-info {
         grid-template-columns: 1fr;
     }
+}
+
+/* Light mode: switch to MatchOp light blue gradient for readability */
+[data-theme='light'] .offer-modal {
+    background: linear-gradient(135deg, #f0f7ff 0%, #dbeafe 35%, #bfdbfe 100%);
+    color: var(--text-primary);
 }

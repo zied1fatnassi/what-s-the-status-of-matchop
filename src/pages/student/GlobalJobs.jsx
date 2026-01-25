@@ -44,12 +44,18 @@ export default function GlobalJobs() {
                 window.location.href = `mailto:${job.contact_email}?subject=${encodeURIComponent(subject)}&body=${body}`
                 showSuccess('Opening your email app to apply')
             } else {
-                window.open(job.original_url, '_blank')
+                // Fallback chain for external links; normalize protocol to avoid blocked navigation
+                const externalUrl = job.original_url || job.apply_url || job.url || job.link
+                if (!externalUrl) {
+                    showError('No external apply link found for this job')
+                    return
+                }
+                const normalized = externalUrl.startsWith('http') ? externalUrl : `https://${externalUrl}`
+                window.open(normalized, '_blank', 'noopener')
             }
         } catch (err) {
             console.error('Apply error:', err)
-            showError('Failed to send application. Opened original link instead.')
-            window.open(job.original_url, '_blank')
+            showError('Failed to open application link. Please try again.')
         } finally {
             setApplyingId(null)
         }
