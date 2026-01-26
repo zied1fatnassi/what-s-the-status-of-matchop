@@ -101,4 +101,42 @@ export function PublicRoute({ children }) {
     return children
 }
 
-export default { ProtectedRoute, PublicRoute }
+/**
+ * AdminRoute - Wraps routes that require admin privileges
+ * Redirects to home if user is not an admin
+ * 
+ * @param {ReactNode} children - The admin component to render
+ */
+export function AdminRoute({ children }) {
+    const { isLoggedIn, isLoading, profile, user } = useAuth()
+    const location = useLocation()
+
+    // While loading, show spinner
+    if (isLoading) {
+        return <AuthLoadingSpinner />
+    }
+
+    // Not logged in - redirect to login
+    if (!isLoggedIn || !user) {
+        return <Navigate to="/student/login" state={{ from: location }} replace />
+    }
+
+    // Check if user is admin
+    const isAdmin = profile?.role === 'admin' || user?.user_metadata?.type === 'admin'
+
+    if (!isAdmin) {
+        // Not an admin - redirect to appropriate dashboard
+        if (profile?.role === 'student') {
+            return <Navigate to="/student/swipe" replace />
+        }
+        if (profile?.role === 'company') {
+            return <Navigate to="/company/candidates" replace />
+        }
+        return <Navigate to="/" replace />
+    }
+
+    // Authenticated admin - render children
+    return children
+}
+
+export default { ProtectedRoute, PublicRoute, AdminRoute }

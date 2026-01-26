@@ -6,7 +6,7 @@ import Navbar from './components/Navbar'
 import ScrollToTop from './components/ScrollToTop'
 import LoadingScreen from './components/LoadingScreen'
 import AuthToast from './components/AuthToast'
-import { ProtectedRoute, PublicRoute } from './components/RouteGuards'
+import { ProtectedRoute, PublicRoute, AdminRoute } from './components/RouteGuards'
 import { useAuth } from './context/AuthContext'
 import DiagnosticHelper from './components/DiagnosticHelper'
 
@@ -42,6 +42,15 @@ const PostOffer = lazy(() => import('./pages/company/PostOffer'))
 const ViewCandidates = lazy(() => import('./pages/company/ViewCandidates'))
 const CompanyMatches = lazy(() => import('./pages/company/CompanyMatches'))
 const CompanyChat = lazy(() => import('./pages/company/CompanyChat'))
+
+// Admin pages
+const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'))
+const AdminUsers = lazy(() => import('./pages/admin/AdminUsers'))
+const AdminOffers = lazy(() => import('./pages/admin/AdminOffers'))
+const AdminCompanies = lazy(() => import('./pages/admin/AdminCompanies'))
+const AdminReports = lazy(() => import('./pages/admin/AdminReports'))
+const AdminAnalytics = lazy(() => import('./pages/admin/AdminAnalytics'))
+const AdminSettings = lazy(() => import('./pages/admin/AdminSettings'))
 
 // Minimal loading fallback for route transitions
 const RouteLoadingFallback = () => (
@@ -259,6 +268,16 @@ function App() {
               <Route path="/company/candidates" element={<ProtectedRoute requiredType="company"><ViewCandidates /></ProtectedRoute>} />
               <Route path="/company/matches" element={<ProtectedRoute requiredType="company"><CompanyMatches /></ProtectedRoute>} />
               <Route path="/company/chat/:matchId" element={<ProtectedRoute requiredType="company"><CompanyChat /></ProtectedRoute>} />
+
+              {/* Admin Routes */}
+              <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+              <Route path="/admin/dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+              <Route path="/admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />
+              <Route path="/admin/offers" element={<AdminRoute><AdminOffers /></AdminRoute>} />
+              <Route path="/admin/companies" element={<AdminRoute><AdminCompanies /></AdminRoute>} />
+              <Route path="/admin/reports" element={<AdminRoute><AdminReports /></AdminRoute>} />
+              <Route path="/admin/analytics" element={<AdminRoute><AdminAnalytics /></AdminRoute>} />
+              <Route path="/admin/settings" element={<AdminRoute><AdminSettings /></AdminRoute>} />
             </Routes>
           </Suspense>
         </main>
