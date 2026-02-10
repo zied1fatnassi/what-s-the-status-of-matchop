@@ -115,7 +115,7 @@ serve(async (req) => {
             })
         }
 
-        // Transform offers
+        // Transform offers — explicitly tag as internal MatchOp offers
         const transformedOffers = (offers || []).map(offer => ({
             ...offer,
             company: offer.companies?.company_name || 'Unknown Company',
@@ -123,7 +123,9 @@ serve(async (req) => {
             industry: offer.companies?.industry,
             salary: offer.salary_range || 'Competitive',
             skills: offer.req_skills || [],
-            matchScore: null // No score in fallback mode
+            matchScore: null, // No score in fallback mode
+            isExternal: false,
+            externalUrl: null
         }))
 
         return new Response(JSON.stringify({
@@ -167,7 +169,9 @@ async function enrichWithCompanyData(supabase: any, matches: any[]) {
             industry: offer.companies?.industry,
             salary: offer.salary_range || 'Competitive',
             skills: offer.req_skills || [],
-            matchScore: match.similarity // Include the similarity score
+            matchScore: match.similarity, // Include the similarity score
+            isExternal: false,
+            externalUrl: null
         }
     })
 }

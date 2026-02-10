@@ -38,7 +38,7 @@ const AuthLoadingSpinner = () => (
  * @param {string} requiredType - Optional: 'student' or 'company' to restrict by user type
  */
 export function ProtectedRoute({ children, requiredType = null }) {
-    const { isLoggedIn, isLoading, isStudent, isCompany, user } = useAuth()
+    const { isLoggedIn, isLoading, isStudent, isCompany, user, profile } = useAuth()
     const location = useLocation()
 
     // While loading, show spinner - don't render anything else
@@ -48,21 +48,22 @@ export function ProtectedRoute({ children, requiredType = null }) {
 
     // Not logged in - redirect to appropriate login page
     if (!isLoggedIn || !user) {
-        // Determine which login to redirect to based on URL pattern
         const isCompanyPath = location.pathname.startsWith('/company')
         const loginPath = isCompanyPath ? '/company/login' : '/student/login'
-
         return <Navigate to={loginPath} state={{ from: location }} replace />
+    }
+
+    // Wait for profile to load before making role-based decisions
+    if (requiredType && !profile) {
+        return <AuthLoadingSpinner />
     }
 
     // Check user type if required
     if (requiredType === 'student' && !isStudent) {
-        // User is logged in but wrong type - redirect to company area
         return <Navigate to="/company/candidates" replace />
     }
 
     if (requiredType === 'company' && !isCompany) {
-        // User is logged in but wrong type - redirect to student area
         return <Navigate to="/student/swipe" replace />
     }
 
@@ -77,7 +78,7 @@ export function ProtectedRoute({ children, requiredType = null }) {
  * @param {ReactNode} children - The public component to render
  */
 export function PublicRoute({ children }) {
-    const { isLoggedIn, isLoading, isStudent, isCompany } = useAuth()
+    const { isLoggedIn, isLoading, isStudent, isCompany, profile } = useAuth()
 
     // While loading, show spinner - don't render anything else
     if (isLoading) {
@@ -86,15 +87,18 @@ export function PublicRoute({ children }) {
 
     // If logged in, redirect to appropriate dashboard
     if (isLoggedIn) {
+        // Wait for profile to load before making role-based redirect decisions
+        if (!profile) {
+            return <AuthLoadingSpinner />
+        }
         if (isStudent) {
             return <Navigate to="/student/swipe" replace />
         }
         if (isCompany) {
             return <Navigate to="/company/candidates" replace />
         }
-        // Logged in but type not determined - wait for profile
-        // This shouldn't happen but fallback to landing
-        return <Navigate to="/" replace />
+        // Logged in but unknown role — show public content instead of looping
+        return children
     }
 
     // Not logged in - render public content

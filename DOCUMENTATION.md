@@ -1,6 +1,6 @@
 # MatchOp Documentation
 
-> **Match Your Opportunity** - A Tinder-style student-company matching platform for internships in Tunisia.
+> **Match Your Opportunity** - A Swipe-style student-company matching platform for internships and job opportunities in Tunisia.
 
 ---
 

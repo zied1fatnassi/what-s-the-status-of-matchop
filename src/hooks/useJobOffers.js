@@ -90,7 +90,9 @@ export function useJobOffers() {
             const { data: matchedData, error: matchError } = await supabase.functions.invoke('get-matched-jobs')
 
             if (!matchError && matchedData?.success && matchedData?.offers?.length > 0) {
-                internalOffers = matchedData.offers.filter(o => !offersCache.swipedIds.has(o.id))
+                internalOffers = matchedData.offers
+                    .filter(o => !offersCache.swipedIds.has(o.id))
+                    .map(o => ({ ...o, isExternal: false, externalUrl: null }))
             } else {
                 // Fallback Query
                 const offersResult = await supabase
@@ -109,7 +111,9 @@ export function useJobOffers() {
                             industry: offer.companies?.industry,
                             salary: offer.salary_range || 'Competitive',
                             skills: offer.req_skills || [],
-                            matchScore: null
+                            matchScore: null,
+                            isExternal: false,
+                            externalUrl: null
                         }))
                 }
             }
@@ -148,6 +152,10 @@ export function useJobOffers() {
 
             // ==========================================
             // MERGE: Internal First, then External
+            // Internal offers are real MatchOp listings (swipeable, matchable).
+            // External offers are scraped job links (opens external site).
+            // They are separated in the array: all internals first, then externals.
+            // Each offer carries isExternal/externalUrl so the UI can differentiate.
             // ==========================================
             const finalOffers = [...internalOffers, ...externalOffers]
 

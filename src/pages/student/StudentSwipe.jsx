@@ -5,7 +5,6 @@ import MatchModal from '../../components/MatchModal'
 import OfferDetailModal from '../../components/OfferDetailModal'
 import ApplicationToast from '../../components/ApplicationToast'
 import MatchToast from '../../components/MatchToast'
-import { useApplications } from '../../context/ApplicationContext'
 import { useAuth } from '../../context/AuthContext'
 import { useJobOffers } from '../../hooks/useJobOffers'
 import { useMatchListener } from '../../hooks/useMatchListener'
@@ -30,7 +29,6 @@ function StudentSwipe() {
         }
     }, [realOffers])
 
-    const { addApplication } = useApplications()
     const { user } = useAuth()
 
     const currentOffer = offers[currentIndex]
@@ -47,28 +45,28 @@ function StudentSwipe() {
         const nextIndex = currentIndex + 1
         setCurrentIndex(nextIndex)
 
-        // Call Supabase (skip for external jobs as they don't need DB tracking)
-        if (!offerToSwipe.isExternal) {
+        // Determine if this is a real MatchOp offer or an external scraped job
+        const isExternal = offerToSwipe.isExternal === true && !!offerToSwipe.externalUrl
+
+        // Call Supabase swipe (internal offers only)
+        if (!isExternal) {
             await swipe(offerToSwipe.id, direction)
         }
 
-        // On right swipe (like) or super like - open job and send application
+        // On right swipe (like) or super like
         if (direction === 'right' || direction === 'super') {
-            // For external jobs, open the job URL directly to apply
-            if (offerToSwipe.isExternal && offerToSwipe.externalUrl) {
+            // External jobs: open the external URL in a new tab (NEVER redirect current page)
+            if (isExternal) {
                 window.open(offerToSwipe.externalUrl, '_blank', 'noopener,noreferrer')
             }
 
-            // Add application (sends profile to company for internal jobs)
-            addApplication(offerToSwipe, user?.profile)
-
-            // Show toast notification
+            // Show toast notification (honest messaging — see ApplicationToast)
             setToastCompany(offerToSwipe.company)
-            setToastIsExternal(offerToSwipe.isExternal || false)
+            setToastIsExternal(isExternal)
             setShowToast(true)
 
-            // Check if it's a match (internal jobs only)
-            if (!offerToSwipe.isExternal && offerToSwipe.hasMatched) {
+            // Check if it's a match (internal offers only — externals can never match)
+            if (!isExternal && offerToSwipe.hasMatched) {
                 setMatchedOffer(offerToSwipe)
 
                 // Send email notification (fire and forget)
