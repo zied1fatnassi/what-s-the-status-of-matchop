@@ -764,6 +764,25 @@ textarea {
 }
 
 /* ============================================================
+   APP MAIN CONTENT AREA
+   Replaces the inline style on <main> in App.jsx.
+   Accounts for fixed navbar height + mobile differences.
+   ============================================================ */
+.app-main {
+  flex: 1;
+  width: 100%;
+  padding-top: 90px;
+}
+.app-main--landing {
+  padding-top: 0;
+}
+@media (max-width: 768px) {
+  .app-main {
+    padding-top: 70px; /* mobile navbar is shorter */
+  }
+}
+
+/* ============================================================
    UTILITY CLASSES
    Provides the utility classes referenced throughout JSX files.
    These were originally ghost Tailwind references (Tailwind is

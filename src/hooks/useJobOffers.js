@@ -3,14 +3,18 @@ import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
 
 
-// Simple in-memory cache for job offers
-const offersCache = {
-    data: null,
-    timestamp: 0,
-    swipedIds: new Set(),
-}
+// User-scoped in-memory cache for job offers
+// Map<userId -> { data, timestamp, swipedIds }>
+const offersCacheMap = new Map()
 const CACHE_TTL = 60000 // 60 seconds
 const FETCH_TIMEOUT = 15000 // 15 second timeout
+
+function getOffersCache(userId) {
+    if (!offersCacheMap.has(userId)) {
+        offersCacheMap.set(userId, { data: null, timestamp: 0, swipedIds: new Set() })
+    }
+    return offersCacheMap.get(userId)
+}
 
 /**
  * Hook for fetching and managing job offers
@@ -42,12 +46,13 @@ export function useJobOffers() {
         }
 
         const now = Date.now()
-        const cacheValid = offersCache.data && (now - offersCache.timestamp) < CACHE_TTL
+        const cache = getOffersCache(user.id)
+        const cacheValid = cache.data && (now - cache.timestamp) < CACHE_TTL
 
         if (cacheValid && !forceRefresh) {
             console.log('[useJobOffers] Using cached data')
-            const cachedOffers = offersCache.data.filter(
-                o => !offersCache.swipedIds.has(o.id)
+            const cachedOffers = cache.data.filter(
+                o => !cache.swipedIds.has(o.id)
             )
             if (isMounted.current) {
                 setOffers(cachedOffers)
@@ -83,7 +88,7 @@ export function useJobOffers() {
 
             if (!swipeResult.error) {
                 swipedOfferIds = swipeResult.data?.map(s => s.offer_id) || []
-                offersCache.swipedIds = new Set(swipedOfferIds)
+                getOffersCache(user.id).swipedIds = new Set(swipedOfferIds)
             }
 
             // Try Semantic Search
@@ -91,7 +96,7 @@ export function useJobOffers() {
 
             if (!matchError && matchedData?.success && matchedData?.offers?.length > 0) {
                 internalOffers = matchedData.offers
-                    .filter(o => !offersCache.swipedIds.has(o.id))
+                    .filter(o => !getOffersCache(user.id).swipedIds.has(o.id))
                     .map(o => ({ ...o, isExternal: false, externalUrl: null }))
             } else {
                 // Fallback Query
@@ -159,8 +164,9 @@ export function useJobOffers() {
             // ==========================================
             const finalOffers = [...internalOffers, ...externalOffers]
 
-            offersCache.data = finalOffers
-            offersCache.timestamp = now
+            const userCache = getOffersCache(user.id)
+            userCache.data = finalOffers
+            userCache.timestamp = now
 
             clearTimeout(timeoutId)
             if (isMounted.current) {
@@ -188,7 +194,7 @@ export function useJobOffers() {
 
         // Optimistically remove from view
         setOffers(prev => prev.filter(o => o.id !== offerId))
-        offersCache.swipedIds.add(offerId)
+        getOffersCache(user.id).swipedIds.add(offerId)
 
         // For External jobs, we don't save to DB (yet)
         if (typeof offerId === 'string' && offerId.startsWith('ext-')) {

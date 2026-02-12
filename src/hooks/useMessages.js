@@ -106,15 +106,8 @@ export function useMessages(matchId) {
                 .single()
 
             if (sendError) {
-                // For demo, add message locally
-                const localMessage = {
-                    id: Date.now(),
-                    ...newMessage,
-                    created_at: new Date().toISOString(),
-                    sender: { name: 'You' }
-                }
-                setMessages(prev => [...prev, localMessage])
-                return { error: null, data: localMessage }
+                console.error('[useMessages] Failed to send:', sendError)
+                return { error: sendError.message || 'Failed to send message' }
             }
 
             return { error: null, data }

@@ -33,6 +33,7 @@ const StudentSwipe = lazy(() => import('./pages/student/StudentSwipe'))
 const StudentMatches = lazy(() => import('./pages/student/StudentMatches'))
 const StudentChat = lazy(() => import('./pages/student/StudentChat'))
 const StudentGlobalJobs = lazy(() => import('./pages/student/GlobalJobs'))
+const GlobalOffers = lazy(() => import('./pages/student/GlobalOffers'))
 
 // Company pages
 const CompanySignup = lazy(() => import('./pages/company/CompanySignup'))
@@ -213,11 +214,7 @@ function App() {
         <Analytics />
         <DiagnosticHelper />
 
-        <main style={{
-          flex: 1,
-          paddingTop: isLanding ? '0' : '90px', /* Fix overlap */
-          width: '100%'
-        }}>
+        <main className={isLanding ? 'app-main app-main--landing' : 'app-main'}>
           <Suspense fallback={<RouteLoadingFallback />}>
             <Routes>
               {/* Landing */}
@@ -258,6 +255,8 @@ function App() {
               <Route path="/student/matches" element={<ProtectedRoute requiredType="student"><StudentMatches /></ProtectedRoute>} />
               <Route path="/student/chat/:matchId" element={<ProtectedRoute requiredType="student"><StudentChat /></ProtectedRoute>} />
               <Route path="/student/global-jobs" element={<ProtectedRoute requiredType="student"><StudentGlobalJobs /></ProtectedRoute>} />
+              <Route path="/student/offers" element={<ProtectedRoute requiredType="student"><GlobalOffers /></ProtectedRoute>} />
+              <Route path="/offers" element={<GlobalOffers />} />
 
               {/* Company */}
               <Route path="/company/signup" element={<PublicRoute><CompanySignup /></PublicRoute>} />

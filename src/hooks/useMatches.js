@@ -2,12 +2,21 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
 
-// Simple in-memory cache for matches (separate for student/company)
-const matchesCache = {
-    student: { data: null, timestamp: 0 },
-    company: { data: null, timestamp: 0 },
-}
+// User-scoped in-memory cache for matches
+// Map<`${userId}:${role}`  →  { data, timestamp }>
+const matchesCacheMap = new Map()
 const CACHE_TTL = 30000 // 30 seconds
+
+function getCacheEntry(userId, role) {
+    return matchesCacheMap.get(`${userId}:${role}`) || { data: null, timestamp: 0 }
+}
+function setCacheEntry(userId, role, data) {
+    matchesCacheMap.set(`${userId}:${role}`, { data, timestamp: Date.now() })
+}
+function invalidateCache(userId, role) {
+    const entry = matchesCacheMap.get(`${userId}:${role}`)
+    if (entry) entry.timestamp = 0
+}
 
 /**
  * Hook for fetching and managing matches
@@ -23,8 +32,15 @@ export function useMatches() {
 
     useEffect(() => {
         isMounted.current = true
-        return () => { isMounted.current = false }
+        return () => {
+            isMounted.current = false
+            // Cancel any in-flight fetch when the component unmounts
+            if (abortRef.current) abortRef.current.abort()
+        }
     }, [])
+
+    // AbortController to prevent race conditions when user/profile changes mid-fetch
+    const abortRef = useRef(null)
 
     const fetchMatches = useCallback(async (forceRefresh = false) => {
         console.log('[useMatches] fetchMatches called:', {
@@ -45,8 +61,15 @@ export function useMatches() {
             return
         }
 
-        const cacheKey = isStudent ? 'student' : 'company'
-        const cache = matchesCache[cacheKey]
+        // Abort any in-flight request before starting a new one
+        if (abortRef.current) {
+            abortRef.current.abort()
+        }
+        const controller = new AbortController()
+        abortRef.current = controller
+
+        const role = isStudent ? 'student' : 'company'
+        const cache = getCacheEntry(user.id, role)
         const now = Date.now()
         const cacheValid = cache.data && (now - cache.timestamp) < CACHE_TTL
 
@@ -67,7 +90,7 @@ export function useMatches() {
 
         try {
             // Build query based on user type
-            console.log('[useMatches] Building query for:', isStudent ? 'student' : 'company', 'id:', user.id)
+            console.log('[useMatches] Building query for:', role, 'id:', user.id)
 
             let query = supabase
                 .from('matches')
@@ -84,6 +107,7 @@ export function useMatches() {
                     )
                 `)
                 .order('matched_at', { ascending: false })
+                .abortSignal(controller.signal)
 
             if (isStudent) {
                 query = query.eq('student_id', user.id)
@@ -93,6 +117,9 @@ export function useMatches() {
 
             console.log('[useMatches] Executing matches query...')
             const { data, error: fetchError } = await query
+
+            // If aborted, bail silently
+            if (controller.signal.aborted) return
 
             console.log('[useMatches] Matches query result:', {
                 data: data,
@@ -105,13 +132,13 @@ export function useMatches() {
                 if (isMounted.current) {
                     setError(`Failed to load matches: ${fetchError.message} (code: ${fetchError.code})`)
                     setMatches([])
-                    setLoading(false) // <-- THIS WAS MISSING BEFORE!
+                    setLoading(false)
                 }
                 return
             }
 
-            // Update cache
-            matchesCache[cacheKey] = { data: data || [], timestamp: now }
+            // Update user-scoped cache
+            setCacheEntry(user.id, role, data || [])
 
             console.log('[useMatches] Success, found', data?.length || 0, 'matches, setting loading=false')
 
@@ -121,6 +148,7 @@ export function useMatches() {
                 setLoading(false)
             }
         } catch (err) {
+            if (err.name === 'AbortError') return // expected, ignore
             console.error('[useMatches] Unexpected exception:', err)
             if (isMounted.current) {
                 setError(err.message || 'Failed to load matches')
@@ -146,9 +174,8 @@ export function useMatches() {
 
         if (!error) {
             setMatches(prev => prev.filter(m => m.id !== matchId))
-            // Invalidate cache
-            const cacheKey = isStudent ? 'student' : 'company'
-            matchesCache[cacheKey].timestamp = 0
+            // Invalidate user-scoped cache
+            invalidateCache(user?.id, isStudent ? 'student' : 'company')
         }
 
         return { error }

@@ -16,6 +16,26 @@ serve(async (req) => {
     }
 
     try {
+        // --- Auth check ---
+        const authHeader = req.headers.get('Authorization')
+        if (!authHeader) {
+            return new Response(JSON.stringify({ success: false, error: 'Authorization required' }), {
+                status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            })
+        }
+        const supabaseAuth = createClient(
+            Deno.env.get('SUPABASE_URL')!,
+            Deno.env.get('SUPABASE_ANON_KEY')!,
+            { global: { headers: { Authorization: authHeader } } }
+        )
+        const { data: { user }, error: authError } = await supabaseAuth.auth.getUser()
+        if (authError || !user) {
+            return new Response(JSON.stringify({ success: false, error: 'Invalid token' }), {
+                status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            })
+        }
+        // --- End auth check ---
+
         const { text, type, id } = await req.json()
 
         // Validate input
