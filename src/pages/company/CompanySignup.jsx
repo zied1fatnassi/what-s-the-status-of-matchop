@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { Mail, Lock, Building2, ArrowRight, CheckCircle, Globe, Loader2, AlertCircle } from 'lucide-react'
+import { Mail, Lock, Building2, ArrowRight, CheckCircle, Globe, Loader2, AlertCircle, RefreshCw } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import { validatePassword, validateEmail, validateName, getPasswordStrengthInfo, getAuthErrorMessage, validateURL } from '../../lib/validation'
 import '../student/StudentSignup.css'
@@ -11,7 +11,7 @@ import '../student/StudentSignup.css'
  */
 function CompanySignup() {
     const navigate = useNavigate()
-    const { signUp } = useAuth()
+    const { signUp, resendVerificationEmail } = useAuth()
     const [step, setStep] = useState(1)
     const [formData, setFormData] = useState({
         companyName: '',
@@ -25,6 +25,8 @@ function CompanySignup() {
     const [isLoading, setIsLoading] = useState(false)
     const [showEmailVerification, setShowEmailVerification] = useState(false)
     const [passwordStrength, setPasswordStrength] = useState({ strength: 0, errors: [] })
+    const [resendStatus, setResendStatus] = useState('')
+    const [resendCooldown, setResendCooldown] = useState(0)
 
     const handleChange = (e) => {
         const { name, value } = e.target
@@ -113,6 +115,28 @@ function CompanySignup() {
 
     const strengthInfo = getPasswordStrengthInfo(passwordStrength.strength)
 
+    const handleResendEmail = async () => {
+        if (resendCooldown > 0 || resendStatus === 'sending') return
+        setResendStatus('sending')
+        try {
+            const { error } = await resendVerificationEmail(formData.email)
+            if (error) {
+                setResendStatus('error')
+            } else {
+                setResendStatus('sent')
+                setResendCooldown(60)
+                const interval = setInterval(() => {
+                    setResendCooldown(prev => {
+                        if (prev <= 1) { clearInterval(interval); return 0 }
+                        return prev - 1
+                    })
+                }, 1000)
+            }
+        } catch {
+            setResendStatus('error')
+        }
+    }
+
     // Email verification success screen
     if (showEmailVerification) {
         return (
@@ -136,13 +160,39 @@ function CompanySignup() {
                             <h2>Verify Your Email</h2>
                             <p>We've sent a verification email to:</p>
                             <p className="verification-email">{formData.email}</p>
-                            <p className="verification-instructions">
-                                Click the link in the email to activate your company account.
-                                If you don't see it, check your spam folder.
-                            </p>
-                            <Link to="/company/login" className="btn btn-primary">
-                                Go to Login
-                            </Link>
+                            <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '1rem', lineHeight: '1.5' }}>
+                                <p>📧 Check your <strong>spam/junk</strong> folder — the email may land there.</p>
+                                <p>⏳ It can take up to 2 minutes to arrive.</p>
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', width: '100%' }}>
+                                <Link to="/company/login" className="btn btn-primary" style={{ textAlign: 'center' }}>
+                                    Go to Login
+                                </Link>
+                                <button
+                                    onClick={handleResendEmail}
+                                    className="btn btn-secondary"
+                                    disabled={resendCooldown > 0 || resendStatus === 'sending'}
+                                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
+                                >
+                                    {resendStatus === 'sending' ? (
+                                        <><Loader2 size={16} className="spinner" /> Sending...</>
+                                    ) : resendCooldown > 0 ? (
+                                        <>Resend in {resendCooldown}s</>
+                                    ) : (
+                                        <><RefreshCw size={16} /> Resend Verification Email</>
+                                    )}
+                                </button>
+                                {resendStatus === 'sent' && (
+                                    <p style={{ color: 'var(--success)', fontSize: '0.85rem', textAlign: 'center' }}>
+                                        ✓ Verification email resent!
+                                    </p>
+                                )}
+                                {resendStatus === 'error' && (
+                                    <p style={{ color: 'var(--error)', fontSize: '0.85rem', textAlign: 'center' }}>
+                                        Failed to resend. Please try again later.
+                                    </p>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>
