@@ -23,13 +23,9 @@ export default function AdminUsers() {
         try {
             let query = supabase
                 .from('profiles')
-                .select('*, students(*), companies(*)', { count: 'exact' })
+                .select('*, students(*), companies(*), user_profiles!user_profiles_user_id_fkey(*)', { count: 'exact' })
                 .range((currentPage - 1) * pageSize, currentPage * pageSize - 1)
                 .order('created_at', { ascending: false })
-
-            if (roleFilter !== 'all') {
-                query = query.eq('role', roleFilter)
-            }
 
             if (searchTerm) {
                 query = query.ilike('email', `%${searchTerm}%`)
@@ -39,8 +35,17 @@ export default function AdminUsers() {
 
             if (error) throw error
 
-            setUsers(data || [])
-            setTotalCount(count || 0)
+            // Client-side role filter using user_profiles
+            let filtered = data || []
+            if (roleFilter !== 'all') {
+                filtered = filtered.filter(u => {
+                    const ups = u.user_profiles || []
+                    return ups.some(up => up.profile_type === roleFilter)
+                })
+            }
+
+            setUsers(filtered)
+            setTotalCount(roleFilter === 'all' ? (count || 0) : filtered.length)
         } catch (error) {
             console.error('Error fetching users:', error)
         } finally {
@@ -67,16 +72,26 @@ export default function AdminUsers() {
         }
     }
 
-    async function updateUserRole(userId, role) {
+    async function updateUserRole(userId, newProfileType) {
         try {
+            // Find the user's default user_profile and update its profile_type
+            const { data: ups, error: fetchErr } = await supabase
+                .from('user_profiles')
+                .select('id')
+                .eq('user_id', userId)
+                .eq('is_default', true)
+                .single()
+
+            if (fetchErr) throw fetchErr
+
             const { error } = await supabase
-                .from('profiles')
-                .update({ role })
-                .eq('id', userId)
+                .from('user_profiles')
+                .update({ profile_type: newProfileType })
+                .eq('id', ups.id)
 
             if (error) throw error
 
-            await logAdminAction(`Changed user role to ${role}`, userId)
+            await logAdminAction(`Changed user role to ${newProfileType}`, userId)
             fetchUsers()
             setShowModal(false)
         } catch (error) {
@@ -102,6 +117,12 @@ export default function AdminUsers() {
         if (user.students?.full_name) return user.students.full_name
         if (user.companies?.company_name) return user.companies.company_name
         return user.email?.split('@')[0] || 'Unknown'
+    }
+
+    function getUserRole(user) {
+        const ups = user.user_profiles || []
+        const defaultUp = ups.find(up => up.is_default) || ups[0]
+        return defaultUp?.profile_type || 'unknown'
     }
 
     return (
@@ -176,8 +197,8 @@ export default function AdminUsers() {
                                             <td>{getUserDisplayName(user)}</td>
                                             <td>{user.email}</td>
                                             <td>
-                                                <span className={`status-badge status-${user.role === 'admin' ? 'active' : 'pending'}`}>
-                                                    {user.role}
+                                                <span className={`status-badge status-${getUserRole(user) === 'admin' ? 'active' : 'pending'}`}>
+                                                    {getUserRole(user)}
                                                 </span>
                                             </td>
                                             <td>
@@ -246,7 +267,7 @@ export default function AdminUsers() {
                 <div className="admin-modal-overlay" onClick={() => setShowModal(false)}>
                     <div className="admin-modal" onClick={e => e.stopPropagation()}>
                         <h2>Edit User</h2>
-                        
+
                         <div className="admin-form-group">
                             <label>Email</label>
                             <input type="text" value={selectedUser.email} disabled />
@@ -255,8 +276,8 @@ export default function AdminUsers() {
                         <div className="admin-form-group">
                             <label>Role</label>
                             <select
-                                value={selectedUser.role}
-                                onChange={(e) => setSelectedUser({ ...selectedUser, role: e.target.value })}
+                                value={selectedUser._editRole || getUserRole(selectedUser)}
+                                onChange={(e) => setSelectedUser({ ...selectedUser, _editRole: e.target.value })}
                             >
                                 <option value="student">Student</option>
                                 <option value="company">Company</option>
@@ -273,7 +294,7 @@ export default function AdminUsers() {
                             </button>
                             <button
                                 className="admin-btn admin-btn-success"
-                                onClick={() => updateUserRole(selectedUser.id, selectedUser.role)}
+                                onClick={() => updateUserRole(selectedUser.id, selectedUser._editRole || getUserRole(selectedUser))}
                             >
                                 Save Changes
                             </button>

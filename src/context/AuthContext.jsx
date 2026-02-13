@@ -82,63 +82,96 @@ export function AuthProvider({ children }) {
 
     const fetchProfile = useCallback(async (userId) => {
         try {
-            let { data, error } = await supabase
-                .from('profiles')
-                .select('*, students(*), companies(*)')
-                .eq('id', userId)
-                .single()
+            console.log('[Auth] fetchProfile called for:', userId)
 
-            // If profile doesn't exist, try to create it from user metadata
-            if (error?.code === 'PGRST116') {
-                const { data: { user } } = await supabase.auth.getUser()
-                if (user?.user_metadata) {
-                    const { type, name } = user.user_metadata
-                    if (type && name) {
-                        console.log('Profile not found, creating from user metadata...')
-                        const { error: insertError } = await supabase
-                            .from('profiles')
-                            .insert({
-                                id: userId,
-                                role: type,
-                                email: user.email
-                            })
+            // Create a promise that rejects after 5 seconds
+            const timeoutPromise = new Promise((_, reject) =>
+                setTimeout(() => reject(new Error('Profile fetch timed out')), 5000)
+            )
 
-                        if (!insertError) {
-                            // Also create type-specific profile
-                            if (type === 'student') {
-                                await supabase.from('students').insert({
-                                    id: userId,
-                                    display_name: name || 'Student',
-                                    location: '',
-                                    skills: []
-                                })
-                            } else if (type === 'company') {
-                                await supabase.from('companies').insert({
-                                    id: userId,
-                                    company_name: name || 'Company',
-                                    industry: '',
-                                    description: ''
-                                })
-                            }
+            // The actual fetch request
+            const fetchPromise = (async () => {
+                let { data, error } = await supabase
+                    .from('profiles')
+                    .select('*, students(*), companies(*), user_profiles(*)')
+                    .eq('id', userId)
+                    .single()
 
-                            // Fetch the newly created profile
-                            const result = await supabase
+                // If profile doesn't exist, try to create it from user metadata
+                if (error?.code === 'PGRST116') {
+                    const { data: { user } } = await supabase.auth.getUser()
+                    if (user?.user_metadata) {
+                        const { type, name } = user.user_metadata
+                        if (type && name) {
+                            console.log('Profile not found, creating from user metadata...')
+                            const { error: insertError } = await supabase
                                 .from('profiles')
-                                .select('*, students(*), companies(*)')
-                                .eq('id', userId)
-                                .single()
-                            data = result.data
-                            error = result.error
+                                .insert({
+                                    id: userId,
+                                    email: user.email
+                                })
+
+                            if (!insertError) {
+                                // Create user_profiles row
+                                const { data: upData } = await supabase.from('user_profiles').insert({
+                                    id: userId,
+                                    user_id: userId,
+                                    profile_type: type,
+                                    is_default: true
+                                }).select().single()
+
+                                // Set active_profile_id
+                                if (upData) {
+                                    await supabase.from('profiles').update({
+                                        active_profile_id: upData.id
+                                    }).eq('id', userId)
+                                }
+
+                                // Also create type-specific profile
+                                if (type === 'student') {
+                                    await supabase.from('students').insert({
+                                        id: userId,
+                                        display_name: name || 'Student',
+                                        location: '',
+                                        skills: []
+                                    })
+                                } else if (type === 'company') {
+                                    await supabase.from('companies').insert({
+                                        id: userId,
+                                        company_name: name || 'Company',
+                                        industry: '',
+                                        description: ''
+                                    })
+                                }
+
+                                // Fetch the newly created profile
+                                const result = await supabase
+                                    .from('profiles')
+                                    .select('*, students(*), companies(*), user_profiles(*)')
+                                    .eq('id', userId)
+                                    .single()
+                                data = result.data
+                                error = result.error
+                            }
                         }
                     }
                 }
+                return { data, error }
+            })()
+
+            // Race the fetch against the timeout
+            const { data, error } = await Promise.race([fetchPromise, timeoutPromise])
+
+            if (error) {
+                console.error('[Auth] Error fetching profile:', error)
             }
 
             if (!error && data) {
+                console.log('[Auth] Profile fetched successfully:', data)
                 setProfile(data)
             }
         } catch (err) {
-            console.error('Error fetching profile:', err)
+            console.error('[Auth] Critical error (timeout or crash) fetching profile:', err)
         }
     }, [])
 
@@ -216,12 +249,26 @@ export function AuthProvider({ children }) {
                 try {
                     const { error: profileError } = await supabase.from('profiles').insert({
                         id: data.user.id,
-                        role: userType,
                         email: email
                     })
 
                     if (profileError && !profileError.message.includes('duplicate')) {
                         console.error('Profile creation error:', profileError)
+                    }
+
+                    // Create user_profiles row (profile type link)
+                    const { data: upData } = await supabase.from('user_profiles').insert({
+                        id: data.user.id,
+                        user_id: data.user.id,
+                        profile_type: userType,
+                        is_default: true
+                    }).select().single()
+
+                    // Set active_profile_id
+                    if (upData) {
+                        await supabase.from('profiles').update({
+                            active_profile_id: upData.id
+                        }).eq('id', data.user.id)
                     }
 
                     // Create type-specific profile
@@ -272,6 +319,11 @@ export function AuthProvider({ children }) {
                 setAuthError(error)
                 throw error
             }
+
+            // Track login activity for engagement decay system
+            supabase.rpc('touch_activity').catch(err =>
+                console.warn('[Auth] Activity tracking failed:', err.message)
+            )
 
             return { data, error: null }
         } catch (err) {
@@ -358,14 +410,27 @@ export function AuthProvider({ children }) {
     // Check if email is verified
     const isEmailVerified = user?.email_confirmed_at != null
 
+    // Derive role from user_profiles (the new single source of truth)
+    const activeProfileType = useMemo(() => {
+        const ups = profile?.user_profiles
+        if (Array.isArray(ups) && ups.length > 0) {
+            // Prefer the default profile, otherwise the first one
+            const defaultUp = ups.find(up => up.is_default) || ups[0]
+            return defaultUp?.profile_type
+        }
+        // Fallback to user_metadata during the brief window before profile loads
+        return user?.user_metadata?.type || null
+    }, [profile, user])
+
     // Memoize context value to prevent unnecessary re-renders
     const value = useMemo(() => ({
         user,
         profile,
         isLoggedIn: !!user,
         isEmailVerified,
-        isStudent: profile?.role === 'student' || user?.user_metadata?.type === 'student',
-        isCompany: profile?.role === 'company' || user?.user_metadata?.type === 'company',
+        isStudent: activeProfileType === 'student',
+        isCompany: activeProfileType === 'company',
+        isAdmin: activeProfileType === 'admin',
         isLoading,
         authError,
         // Auth methods
@@ -379,7 +444,7 @@ export function AuthProvider({ children }) {
         updateProfile,
         refreshProfile: () => user && fetchProfile(user.id),
         clearError: () => setAuthError(null),
-    }), [user, profile, isLoading, isEmailVerified, authError, signUp, signIn, signOut, resendVerificationEmail, resetPassword, updateProfile, fetchProfile])
+    }), [user, profile, isLoading, isEmailVerified, activeProfileType, authError, signUp, signIn, signOut, resendVerificationEmail, resetPassword, updateProfile, fetchProfile])
 
     return (
         <AuthContext.Provider value={value}>

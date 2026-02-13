@@ -1,5 +1,8 @@
+import { useState, useEffect } from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+
+const PROFILE_WAIT_TIMEOUT_MS = 5000
 
 /**
  * Loading spinner for auth state resolution
@@ -40,6 +43,19 @@ const AuthLoadingSpinner = () => (
 export function ProtectedRoute({ children, requiredType = null }) {
     const { isLoggedIn, isLoading, isStudent, isCompany, user, profile } = useAuth()
     const location = useLocation()
+    const [profileWaitTimedOut, setProfileWaitTimedOut] = useState(false)
+
+    // If we're waiting for profile, stop blocking after a timeout so the page never spins forever
+    useEffect(() => {
+        if (!requiredType || profile) return
+        const t = setTimeout(() => setProfileWaitTimedOut(true), PROFILE_WAIT_TIMEOUT_MS)
+        return () => clearTimeout(t)
+    }, [requiredType, profile])
+
+    // Reset timeout state when profile loads or route changes
+    useEffect(() => {
+        if (profile) setProfileWaitTimedOut(false)
+    }, [profile])
 
     // While loading, show spinner - don't render anything else
     if (isLoading) {
@@ -53,17 +69,25 @@ export function ProtectedRoute({ children, requiredType = null }) {
         return <Navigate to={loginPath} state={{ from: location }} replace />
     }
 
-    // Wait for profile to load before making role-based decisions
-    if (requiredType && !profile) {
+    // Wait for profile to load before making role-based decisions, but don't block forever:
+    // allow through if user_metadata has the required type, or after PROFILE_WAIT_TIMEOUT_MS.
+    const userTypeFromMetadata = user?.user_metadata?.type
+    const metadataSaysStudent = userTypeFromMetadata === 'student'
+    const metadataSaysCompany = userTypeFromMetadata === 'company'
+    const canProceedWithoutProfile =
+        (requiredType === 'student' && metadataSaysStudent) ||
+        (requiredType === 'company' && metadataSaysCompany)
+
+    if (requiredType && !profile && !canProceedWithoutProfile && !profileWaitTimedOut) {
         return <AuthLoadingSpinner />
     }
 
-    // Check user type if required
-    if (requiredType === 'student' && !isStudent) {
+    // Check user type if required (profile takes precedence; fallback to metadata)
+    if (requiredType === 'student' && !isStudent && !metadataSaysStudent) {
         return <Navigate to="/company/candidates" replace />
     }
 
-    if (requiredType === 'company' && !isCompany) {
+    if (requiredType === 'company' && !isCompany && !metadataSaysCompany) {
         return <Navigate to="/student/swipe" replace />
     }
 
@@ -112,7 +136,7 @@ export function PublicRoute({ children }) {
  * @param {ReactNode} children - The admin component to render
  */
 export function AdminRoute({ children }) {
-    const { isLoggedIn, isLoading, profile, user } = useAuth()
+    const { isLoggedIn, isLoading, isAdmin, isStudent, isCompany, user } = useAuth()
     const location = useLocation()
 
     // While loading, show spinner
@@ -125,15 +149,12 @@ export function AdminRoute({ children }) {
         return <Navigate to="/student/login" state={{ from: location }} replace />
     }
 
-    // Check if user is admin
-    const isAdmin = profile?.role === 'admin' || user?.user_metadata?.type === 'admin'
-
     if (!isAdmin) {
         // Not an admin - redirect to appropriate dashboard
-        if (profile?.role === 'student') {
+        if (isStudent) {
             return <Navigate to="/student/swipe" replace />
         }
-        if (profile?.role === 'company') {
+        if (isCompany) {
             return <Navigate to="/company/candidates" replace />
         }
         return <Navigate to="/" replace />

@@ -34,7 +34,7 @@ export default function AdminAnalytics() {
                 { count: newOffers },
                 { count: newMatches }
             ] = await Promise.all([
-                supabase.from('profiles').select('created_at, role'),
+                supabase.from('profiles').select('created_at'),
                 supabase.from('offers').select('created_at, status, location, required_skills'),
                 supabase.from('matches').select('created_at'),
                 supabase.from('companies').select('id, company_name').limit(10),
@@ -56,11 +56,11 @@ export default function AdminAnalytics() {
 
             // Calculate skill distribution
             const skillCounts = {}
-            ;(offers || []).forEach(offer => {
-                (offer.required_skills || []).forEach(skill => {
-                    skillCounts[skill] = (skillCounts[skill] || 0) + 1
+                ; (offers || []).forEach(offer => {
+                    (offer.required_skills || []).forEach(skill => {
+                        skillCounts[skill] = (skillCounts[skill] || 0) + 1
+                    })
                 })
-            })
             const topSkills = Object.entries(skillCounts)
                 .sort((a, b) => b[1] - a[1])
                 .slice(0, 10)
@@ -68,22 +68,26 @@ export default function AdminAnalytics() {
 
             // Calculate location distribution
             const locationCounts = {}
-            ;(offers || []).forEach(offer => {
-                const loc = offer.location || 'Remote'
-                locationCounts[loc] = (locationCounts[loc] || 0) + 1
-            })
+                ; (offers || []).forEach(offer => {
+                    const loc = offer.location || 'Remote'
+                    locationCounts[loc] = (locationCounts[loc] || 0) + 1
+                })
             const locationStats = Object.entries(locationCounts)
                 .sort((a, b) => b[1] - a[1])
                 .slice(0, 10)
                 .map(([location, count]) => ({ location, count }))
 
-            // Calculate role distribution
+            // Calculate role distribution from user_profiles
+            const { data: profileTypes } = await supabase
+                .from('user_profiles')
+                .select('profile_type')
+
             const roleCounts = { student: 0, company: 0, admin: 0 }
-            ;(users || []).forEach(user => {
-                if (roleCounts[user.role] !== undefined) {
-                    roleCounts[user.role]++
-                }
-            })
+                ; (profileTypes || []).forEach(up => {
+                    if (roleCounts[up.profile_type] !== undefined) {
+                        roleCounts[up.profile_type]++
+                    }
+                })
 
             setAnalytics({
                 newUsers: newUsers || 0,
@@ -176,10 +180,10 @@ export default function AdminAnalytics() {
                     <div className="analytics-bar-item">
                         <span className="bar-label">Students</span>
                         <div className="bar-container">
-                            <div 
-                                className="bar-fill student" 
-                                style={{ 
-                                    width: `${(analytics.roleCounts.student / analytics.totalUsers * 100) || 0}%` 
+                            <div
+                                className="bar-fill student"
+                                style={{
+                                    width: `${(analytics.roleCounts.student / analytics.totalUsers * 100) || 0}%`
                                 }}
                             />
                         </div>
@@ -188,10 +192,10 @@ export default function AdminAnalytics() {
                     <div className="analytics-bar-item">
                         <span className="bar-label">Companies</span>
                         <div className="bar-container">
-                            <div 
-                                className="bar-fill company" 
-                                style={{ 
-                                    width: `${(analytics.roleCounts.company / analytics.totalUsers * 100) || 0}%` 
+                            <div
+                                className="bar-fill company"
+                                style={{
+                                    width: `${(analytics.roleCounts.company / analytics.totalUsers * 100) || 0}%`
                                 }}
                             />
                         </div>
@@ -200,10 +204,10 @@ export default function AdminAnalytics() {
                     <div className="analytics-bar-item">
                         <span className="bar-label">Admins</span>
                         <div className="bar-container">
-                            <div 
-                                className="bar-fill admin" 
-                                style={{ 
-                                    width: `${(analytics.roleCounts.admin / analytics.totalUsers * 100) || 0}%` 
+                            <div
+                                className="bar-fill admin"
+                                style={{
+                                    width: `${(analytics.roleCounts.admin / analytics.totalUsers * 100) || 0}%`
                                 }}
                             />
                         </div>

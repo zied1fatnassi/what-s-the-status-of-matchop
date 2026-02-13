@@ -142,6 +142,10 @@ function StudentSignup() {
                     <div style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '1.5rem', lineHeight: '1.5' }}>
                         <p>📧 Check your <strong>spam/junk</strong> folder — the email may land there.</p>
                         <p>⏳ It can take up to 2 minutes to arrive.</p>
+                        <p style={{ marginTop: '1rem', fontSize: '0.8rem', opacity: 0.9 }}>
+                            Still nothing? Supabase&apos;s default email only works for pre-authorized addresses. 
+                            Run <code>database/auto_confirm_emails.sql</code> in Supabase SQL Editor, or configure Custom SMTP — see <code>docs/EMAIL_SETUP.md</code>.
+                        </p>
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', width: '100%', maxWidth: '280px' }}>
                         <Link to="/student/login" className="btn btn-primary" style={{ width: '100%', textAlign: 'center' }}>

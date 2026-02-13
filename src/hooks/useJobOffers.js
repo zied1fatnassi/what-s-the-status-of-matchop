@@ -8,6 +8,7 @@ import { useAuth } from '../context/AuthContext'
 const offersCacheMap = new Map()
 const CACHE_TTL = 60000 // 60 seconds
 const FETCH_TIMEOUT = 15000 // 15 second timeout
+const EDGE_FUNCTION_TIMEOUT_MS = 8000 // 8s then fall back to direct query
 
 function getOffersCache(userId) {
     if (!offersCacheMap.has(userId)) {
@@ -91,8 +92,23 @@ export function useJobOffers() {
                 getOffersCache(user.id).swipedIds = new Set(swipedOfferIds)
             }
 
-            // Try Semantic Search
-            const { data: matchedData, error: matchError } = await supabase.functions.invoke('get-matched-jobs')
+            // Try Semantic Search (with timeout so we don't hang if edge function is missing/slow)
+            let matchedData = null
+            let matchError = null
+            try {
+                const result = await Promise.race([
+                    supabase.functions.invoke('get-matched-jobs'),
+                    new Promise((_, reject) =>
+                        setTimeout(() => reject(new Error('get-matched-jobs timeout')), EDGE_FUNCTION_TIMEOUT_MS)
+                    )
+                ])
+                if (result && typeof result === 'object') {
+                    matchedData = result.data
+                    matchError = result.error
+                }
+            } catch (e) {
+                matchError = e
+            }
 
             if (!matchError && matchedData?.success && matchedData?.offers?.length > 0) {
                 internalOffers = matchedData.offers
@@ -202,7 +218,8 @@ export function useJobOffers() {
             return { error: null }
         }
 
-        const { data, error: swipeError } = await supabase
+        // Record the swipe (for feed exclusion)
+        const { error: swipeError } = await supabase
             .from('student_swipes')
             .insert({
                 student_id: user.id,
@@ -212,9 +229,27 @@ export function useJobOffers() {
 
         if (swipeError) {
             console.error('[useJobOffers] Swipe insert ERROR:', swipeError)
+            return { error: swipeError.message }
         }
 
-        return { error: swipeError?.message || null }
+        // On RIGHT swipe: also create an Intro (Handshake System)
+        // This makes the student's interest visible to the company immediately
+        if (direction === 'right') {
+            const { data: introResult, error: introError } = await supabase
+                .rpc('create_intro_from_swipe', {
+                    p_student_id: user.id,
+                    p_offer_id: offerId
+                })
+
+            if (introError) {
+                console.warn('[useJobOffers] Intro creation warning:', introError.message)
+                // Non-fatal: swipe is already recorded, intro is a bonus
+            } else {
+                console.log('[useJobOffers] Intro created:', introResult)
+            }
+        }
+
+        return { error: null }
 
     }, [user])
 

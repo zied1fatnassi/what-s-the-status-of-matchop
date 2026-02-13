@@ -1864,6 +1864,7 @@ cp .env.example .env
 #   5. database/000_canonical_rls.sql   (RLS policies)
 #   6. supabase/migrations/20251222_vector_matching.sql  (vector search)
 #   7. supabase/migrations/20251222_external_jobs_rls.sql (external jobs RLS)
+#   8. database/auto_confirm_emails.sql (fix signup — see docs/EMAIL_SETUP.md)
 
 # 5. Start development server
 npm run dev

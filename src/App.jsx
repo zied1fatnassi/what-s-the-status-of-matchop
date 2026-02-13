@@ -41,6 +41,7 @@ const CompanyLogin = lazy(() => import('./pages/company/CompanyLogin'))
 const CompanyProfile = lazy(() => import('./pages/company/CompanyProfile'))
 const PostOffer = lazy(() => import('./pages/company/PostOffer'))
 const ViewCandidates = lazy(() => import('./pages/company/ViewCandidates'))
+const CompanyIntros = lazy(() => import('./pages/company/CompanyIntros'))
 const CompanyMatches = lazy(() => import('./pages/company/CompanyMatches'))
 const CompanyChat = lazy(() => import('./pages/company/CompanyChat'))
 
@@ -96,7 +97,7 @@ function SmartLanding() {
       return <Navigate to="/student/swipe" replace />
     }
     if (isCompany) {
-      return <Navigate to="/company/candidates" replace />
+      return <Navigate to="/company/intros" replace />
     }
   }
 
@@ -265,6 +266,7 @@ function App() {
               <Route path="/company/profile" element={<ProtectedRoute requiredType="company"><CompanyProfile /></ProtectedRoute>} />
               <Route path="/company/post-offer" element={<ProtectedRoute requiredType="company"><PostOffer /></ProtectedRoute>} />
               <Route path="/company/candidates" element={<ProtectedRoute requiredType="company"><ViewCandidates /></ProtectedRoute>} />
+              <Route path="/company/intros" element={<ProtectedRoute requiredType="company"><CompanyIntros /></ProtectedRoute>} />
               <Route path="/company/matches" element={<ProtectedRoute requiredType="company"><CompanyMatches /></ProtectedRoute>} />
               <Route path="/company/chat/:matchId" element={<ProtectedRoute requiredType="company"><CompanyChat /></ProtectedRoute>} />
 
