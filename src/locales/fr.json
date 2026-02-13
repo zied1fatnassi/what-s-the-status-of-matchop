@@ -156,5 +156,10 @@
         "noMatches": "Pas encore de matchs",
         "noCandidates": "Pas encore de candidats",
         "noOffers": "Aucune offre disponible"
+    },
+    "badges": {
+        "exclusive": "Exclusivité MatchOp",
+        "leak": "Fuite Interne",
+        "bounty": "Prime"
     }
 }

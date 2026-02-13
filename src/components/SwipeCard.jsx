@@ -1,5 +1,6 @@
 import { motion, useMotionValue, useTransform, useSpring, useAnimation } from 'framer-motion'
-import { MapPin, Briefcase, DollarSign, Clock, Info, Sparkles, ExternalLink } from 'lucide-react'
+import { MapPin, Briefcase, DollarSign, Clock, Info, Sparkles, ExternalLink, Crown, EyeOff, Coins } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import VerificationBadge from './VerificationBadge'
 import './SwipeCard.css'
 
@@ -94,6 +95,7 @@ function SwipeCard({ offer, onSwipe, isTop, onViewDetails }) {
 
 // Reusable card content component
 function CardContent({ offer }) {
+    const { t } = useTranslation()
     const matchPercent = offer.matchScore ? Math.round(offer.matchScore * 100) : null
 
     return (
@@ -105,6 +107,28 @@ function CardContent({ offer }) {
                     <span>{matchPercent}% Match</span>
                 </div>
             )}
+
+            {/* Partner-Model Badges */}
+            <div className="partner-badges">
+                {offer.is_exclusive && (
+                    <div className="partner-badge badge-exclusive">
+                        <Crown size={12} />
+                        <span>{t('badges.exclusive')}</span>
+                    </div>
+                )}
+                {offer.is_leak && (
+                    <div className="partner-badge badge-leak">
+                        <EyeOff size={12} />
+                        <span>{t('badges.leak')}</span>
+                    </div>
+                )}
+                {offer.bounty_value > 0 && (
+                    <div className="partner-badge badge-bounty">
+                        <Coins size={12} />
+                        <span>{Number(offer.bounty_value).toLocaleString(undefined, { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })}</span>
+                    </div>
+                )}
+            </div>
 
             {/* External Source Badge */}
             {offer.isExternal && (

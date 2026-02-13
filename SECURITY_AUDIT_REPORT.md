@@ -96,53 +96,39 @@
 
 ---
 
-## 3. Dead Link Proliferation
+## 3. Partner Ingest Model (Replaces Web Scraping)
 
-### Before (VULNERABLE)
+### Before (REMOVED)
 | Aspect | Status | Detail |
 |---|---|---|
-| Verification Coverage | ❌ 30% random sample | `Math.random() < 0.3` — 70% of links saved unverified |
-| Method | ⚠️ Full GET via Scrapestack | Downloads entire page + JS render — slow, expensive |
-| API Cost | ❌ HIGH | Every verification consumes Scrapestack API credits |
-| Dead Link Rate | ❌ ~15-25% estimated | Users encounter expired/removed job listings |
-| Background Verification | ❌ NONE | No post-save verification mechanism |
+| Data Source | ❌ Web scraping | Legal risk, low-quality data, dead links |
+| Verification | ❌ 30% random | Most links unverified |
+| Dependencies | ❌ cheerio, axios, rss-parser, Scrapestack | Large attack surface, API key exposure |
+| Data Quality | ❌ LOW | Scraped listings often expired, duplicated, or inaccurate |
 
-**User Impact:** Students click on job links and find "Page Not Found" or "Job Expired" — eroding trust in the platform.
+**Decision:** All web-scraping code (`scripts/crawler/`, `link-checker` Edge Function) has been **permanently removed**. Dependencies `cheerio`, `axios`, and `rss-parser` deleted from `package.json`.
 
-### After (REMEDIATED)
+### After (PARTNER INGEST MODEL)
 | Aspect | Status | Detail |
 |---|---|---|
-| Verification Coverage | ✅ **100%** | Every link checked before save + background re-verification |
-| Method | ✅ Async HEAD requests | Headers only (~1KB) — 10x faster, 100x less bandwidth than GET |
-| Fallback | ✅ GET with Range for HEAD-blocked sites | `Range: bytes=0-1024` — only first 1KB |
-| API Cost | ✅ FREE | Direct HEAD requests — no Scrapestack credits consumed |
-| Soft 404 Detection | ✅ Content analysis | Detects "job expired", "page not found" even with HTTP 200 |
-| Background Worker | ✅ Edge Function + Local Script | Scheduled re-verification of all stored links |
-| Concurrency | ✅ Semaphore (10 concurrent) | Prevents overwhelming target servers |
-| Retry Logic | ✅ 2 retries with backoff | Handles transient network failures |
-| Reporting | ✅ Detailed verification report | Alive/dead/error counts, avg response time |
-
-### Performance Comparison
-| Metric | Before (Scrapestack GET, 30%) | After (HEAD, 100%) |
-|---|---|---|
-| Coverage | 30% | **100%** |
-| Avg request time | ~3-5 seconds | **~200-500ms** |
-| Bandwidth per link | ~50-500 KB | **~1 KB** |
-| Cost per 1000 links | ~$2-5 (API credits) | **$0** |
-| Dead links reaching users | ~15-25% | **<1%** |
+| Data Source | ✅ Partner APIs | Direct integration with verified companies |
+| Authentication | ✅ X-Partner-Key header | SHA-256 hashed, compared against `partners` table |
+| Authorization | ✅ Status check | Only `active` partners can ingest offers |
+| Input Validation | ✅ Server-side | Every field sanitised, length-limited, type-checked |
+| RLS | ✅ Enabled | `partners` table accessible only via `service_role` |
+| Rate Limiting | ✅ 100 offers/request | Prevents bulk abuse |
+| New Offer Types | ✅ Exclusive, Leak, Bounty | `is_exclusive`, `is_leak`, `bounty_value` columns |
 
 ### Verified Checklist
-- [x] Link checker uses HEAD requests (not GET) as primary method
-- [x] GET fallback only when HEAD returns 405 or network error
-- [x] GET fallback uses `Range: bytes=0-1024` to limit download
-- [x] 100% of links verified inline during scraping (kernel.js)
-- [x] Background Edge Function for re-verification of stored links
-- [x] Standalone Node.js script for local/CI execution
-- [x] Soft 404 detection (content pattern matching)
-- [x] Concurrency control (semaphore, max 10 parallel)
-- [x] Retry logic with exponential backoff (2 retries)
-- [x] Dead links deleted from database (not just flagged)
-- [x] Detailed verification reports with statistics
+- [x] All `scripts/crawler/` files deleted
+- [x] `supabase/functions/link-checker/` deleted
+- [x] `cheerio`, `axios`, `rss-parser` removed from `package.json`
+- [x] `scrape`, `scrape:cleanup`, `scrape:check-links` npm scripts removed
+- [x] `partners` table created with RLS (service_role only)
+- [x] API key stored as SHA-256 hash (never plaintext)
+- [x] `ingest-partner-offers` Edge Function validates key, status, and input
+- [x] `offers` table extended with `is_exclusive`, `is_leak`, `bounty_value`, `partner_id`
+- [x] Frontend badges render conditionally with i18n support (EN/FR)
 
 ---
 
@@ -152,7 +138,7 @@
 |---|---|---|---|
 | Session Storage | localStorage (XSS-vulnerable) | Secure cookies + CSRF | **CRITICAL → LOW** |
 | Password Reset | No rate limit, 1hr expiry, no audit | Single-use, 15min, rate-limited, audited | **HIGH → LOW** |
-| Link Verification | 30% random sampling | 100% HEAD + background worker | **MEDIUM → NEGLIGIBLE** |
+| Data Ingestion | Web scraping (legal risk, dead links) | Partner API with hashed keys + RLS | **HIGH → LOW** |
 | Security Headers | None | HSTS, X-Frame-Options, CSP-ready | **HIGH → LOW** |
 | CSRF Protection | None | SameSite=Strict + CSRF token | **HIGH → LOW** |
 | Auth Flow | Implicit | PKCE | **MEDIUM → LOW** |
@@ -161,7 +147,7 @@
 
 ## Files Modified/Created Summary
 
-### New Files (6)
+### New Files (7)
 | File | Purpose |
 |---|---|
 | `src/lib/cookieStorage.js` | Cookie storage adapter + CSRF utilities |
@@ -169,8 +155,8 @@
 | `middleware.js` | Vercel Edge Middleware (rate limiting) |
 | `database/password_reset_tokens.sql` | Token storage table + RLS |
 | `supabase/functions/secure-password-reset/index.ts` | Password reset Edge Function |
-| `supabase/functions/link-checker/index.ts` | Link verification Edge Function |
-| `scripts/crawler/check-links-local.js` | Local link checker script |
+| `supabase/functions/ingest-partner-offers/index.ts` | Partner offer ingestion Edge Function |
+| `supabase/migrations/20260213_partner_ingest_model.sql` | Partners table + offers columns migration |
 
 ### Modified Files (7)
 | File | Change |
@@ -179,9 +165,20 @@
 | `src/context/AuthContext.jsx` | CSRF init, cookie clearing on sign-out |
 | `src/pages/ForgotPassword.jsx` | Secure Edge Function-based reset request |
 | `src/pages/ResetPassword.jsx` | Token-based validation + consumption |
-| `scripts/crawler/kernel.js` | 30% sampling → 100% HEAD verification |
+| `src/components/SwipeCard.jsx` | Partner-model badges (Exclusive, Leak, Bounty) |
 | `vercel.json` | Security headers added |
-| `package.json` | Added `scrape:check-links` script |
+| `package.json` | Removed scraping deps, added ingest script |
+
+### Deleted Files (8)
+| File | Reason |
+|---|---|
+| `scripts/crawler/kernel.js` | Web scraping removed |
+| `scripts/crawler/config.js` | Web scraping removed |
+| `scripts/crawler/scrapestack-client.js` | Web scraping removed |
+| `scripts/crawler/check-links-local.js` | Link checker removed |
+| `scripts/crawler/cleanup-dead-links.js` | Link checker removed |
+| `scripts/crawler/scrapers/*.js` (6 files) | Site-specific scrapers removed |
+| `supabase/functions/link-checker/index.ts` | Link checker Edge Function removed |
 
 ---
 
