@@ -144,23 +144,23 @@ function Landing() {
                                 </div>
                                 <div className="mock-candidates">
                                     <div className="mock-candidate">
-                                        <div className="mock-avatar">👨‍💻</div>
+                                        <div className="mock-avatar avatar-1"><span>AB</span></div>
                                         <div className="mock-info">
-                                            <span>Alex Johnson</span>
+                                            <span>Ahmed Ben Ali</span>
                                             <span className="match-score">95% Match</span>
                                         </div>
                                     </div>
                                     <div className="mock-candidate">
-                                        <div className="mock-avatar">👩‍💻</div>
+                                        <div className="mock-avatar avatar-2"><span>MS</span></div>
                                         <div className="mock-info">
-                                            <span>Sarah Chen</span>
+                                            <span>Mariem Sassi</span>
                                             <span className="match-score">92% Match</span>
                                         </div>
                                     </div>
                                     <div className="mock-candidate">
-                                        <div className="mock-avatar">👨‍🎓</div>
+                                        <div className="mock-avatar avatar-3"><span>YH</span></div>
                                         <div className="mock-info">
-                                            <span>Mike Ross</span>
+                                            <span>Yassine Hammami</span>
                                             <span className="match-score">88% Match</span>
                                         </div>
                                     </div>
