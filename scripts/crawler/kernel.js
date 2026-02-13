@@ -47,8 +47,18 @@ const parser = new Parser()
 // ============================================
 
 /**
- * Verify a job link is valid before saving
- * Returns true only if the link returns HTTP 200 and looks like a valid job page
+ * Verify a job link is valid before saving.
+ * 
+ * SECURITY FIX: Now performs 100% verification using async HEAD requests
+ * instead of the previous 30% random sampling via Scrapestack.
+ * 
+ * Strategy:
+ * 1. Basic URL validation (format, blocked patterns) — FREE, instant
+ * 2. Async HEAD request to verify HTTP status — FAST, no body download
+ * 3. Fallback to Scrapestack GET only for sites that block HEAD (rare)
+ * 
+ * @param {object} job - Job object with original_url
+ * @returns {Promise<{valid: boolean, reason: string}>}
  */
 async function verifyJobLink(job) {
     // Basic URL validation
@@ -68,17 +78,71 @@ async function verifyJobLink(job) {
         }
     }
 
-    // Verify via Scrapestack (sample check - not all links to save API calls)
-    const shouldVerify = Math.random() < 0.3 // Verify 30% of links
-    
-    if (shouldVerify) {
+    // 100% verification via async HEAD request
+    try {
+        const controller = new AbortController()
+        const timeoutId = setTimeout(() => controller.abort(), 15000)
+
+        let response
+        try {
+            // HEAD request — fast, no body download
+            response = await fetch(job.original_url, {
+                method: 'HEAD',
+                signal: controller.signal,
+                redirect: 'follow',
+                headers: {
+                    'User-Agent': 'MatchOp-LinkChecker/1.0',
+                    'Accept': '*/*'
+                }
+            })
+        } catch (headErr) {
+            // Some servers return 405 for HEAD — fall back to lightweight GET
+            if (headErr.name !== 'AbortError') {
+                response = await fetch(job.original_url, {
+                    method: 'GET',
+                    signal: controller.signal,
+                    redirect: 'follow',
+                    headers: {
+                        'User-Agent': 'MatchOp-LinkChecker/1.0',
+                        'Accept': 'text/html',
+                        'Range': 'bytes=0-512' // Only first 512 bytes
+                    }
+                })
+            } else {
+                clearTimeout(timeoutId)
+                return { valid: false, reason: 'Timeout (15s)' }
+            }
+        } finally {
+            clearTimeout(timeoutId)
+        }
+
+        const status = response.status
+
+        // Dead status codes
+        const deadCodes = new Set([404, 410, 451, 500, 502, 503, 521, 522, 523, 530])
+        if (deadCodes.has(status)) {
+            return { valid: false, reason: `HTTP ${status}` }
+        }
+
+        // 2xx/3xx = alive
+        if (status >= 200 && status < 400) {
+            return { valid: true, reason: `HTTP ${status}` }
+        }
+
+        // All other codes — uncertain, allow but flag
+        return { valid: true, reason: `HTTP ${status} (uncertain)` }
+
+    } catch (err) {
+        // Network errors — could be transient, allow with warning
+        if (err.name === 'AbortError') {
+            return { valid: false, reason: 'Timeout' }
+        }
+        // For DNS/connection failures, fall back to Scrapestack
         const result = await scrapestack.verifyLink(job.original_url, {
             siteName: job.source_website?.toLowerCase() || 'default'
         })
         return result
     }
-
-    return { valid: true, reason: 'Passed basic validation' }
 }
 
 // ============================================

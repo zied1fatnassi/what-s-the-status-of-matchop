@@ -12,7 +12,8 @@
     "test": "vitest",
     "test:run": "vitest run",
     "scrape": "node scripts/crawler/kernel.js",
-    "scrape:cleanup": "node scripts/crawler/cleanup-dead-links.js"
+    "scrape:cleanup": "node scripts/crawler/cleanup-dead-links.js",
+    "scrape:check-links": "node scripts/crawler/check-links-local.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.89.0",

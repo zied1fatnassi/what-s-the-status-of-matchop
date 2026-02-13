@@ -1,13 +1,21 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Lock, Eye, EyeOff, CheckCircle, Loader2, KeyRound } from 'lucide-react'
-import { supabase } from '../lib/supabase'
 import { validatePassword, getAuthErrorMessage } from '../lib/validation'
+import { validateResetToken, executePasswordReset, getResetParamsFromURL } from '../lib/passwordReset'
 import '../pages/student/StudentSignup.css'
 
 /**
  * Reset Password Page
- * Shows password form directly - Supabase handles session from URL hash automatically
+ * 
+ * SECURITY: Uses single-use tokens validated by the secure-password-reset
+ * Edge Function. Token is extracted from URL query params (?token=xxx&email=yyy).
+ * 
+ * Flow:
+ * 1. On mount: extract token + email from URL → validate via Edge Function
+ * 2. If valid: show password form with strength meter
+ * 3. On submit: consume token + update password via Edge Function
+ * 4. Token is single-use — cannot be reused after consumption
  */
 function ResetPassword() {
     const navigate = useNavigate()
@@ -18,70 +26,77 @@ function ResetPassword() {
     const [error, setError] = useState('')
     const [isLoading, setIsLoading] = useState(false)
     const [isSuccess, setIsSuccess] = useState(false)
-    const [isSessionValid, setIsSessionValid] = useState(true)
-    const [isCheckingSession, setIsCheckingSession] = useState(true)
+    const [isTokenValid, setIsTokenValid] = useState(false)
+    const [isCheckingToken, setIsCheckingToken] = useState(true)
+    const [tokenExpiry, setTokenExpiry] = useState(null)
+    const [resetToken, setResetToken] = useState(null)
+    const [resetEmail, setResetEmail] = useState(null)
 
-    // Ensure the recovery session from Supabase exists before allowing reset
+    // Validate the reset token from URL on mount
     useEffect(() => {
         let active = true
 
-        const ensureSession = async () => {
+        const checkToken = async () => {
             try {
-                const { data } = await supabase.auth.getSession()
+                // Extract token and email from URL query params
+                const { token, email } = getResetParamsFromURL()
 
-                // If no session yet but tokens were passed via navigation state, set it
-                if (!data?.session && location.state?.accessToken && location.state?.refreshToken) {
-                    await supabase.auth.setSession({
-                        access_token: location.state.accessToken,
-                        refresh_token: location.state.refreshToken
-                    })
+                if (!token || !email) {
+                    if (active) {
+                        setError('Invalid reset link. Please request a new password reset.')
+                        setIsTokenValid(false)
+                    }
+                    return
                 }
 
-                const { data: refreshed } = await supabase.auth.getSession()
+                // Store for later use in form submission
+                setResetToken(token)
+                setResetEmail(email)
 
-                if (!refreshed?.session) {
-                    if (active) {
-                        setError('Your reset link is invalid or has expired. Please request a new one.')
-                        setIsSessionValid(false)
+                // Validate token via Edge Function (does NOT consume it)
+                const result = await validateResetToken(token, email)
+
+                if (active) {
+                    if (result.valid) {
+                        setIsTokenValid(true)
+                        setTokenExpiry(result.expiresAt)
+                    } else {
+                        setError(result.error || 'Your reset link is invalid or has expired. Please request a new one.')
+                        setIsTokenValid(false)
                     }
-                } else if (active) {
-                    setIsSessionValid(true)
                 }
             } catch (err) {
                 if (active) {
-                    setError(getAuthErrorMessage(err))
-                    setIsSessionValid(false)
+                    setError('Failed to validate reset link. Please try again or request a new one.')
+                    setIsTokenValid(false)
                 }
             } finally {
                 if (active) {
-                    setIsCheckingSession(false)
+                    setIsCheckingToken(false)
                 }
             }
         }
 
-        ensureSession()
-        return () => {
-            active = false
-        }
-    }, [location.state])
+        checkToken()
+        return () => { active = false }
+    }, [])
 
     const handleSubmit = async (e) => {
         e.preventDefault()
         setError('')
 
-        if (!isSessionValid) {
+        if (!isTokenValid || !resetToken || !resetEmail) {
             setError('Your reset link is invalid or has expired. Please request a new one.')
             return
         }
 
-        // Validate password
+        // Validate password client-side
         const passwordValidation = validatePassword(password)
         if (!passwordValidation.valid) {
             setError(passwordValidation.error)
             return
         }
 
-        // Check passwords match
         if (password !== confirmPassword) {
             setError('Passwords do not match')
             return
@@ -90,29 +105,24 @@ function ResetPassword() {
         setIsLoading(true)
 
         try {
-            const { error: updateError } = await supabase.auth.updateUser({
-                password: password
-            })
+            // Consume token + update password via Edge Function
+            const result = await executePasswordReset(resetToken, resetEmail, password)
 
-            if (updateError) {
-                // Handle specific errors
-                if (updateError.message.includes('session')) {
-                    setError('Your reset link has expired. Please request a new one.')
-                } else {
-                    setError(getAuthErrorMessage(updateError))
-                }
-                return
+            if (result.success) {
+                setIsSuccess(true)
+                // Token is now consumed — redirect to login
+                setTimeout(() => {
+                    navigate('/student/login')
+                }, 3000)
+            } else {
+                setError(result.error || 'Failed to reset password. Please try again.')
             }
-
-            setIsSuccess(true)
-
-            // Sign out and redirect to login
-            await supabase.auth.signOut()
-            setTimeout(() => {
-                navigate('/student/login')
-            }, 3000)
         } catch (err) {
-            setError(getAuthErrorMessage(err))
+            if (err.message?.includes('expired') || err.message?.includes('invalid')) {
+                setError('Your reset token has expired. Please request a new reset link.')
+            } else {
+                setError(err.message || 'An error occurred. Please try again.')
+            }
         } finally {
             setIsLoading(false)
         }
@@ -295,7 +305,7 @@ function ResetPassword() {
                         <button
                             type="submit"
                             className="btn btn-primary btn-lg w-full"
-                            disabled={isLoading || isCheckingSession || !isSessionValid || !password || !confirmPassword || password !== confirmPassword}
+                            disabled={isLoading || isCheckingToken || !isTokenValid || !password || !confirmPassword || password !== confirmPassword}
                             style={{ marginTop: '1.5rem' }}
                         >
                             {isLoading ? (
@@ -304,7 +314,7 @@ function ResetPassword() {
                                     Updating...
                                 </>
                             ) : (
-                                isCheckingSession ? 'Checking link...' : 'Update Password'
+                                isCheckingToken ? 'Validating link...' : 'Update Password'
                             )}
                         </button>
 

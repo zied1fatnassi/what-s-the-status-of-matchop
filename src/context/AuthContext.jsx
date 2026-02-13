@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 import { autoVerifyEmail } from '../lib/verification'
+import { clearAuthCookies, getOrCreateCSRFToken } from '../lib/cookieStorage'
 
 /**
  * Auth Context for managing user authentication state with Supabase
@@ -53,6 +54,8 @@ export function AuthProvider({ children }) {
                 setUser(session?.user ?? null)
 
                 if (session?.user) {
+                    // Initialize CSRF token on sign-in (cookie-based sessions)
+                    getOrCreateCSRFToken()
                     // Fetch profile in background
                     fetchProfile(session.user.id)
                 } else {
@@ -62,6 +65,11 @@ export function AuthProvider({ children }) {
                 // Clear error on successful auth events
                 if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
                     setAuthError(null)
+                }
+
+                // Clear all auth cookies on sign-out
+                if (event === 'SIGNED_OUT') {
+                    clearAuthCookies()
                 }
             }
         )
@@ -286,7 +294,9 @@ export function AuthProvider({ children }) {
             throw error
         }
 
-        console.log('[AuthContext] signOut successful, clearing user state')
+        // Clear all auth cookies (session + CSRF)
+        clearAuthCookies()
+        console.log('[AuthContext] signOut successful, clearing user state + cookies')
         setUser(null)
         setProfile(null)
     }, [])

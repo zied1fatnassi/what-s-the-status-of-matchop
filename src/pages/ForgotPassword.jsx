@@ -1,16 +1,21 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Mail, ArrowLeft, CheckCircle, Loader2, KeyRound } from 'lucide-react'
-import { useAuth } from '../context/AuthContext'
 import { validateEmail, getAuthErrorMessage } from '../lib/validation'
+import { requestPasswordReset } from '../lib/passwordReset'
 import '../pages/student/StudentSignup.css'
 
 /**
  * Forgot Password Page
- * Sends password reset email via Supabase Auth
+ * 
+ * SECURITY: Uses the secure-password-reset Edge Function instead of
+ * direct Supabase Auth. This provides:
+ * - Rate limiting (3 requests per email per hour)
+ * - Single-use tokens with 15-minute expiry
+ * - SHA-256 hashed token storage (no plaintext in DB)
+ * - User enumeration prevention (always returns success)
  */
 function ForgotPassword() {
-    const { resetPassword } = useAuth()
     const [email, setEmail] = useState('')
     const [error, setError] = useState('')
     const [isLoading, setIsLoading] = useState(false)
@@ -30,16 +35,21 @@ function ForgotPassword() {
         setIsLoading(true)
 
         try {
-            const { error: resetError } = await resetPassword(email)
+            const result = await requestPasswordReset(email)
 
-            if (resetError) {
-                setError(getAuthErrorMessage(resetError))
+            if (result.error) {
+                setError(result.error)
                 return
             }
 
             setIsEmailSent(true)
         } catch (err) {
-            setError(getAuthErrorMessage(err))
+            // Handle rate limiting (429)
+            if (err.message?.includes('Too many') || err.message?.includes('rate limit')) {
+                setError('Too many reset attempts. Please wait 15 minutes before trying again.')
+            } else {
+                setError(err.message || 'Failed to send reset email. Please try again.')
+            }
         } finally {
             setIsLoading(false)
         }
