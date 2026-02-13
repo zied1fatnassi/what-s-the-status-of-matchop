@@ -209,8 +209,8 @@ function App() {
         />
       )}
 
-      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-        <Navbar />
+      <div className={isLanding ? 'app-wrapper app-wrapper--landing' : 'app-wrapper'} style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+        <Navbar isLanding={isLanding} />
         <SpeedInsights />
         <Analytics />
         <DiagnosticHelper />

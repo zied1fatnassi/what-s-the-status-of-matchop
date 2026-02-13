@@ -768,6 +768,11 @@ textarea {
    Replaces the inline style on <main> in App.jsx.
    Accounts for fixed navbar height + mobile differences.
    ============================================================ */
+/* When on landing, wrapper gets page background so blue reaches the top */
+.app-wrapper--landing {
+  background: var(--bento-bg);
+}
+
 .app-main {
   flex: 1;
   width: 100%;

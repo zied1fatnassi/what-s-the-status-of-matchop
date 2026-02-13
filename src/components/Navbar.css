@@ -29,6 +29,19 @@
     transition: all var(--duration-normal) var(--ease-in-out);
 }
 
+/* Landing: transparent so page blue reaches the top */
+.navbar--landing {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: none;
+}
+[data-theme='dark'] .navbar--landing {
+    background: rgba(0, 0, 0, 0.2);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
 /* Desktop: Wider navbar */
 @media (min-width: 768px) {
     .navbar {

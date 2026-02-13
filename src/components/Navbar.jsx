@@ -14,7 +14,7 @@ import './Navbar.css'
  * - Mobile responsive menu
  * - Auth state persistence
  */
-function Navbar() {
+function Navbar({ isLanding = false }) {
     const [isOpen, setIsOpen] = useState(false)
     const [langOpen, setLangOpen] = useState(false)
     const location = useLocation()
@@ -70,7 +70,7 @@ function Navbar() {
     }
 
     return (
-        <nav className="navbar">
+        <nav className={`navbar${isLanding ? ' navbar--landing' : ''}`}>
             <div className="navbar-container">
                 {/* Logo */}
                 <Link to="/" className="navbar-logo">
