@@ -125,11 +125,20 @@
     }
 }
 
-/* External job variant - coral/orange gradient */
+/* External job variant - green gradient */
 .application-toast.external {
-    background: linear-gradient(135deg, #ff7043 0%, #e64a19 100%);
+    background: linear-gradient(135deg, #43a047 0%, #2e7d32 100%);
 }
 
 .application-toast.external .toast-message strong {
-    color: #ffccbc;
+    color: #c8e6c9;
+}
+
+/* Rejected variant - red gradient matching the X button */
+.application-toast.rejected {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.application-toast.rejected .toast-check {
+    color: rgba(255, 255, 255, 0.9);
 }

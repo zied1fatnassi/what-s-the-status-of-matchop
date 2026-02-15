@@ -56,8 +56,14 @@ function StudentSwipe() {
             await swipe(offerToSwipe.id, direction)
         }
 
-        // On right swipe (like) or super like
-        if (direction === 'right' || direction === 'super') {
+        // Show toast for all swipe directions
+        if (direction === 'left') {
+            setToastCompany(offerToSwipe.company)
+            setToastIsExternal(false)
+            setToastTitle('Not interested')
+            setToastVariant('rejected')
+            setShowToast(true)
+        } else if (direction === 'right' || direction === 'super') {
             // No redirect and no new tab — user stays on swipe page; just show toast.
             setToastCompany(offerToSwipe.company)
             setToastIsExternal(isExternal)

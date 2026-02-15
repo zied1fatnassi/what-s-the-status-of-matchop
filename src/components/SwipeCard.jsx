@@ -26,24 +26,24 @@ const SwipeCard = forwardRef(function SwipeCard({ offer, onSwipe, isTop, onViewD
 
     // Expose triggerSwipe so parent buttons can play the same fly-off animation
     useImperativeHandle(ref, () => ({
-        async triggerSwipe(direction) {
+        triggerSwipe(direction) {
             const animX = direction === 'left' ? -500 : 500
             // Drive the motion value so indicators + rotate react instantly
             x.set(animX * 0.3)
-            await controls.start({ x: animX, opacity: 0, transition: { duration: 2 } })
+            controls.start({ x: animX, opacity: 0, transition: { duration: 0.35 } })
             onSwipe(direction)
         }
     }))
 
-    const handleDragEnd = async (_, info) => {
+    const handleDragEnd = (_, info) => {
         const threshold = 150 // Increased from 100 for precision
         const velocity = info.velocity.x
 
         if (info.offset.x > threshold || velocity > 500) {
-            await controls.start({ x: 500, opacity: 0, transition: { duration: 2 } })
+            controls.start({ x: 500, opacity: 0, transition: { duration: 0.35 } })
             onSwipe('right')
         } else if (info.offset.x < -threshold || velocity < -500) {
-            await controls.start({ x: -500, opacity: 0, transition: { duration: 2 } })
+            controls.start({ x: -500, opacity: 0, transition: { duration: 0.35 } })
             onSwipe('left')
         } else {
             // Satisfying snap back

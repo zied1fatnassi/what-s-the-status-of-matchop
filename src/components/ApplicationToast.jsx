@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Send, CheckCircle, ExternalLink, Star } from 'lucide-react'
+import { Send, CheckCircle, ExternalLink, Star, X } from 'lucide-react'
 import './ApplicationToast.css'
 
 /**
@@ -25,10 +25,10 @@ function ApplicationToast({ title = 'Application was sent!', isExternal = false,
         }
     }, [onClose])
 
-    const icon = variant === 'favorites' ? <Star size={20} /> : (isExternal ? <ExternalLink size={20} /> : <Send size={20} />)
+    const icon = variant === 'rejected' ? <X size={20} /> : variant === 'favorites' ? <Star size={20} /> : (isExternal ? <ExternalLink size={20} /> : <Send size={20} />)
 
     return (
-        <div className={`application-toast ${isVisible ? 'visible' : ''} ${isExiting ? 'exiting' : ''} ${isExternal ? 'external' : ''} ${variant === 'favorites' ? 'favorites' : ''}`}>
+        <div className={`application-toast ${isVisible ? 'visible' : ''} ${isExiting ? 'exiting' : ''} ${isExternal ? 'external' : ''} ${variant === 'favorites' ? 'favorites' : ''} ${variant === 'rejected' ? 'rejected' : ''}`}>
             <div className="toast-icon">
                 {icon}
             </div>
