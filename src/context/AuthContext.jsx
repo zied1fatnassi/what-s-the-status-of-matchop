@@ -217,31 +217,17 @@ export function AuthProvider({ children }) {
                 throw error
             }
 
-            // Check if email confirmation is required
-            let needsEmailVerification = data.user && !data.session
-
-            // If no session was returned (email verification required), try to sign in
-            // immediately in case the auto-confirm trigger is active in the database.
-            // This handles the race condition where the trigger confirms the email
-            // but GoTrue already built the response without a session.
-            if (needsEmailVerification && data.user) {
-                console.log('[Auth] No session returned, attempting auto-confirm sign-in...')
-                // Small delay to let the DB trigger fire
-                await new Promise(resolve => setTimeout(resolve, 500))
-                try {
-                    const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-                        email,
-                        password
-                    })
-                    if (!signInError && signInData?.session) {
-                        console.log('[Auth] Auto-confirm sign-in successful')
-                        data.session = signInData.session
-                        needsEmailVerification = false
-                    }
-                } catch (retryErr) {
-                    console.log('[Auth] Auto-confirm sign-in failed, email verification required:', retryErr.message)
-                }
+            // Detect "already registered" case:
+            // Supabase returns a fake user with no session and no identities
+            // to avoid leaking whether an email is already taken.
+            if (data.user && !data.session && data.user.identities?.length === 0) {
+                const alreadyRegisteredError = new Error('An account with this email already exists. Please log in instead.')
+                setAuthError(alreadyRegisteredError)
+                throw alreadyRegisteredError
             }
+
+            // Email verification is required — user was created but needs to confirm
+            const needsEmailVerification = data.user && !data.session
 
             // Only create profile if we have a session (no email verification required)
             // Otherwise, profile will be created when user verifies email and fetchProfile runs
