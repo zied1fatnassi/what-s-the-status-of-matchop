@@ -19,6 +19,8 @@ import Footer from './components/Footer'
 const Landing = lazy(() => import('./pages/Landing'))
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'))
 const ResetPassword = lazy(() => import('./pages/ResetPassword'))
+const AuthCallback = lazy(() => import('./pages/AuthCallback'))
+const Dashboard = lazy(() => import('./pages/Dashboard'))
 
 // Legal pages
 const TermsOfService = lazy(() => import('./pages/legal/TermsOfService'))
@@ -207,6 +209,10 @@ function App() {
             <Routes>
               {/* Landing */}
               <Route path="/" element={<SmartLanding />} />
+
+              {/* Auth Callback & Dashboard */}
+              <Route path="/auth/callback" element={<AuthCallback />} />
+              <Route path="/dashboard" element={<Dashboard />} />
 
               {/* Public Auth */}
               <Route path="/forgot-password" element={<ForgotPassword />} />

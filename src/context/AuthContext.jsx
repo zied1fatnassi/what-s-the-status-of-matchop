@@ -208,7 +208,7 @@ export function AuthProvider({ children }) {
                 password,
                 options: {
                     data: { type: userType, name: userData.name || 'User' },
-                    emailRedirectTo: `${window.location.origin}/`
+                    emailRedirectTo: `${window.location.origin}/auth/callback`
                 }
             })
 
@@ -372,7 +372,7 @@ export function AuthProvider({ children }) {
                 type: 'signup',
                 email,
                 options: {
-                    emailRedirectTo: `${window.location.origin}/`
+                    emailRedirectTo: `${window.location.origin}/auth/callback`
                 }
             })
             return { error }
