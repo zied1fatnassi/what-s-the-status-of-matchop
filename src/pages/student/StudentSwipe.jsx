@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { X, Heart, Star, RotateCcw, Loader } from 'lucide-react'
 import SwipeCard from '../../components/SwipeCard'
 import MatchModal from '../../components/MatchModal'
@@ -24,6 +24,7 @@ function StudentSwipe() {
     const [toastIsExternal, setToastIsExternal] = useState(false)
     const [toastTitle, setToastTitle] = useState('Application was sent!')
     const [toastVariant, setToastVariant] = useState('application')
+    const topCardRef = useRef(null)
 
     useEffect(() => {
         if (realOffers.length > 0) {
@@ -132,6 +133,7 @@ function StudentSwipe() {
                                     onSwipe={handleSwipe}
                                     onViewDetails={handleViewDetails}
                                     isTop={index === offers.slice(currentIndex, currentIndex + 2).length - 1}
+                                    ref={index === offers.slice(currentIndex, currentIndex + 2).length - 1 ? topCardRef : null}
                                 />
                             ))}
                         </div>
@@ -146,19 +148,28 @@ function StudentSwipe() {
                             </button>
                             <button
                                 className="action-btn pass"
-                                onClick={() => handleSwipe('left')}
+                                onClick={() => {
+                                    if (topCardRef.current) topCardRef.current.triggerSwipe('left')
+                                    else handleSwipe('left')
+                                }}
                             >
                                 <X size={32} />
                             </button>
                             <button
                                 className="action-btn super-like"
-                                onClick={() => handleSwipe('super')}
+                                onClick={() => {
+                                    if (topCardRef.current) topCardRef.current.triggerSwipe('super')
+                                    else handleSwipe('super')
+                                }}
                             >
                                 <Star size={24} />
                             </button>
                             <button
                                 className="action-btn like"
-                                onClick={() => handleSwipe('right')}
+                                onClick={() => {
+                                    if (topCardRef.current) topCardRef.current.triggerSwipe('right')
+                                    else handleSwipe('right')
+                                }}
                             >
                                 <Heart size={32} />
                             </button>

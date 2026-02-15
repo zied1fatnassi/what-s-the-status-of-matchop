@@ -1,3 +1,4 @@
+import { forwardRef, useImperativeHandle } from 'react'
 import { motion, useMotionValue, useTransform, useSpring, useAnimation } from 'framer-motion'
 import { MapPin, Briefcase, DollarSign, Clock, Info, Sparkles, ExternalLink, Crown, EyeOff, Coins } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -8,7 +9,7 @@ import './SwipeCard.css'
  * Framer Motion powered swipe card for job offers
  * Smooth gesture-based animations like Tinder
  */
-function SwipeCard({ offer, onSwipe, isTop, onViewDetails }) {
+const SwipeCard = forwardRef(function SwipeCard({ offer, onSwipe, isTop, onViewDetails }, ref) {
     const x = useMotionValue(0)
     const rotate = useTransform(x, [-200, 200], [-25, 25]) // Slightly reduced rotation for stability
     const opacity = useTransform(x, [-200, -150, 0, 150, 200], [0, 1, 1, 1, 0])
@@ -23,15 +24,26 @@ function SwipeCard({ offer, onSwipe, isTop, onViewDetails }) {
 
     const controls = useAnimation() // Initialize animation controls
 
+    // Expose triggerSwipe so parent buttons can play the same fly-off animation
+    useImperativeHandle(ref, () => ({
+        async triggerSwipe(direction) {
+            const animX = direction === 'left' ? -500 : 500
+            // Drive the motion value so indicators + rotate react instantly
+            x.set(animX * 0.3)
+            await controls.start({ x: animX, opacity: 0, transition: { duration: 2 } })
+            onSwipe(direction)
+        }
+    }))
+
     const handleDragEnd = async (_, info) => {
         const threshold = 150 // Increased from 100 for precision
         const velocity = info.velocity.x
 
         if (info.offset.x > threshold || velocity > 500) {
-            await controls.start({ x: 500, opacity: 0, transition: { duration: 0.4 } }) // Snappier exit
+            await controls.start({ x: 500, opacity: 0, transition: { duration: 2 } })
             onSwipe('right')
         } else if (info.offset.x < -threshold || velocity < -500) {
-            await controls.start({ x: -500, opacity: 0, transition: { duration: 0.4 } })
+            await controls.start({ x: -500, opacity: 0, transition: { duration: 2 } })
             onSwipe('left')
         } else {
             // Satisfying snap back
@@ -57,10 +69,10 @@ function SwipeCard({ offer, onSwipe, isTop, onViewDetails }) {
                 opacity,
                 cursor: 'grab'
             }}
+            animate={controls}
             drag="x"
             dragConstraints={{ left: 0, right: 0 }}
             dragElastic={0.5} // Stiffer resistance (was 0.7)
-            dragSnapToOrigin={true} // Always snap back if not swiped
             onDragEnd={handleDragEnd}
             onClick={(e) => {
                 // Only trigger if not dragging
@@ -91,7 +103,7 @@ function SwipeCard({ offer, onSwipe, isTop, onViewDetails }) {
             <CardContent offer={offer} />
         </motion.div>
     )
-}
+})
 
 // Reusable card content component
 function CardContent({ offer }) {
