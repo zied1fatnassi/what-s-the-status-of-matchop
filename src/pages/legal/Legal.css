@@ -4,7 +4,7 @@
 
 .legal-page {
     min-height: 100vh;
-    background: linear-gradient(180deg, #0a0a0a 0%, #1a1a2e 100%);
+    background: var(--bg-gradient, linear-gradient(180deg, #0a0a0a 0%, #1a1a2e 100%));
     padding: var(--space-3);
     padding-top: calc(70px + var(--space-3));
 }
@@ -19,8 +19,8 @@
 .legal-container {
     max-width: 800px;
     margin: 0 auto;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--glass-base, rgba(255, 255, 255, 0.03));
+    border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.1));
     border-radius: var(--radius-lg);
     padding: var(--space-4);
 }
@@ -35,7 +35,7 @@
 .legal-header {
     margin-bottom: var(--space-4);
     padding-bottom: var(--space-3);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid var(--glass-border, rgba(255, 255, 255, 0.1));
 }
 
 @media (min-width: 768px) {
@@ -48,7 +48,7 @@
 .legal-header h1 {
     font-size: 1.5rem;
     font-weight: 700;
-    color: #fff;
+    color: var(--text-primary);
     margin: 0 0 0.5rem 0;
 }
 
@@ -59,7 +59,7 @@
 }
 
 .legal-header .last-updated {
-    color: rgba(255, 255, 255, 0.5);
+    color: var(--text-muted);
     font-size: 0.85rem;
 }
 
@@ -70,7 +70,7 @@
 }
 
 .legal-content {
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--text-secondary);
     line-height: 1.7;
     font-size: 0.95rem;
 }
@@ -83,7 +83,7 @@
 }
 
 .legal-content h2 {
-    color: #fff;
+    color: var(--text-primary);
     font-size: 1.2rem;
     font-weight: 600;
     margin: 1.5rem 0 0.75rem 0;
@@ -97,7 +97,7 @@
 }
 
 .legal-content h3 {
-    color: #fff;
+    color: var(--text-primary);
     font-size: 1.1rem;
     font-weight: 600;
     margin: 1.25rem 0 0.5rem 0;
@@ -130,7 +130,7 @@
 }
 
 .legal-content a {
-    color: #2196f3;
+    color: var(--accent-blue, #2196f3);
     text-decoration: none;
     transition: color 0.2s;
 }
@@ -144,7 +144,7 @@
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    color: #2196f3;
+    color: var(--accent-blue, #2196f3);
     text-decoration: none;
     font-size: 0.95rem;
     margin-bottom: var(--space-4);
@@ -166,7 +166,7 @@
 .legal-contact {
     margin-top: 2rem;
     padding-top: 1.5rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid var(--glass-border, rgba(255, 255, 255, 0.1));
 }
 
 @media (min-width: 768px) {
