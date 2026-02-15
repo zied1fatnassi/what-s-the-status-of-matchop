@@ -22,6 +22,8 @@ function StudentSwipe() {
     const [showToast, setShowToast] = useState(false)
     const [toastCompany, setToastCompany] = useState('')
     const [toastIsExternal, setToastIsExternal] = useState(false)
+    const [toastTitle, setToastTitle] = useState('Application was sent!')
+    const [toastVariant, setToastVariant] = useState('application')
 
     useEffect(() => {
         if (realOffers.length > 0) {
@@ -55,14 +57,16 @@ function StudentSwipe() {
 
         // On right swipe (like) or super like
         if (direction === 'right' || direction === 'super') {
-            // External jobs: open the external URL in a new tab (NEVER redirect current page)
-            if (isExternal) {
-                window.open(offerToSwipe.externalUrl, '_blank', 'noopener,noreferrer')
-            }
-
-            // Show toast notification (honest messaging — see ApplicationToast)
+            // No redirect and no new tab — user stays on swipe page; just show toast.
             setToastCompany(offerToSwipe.company)
             setToastIsExternal(isExternal)
+            if (direction === 'super') {
+                setToastTitle('Added to favorites')
+                setToastVariant('favorites')
+            } else {
+                setToastTitle('Application was sent!')
+                setToastVariant('application')
+            }
             setShowToast(true)
 
             // Check if it's a match (internal offers only — externals can never match)
@@ -182,7 +186,8 @@ function StudentSwipe() {
             {/* Application Toast */}
             {showToast && (
                 <ApplicationToast
-                    companyName={toastCompany}
+                    title={toastTitle}
+                    variant={toastVariant}
                     isExternal={toastIsExternal}
                     onClose={() => setShowToast(false)}
                 />

@@ -63,7 +63,6 @@ const Footer = () => {
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                             <Link to="/about" style={{ color: 'var(--text-secondary)', fontSize: 'clamp(0.8rem, 2vw, 0.9rem)', minHeight: '44px', display: 'flex', alignItems: 'center' }}>About Us</Link>
                             <Link to="/contact" style={{ color: 'var(--text-secondary)', fontSize: 'clamp(0.8rem, 2vw, 0.9rem)', minHeight: '44px', display: 'flex', alignItems: 'center' }}>Contact</Link>
-                            <Link to="/blog" style={{ color: 'var(--text-secondary)', fontSize: 'clamp(0.8rem, 2vw, 0.9rem)', minHeight: '44px', display: 'flex', alignItems: 'center' }}>Blog</Link>
                         </div>
                     </div>
 

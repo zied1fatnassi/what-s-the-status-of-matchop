@@ -98,34 +98,31 @@ export function ProtectedRoute({ children, requiredType = null }) {
 /**
  * PublicRoute - Wraps routes that should only be accessible when NOT logged in
  * Redirects to app if user IS authenticated (signup, login pages)
- * 
- * @param {ReactNode} children - The public component to render
+ * Uses user_metadata.type when profile isn't loaded yet so we don't stick on spinner after login.
  */
 export function PublicRoute({ children }) {
-    const { isLoggedIn, isLoading, isStudent, isCompany, profile } = useAuth()
+    const { isLoggedIn, isLoading, isStudent, isCompany, profile, user } = useAuth()
 
-    // While loading, show spinner - don't render anything else
     if (isLoading) {
         return <AuthLoadingSpinner />
     }
 
-    // If logged in, redirect to appropriate dashboard
     if (isLoggedIn) {
-        // Wait for profile to load before making role-based redirect decisions
-        if (!profile) {
-            return <AuthLoadingSpinner />
-        }
-        if (isStudent) {
+        // Use profile when available; otherwise use user_metadata so we redirect immediately after login
+        const typeFromMetadata = user?.user_metadata?.type
+        const isStudentType = isStudent || typeFromMetadata === 'student'
+        const isCompanyType = isCompany || typeFromMetadata === 'company'
+
+        if (isStudentType) {
             return <Navigate to="/student/swipe" replace />
         }
-        if (isCompany) {
+        if (isCompanyType) {
             return <Navigate to="/company/candidates" replace />
         }
-        // Logged in but unknown role — show public content instead of looping
-        return children
+        // No role from profile or metadata yet — redirect to student swipe so we don't stick on spinner (profile will load on that page)
+        return <Navigate to="/student/swipe" replace />
     }
 
-    // Not logged in - render public content
     return children
 }
 

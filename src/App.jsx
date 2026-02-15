@@ -14,7 +14,6 @@ import DiagnosticHelper from './components/DiagnosticHelper'
 import Cookies from './pages/legal/Cookies'
 import About from './pages/About'
 import Contact from './pages/Contact'
-import Blog from './pages/Blog'
 import Footer from './components/Footer'
 
 const Landing = lazy(() => import('./pages/Landing'))
@@ -81,27 +80,15 @@ const RouteLoadingFallback = () => (
 )
 
 /**
- * Smart Landing component that redirects logged-in users
+ * Smart Landing: show landing page at "/" for everyone (no redirect for logged-in users).
  */
 function SmartLanding() {
-  const { isLoggedIn, isLoading, isStudent, isCompany } = useAuth()
+  const { isLoading } = useAuth()
 
-  // While auth is loading, show the landing page (it will redirect after loading)
   if (isLoading) {
     return <RouteLoadingFallback />
   }
 
-  // Redirect logged-in users to their dashboard
-  if (isLoggedIn) {
-    if (isStudent) {
-      return <Navigate to="/student/swipe" replace />
-    }
-    if (isCompany) {
-      return <Navigate to="/company/intros" replace />
-    }
-  }
-
-  // Not logged in - show landing
   return <Landing />
 }
 
@@ -245,7 +232,6 @@ function App() {
               {/* Public Info Routes */}
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
-              <Route path="/blog" element={<Blog />} />
 
               {/* Student Routes */}
               <Route path="/student/signup" element={<PublicRoute><StudentSignup /></PublicRoute>} />

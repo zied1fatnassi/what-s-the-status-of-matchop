@@ -52,15 +52,7 @@ function StudentLogin() {
             }
 
             if (data?.user) {
-                // Check if user is a student
-                const userType = data.user.user_metadata?.type
-                if (userType === 'company') {
-                    // Optional: You might want to allow them to login anyway or redirect them
-                    // For now, we'll just let them in but maybe warn them?
-                    // Or ideally, the RLS policies would handle data access.
-                    // Let's assume valid login is fine.
-                }
-                navigate('/student/swipe')
+                navigate('/student/swipe', { replace: true })
             }
         } catch (err) {
             setError(getAuthErrorMessage(err))

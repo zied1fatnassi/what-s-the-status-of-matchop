@@ -40,7 +40,7 @@ const Contact = () => {
                             </div>
                             <div>
                                 <h3 style={{ marginBottom: '0.25rem' }}>Visit Us</h3>
-                                <p style={{ color: 'var(--text-secondary)' }}>Technopark El Ghazala, Tunis</p>
+                                <p style={{ color: 'var(--text-secondary)' }}>5111 Avenue Mahdia, El Mourouj</p>
                             </div>
                         </div>
                     </div>

@@ -191,10 +191,19 @@
     background: color-mix(in srgb, var(--accent-red) 10%, transparent);
 }
 
-/* Super Like Button */
+/* Super Like Button - same size as pass and like */
 .action-btn.super-like {
+    width: 56px;
+    height: 56px;
     border-color: var(--primary);
     color: var(--primary);
+}
+
+@media (min-width: 768px) {
+    .action-btn.super-like {
+        width: 64px;
+        height: 64px;
+    }
 }
 
 .action-btn.super-like:hover:not(:disabled) {

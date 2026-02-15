@@ -768,9 +768,12 @@ textarea {
    Replaces the inline style on <main> in App.jsx.
    Accounts for fixed navbar height + mobile differences.
    ============================================================ */
-/* When on landing, wrapper gets page background so blue reaches the top */
+/* When on landing: blue fade from the very top, no white gap */
 .app-wrapper--landing {
-  background: var(--bento-bg);
+  background: linear-gradient(180deg, #bfdbfe 0%, #e0e7ff 25%, #f0f9ff 55%, #f8fafc 100%);
+}
+[data-theme='dark'] .app-wrapper--landing {
+  background: linear-gradient(180deg, #1e3a5f 0%, #1e293b 30%, #0f172a 70%, #0a0a0b 100%);
 }
 
 .app-main {

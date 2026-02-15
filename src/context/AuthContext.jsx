@@ -320,6 +320,14 @@ export function AuthProvider({ children }) {
                 throw error
             }
 
+            // Set user immediately so redirect (e.g. to /student/swipe) sees logged-in state.
+            // onAuthStateChange will also fire, but updating here avoids race where navigate runs before listener.
+            if (data?.session?.user) {
+                setUser(data.session.user)
+                getOrCreateCSRFToken()
+                fetchProfile(data.session.user.id)
+            }
+
             // Track login activity for engagement decay system
             supabase.rpc('touch_activity').catch(err =>
                 console.warn('[Auth] Activity tracking failed:', err.message)
@@ -329,7 +337,7 @@ export function AuthProvider({ children }) {
         } catch (err) {
             return { data: null, error: err }
         }
-    }, [])
+    }, [fetchProfile])
 
     /**
      * Sign out the current user

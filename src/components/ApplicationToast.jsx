@@ -1,54 +1,39 @@
 import { useEffect, useState } from 'react'
-import { Send, CheckCircle, ExternalLink, Heart } from 'lucide-react'
+import { Send, CheckCircle, ExternalLink, Star } from 'lucide-react'
 import './ApplicationToast.css'
 
 /**
- * Toast notification that appears when student swipes right on a job.
- *
- * - Internal (MatchOp) offers: "Liked!" — the swipe is recorded in student_swipes.
- *   If the company also swipes right, a match is created automatically.
- * - External (scraped) jobs: "Opening Job Page!" — opens in a new tab.
+ * Toast at the bottom with same animation for:
+ * - "Application was sent!" (heart / right swipe)
+ * - "Added to favorites" (blue star / super like)
+ * - External variant (orange) when isExternal
  */
-function ApplicationToast({ companyName, isExternal = false, onClose }) {
+function ApplicationToast({ title = 'Application was sent!', isExternal = false, variant = 'application', onClose }) {
     const [isVisible, setIsVisible] = useState(false)
     const [isExiting, setIsExiting] = useState(false)
 
     useEffect(() => {
-        // Animate in
-        setTimeout(() => setIsVisible(true), 50)
-
-        // Start exit animation after 2.5s
-        const exitTimer = setTimeout(() => {
-            setIsExiting(true)
-        }, 2500)
-
-        // Call onClose after exit animation
-        const closeTimer = setTimeout(() => {
-            onClose?.()
-        }, 3000)
-
+        const showTimer = requestAnimationFrame(() => {
+            requestAnimationFrame(() => setIsVisible(true))
+        })
+        const exitTimer = setTimeout(() => setIsExiting(true), 2500)
+        const closeTimer = setTimeout(() => onClose?.(), 3000)
         return () => {
+            cancelAnimationFrame(showTimer)
             clearTimeout(exitTimer)
             clearTimeout(closeTimer)
         }
     }, [onClose])
 
+    const icon = variant === 'favorites' ? <Star size={20} /> : (isExternal ? <ExternalLink size={20} /> : <Send size={20} />)
+
     return (
-        <div className={`application-toast ${isVisible ? 'visible' : ''} ${isExiting ? 'exiting' : ''} ${isExternal ? 'external' : ''}`}>
+        <div className={`application-toast ${isVisible ? 'visible' : ''} ${isExiting ? 'exiting' : ''} ${isExternal ? 'external' : ''} ${variant === 'favorites' ? 'favorites' : ''}`}>
             <div className="toast-icon">
-                {isExternal ? <ExternalLink size={20} /> : <Heart size={20} />}
+                {icon}
             </div>
             <div className="toast-content">
-                <span className="toast-title">
-                    {isExternal ? 'Opening Job Page! 🚀' : 'Liked! 💜'}
-                </span>
-                <span className="toast-message">
-                    {isExternal ? (
-                        <>Redirecting to <strong>{companyName}</strong> to apply</>
-                    ) : (
-                        <>You liked <strong>{companyName}</strong> — if they like you back, it's a match!</>
-                    )}
-                </span>
+                <span className="toast-title">{title}</span>
             </div>
             <div className="toast-check">
                 <CheckCircle size={20} />
