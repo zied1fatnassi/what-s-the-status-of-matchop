@@ -182,17 +182,17 @@ export function useStudentProfile() {
             // Remove fields that don't exist in DB
             const { headline, governorate, location, ...otherUpdates } = updates
 
-            // Combine governorate and city for storage
-            let dbLocation = location
-            if (governorate) {
-                dbLocation = `${governorate}, ${location}`
-            }
-
             // WHITELIST: Only send columns that exist in the DB
-            // We will add 'headline' and 'open_to_work' to this list AFTER migration succeeds
             const validCols = ['display_name', 'bio', 'skills', 'avatar_url', 'headline', 'open_to_work', 'cv_url']
-            const dbUpdates = {
-                location: dbLocation
+            const dbUpdates = {}
+
+            // Only include location when it was explicitly provided in the updates
+            if (location !== undefined || governorate !== undefined) {
+                let dbLocation = location
+                if (governorate) {
+                    dbLocation = `${governorate}, ${location}`
+                }
+                dbUpdates.location = dbLocation
             }
 
             validCols.forEach(col => {

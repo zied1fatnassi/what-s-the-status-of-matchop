@@ -11,6 +11,7 @@ import { useAuth } from '../../context/AuthContext'
 import { useStudentProfile } from '../../hooks/useStudentProfile'
 import { useImageUpload } from '../../hooks/useImageUpload'
 import { useCVUpload } from '../../hooks/useCVUpload'
+import { getSignedCVUrl } from '../../lib/storage'
 import { useToast } from '../../hooks/useLoadingError'
 import { TUNISIAN_UNIVERSITIES } from '../../lib/validation'
 import { FormLocationSelector, FormEducationSelector } from '../../components/forms/FormComponents'
@@ -169,6 +170,22 @@ function StudentProfile() {
 
 
     // CV upload
+    const [cvSignedUrl, setCvSignedUrl] = useState(null)
+    const [cvFileName, setCvFileName] = useState(null)
+
+    // Generate signed URL when cv_url (path) changes
+    useEffect(() => {
+        let cancelled = false
+        if (formData.cv_url) {
+            getSignedCVUrl(formData.cv_url).then(url => {
+                if (!cancelled) setCvSignedUrl(url)
+            })
+        } else {
+            setCvSignedUrl(null)
+        }
+        return () => { cancelled = true }
+    }, [formData.cv_url])
+
     const handleCVUpload = async (e) => {
         const file = e.target.files?.[0]
         if (!file) return
@@ -176,23 +193,35 @@ function StudentProfile() {
         // 5MB limit
         if (file.size > 5 * 1024 * 1024) {
             showError('File too large (Max 5MB)')
+            if (cvInputRef.current) cvInputRef.current.value = ''
             return
         }
 
+        // Immediately show the file as uploaded with a local blob URL
+        setCvFileName(file.name)
+        const localBlobUrl = URL.createObjectURL(file)
+        setCvSignedUrl(localBlobUrl)
+
         try {
-            const { url, error } = await uploadCV(file)
+            const { path, error } = await uploadCV(file)
             if (error) throw error
 
-            if (url) {
-                setFormData(prev => ({ ...prev, cv_url: url }))
-                // Auto-save to profile
-                const { error: saveError } = await updateProfile({ ...formData, cv_url: url })
-                if (saveError) showError('Uploaded but failed to save profile')
-                else showSuccess('CV uploaded successfully!')
+            if (path) {
+                setFormData(prev => ({ ...prev, cv_url: path }))
+                const { error: saveError } = await updateProfile({ cv_url: path })
+                if (saveError) {
+                    showError('CV uploaded but failed to save to profile')
+                } else {
+                    showSuccess('CV uploaded successfully!')
+                    // Replace local blob URL with a proper signed URL
+                    const signedUrl = await getSignedCVUrl(path)
+                    if (signedUrl) setCvSignedUrl(signedUrl)
+                }
             }
         } catch (error) {
-            showError('Failed to upload CV')
-            console.error(error)
+            console.error('[CV Upload] Error:', error)
+            showError('Failed to upload CV: ' + (error?.message || error))
+            // Keep showing the file locally — don't revert the UI
         }
     }
 
@@ -352,36 +381,20 @@ function StudentProfile() {
                     </div>
                 </ProfileSection>
 
-                {/* Switch for Open to Work */}
-                <div className={`toggle-wrapper ${formData.open_to_work ? 'active' : ''}`}>
-                    <div className="toggle-label">
-                        Open to Work
-                        <span className="status-badge">
-                            {formData.open_to_work ? 'Available' : 'Not Looking'}
-                        </span>
-                    </div>
-                    <label className="switch">
-                        <input
-                            type="checkbox"
-                            checked={formData.open_to_work}
-                            onChange={e => setFormData(prev => ({ ...prev, open_to_work: e.target.checked }))}
-                        />
-                        <span className="slider"></span>
-                    </label>
-                </div>
-
                 {/* ============ SECTION: CV / Resume ============ */}
                 <ProfileSection icon={FileText} title="CV / Resume">
                     <div className="cv-upload-area">
-                        {formData.cv_url ? (
+                        {(formData.cv_url || cvFileName) ? (
                             <div className="cv-display">
                                 <FileText size={48} className="cv-icon" />
                                 <div className="cv-info">
-                                    <span className="cv-label">Current CV</span>
+                                    <span className="cv-label">{cvFileName || 'Current CV'}</span>
                                     <div className="cv-actions">
-                                        <a href={formData.cv_url} target="_blank" rel="noopener noreferrer" className="view-cv-btn">
-                                            <Download size={14} /> Download / View
-                                        </a>
+                                        {cvSignedUrl && (
+                                            <a href={cvSignedUrl} target="_blank" rel="noopener noreferrer" className="view-cv-btn">
+                                                <Download size={14} /> Download / View
+                                            </a>
+                                        )}
                                         <button onClick={() => cvInputRef.current?.click()} className="change-cv-btn">
                                             Change
                                         </button>

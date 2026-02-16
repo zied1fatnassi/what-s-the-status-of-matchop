@@ -23,9 +23,9 @@ export function useCVUpload(userId) {
         setError(null)
 
         try {
-            const url = await uploadCV(userId, file)
+            const path = await uploadCV(userId, file)
             setUploading(false)
-            return { url }
+            return { path }
         } catch (err) {
             console.error('Upload failed:', err)
             setError(err)
