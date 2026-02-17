@@ -239,7 +239,38 @@ function StudentProfile() {
     }
     const handleRemoveSkill = (skill) => setFormData(prev => ({ ...prev, skills: prev.skills.filter(s => s !== skill) }))
 
-    // AI Bio Improvement
+    // AI Bio Improvement — with local fallback when edge function is unavailable
+    const improveBioLocally = (bio, skills, headline) => {
+        let improved = bio.trim()
+
+        // Capitalize first letter of each sentence
+        improved = improved.replace(/(^|\.\s+)([a-z])/g, (_, prefix, letter) => prefix + letter.toUpperCase())
+
+        // Ensure it starts with a capital letter
+        improved = improved.charAt(0).toUpperCase() + improved.slice(1)
+
+        // Add a professional intro if missing common patterns
+        if (!improved.match(/^(I am|I'm|As a|With|A passionate|A dedicated|A motivated)/i)) {
+            const role = headline || 'professional'
+            improved = `As a dedicated ${role}, ${improved.charAt(0).toLowerCase()}${improved.slice(1)}`
+        }
+
+        // Ensure it ends with a period
+        if (!improved.endsWith('.') && !improved.endsWith('!') && !improved.endsWith('?')) {
+            improved += '.'
+        }
+
+        // Append skills summary if skills exist and bio doesn't mention them
+        if (skills && skills.length > 0) {
+            const skillsMentioned = skills.some(s => improved.toLowerCase().includes(s.toLowerCase()))
+            if (!skillsMentioned) {
+                improved += ` My key skills include ${skills.slice(0, 5).join(', ')}.`
+            }
+        }
+
+        return improved
+    }
+
     const improveBio = async () => {
         if (!formData.bio || formData.bio.trim().length < 10) {
             showError('Please enter at least a short bio first')
@@ -258,13 +289,20 @@ function StudentProfile() {
             if (error) throw error
             if (data?.success && data?.bio) {
                 setFormData(prev => ({ ...prev, bio: data.bio }))
-                showSuccess('Bio improved! Review and save.')
+                showSuccess('Bio improved with AI! Review and save.')
             } else {
-                throw new Error(data?.error || 'Failed to improve bio')
+                throw new Error(data?.error || 'AI service unavailable')
             }
         } catch (err) {
-            console.error('AI bio error:', err)
-            setAiError(err.message || 'Failed to improve bio')
+            console.warn('AI bio service unavailable, using local improvement:', err.message)
+            // Fallback: improve locally
+            const improved = improveBioLocally(formData.bio, formData.skills, formData.headline)
+            if (improved !== formData.bio) {
+                setFormData(prev => ({ ...prev, bio: improved }))
+                showSuccess('Bio polished! Review and save.')
+            } else {
+                setAiError('Could not improve bio. Try adding more detail first.')
+            }
         } finally {
             setAiLoading(false)
         }
