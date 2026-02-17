@@ -30,8 +30,11 @@ const SwipeCard = forwardRef(function SwipeCard({ offer, onSwipe, isTop, onViewD
             const animX = direction === 'left' ? -500 : 500
             // Drive the motion value so indicators + rotate react instantly
             x.set(animX * 0.3)
-            controls.start({ x: animX, opacity: 0, transition: { duration: 0.35 } })
-            onSwipe(direction)
+            // Wait for animation to finish before notifying parent (otherwise the
+            // parent unmounts this card immediately, killing the animation)
+            controls
+                .start({ x: animX, opacity: 0, transition: { duration: 2 } })
+                .then(() => onSwipe(direction))
         }
     }))
 
@@ -40,11 +43,13 @@ const SwipeCard = forwardRef(function SwipeCard({ offer, onSwipe, isTop, onViewD
         const velocity = info.velocity.x
 
         if (info.offset.x > threshold || velocity > 500) {
-            controls.start({ x: 500, opacity: 0, transition: { duration: 0.35 } })
-            onSwipe('right')
+            controls
+                .start({ x: 500, opacity: 0, transition: { duration: 2 } })
+                .then(() => onSwipe('right'))
         } else if (info.offset.x < -threshold || velocity < -500) {
-            controls.start({ x: -500, opacity: 0, transition: { duration: 0.35 } })
-            onSwipe('left')
+            controls
+                .start({ x: -500, opacity: 0, transition: { duration: 2 } })
+                .then(() => onSwipe('left'))
         } else {
             // Satisfying snap back
             controls.start({ x: 0, transition: { type: 'spring', stiffness: 500, damping: 30 } })
