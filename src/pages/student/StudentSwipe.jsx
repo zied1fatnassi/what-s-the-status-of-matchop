@@ -51,12 +51,7 @@ function StudentSwipe() {
         // Determine if this is a real MatchOp offer or an external scraped job
         const isExternal = offerToSwipe.isExternal === true && !!offerToSwipe.externalUrl
 
-        // Call Supabase swipe (internal offers only)
-        if (!isExternal) {
-            await swipe(offerToSwipe.id, direction)
-        }
-
-        // Show toast for all swipe directions
+        // Show toast IMMEDIATELY before any async operations
         if (direction === 'left') {
             setToastCompany(offerToSwipe.company)
             setToastIsExternal(false)
@@ -64,7 +59,6 @@ function StudentSwipe() {
             setToastVariant('rejected')
             setShowToast(true)
         } else if (direction === 'right' || direction === 'super') {
-            // No redirect and no new tab — user stays on swipe page; just show toast.
             setToastCompany(offerToSwipe.company)
             setToastIsExternal(isExternal)
             if (direction === 'super') {
@@ -75,23 +69,28 @@ function StudentSwipe() {
                 setToastVariant('application')
             }
             setShowToast(true)
+        }
 
-            // Check if it's a match (internal offers only — externals can never match)
-            if (!isExternal && offerToSwipe.hasMatched) {
-                setMatchedOffer(offerToSwipe)
+        // Call Supabase swipe (internal offers only) - happens after toast shows
+        if (!isExternal) {
+            swipe(offerToSwipe.id, direction) // Fire and forget, don't await
+        }
 
-                // Send email notification (fire and forget)
-                import('../../lib/email').then(({ sendMatchEmail }) => {
-                    sendMatchEmail(
-                        user?.email,
-                        user?.user_metadata?.name || 'Student',
-                        offerToSwipe.company,
-                        'Company'
-                    )
-                })
+        // Check if it's a match (internal offers only — externals can never match)
+        if ((direction === 'right' || direction === 'super') && !isExternal && offerToSwipe.hasMatched) {
+            setMatchedOffer(offerToSwipe)
 
-                setTimeout(() => setShowMatch(true), 500) // Delay match modal so toast appears first
-            }
+            // Send email notification (fire and forget)
+            import('../../lib/email').then(({ sendMatchEmail }) => {
+                sendMatchEmail(
+                    user?.email,
+                    user?.user_metadata?.name || 'Student',
+                    offerToSwipe.company,
+                    'Company'
+                )
+            })
+
+            setTimeout(() => setShowMatch(true), 500) // Delay match modal so toast appears first
         }
     }
 

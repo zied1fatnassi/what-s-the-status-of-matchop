@@ -1,0 +1,187 @@
+/* ===================================
+   ACCESSIBILITY FIXES - WCAG 2 AA CONTRAST
+   Fixes for failing selectors from accessibility audit
+
+   Target: 4.5:1 for normal text, 3:1 for large text (18pt+ or 14pt bold)
+   ================================ */
+
+/* ===================================
+   BUTTONS - Ensure high contrast
+   ================================ */
+
+/* Primary buttons - white text on blue is already good, but ensure it stays white */
+.btn-primary,
+.btn-primary.btn,
+.btn-lg.btn-primary.btn,
+a.btn-primary,
+a.btn-primary.btn {
+    color: #ffffff !important;
+}
+
+/* Ensure hover states maintain contrast */
+.btn-primary:hover,
+.btn-primary.btn:hover {
+    color: #ffffff !important;
+}
+
+/* ===================================
+   HERO BADGE - Improve contrast
+   ================================ */
+
+.hero-badge,
+.hero-badge > span {
+    /* Darker blue for better contrast on glass backgrounds */
+    color: #1d4ed8 !important;
+}
+
+/* ===================================
+   STEP NUMBERS - Increase contrast
+   ================================ */
+
+.step-number,
+.step-card.glass-card:nth-child(1) > .step-number,
+.step-card.glass-card:nth-child(2) > .step-number,
+.step-card.glass-card:nth-child(3) > .step-number {
+    /* Darken from text-muted to ensure 4.5:1 ratio */
+    color: #475569 !important;
+    opacity: 0.9;
+}
+
+/* ===================================
+   FEATURE BADGES - Improve contrast
+   ================================ */
+
+.feature-badge,
+.features-grid:nth-child(1) > .feature-content > .feature-badge {
+    /* Use darker primary for better contrast */
+    color: #1d4ed8 !important;
+    border-color: #1d4ed8;
+}
+
+/* Company badge variant */
+.feature-badge.company,
+.company,
+.reverse > .feature-content > .feature-badge.company {
+    /* Darker teal for better contrast */
+    color: #0f766e !important;
+    border-color: #0f766e;
+}
+
+/* ===================================
+   FEATURE BUTTONS - Ensure visibility
+   ================================ */
+
+.feature-content .btn-primary,
+.features-grid:nth-child(1) > .feature-content > .btn-primary.btn[href$="signup"],
+.reverse > .feature-content > .btn-primary.btn[href$="signup"] {
+    color: #ffffff !important;
+}
+
+/* ===================================
+   CTA BUTTONS - Large text (3:1 minimum)
+   ================================ */
+
+.cta-buttons > .btn-lg.btn-primary.btn {
+    color: #ffffff !important;
+}
+
+/* ===================================
+   FOOTER - Improve text contrast
+   ================================ */
+
+footer .container div:nth-child(2),
+footer > .container > div:nth-child(2),
+.footer-tagline,
+.footer-bottom p {
+    /* Darker text for better readability */
+    color: #64748b !important;
+}
+
+/* ===================================
+   DARK MODE OVERRIDES
+   Ensure contrast in dark mode as well
+   ================================ */
+
+[data-theme="dark"] .step-number,
+[data-theme="dark"] .step-card.glass-card:nth-child(1) > .step-number,
+[data-theme="dark"] .step-card.glass-card:nth-child(2) > .step-number,
+[data-theme="dark"] .step-card.glass-card:nth-child(3) > .step-number {
+    color: #cbd5e1 !important;
+}
+
+[data-theme="dark"] .hero-badge,
+[data-theme="dark"] .hero-badge > span {
+    color: #93c5fd !important;
+}
+
+[data-theme="dark"] .feature-badge {
+    color: #93c5fd !important;
+    border-color: #93c5fd;
+}
+
+[data-theme="dark"] .feature-badge.company,
+[data-theme="dark"] .company {
+    color: #2dd4bf !important;
+    border-color: #2dd4bf;
+}
+
+[data-theme="dark"] footer .container div:nth-child(2),
+[data-theme="dark"] footer > .container > div:nth-child(2),
+[data-theme="dark"] .footer-tagline,
+[data-theme="dark"] .footer-bottom p {
+    color: #94a3b8 !important;
+}
+
+/* ===================================
+   ARIA ACCESSIBILITY
+   Ensure proper focus management and screen reader support
+   ================================ */
+
+/* Only set aria-hidden on root when modal is open - handled by useA11y hook */
+/* This CSS ensures focus-visible works properly */
+
+:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+/* Skip to content link for keyboard users */
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: var(--primary);
+    color: white;
+    padding: 8px 16px;
+    z-index: 100;
+    transition: top 0.3s;
+}
+
+.skip-link:focus {
+    top: 0;
+}
+
+/* Ensure modals have proper focus styles */
+[role="dialog"]:focus {
+    outline: none;
+}
+
+[role="dialog"] button:focus-visible,
+[role="dialog"] a:focus-visible,
+[role="dialog"] input:focus-visible {
+    outline: 3px solid var(--primary);
+    outline-offset: 2px;
+}
+
+/* Screen reader only text */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
