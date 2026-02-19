@@ -5,6 +5,9 @@ import { validateEmail, getAuthErrorMessage } from '../lib/validation'
 import { requestPasswordReset } from '../lib/passwordReset'
 import '../pages/student/StudentSignup.css'
 
+const STUDENT_LOGIN_PATH = '/student/login'
+const COMPANY_LOGIN_PATH = '/company/login'
+
 /**
  * Forgot Password Page
  * 
@@ -98,9 +101,13 @@ function ForgotPassword() {
                             >
                                 Try Different Email
                             </button>
-                            <Link to="/student/login" className="btn btn-primary w-full">
+                            <Link to={STUDENT_LOGIN_PATH} className="btn btn-primary w-full">
                                 <ArrowLeft size={20} />
-                                Back to Sign In
+                                Go to Student Sign In
+                            </Link>
+                            <Link to={COMPANY_LOGIN_PATH} className="btn btn-secondary w-full">
+                                <ArrowLeft size={20} />
+                                Go to Company Sign In
                             </Link>
                         </div>
                     </div>
@@ -174,14 +181,22 @@ function ForgotPassword() {
                             )}
                         </button>
 
-                        <Link
-                            to="/student/login"
-                            className="btn btn-secondary w-full"
-                            style={{ marginTop: '1rem' }}
-                        >
-                            <ArrowLeft size={20} />
-                            Back to Sign In
-                        </Link>
+                        <div style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                            <Link
+                                to={STUDENT_LOGIN_PATH}
+                                className="btn btn-secondary w-full"
+                            >
+                                <ArrowLeft size={20} />
+                                Go to Student Sign In
+                            </Link>
+                            <Link
+                                to={COMPANY_LOGIN_PATH}
+                                className="btn btn-secondary w-full"
+                            >
+                                <ArrowLeft size={20} />
+                                Go to Company Sign In
+                            </Link>
+                        </div>
                     </form>
                 </div>
             </div>

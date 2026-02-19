@@ -5,6 +5,9 @@ import { validatePassword, getAuthErrorMessage } from '../lib/validation'
 import { validateResetToken, executePasswordReset, getResetParamsFromURL } from '../lib/passwordReset'
 import '../pages/student/StudentSignup.css'
 
+const STUDENT_LOGIN_PATH = '/student/login'
+const COMPANY_LOGIN_PATH = '/company/login'
+
 /**
  * Reset Password Page
  * 
@@ -110,10 +113,6 @@ function ResetPassword() {
 
             if (result.success) {
                 setIsSuccess(true)
-                // Token is now consumed — redirect to login
-                setTimeout(() => {
-                    navigate('/student/login')
-                }, 3000)
             } else {
                 setError(result.error || 'Failed to reset password. Please try again.')
             }
@@ -171,17 +170,24 @@ function ResetPassword() {
                             <CheckCircle size={48} style={{ color: '#10b981', marginBottom: '1rem' }} />
                             <h3>Password Changed Successfully</h3>
                             <p>
-                                You will be redirected to the login page in a few seconds.
+                                Your password is updated. Choose your sign-in portal below.
                             </p>
                         </div>
 
-                        <button
-                            onClick={() => navigate('/student/login')}
-                            className="btn btn-primary btn-lg w-full"
-                            style={{ marginTop: '2rem' }}
-                        >
-                            Go to Sign In
-                        </button>
+                        <div style={{ marginTop: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                            <button
+                                onClick={() => navigate(STUDENT_LOGIN_PATH)}
+                                className="btn btn-primary btn-lg w-full"
+                            >
+                                Go to Student Sign In
+                            </button>
+                            <button
+                                onClick={() => navigate(COMPANY_LOGIN_PATH)}
+                                className="btn btn-secondary btn-lg w-full"
+                            >
+                                Go to Company Sign In
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -318,14 +324,22 @@ function ResetPassword() {
                             )}
                         </button>
 
-                        <button
-                            type="button"
-                            onClick={() => navigate('/student/login')}
-                            className="btn btn-secondary w-full"
-                            style={{ marginTop: '1rem' }}
-                        >
-                            Back to Sign In
-                        </button>
+                        <div style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                            <button
+                                type="button"
+                                onClick={() => navigate(STUDENT_LOGIN_PATH)}
+                                className="btn btn-secondary w-full"
+                            >
+                                Go to Student Sign In
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => navigate(COMPANY_LOGIN_PATH)}
+                                className="btn btn-secondary w-full"
+                            >
+                                Go to Company Sign In
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>
