@@ -16,17 +16,17 @@ export function AuthProvider({ children }) {
     const [authError, setAuthError] = useState(null)
 
     useEffect(() => {
-        console.log('[Auth] Starting auth initialization...')
+        
 
         // Simple timeout fallback - set loading to false after 5 seconds max
         const timeoutId = setTimeout(() => {
-            console.log('[Auth] Safety timeout - setting loading=false after 5s')
+            
             setIsLoading(false)
         }, 5000)
 
         // Get initial session (non-blocking)
         supabase.auth.getSession().then(async ({ data, error }) => {
-            console.log('[Auth] getSession result:', {
+            
                 hasSession: !!data?.session,
                 userId: data?.session?.user?.id,
                 error: error?.message
@@ -50,7 +50,7 @@ export function AuthProvider({ children }) {
         // Listen for auth changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange(
             async (event, session) => {
-                console.log('[Auth] onAuthStateChange:', event, session?.user?.id)
+                
                 setUser(session?.user ?? null)
 
                 if (session?.user) {
@@ -82,7 +82,7 @@ export function AuthProvider({ children }) {
 
     const fetchProfile = useCallback(async (userId) => {
         try {
-            console.log('[Auth] fetchProfile called for:', userId)
+            
 
             // Create a promise that rejects after 5 seconds
             const timeoutPromise = new Promise((_, reject) =>
@@ -103,7 +103,7 @@ export function AuthProvider({ children }) {
                     if (user?.user_metadata) {
                         const { type, name } = user.user_metadata
                         if (type && name) {
-                            console.log('Profile not found, creating from user metadata...')
+                            
                             const { error: insertError } = await supabase
                                 .from('profiles')
                                 .insert({
@@ -167,7 +167,7 @@ export function AuthProvider({ children }) {
             }
 
             if (!error && data) {
-                console.log('[Auth] Profile fetched successfully:', data)
+                
                 setProfile(data)
             }
         } catch (err) {
@@ -178,10 +178,10 @@ export function AuthProvider({ children }) {
     // Auto-verify email when user confirms their email
     useEffect(() => {
         if (user?.email_confirmed_at && profile && !profile.verified) {
-            console.log('[Auth] Auto-verifying email for user:', user.id)
+            
             autoVerifyEmail(user.id, user.email_confirmed_at).then(result => {
                 if (result.success) {
-                    console.log('[Auth] Email verification badge added')
+                    
                     fetchProfile(user.id) // Refresh profile to show badge
                 }
             })
@@ -329,7 +329,7 @@ export function AuthProvider({ children }) {
      * Sign out the current user
      */
     const signOut = useCallback(async () => {
-        console.log('[AuthContext] signOut called')
+        
         setAuthError(null)
 
         const { error } = await supabase.auth.signOut()
@@ -342,7 +342,7 @@ export function AuthProvider({ children }) {
 
         // Clear all auth cookies (session + CSRF)
         clearAuthCookies()
-        console.log('[AuthContext] signOut successful, clearing user state + cookies')
+        
         setUser(null)
         setProfile(null)
     }, [])

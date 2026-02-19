@@ -1,5 +1,5 @@
-import { useState, useEffect, lazy, Suspense } from 'react'
-import { Routes, Route, useLocation, Navigate, useNavigate } from 'react-router-dom'
+import { useState, useEffect, lazy, Suspense, useCallback } from 'react'
+import { Routes, Route, useLocation, useNavigate } from 'react-router-dom'
 import { SpeedInsights } from '@vercel/speed-insights/react'
 import { Analytics } from '@vercel/analytics/react'
 import Navbar from './components/Navbar'
@@ -8,14 +8,8 @@ import LoadingScreen from './components/LoadingScreen'
 import AuthToast from './components/AuthToast'
 import { ProtectedRoute, PublicRoute, AdminRoute } from './components/RouteGuards'
 import { useAuth } from './context/AuthContext'
-import DiagnosticHelper from './components/DiagnosticHelper'
 
 // Lazy load all page components for code splitting
-import Cookies from './pages/legal/Cookies'
-import About from './pages/About'
-import Contact from './pages/Contact'
-import Footer from './components/Footer'
-
 const Landing = lazy(() => import('./pages/Landing'))
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'))
 const ResetPassword = lazy(() => import('./pages/ResetPassword'))
@@ -25,6 +19,14 @@ const Dashboard = lazy(() => import('./pages/Dashboard'))
 // Legal pages
 const TermsOfService = lazy(() => import('./pages/legal/TermsOfService'))
 const PrivacyPolicy = lazy(() => import('./pages/legal/PrivacyPolicy'))
+const Cookies = lazy(() => import('./pages/legal/Cookies'))
+
+// Public info pages
+const About = lazy(() => import('./pages/About'))
+const Contact = lazy(() => import('./pages/Contact'))
+
+// Footer (lazy loaded for code splitting)
+const Footer = lazy(() => import('./components/Footer'))
 
 // Student pages
 const StudentSignup = lazy(() => import('./pages/student/StudentSignup'))
@@ -119,10 +121,10 @@ function App() {
     return () => clearTimeout(timer)
   }, [])
 
-  // Detect auth events from URL hash (email verification, password reset, errors)
-  useEffect(() => {
+  // Handle auth events from URL hash (email verification, password reset, errors)
+  const handleAuthHash = useCallback(() => {
     const hash = window.location.hash
-    if (!hash) return
+    if (!hash) return false
 
     // Parse hash parameters
     const params = new URLSearchParams(hash.substring(1))
@@ -132,13 +134,16 @@ function App() {
     const type = params.get('type')
     const refreshToken = params.get('refresh_token')
 
+    // Clear the hash immediately to prevent re-processing
+    window.history.replaceState(null, '', window.location.pathname)
+
     // Handle successful email verification
     if (accessToken && type === 'signup') {
       setToast({
         type: 'success',
         message: '✅ Email verified successfully! You can now sign in.'
       })
-      window.history.replaceState(null, '', window.location.pathname)
+      return true
     }
     // Handle successful password recovery
     else if (accessToken && type === 'recovery') {
@@ -147,16 +152,11 @@ function App() {
         message: '✅ Reset link confirmed. Please set your new password.'
       })
       // Keep the Supabase session from the link and move user to the reset form
-      if (refreshToken) {
-        // Store tokens in location.state to avoid re-parsing hash on navigation
-        navigate('/reset-password', {
-          replace: true,
-          state: { accessToken, refreshToken }
-        })
-      } else {
-        navigate('/reset-password', { replace: true })
-      }
-      window.history.replaceState(null, '', window.location.pathname)
+      navigate('/reset-password', {
+        replace: true,
+        state: { accessToken, refreshToken }
+      })
+      return true
     }
     // Handle successful sign in via magic link
     else if (accessToken && !type) {
@@ -164,7 +164,7 @@ function App() {
         type: 'success',
         message: '✅ Welcome back! You are now signed in.'
       })
-      window.history.replaceState(null, '', window.location.pathname)
+      return true
     }
     // Handle errors
     else if (error) {
@@ -180,9 +180,15 @@ function App() {
         type: 'error',
         message: `❌ ${message}`
       })
-      window.history.replaceState(null, '', window.location.pathname)
+      return true
     }
-  }, [location])
+
+    return false
+  }, [navigate])
+
+  useEffect(() => {
+    handleAuthHash()
+  }, [location, handleAuthHash])
 
   const handleToastClose = () => {
     setToast(null)
@@ -213,7 +219,6 @@ function App() {
         <Navbar isLanding={isLanding} />
         <SpeedInsights />
         <Analytics />
-        <DiagnosticHelper />
 
         <main className={isLanding ? 'app-main app-main--landing' : 'app-main'}>
           <Suspense fallback={<RouteLoadingFallback />}>
@@ -234,16 +239,6 @@ function App() {
               {/* Legal */}
               <Route path="/legal/terms" element={<TermsOfService />} />
               <Route path="/legal/privacy" element={<PrivacyPolicy />} />
-              {/* Note: Cookies and Terms files were created as .jsx in pages/legal/ but mapped imports might differ. 
-                  Using the dynamic imports defined at top of file for consistency if available, 
-                  or the direct Components created in previous steps.
-                  Let's use the lazy loaded ones if they exist, or direct imports if I created them.
-                  Wait, I created Terms.jsx, Privacy.jsx, Cookies.jsx in src/pages/legal/
-                  But the lazy imports in this file usually point to TermsOfService etc.
-                  I should stick to the structure I just created.
-              */}
-
-              {/* Legal Routes */}
               <Route path="/legal/cookies" element={<Cookies />} />
 
               {/* Public Info Routes */}
