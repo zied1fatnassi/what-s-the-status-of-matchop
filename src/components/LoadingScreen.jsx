@@ -1,34 +1,62 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import Logo from './Logo'
 import './LoadingScreen.css'
 
 /**
  * Full-screen loading animation with MatchOp logo
- * Shows on initial app load, then fades out
- * Skips on repeat visits within the same session for faster UX
+ * Uses grace period approach - only shows if load exceeds threshold
+ * @param {Object} props
+ * @param {number} props.gracePeriod - Delay before showing loader (default 300ms)
+ * @param {Function} props.onComplete - Callback when loading completes
  */
-function LoadingScreen({ onComplete, minDuration = 800 }) {
-    const [isVisible, setIsVisible] = useState(true)
+function LoadingScreen({ gracePeriod = 300, onComplete }) {
+    const [isVisible, setIsVisible] = useState(false)
     const [isFading, setIsFading] = useState(false)
+    const hasExitedRef = useRef(false)
+    const startTimeRef = useRef(performance.now())
 
+    // Grace period timer - shows loader if load is slow
     useEffect(() => {
-        // Skip loading screen on repeat visits within session
-        const hasLoaded = sessionStorage.getItem('matchop-loaded')
-        const duration = hasLoaded ? 300 : minDuration
-
         const timer = setTimeout(() => {
-            setIsFading(true)
+            if (!hasExitedRef.current) {
+                setIsVisible(true)
+            }
+        }, gracePeriod)
 
-            // Wait for fade animation to complete
-            setTimeout(() => {
+        return () => clearTimeout(timer)
+    }, [gracePeriod])
+
+    // Listen for app ready signal
+    useEffect(() => {
+        const handleAppReady = () => {
+            if (hasExitedRef.current) return
+            hasExitedRef.current = true
+
+            const elapsed = performance.now() - startTimeRef.current
+
+            if (elapsed < gracePeriod) {
+                // Fast load - dismiss without showing
                 setIsVisible(false)
                 sessionStorage.setItem('matchop-loaded', 'true')
                 if (onComplete) onComplete()
-            }, 400)
-        }, duration)
+            } else if (isVisible) {
+                // Already visible - fade out
+                setIsFading(true)
+                setTimeout(() => {
+                    setIsVisible(false)
+                    sessionStorage.setItem('matchop-loaded', 'true')
+                    if (onComplete) onComplete()
+                }, 400)
+            } else {
+                // Was about to show but app ready now - skip showing
+                sessionStorage.setItem('matchop-loaded', 'true')
+                if (onComplete) onComplete()
+            }
+        }
 
-        return () => clearTimeout(timer)
-    }, [minDuration, onComplete])
+        window.addEventListener('matchop-app-ready', handleAppReady)
+        return () => window.removeEventListener('matchop-app-ready', handleAppReady)
+    }, [gracePeriod, onComplete, isVisible])
 
     if (!isVisible) return null
 
@@ -45,4 +73,3 @@ function LoadingScreen({ onComplete, minDuration = 800 }) {
 }
 
 export default LoadingScreen
-

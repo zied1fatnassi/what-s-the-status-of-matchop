@@ -111,6 +111,14 @@ function App() {
   const location = useLocation()
   const navigate = useNavigate()
 
+  // Signal app is ready after initial render completes
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      window.dispatchEvent(new CustomEvent('matchop-app-ready'))
+    }, 50)
+    return () => clearTimeout(timer)
+  }, [])
+
   // Detect auth events from URL hash (email verification, password reset, errors)
   useEffect(() => {
     const hash = window.location.hash
@@ -187,7 +195,7 @@ function App() {
       <ScrollToTop />
       {isLoading && (
         <LoadingScreen
-          minDuration={1000}
+          gracePeriod={300}
           onComplete={() => setIsLoading(false)}
         />
       )}
