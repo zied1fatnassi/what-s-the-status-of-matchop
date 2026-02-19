@@ -46,6 +46,9 @@ const CompanyIntros = lazy(() => import('./pages/company/CompanyIntros'))
 const CompanyMatches = lazy(() => import('./pages/company/CompanyMatches'))
 const CompanyChat = lazy(() => import('./pages/company/CompanyChat'))
 
+// 404 page
+const NotFound = lazy(() => import('./pages/NotFound'))
+
 // Admin pages
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'))
 const AdminUsers = lazy(() => import('./pages/admin/AdminUsers'))
@@ -271,6 +274,9 @@ function App() {
               <Route path="/admin/reports" element={<AdminRoute><AdminReports /></AdminRoute>} />
               <Route path="/admin/analytics" element={<AdminRoute><AdminAnalytics /></AdminRoute>} />
               <Route path="/admin/settings" element={<AdminRoute><AdminSettings /></AdminRoute>} />
+
+              {/* 404 Catch-all */}
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
         </main>
