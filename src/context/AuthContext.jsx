@@ -39,11 +39,9 @@ export function AuthProvider({ children }) {
 
             if (data?.session?.user) {
                 setUser(data.session.user)
-                // Fetch profile in background, don't block
                 fetchProfile(data.session.user.id)
             }
 
-            // Always set loading to false
             clearTimeout(timeoutId)
             setIsLoading(false)
         }).catch(err => {
