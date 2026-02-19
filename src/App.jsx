@@ -1,5 +1,5 @@
 import { useState, useEffect, lazy, Suspense } from 'react'
-import { Routes, Route, useLocation, useNavigate } from 'react-router-dom'
+import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { SpeedInsights } from '@vercel/speed-insights/react'
 import { Analytics } from '@vercel/analytics/react'
 import Navbar from './components/Navbar'
@@ -81,13 +81,21 @@ const RouteLoadingFallback = () => (
 )
 
 /**
- * Smart Landing: show landing page at "/" for everyone (no redirect for logged-in users).
+ * Smart Landing:
+ * - show loading while auth state initializes
+ * - redirect authenticated users to discovery gateway
+ * - show landing page for guests
  */
 function SmartLanding() {
-  const { isLoading } = useAuth()
+  const { isLoading, isLoggedIn, user } = useAuth()
+  const hasSession = isLoggedIn && !!user
 
   if (isLoading) {
     return <RouteLoadingFallback />
+  }
+
+  if (hasSession) {
+    return <Navigate to="/discovery" replace />
   }
 
   return <Landing />
@@ -207,6 +215,7 @@ function App() {
 
               {/* Auth Callback & Dashboard */}
               <Route path="/auth/callback" element={<AuthCallback />} />
+              <Route path="/discovery" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
               <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
 
               {/* Public Auth */}

@@ -22,6 +22,7 @@ function Navbar({ isLanding = false }) {
     const { t, i18n } = useTranslation()
     const { isLoggedIn, isStudent, isCompany, isLoading, signOut, user } = useAuth()
     const { theme, setTheme, isDark } = useTheme()
+    const hasSession = isLoggedIn && !!user
 
     // Toggle between light and dark modes
     const toggleTheme = () => {
@@ -44,6 +45,7 @@ function Navbar({ isLanding = false }) {
 
     // Determine links based on user type, with fallback for when type isn't loaded yet
     const links = isStudent ? studentLinks : isCompany ? companyLinks : []
+    const logoTarget = hasSession ? '/discovery' : '/'
 
     const languages = [
         { code: 'en', label: 'EN', fullLabel: 'English', flag: '🇬🇧' },
@@ -73,12 +75,12 @@ function Navbar({ isLanding = false }) {
         <nav className={`navbar${isLanding ? ' navbar--landing' : ''}`}>
             <div className="navbar-container">
                 {/* Logo */}
-                <Link to="/" className="navbar-logo">
+                <Link to={logoTarget} className="navbar-logo">
                     <Logo size="small" showText={true} />
                 </Link>
 
                 {/* Center Links (when logged in) */}
-                {isLoggedIn && (
+                {hasSession && (
                     <div className={`navbar-links ${isOpen ? 'active' : ''}`}>
                         {links.map(link => (
                             <Link
@@ -133,7 +135,7 @@ function Navbar({ isLanding = false }) {
                     </button>
 
                     {/* Auth Buttons (when not logged in and not loading) */}
-                    {!isLoggedIn && !isLoading && (
+                    {!hasSession && !isLoading && (
                         <div className="navbar-auth">
                             <Link to="/student/signup" className="btn btn-secondary btn-sm">
                                 {t('landing.ctaStudent')}
@@ -145,7 +147,7 @@ function Navbar({ isLanding = false }) {
                     )}
 
                     {/* Logout (when logged in) */}
-                    {isLoggedIn && (
+                    {hasSession && (
                         <button onClick={handleLogout} className="btn btn-secondary btn-sm logout-btn">
                             <LogOut size={16} />
                             <span>{t('nav.logout')}</span>
@@ -153,7 +155,7 @@ function Navbar({ isLanding = false }) {
                     )}
 
                     {/* Mobile Toggle */}
-                    {isLoggedIn && (
+                    {hasSession && (
                         <button className="navbar-toggle" onClick={() => setIsOpen(!isOpen)}>
                             {isOpen ? <X size={24} /> : <Menu size={24} />}
                         </button>
