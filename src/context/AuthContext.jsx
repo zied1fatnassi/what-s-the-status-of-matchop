@@ -20,13 +20,12 @@ export function AuthProvider({ children }) {
 
         // Simple timeout fallback - set loading to false after 5 seconds max
         const timeoutId = setTimeout(() => {
-            
             setIsLoading(false)
         }, 5000)
 
         // Get initial session (non-blocking)
         supabase.auth.getSession().then(async ({ data, error }) => {
-            
+            setAuthState({
                 hasSession: !!data?.session,
                 userId: data?.session?.user?.id,
                 error: error?.message
