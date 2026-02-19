@@ -13,13 +13,11 @@ function ApplicationToast({ title = 'Application was sent!', isExternal = false,
     const [isExiting, setIsExiting] = useState(false)
 
     useEffect(() => {
-        const showTimer = requestAnimationFrame(() => {
-            requestAnimationFrame(() => setIsVisible(true))
-        })
+        // Show immediately without delay
+        setIsVisible(true)
         const exitTimer = setTimeout(() => setIsExiting(true), 2500)
         const closeTimer = setTimeout(() => onClose?.(), 3000)
         return () => {
-            cancelAnimationFrame(showTimer)
             clearTimeout(exitTimer)
             clearTimeout(closeTimer)
         }
