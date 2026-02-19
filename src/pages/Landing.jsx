@@ -55,17 +55,17 @@ function Landing() {
 
                     <div className="hero-stats">
                         <div className="stat-item">
-                            <span className="stat-number">10K+</span>
+                            <span className="stat-number">{t('landing.statsStudentsValue')}</span>
                             <span className="stat-label">{t('landing.statsStudents')}</span>
                         </div>
                         <div className="stat-divider"></div>
                         <div className="stat-item">
-                            <span className="stat-number">500+</span>
+                            <span className="stat-number">{t('landing.statsCompaniesValue')}</span>
                             <span className="stat-label">{t('landing.statsCompanies')}</span>
                         </div>
                         <div className="stat-divider"></div>
                         <div className="stat-item">
-                            <span className="stat-number">5K+</span>
+                            <span className="stat-number">{t('landing.statsMatchesValue')}</span>
                             <span className="stat-label">{t('landing.statsMatches')}</span>
                         </div>
                     </div>

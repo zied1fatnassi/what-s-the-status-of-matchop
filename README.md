@@ -420,7 +420,7 @@ matchop/
 │   ├── assets/
 │   │   └── react.svg             # React logo asset
 │   │
-│   ├── components/               # 37 reusable UI components
+│   ├── components/               # 36 reusable UI components
 │   │   ├── Navbar.jsx + .css     # Top nav (role-based, hamburger, lang, theme)
 │   │   ├── SwipeCard.jsx + .css  # Draggable job card (Framer Motion)
 │   │   ├── MatchModal.jsx + .css # Match celebration (confetti)
@@ -431,7 +431,6 @@ matchop/
 │   │   ├── ErrorBoundary.jsx     # Catch render errors
 │   │   ├── Footer.jsx            # Site footer
 │   │   ├── Logo.jsx + .css       # Animated brand logo
-│   │   ├── LoadingScreen.jsx + .css     # Initial loading animation
 │   │   ├── ScrollToTop.jsx       # Scroll reset on navigation
 │   │   ├── DiagnosticHelper.jsx  # Debug overlay
 │   │   ├── SkeletonLoader.jsx + .css    # Content loading skeleton
@@ -1001,7 +1000,7 @@ const {
 - Landing, ForgotPassword, ResetPassword
 - Legal pages (TermsOfService, PrivacyPolicy)
 
-Eagerly loaded: Navbar, Footer, RouteGuards, ScrollToTop, DiagnosticHelper, LoadingScreen, AuthToast, About, Blog, Contact, Cookies.
+Eagerly loaded: Navbar, Footer, RouteGuards, ScrollToTop, DiagnosticHelper, AuthToast, About, Blog, Contact, Cookies.
 
 ### 10.3 Entry Point (`main.jsx`)
 
@@ -1011,7 +1010,7 @@ Eagerly loaded: Navbar, Footer, RouteGuards, ScrollToTop, DiagnosticHelper, Load
 
 ### 10.4 App Component (`App.jsx`)
 
-- Shows `LoadingScreen` on first visit (1000ms minimum)
+- No forced startup splash; initial loading UI is shown only when route/auth state is actually pending
 - Parses URL hash for auth events (email verification, password recovery, magic links, errors)
 - `SmartLanding`: redirects authenticated users to their role dashboard
 - Renders: `ScrollToTop` + `Navbar` + `<Suspense>` routes + `Footer` + Vercel analytics
@@ -1485,7 +1484,6 @@ Language switcher in Navbar toggles between EN (🇬🇧) and FR (🇫🇷).
 | `AuthToast` | Auth event feedback (verification, recovery, errors) |
 | `ErrorToast` | Generic error notification |
 | `MatchToast` | Match celebration mini-toast |
-| `LoadingScreen` | Full-screen loading animation |
 | `SkeletonLoader` | Content skeleton while data loads |
 
 ### Safety & Moderation Components
@@ -1539,7 +1537,7 @@ Language switcher in Navbar toggles between EN (🇬🇧) and FR (🇫🇷).
 ## 19. Pages Reference
 
 ### Landing Page
-- Hero: animated gradient orb, Logo, badge, headline, subtitle, dual CTA (Student/Company), stats (10K+ Students, 500+ Companies, 5K+ Matches)
+- Hero: animated gradient orb, Logo, badge, headline, subtitle, dual CTA (Student/Company), trust-first status chips (Private, Invite, Dec 2025 launch)
 - How It Works: 3-step glass cards (Create Profile → Swipe & Match → Connect & Chat)
 - For Students: 4 feature cards + signup CTA
 - For Companies: 4 feature cards + candidate pipeline mockup + hiring CTA
@@ -1977,7 +1975,7 @@ npm run scrape
 | ID | Bug |
 |----|-----|
 | L1 | "Global Jobs" label hardcoded English in Navbar |
-| L2 | Landing stats hardcoded (10K+, 500+, 5K+) |
+| L2 | Landing stats were hardcoded (fixed: replaced with private-beta status labels) |
 | L4 | Duplicate `@keyframes fadeIn` |
 | L6 | Non-lazy imports for Navbar, Footer, Logo inflate main bundle |
 | L9 | `unread_count` in StudentMatches never set |
@@ -2079,3 +2077,4 @@ See [LICENSE](LICENSE) for full text.
 ---
 
 *Built with React, Supabase, and AI — for students, by builders.*
+

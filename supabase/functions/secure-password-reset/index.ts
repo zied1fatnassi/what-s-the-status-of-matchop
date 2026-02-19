@@ -29,11 +29,14 @@ import { timingSafeEqual } from 'https://deno.land/std@0.208.0/crypto/timing_saf
 const TOKEN_EXPIRY_MINUTES = 15
 const TOKEN_BYTE_LENGTH = 32 // 256 bits of entropy
 const MAX_RESETS_PER_HOUR = 3
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
+const CORS_BASE_HEADERS = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-csrf-token',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 }
+const DEV_ORIGINS = new Set([
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+])
 
 // ============================================
 // HELPERS
@@ -82,12 +85,13 @@ function safeCompare(a, b) {
  * Create a JSON response with CORS headers.
  * @param {object} body
  * @param {number} status
+ * @param {string | null} origin
  * @returns {Response}
  */
-function jsonResponse(body, status = 200) {
+function jsonResponse(body, status = 200, origin: string | null = null) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+    headers: { ...getCorsHeaders(origin), 'Content-Type': 'application/json' },
   })
 }
 
@@ -100,18 +104,59 @@ function isValidEmail(email) {
   return typeof email === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 }
 
+function getAllowedOrigins() {
+  const configuredRaw = (Deno.env.get('SITE_URL') ?? '').trim()
+  let configured = configuredRaw
+  if (configuredRaw) {
+    try {
+      configured = new URL(configuredRaw).origin
+    } catch {
+      configured = configuredRaw.replace(/\/+$/, '')
+    }
+  }
+  const allowed = new Set(DEV_ORIGINS)
+  if (configured) allowed.add(configured)
+  return allowed
+}
+
+function isAllowedOrigin(origin: string | null) {
+  if (!origin) return false
+  const allowedOrigins = getAllowedOrigins()
+  return allowedOrigins.has(origin)
+}
+
+function getCorsHeaders(origin: string | null) {
+  const allowOrigin = isAllowedOrigin(origin) ? origin : 'null'
+  return {
+    ...CORS_BASE_HEADERS,
+    'Access-Control-Allow-Origin': allowOrigin,
+    'Vary': 'Origin',
+  }
+}
+
 // ============================================
 // MAIN HANDLER
 // ============================================
 
 serve(async (req) => {
+  const origin = req.headers.get('origin')
+
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
-    return new Response(null, { status: 204, headers: CORS_HEADERS })
+    return new Response(null, { status: 204, headers: getCorsHeaders(origin) })
+  }
+
+  if (!isAllowedOrigin(origin)) {
+    return jsonResponse({ error: 'Origin not allowed' }, 403, origin)
   }
 
   if (req.method !== 'POST') {
-    return jsonResponse({ error: 'Method not allowed' }, 405)
+    return jsonResponse({ error: 'Method not allowed' }, 405, origin)
+  }
+
+  const csrfHeader = req.headers.get('x-csrf-token')
+  if (!csrfHeader || csrfHeader.length < 32) {
+    return jsonResponse({ error: 'Missing or invalid CSRF token header' }, 400, origin)
   }
 
   // Initialize Supabase admin client (service role for DB writes)
@@ -129,20 +174,20 @@ serve(async (req) => {
 
     switch (action) {
       case 'request-reset':
-        return await handleRequestReset(supabaseAdmin, body, req)
+        return await handleRequestReset(supabaseAdmin, body, req, origin)
 
       case 'validate-token':
-        return await handleValidateToken(supabaseAdmin, body)
+        return await handleValidateToken(supabaseAdmin, body, origin)
 
       case 'reset-password':
-        return await handleResetPassword(supabaseAdmin, body)
+        return await handleResetPassword(supabaseAdmin, body, origin)
 
       default:
-        return jsonResponse({ error: 'Unknown action', validActions: ['request-reset', 'validate-token', 'reset-password'] }, 400)
+        return jsonResponse({ error: 'Unknown action', validActions: ['request-reset', 'validate-token', 'reset-password'] }, 400, origin)
     }
   } catch (err) {
     console.error('[secure-password-reset] Error:', err.message)
-    return jsonResponse({ error: 'Internal server error' }, 500)
+    return jsonResponse({ error: 'Internal server error' }, 500, origin)
   }
 })
 
@@ -160,13 +205,14 @@ serve(async (req) => {
  * @param {SupabaseClient} supabase
  * @param {{ email: string }} body
  * @param {Request} req - Original request (for IP-based rate limiting)
+ * @param {string | null} origin
  * @returns {Response}
  */
-async function handleRequestReset(supabase, body, req) {
+async function handleRequestReset(supabase, body, req, origin) {
   const { email } = body
 
   if (!isValidEmail(email)) {
-    return jsonResponse({ error: 'Invalid email address' }, 400)
+    return jsonResponse({ error: 'Invalid email address' }, 400, origin)
   }
 
   const normalizedEmail = email.toLowerCase().trim()
@@ -185,7 +231,7 @@ async function handleRequestReset(supabase, body, req) {
     return jsonResponse({
       success: true,
       message: 'If an account with that email exists, a reset link has been sent.',
-    })
+    }, 200, origin)
   }
 
   // --- Check if user exists (silently — never expose this to the client) ---
@@ -197,7 +243,7 @@ async function handleRequestReset(supabase, body, req) {
     return jsonResponse({
       success: true,
       message: 'If an account with that email exists, a reset link has been sent.',
-    })
+    }, 200, origin)
   }
 
   // --- Invalidate any existing tokens for this email (single-use enforcement) ---
@@ -225,7 +271,7 @@ async function handleRequestReset(supabase, body, req) {
 
   if (insertError) {
     console.error('[request-reset] DB insert error:', insertError.message)
-    return jsonResponse({ error: 'Failed to generate reset token' }, 500)
+    return jsonResponse({ error: 'Failed to generate reset token' }, 500, origin)
   }
 
   // --- Send the reset email via Supabase Auth (uses their email templates) ---
@@ -249,7 +295,7 @@ async function handleRequestReset(supabase, body, req) {
   return jsonResponse({
     success: true,
     message: 'If an account with that email exists, a reset link has been sent.',
-  })
+  }, 200, origin)
 }
 
 /**
@@ -260,13 +306,14 @@ async function handleRequestReset(supabase, body, req) {
  * 
  * @param {SupabaseClient} supabase
  * @param {{ token: string, email: string }} body
+ * @param {string | null} origin
  * @returns {Response}
  */
-async function handleValidateToken(supabase, body) {
+async function handleValidateToken(supabase, body, origin) {
   const { token, email } = body
 
   if (!token || !email) {
-    return jsonResponse({ valid: false, error: 'Missing token or email' }, 400)
+    return jsonResponse({ valid: false, error: 'Missing token or email' }, 400, origin)
   }
 
   const tokenHash = await hashToken(token)
@@ -283,13 +330,13 @@ async function handleValidateToken(supabase, body) {
     .single()
 
   if (error || !tokenRecord) {
-    return jsonResponse({ valid: false, error: 'Token is invalid or expired' })
+    return jsonResponse({ valid: false, error: 'Token is invalid or expired' }, 200, origin)
   }
 
   // Timing-safe comparison of token hashes
   const isValid = safeCompare(tokenHash, tokenRecord.token_hash)
 
-  return jsonResponse({ valid: isValid, expiresAt: tokenRecord.expires_at })
+  return jsonResponse({ valid: isValid, expiresAt: tokenRecord.expires_at }, 200, origin)
 }
 
 /**
@@ -300,27 +347,28 @@ async function handleValidateToken(supabase, body) {
  * 
  * @param {SupabaseClient} supabase
  * @param {{ token: string, email: string, newPassword: string }} body
+ * @param {string | null} origin
  * @returns {Response}
  */
-async function handleResetPassword(supabase, body) {
+async function handleResetPassword(supabase, body, origin) {
   const { token, email, newPassword } = body
 
   if (!token || !email || !newPassword) {
-    return jsonResponse({ error: 'Missing required fields: token, email, newPassword' }, 400)
+    return jsonResponse({ error: 'Missing required fields: token, email, newPassword' }, 400, origin)
   }
 
   // --- Password validation (server-side) ---
   if (newPassword.length < 8) {
-    return jsonResponse({ error: 'Password must be at least 8 characters' }, 400)
+    return jsonResponse({ error: 'Password must be at least 8 characters' }, 400, origin)
   }
   if (!/[A-Z]/.test(newPassword)) {
-    return jsonResponse({ error: 'Password must contain an uppercase letter' }, 400)
+    return jsonResponse({ error: 'Password must contain an uppercase letter' }, 400, origin)
   }
   if (!/[0-9]/.test(newPassword)) {
-    return jsonResponse({ error: 'Password must contain a number' }, 400)
+    return jsonResponse({ error: 'Password must contain a number' }, 400, origin)
   }
   if (!/[^A-Za-z0-9]/.test(newPassword)) {
-    return jsonResponse({ error: 'Password must contain a special character' }, 400)
+    return jsonResponse({ error: 'Password must contain a special character' }, 400, origin)
   }
 
   const tokenHash = await hashToken(token)
@@ -338,12 +386,12 @@ async function handleResetPassword(supabase, body) {
     .single()
 
   if (findError || !tokenRecord) {
-    return jsonResponse({ error: 'Token is invalid or has expired. Please request a new reset link.' }, 400)
+    return jsonResponse({ error: 'Token is invalid or has expired. Please request a new reset link.' }, 400, origin)
   }
 
   // Timing-safe comparison
   if (!safeCompare(tokenHash, tokenRecord.token_hash)) {
-    return jsonResponse({ error: 'Invalid token' }, 400)
+    return jsonResponse({ error: 'Invalid token' }, 400, origin)
   }
 
   // --- Mark token as used IMMEDIATELY (single-use, before password update) ---
@@ -354,7 +402,7 @@ async function handleResetPassword(supabase, body) {
 
   if (markError) {
     console.error('[reset-password] Failed to mark token as used:', markError.message)
-    return jsonResponse({ error: 'Failed to process reset. Please try again.' }, 500)
+    return jsonResponse({ error: 'Failed to process reset. Please try again.' }, 500, origin)
   }
 
   // --- Find the user and update password ---
@@ -362,7 +410,7 @@ async function handleResetPassword(supabase, body) {
   const targetUser = userData?.users?.find(u => u.email?.toLowerCase() === normalizedEmail)
 
   if (!targetUser) {
-    return jsonResponse({ error: 'User not found' }, 404)
+    return jsonResponse({ error: 'User not found' }, 404, origin)
   }
 
   const { error: updateError } = await supabase.auth.admin.updateUserById(
@@ -377,7 +425,7 @@ async function handleResetPassword(supabase, body) {
       .from('password_reset_tokens')
       .update({ used: false, used_at: null })
       .eq('id', tokenRecord.id)
-    return jsonResponse({ error: 'Failed to update password. Please try again.' }, 500)
+    return jsonResponse({ error: 'Failed to update password. Please try again.' }, 500, origin)
   }
 
   // --- Invalidate ALL sessions for this user (force re-login) ---
@@ -389,5 +437,5 @@ async function handleResetPassword(supabase, body) {
   return jsonResponse({
     success: true,
     message: 'Password has been reset successfully. Please sign in with your new password.',
-  })
+  }, 200, origin)
 }

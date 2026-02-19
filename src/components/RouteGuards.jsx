@@ -101,7 +101,7 @@ export function ProtectedRoute({ children, requiredType = null }) {
  * Uses user_metadata.type when profile isn't loaded yet so we don't stick on spinner after login.
  */
 export function PublicRoute({ children }) {
-    const { isLoggedIn, isLoading, isStudent, isCompany, profile, user } = useAuth()
+    const { isLoggedIn, isLoading, isStudent, isCompany, user } = useAuth()
 
     if (isLoading) {
         return <AuthLoadingSpinner />
@@ -116,11 +116,13 @@ export function PublicRoute({ children }) {
         if (isStudentType) {
             return <Navigate to="/student/swipe" replace />
         }
+
         if (isCompanyType) {
             return <Navigate to="/company/candidates" replace />
         }
-        // No role from profile or metadata yet — redirect to student swipe so we don't stick on spinner (profile will load on that page)
-        return <Navigate to="/student/swipe" replace />
+
+        // Role unknown for now: let /dashboard resolve destination after profile initialization.
+        return <Navigate to="/dashboard" replace />
     }
 
     return children

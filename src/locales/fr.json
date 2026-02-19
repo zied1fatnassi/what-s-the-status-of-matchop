@@ -24,9 +24,9 @@
         "heroSubtitle": "Connectez étudiants et entreprises grâce à une expérience de matching intuitive. Trouvez le stage parfait ou découvrez des talents exceptionnels.",
         "ctaStudent": "Je suis Étudiant",
         "ctaCompany": "Je suis une Entreprise",
-        "statsStudents": "Étudiants Actifs",
-        "statsCompanies": "Entreprises",
-        "statsMatches": "Matchs Réalisés",
+        "statsStudents": "Beta etudiants",
+        "statsCompanies": "Beta entreprises",
+        "statsMatches": "Lancement plateforme",
         "howItWorks": "Comment fonctionne Matchop",
         "step1Title": "Créez Votre Profil",
         "step1Desc": "Construisez un profil attractif présentant vos compétences, expériences et ce que vous recherchez.",
@@ -41,10 +41,13 @@
         "forCompaniesTitle": "Recrutez des Talents Exceptionnels Plus Vite",
         "forCompaniesDesc": "Éliminez le bruit et connectez-vous directement avec les candidats vraiment intéressés par vos opportunités. La qualité avant la quantité.",
         "ctaTitle": "Prêt à Transformer Votre Parcours Professionnel ?",
-        "ctaSubtitle": "Rejoignez des milliers d'étudiants et d'entreprises qui trouvent déjà leur match parfait.",
+        "ctaSubtitle": "Rejoignez notre beta privee et contribuez a construire une plateforme de recrutement transparente.",
         "signupStudent": "S'inscrire comme Étudiant",
         "signupCompany": "S'inscrire comme Entreprise",
-        "footer": "Connecter les talents aux opportunités"
+        "footer": "Connecter les talents aux opportunités",
+        "statsStudentsValue": "Prive",
+        "statsCompaniesValue": "Invitation",
+        "statsMatchesValue": "Dec 2025"
     },
     "auth": {
         "createAccount": "Créer un Compte",

@@ -1,26 +1,25 @@
 import { useState, useEffect, lazy, Suspense } from 'react'
-import { Routes, Route, useLocation, Navigate, useNavigate } from 'react-router-dom'
+import { Routes, Route, useLocation, useNavigate } from 'react-router-dom'
 import { SpeedInsights } from '@vercel/speed-insights/react'
 import { Analytics } from '@vercel/analytics/react'
 import Navbar from './components/Navbar'
 import ScrollToTop from './components/ScrollToTop'
-import LoadingScreen from './components/LoadingScreen'
 import AuthToast from './components/AuthToast'
 import { ProtectedRoute, PublicRoute, AdminRoute } from './components/RouteGuards'
 import { useAuth } from './context/AuthContext'
-import DiagnosticHelper from './components/DiagnosticHelper'
 
-// Lazy load all page components for code splitting
-import Cookies from './pages/legal/Cookies'
-import About from './pages/About'
-import Contact from './pages/Contact'
-import Footer from './components/Footer'
+// Lazy load route-level pages for code splitting
+const Cookies = lazy(() => import('./pages/legal/Cookies'))
+const About = lazy(() => import('./pages/About'))
+const Contact = lazy(() => import('./pages/Contact'))
+const Footer = lazy(() => import('./components/Footer'))
 
 const Landing = lazy(() => import('./pages/Landing'))
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'))
 const ResetPassword = lazy(() => import('./pages/ResetPassword'))
 const AuthCallback = lazy(() => import('./pages/AuthCallback'))
 const Dashboard = lazy(() => import('./pages/Dashboard'))
+const NotFound = lazy(() => import('./pages/NotFound'))
 
 // Legal pages
 const TermsOfService = lazy(() => import('./pages/legal/TermsOfService'))
@@ -96,48 +95,50 @@ function SmartLanding() {
 
 /**
  * Main App component with:
- * - Initial loading animation
  * - Role-based routing for students and companies
  * - Lazy-loaded routes for optimal performance
  * - Auth event toast notifications
  * - Protected and public route guards
  */
 function App() {
-  const [isLoading, setIsLoading] = useState(true)
   const [toast, setToast] = useState(null)
   const location = useLocation()
   const navigate = useNavigate()
 
   // Detect auth events from URL hash (email verification, password reset, errors)
   useEffect(() => {
-    const hash = window.location.hash
+    const hash = location.hash
     if (!hash) return
 
     // Parse hash parameters
-    const params = new URLSearchParams(hash.substring(1))
+    const params = new URLSearchParams(hash.slice(1))
     const accessToken = params.get('access_token')
     const error = params.get('error')
     const errorDescription = params.get('error_description')
     const type = params.get('type')
     const refreshToken = params.get('refresh_token')
+    const clearHash = () => {
+      window.history.replaceState(null, '', `${location.pathname}${location.search}`)
+    }
 
     // Handle successful email verification
     if (accessToken && type === 'signup') {
       setToast({
         type: 'success',
-        message: '✅ Email verified successfully! You can now sign in.'
+        message: 'Email verified successfully! You can now sign in.'
       })
-      window.history.replaceState(null, '', window.location.pathname)
+      clearHash()
+      return
     }
     // Handle successful password recovery
     else if (accessToken && type === 'recovery') {
       setToast({
         type: 'success',
-        message: '✅ Reset link confirmed. Please set your new password.'
+        message: 'Reset link confirmed. Please set your new password.'
       })
-      // Keep the Supabase session from the link and move user to the reset form
+      // Clear hash before navigation to avoid mutating the wrong history entry.
+      clearHash()
       if (refreshToken) {
-        // Store tokens in location.state to avoid re-parsing hash on navigation
         navigate('/reset-password', {
           replace: true,
           state: { accessToken, refreshToken }
@@ -145,15 +146,16 @@ function App() {
       } else {
         navigate('/reset-password', { replace: true })
       }
-      window.history.replaceState(null, '', window.location.pathname)
+      return
     }
     // Handle successful sign in via magic link
     else if (accessToken && !type) {
       setToast({
         type: 'success',
-        message: '✅ Welcome back! You are now signed in.'
+        message: 'Welcome back! You are now signed in.'
       })
-      window.history.replaceState(null, '', window.location.pathname)
+      clearHash()
+      return
     }
     // Handle errors
     else if (error) {
@@ -167,11 +169,11 @@ function App() {
 
       setToast({
         type: 'error',
-        message: `❌ ${message}`
+        message
       })
-      window.history.replaceState(null, '', window.location.pathname)
+      clearHash()
     }
-  }, [location])
+  }, [location.hash, location.pathname, location.search, navigate])
 
   const handleToastClose = () => {
     setToast(null)
@@ -182,12 +184,6 @@ function App() {
   return (
     <>
       <ScrollToTop />
-      {isLoading && (
-        <LoadingScreen
-          minDuration={1000}
-          onComplete={() => setIsLoading(false)}
-        />
-      )}
 
       {toast && (
         <AuthToast
@@ -202,7 +198,6 @@ function App() {
         <Navbar isLanding={isLanding} />
         <SpeedInsights />
         <Analytics />
-        <DiagnosticHelper />
 
         <main className={isLanding ? 'app-main app-main--landing' : 'app-main'}>
           <Suspense fallback={<RouteLoadingFallback />}>
@@ -212,7 +207,7 @@ function App() {
 
               {/* Auth Callback & Dashboard */}
               <Route path="/auth/callback" element={<AuthCallback />} />
-              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
 
               {/* Public Auth */}
               <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -223,16 +218,6 @@ function App() {
               {/* Legal */}
               <Route path="/legal/terms" element={<TermsOfService />} />
               <Route path="/legal/privacy" element={<PrivacyPolicy />} />
-              {/* Note: Cookies and Terms files were created as .jsx in pages/legal/ but mapped imports might differ. 
-                  Using the dynamic imports defined at top of file for consistency if available, 
-                  or the direct Components created in previous steps.
-                  Let's use the lazy loaded ones if they exist, or direct imports if I created them.
-                  Wait, I created Terms.jsx, Privacy.jsx, Cookies.jsx in src/pages/legal/
-                  But the lazy imports in this file usually point to TermsOfService etc.
-                  I should stick to the structure I just created.
-              */}
-
-              {/* Legal Routes */}
               <Route path="/legal/cookies" element={<Cookies />} />
 
               {/* Public Info Routes */}
@@ -249,7 +234,7 @@ function App() {
               <Route path="/student/chat/:matchId" element={<ProtectedRoute requiredType="student"><StudentChat /></ProtectedRoute>} />
               <Route path="/student/global-jobs" element={<ProtectedRoute requiredType="student"><StudentGlobalJobs /></ProtectedRoute>} />
               <Route path="/student/offers" element={<ProtectedRoute requiredType="student"><GlobalOffers /></ProtectedRoute>} />
-              <Route path="/offers" element={<GlobalOffers />} />
+              <Route path="/offers" element={<ProtectedRoute requiredType="student"><GlobalOffers /></ProtectedRoute>} />
 
               {/* Company */}
               <Route path="/company/signup" element={<PublicRoute><CompanySignup /></PublicRoute>} />
@@ -271,11 +256,14 @@ function App() {
               <Route path="/admin/reports" element={<AdminRoute><AdminReports /></AdminRoute>} />
               <Route path="/admin/analytics" element={<AdminRoute><AdminAnalytics /></AdminRoute>} />
               <Route path="/admin/settings" element={<AdminRoute><AdminSettings /></AdminRoute>} />
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
         </main>
 
-        <Footer />
+        <Suspense fallback={null}>
+          <Footer />
+        </Suspense>
       </div>
     </>
   )

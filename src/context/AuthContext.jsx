@@ -2,12 +2,17 @@ import { createContext, useContext, useState, useEffect, useMemo, useCallback } 
 import { supabase } from '../lib/supabase'
 import { autoVerifyEmail } from '../lib/verification'
 import { clearAuthCookies, getOrCreateCSRFToken } from '../lib/cookieStorage'
+import { requestPasswordReset } from '../lib/passwordReset'
 
 /**
  * Auth Context for managing user authentication state with Supabase
  * SECURITY: All authentication goes through Supabase - no demo/bypass mode
  */
 const AuthContext = createContext(null)
+const isDev = import.meta.env.DEV
+const debugLog = (...args) => {
+    if (isDev) console.log(...args)
+}
 
 export function AuthProvider({ children }) {
     const [user, setUser] = useState(null)
@@ -16,17 +21,17 @@ export function AuthProvider({ children }) {
     const [authError, setAuthError] = useState(null)
 
     useEffect(() => {
-        console.log('[Auth] Starting auth initialization...')
+        debugLog('[Auth] Starting auth initialization...')
 
         // Simple timeout fallback - set loading to false after 5 seconds max
         const timeoutId = setTimeout(() => {
-            console.log('[Auth] Safety timeout - setting loading=false after 5s')
+            debugLog('[Auth] Safety timeout - setting loading=false after 5s')
             setIsLoading(false)
         }, 5000)
 
         // Get initial session (non-blocking)
         supabase.auth.getSession().then(async ({ data, error }) => {
-            console.log('[Auth] getSession result:', {
+            debugLog('[Auth] getSession result:', {
                 hasSession: !!data?.session,
                 userId: data?.session?.user?.id,
                 error: error?.message
@@ -50,7 +55,7 @@ export function AuthProvider({ children }) {
         // Listen for auth changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange(
             async (event, session) => {
-                console.log('[Auth] onAuthStateChange:', event, session?.user?.id)
+                debugLog('[Auth] onAuthStateChange:', event, session?.user?.id)
                 setUser(session?.user ?? null)
 
                 if (session?.user) {
@@ -82,7 +87,7 @@ export function AuthProvider({ children }) {
 
     const fetchProfile = useCallback(async (userId) => {
         try {
-            console.log('[Auth] fetchProfile called for:', userId)
+            debugLog('[Auth] fetchProfile called for:', userId)
 
             // Create a promise that rejects after 5 seconds
             const timeoutPromise = new Promise((_, reject) =>
@@ -103,7 +108,7 @@ export function AuthProvider({ children }) {
                     if (user?.user_metadata) {
                         const { type, name } = user.user_metadata
                         if (type && name) {
-                            console.log('Profile not found, creating from user metadata...')
+                            debugLog('[Auth] Profile not found, creating from user metadata...')
                             const { error: insertError } = await supabase
                                 .from('profiles')
                                 .insert({
@@ -167,7 +172,7 @@ export function AuthProvider({ children }) {
             }
 
             if (!error && data) {
-                console.log('[Auth] Profile fetched successfully:', data)
+                debugLog('[Auth] Profile fetched successfully')
                 setProfile(data)
             }
         } catch (err) {
@@ -178,10 +183,10 @@ export function AuthProvider({ children }) {
     // Auto-verify email when user confirms their email
     useEffect(() => {
         if (user?.email_confirmed_at && profile && !profile.verified) {
-            console.log('[Auth] Auto-verifying email for user:', user.id)
+            debugLog('[Auth] Auto-verifying email for user:', user.id)
             autoVerifyEmail(user.id, user.email_confirmed_at).then(result => {
                 if (result.success) {
-                    console.log('[Auth] Email verification badge added')
+                    debugLog('[Auth] Email verification badge added')
                     fetchProfile(user.id) // Refresh profile to show badge
                 }
             })
@@ -276,7 +281,7 @@ export function AuthProvider({ children }) {
                 } catch (profileErr) {
                     // Profile creation failed, but signup succeeded
                     // Profile will be auto-created on next login via fetchProfile
-                    console.warn('Profile creation failed, will retry on login:', profileErr)
+                    debugLog('Profile creation failed, will retry on login:', profileErr)
                 }
             }
 
@@ -316,7 +321,7 @@ export function AuthProvider({ children }) {
 
             // Track login activity for engagement decay system
             supabase.rpc('touch_activity').catch(err =>
-                console.warn('[Auth] Activity tracking failed:', err.message)
+                debugLog('[Auth] Activity tracking failed:', err.message)
             )
 
             return { data, error: null }
@@ -329,7 +334,6 @@ export function AuthProvider({ children }) {
      * Sign out the current user
      */
     const signOut = useCallback(async () => {
-        console.log('[AuthContext] signOut called')
         setAuthError(null)
 
         const { error } = await supabase.auth.signOut()
@@ -342,7 +346,6 @@ export function AuthProvider({ children }) {
 
         // Clear all auth cookies (session + CSRF)
         clearAuthCookies()
-        console.log('[AuthContext] signOut successful, clearing user state + cookies')
         setUser(null)
         setProfile(null)
     }, [])
@@ -374,10 +377,8 @@ export function AuthProvider({ children }) {
      */
     const resetPassword = useCallback(async (email) => {
         try {
-            const { error } = await supabase.auth.resetPasswordForEmail(email, {
-                redirectTo: `${window.location.origin}/reset-password`
-            })
-            return { error }
+            const result = await requestPasswordReset(email)
+            return { error: result?.error || null }
         } catch (err) {
             return { error: err }
         }
