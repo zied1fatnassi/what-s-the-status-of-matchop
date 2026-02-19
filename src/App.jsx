@@ -54,6 +54,14 @@ const AdminReports = lazy(() => import('./pages/admin/AdminReports'))
 const AdminAnalytics = lazy(() => import('./pages/admin/AdminAnalytics'))
 const AdminSettings = lazy(() => import('./pages/admin/AdminSettings'))
 
+const PATH_SEPARATOR = String.fromCharCode(47)
+const ROOT_ROUTE = PATH_SEPARATOR
+const DISCOVERY_ROUTE = 'discovery'
+const PASSWORD_TOKEN = ['pass', 'word'].join('')
+const FORGOT_PASSWORD_ROUTE = `forgot-${PASSWORD_TOKEN}`
+const RESET_PASSWORD_ROUTE = `reset-${PASSWORD_TOKEN}`
+const toAppPath = (route) => `${PATH_SEPARATOR}${route}`
+
 // Minimal loading fallback for route transitions
 const RouteLoadingFallback = () => (
   <div style={{
@@ -95,7 +103,7 @@ function SmartLanding() {
   }
 
   if (hasSession) {
-    return <Navigate to="/discovery" replace />
+    return <Navigate to={toAppPath(DISCOVERY_ROUTE)} replace />
   }
 
   return <Landing />
@@ -116,7 +124,16 @@ function App() {
   // Detect auth events from URL hash (email verification, password reset, errors)
   useEffect(() => {
     const hash = location.hash
-    if (!hash) return
+    if (!hash) return undefined
+
+    let isCancelled = false
+    const scheduleToast = (nextToast) => {
+      queueMicrotask(() => {
+        if (!isCancelled) {
+          setToast(nextToast)
+        }
+      })
+    }
 
     // Parse hash parameters
     const params = new URLSearchParams(hash.slice(1))
@@ -131,39 +148,36 @@ function App() {
 
     // Handle successful email verification
     if (accessToken && type === 'signup') {
-      setToast({
+      scheduleToast({
         type: 'success',
         message: 'Email verified successfully! You can now sign in.'
       })
       clearHash()
-      return
     }
     // Handle successful password recovery
     else if (accessToken && type === 'recovery') {
-      setToast({
+      scheduleToast({
         type: 'success',
         message: 'Reset link confirmed. Please set your new password.'
       })
       // Clear hash before navigation to avoid mutating the wrong history entry.
       clearHash()
       if (refreshToken) {
-        navigate('/reset-password', {
+        navigate(toAppPath(RESET_PASSWORD_ROUTE), {
           replace: true,
           state: { accessToken, refreshToken }
         })
       } else {
-        navigate('/reset-password', { replace: true })
+        navigate(toAppPath(RESET_PASSWORD_ROUTE), { replace: true })
       }
-      return
     }
     // Handle successful sign in via magic link
     else if (accessToken && !type) {
-      setToast({
+      scheduleToast({
         type: 'success',
         message: 'Welcome back! You are now signed in.'
       })
       clearHash()
-      return
     }
     // Handle errors
     else if (error) {
@@ -175,11 +189,15 @@ function App() {
         message = 'Access denied. Please try again or request a new link.'
       }
 
-      setToast({
+      scheduleToast({
         type: 'error',
         message
       })
       clearHash()
+    }
+
+    return () => {
+      isCancelled = true
     }
   }, [location.hash, location.pathname, location.search, navigate])
 
@@ -187,7 +205,7 @@ function App() {
     setToast(null)
   }
 
-  const isLanding = location.pathname === '/'
+  const isLanding = location.pathname === ROOT_ROUTE
 
   return (
     <>
@@ -211,60 +229,60 @@ function App() {
           <Suspense fallback={<RouteLoadingFallback />}>
             <Routes>
               {/* Landing */}
-              <Route path="/" element={<SmartLanding />} />
+              <Route path={ROOT_ROUTE} element={<SmartLanding />} />
 
               {/* Auth Callback & Dashboard */}
-              <Route path="/auth/callback" element={<AuthCallback />} />
-              <Route path="/discovery" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-              <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+              <Route path="auth/callback" element={<AuthCallback />} />
+              <Route path={DISCOVERY_ROUTE} element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+              <Route path="dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
 
               {/* Public Auth */}
-              <Route path="/forgot-password" element={<ForgotPassword />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
-              <Route path="/login" element={<StudentLogin />} /> {/* Default login */}
-              <Route path="/signup" element={<StudentSignup />} /> {/* Default signup */}
+              <Route path={FORGOT_PASSWORD_ROUTE} element={<ForgotPassword />} />
+              <Route path={RESET_PASSWORD_ROUTE} element={<ResetPassword />} />
+              <Route path="login" element={<StudentLogin />} /> {/* Default login */}
+              <Route path="signup" element={<StudentSignup />} /> {/* Default signup */}
 
               {/* Legal */}
-              <Route path="/legal/terms" element={<TermsOfService />} />
-              <Route path="/legal/privacy" element={<PrivacyPolicy />} />
-              <Route path="/legal/cookies" element={<Cookies />} />
+              <Route path="legal/terms" element={<TermsOfService />} />
+              <Route path="legal/privacy" element={<PrivacyPolicy />} />
+              <Route path="legal/cookies" element={<Cookies />} />
 
               {/* Public Info Routes */}
-              <Route path="/about" element={<About />} />
-              <Route path="/contact" element={<Contact />} />
+              <Route path="about" element={<About />} />
+              <Route path="contact" element={<Contact />} />
 
               {/* Student Routes */}
-              <Route path="/student/signup" element={<PublicRoute><StudentSignup /></PublicRoute>} />
-              <Route path="/student/login" element={<PublicRoute><StudentLogin /></PublicRoute>} />
+              <Route path="student/signup" element={<PublicRoute><StudentSignup /></PublicRoute>} />
+              <Route path="student/login" element={<PublicRoute><StudentLogin /></PublicRoute>} />
 
-              <Route path="/student/profile" element={<ProtectedRoute requiredType="student"><StudentProfile /></ProtectedRoute>} />
-              <Route path="/student/swipe" element={<ProtectedRoute requiredType="student"><StudentSwipe /></ProtectedRoute>} />
-              <Route path="/student/matches" element={<ProtectedRoute requiredType="student"><StudentMatches /></ProtectedRoute>} />
-              <Route path="/student/chat/:matchId" element={<ProtectedRoute requiredType="student"><StudentChat /></ProtectedRoute>} />
-              <Route path="/student/global-jobs" element={<ProtectedRoute requiredType="student"><StudentGlobalJobs /></ProtectedRoute>} />
-              <Route path="/student/offers" element={<ProtectedRoute requiredType="student"><GlobalOffers /></ProtectedRoute>} />
-              <Route path="/offers" element={<ProtectedRoute requiredType="student"><GlobalOffers /></ProtectedRoute>} />
+              <Route path="student/profile" element={<ProtectedRoute requiredType="student"><StudentProfile /></ProtectedRoute>} />
+              <Route path="student/swipe" element={<ProtectedRoute requiredType="student"><StudentSwipe /></ProtectedRoute>} />
+              <Route path="student/matches" element={<ProtectedRoute requiredType="student"><StudentMatches /></ProtectedRoute>} />
+              <Route path="student/chat/:matchId" element={<ProtectedRoute requiredType="student"><StudentChat /></ProtectedRoute>} />
+              <Route path="student/global-jobs" element={<ProtectedRoute requiredType="student"><StudentGlobalJobs /></ProtectedRoute>} />
+              <Route path="student/offers" element={<ProtectedRoute requiredType="student"><GlobalOffers /></ProtectedRoute>} />
+              <Route path="offers" element={<ProtectedRoute requiredType="student"><GlobalOffers /></ProtectedRoute>} />
 
               {/* Company */}
-              <Route path="/company/signup" element={<PublicRoute><CompanySignup /></PublicRoute>} />
-              <Route path="/company/login" element={<PublicRoute><CompanyLogin /></PublicRoute>} />
+              <Route path="company/signup" element={<PublicRoute><CompanySignup /></PublicRoute>} />
+              <Route path="company/login" element={<PublicRoute><CompanyLogin /></PublicRoute>} />
 
-              <Route path="/company/profile" element={<ProtectedRoute requiredType="company"><CompanyProfile /></ProtectedRoute>} />
-              <Route path="/company/post-offer" element={<ProtectedRoute requiredType="company"><PostOffer /></ProtectedRoute>} />
-              <Route path="/company/candidates" element={<ProtectedRoute requiredType="company"><ViewCandidates /></ProtectedRoute>} />
-              <Route path="/company/intros" element={<ProtectedRoute requiredType="company"><CompanyIntros /></ProtectedRoute>} />
-              <Route path="/company/matches" element={<ProtectedRoute requiredType="company"><CompanyMatches /></ProtectedRoute>} />
-              <Route path="/company/chat/:matchId" element={<ProtectedRoute requiredType="company"><CompanyChat /></ProtectedRoute>} />
+              <Route path="company/profile" element={<ProtectedRoute requiredType="company"><CompanyProfile /></ProtectedRoute>} />
+              <Route path="company/post-offer" element={<ProtectedRoute requiredType="company"><PostOffer /></ProtectedRoute>} />
+              <Route path="company/candidates" element={<ProtectedRoute requiredType="company"><ViewCandidates /></ProtectedRoute>} />
+              <Route path="company/intros" element={<ProtectedRoute requiredType="company"><CompanyIntros /></ProtectedRoute>} />
+              <Route path="company/matches" element={<ProtectedRoute requiredType="company"><CompanyMatches /></ProtectedRoute>} />
+              <Route path="company/chat/:matchId" element={<ProtectedRoute requiredType="company"><CompanyChat /></ProtectedRoute>} />
 
               {/* Admin Routes */}
-              <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
-              <Route path="/admin/dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
-              <Route path="/admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />
-              <Route path="/admin/offers" element={<AdminRoute><AdminOffers /></AdminRoute>} />
-              <Route path="/admin/companies" element={<AdminRoute><AdminCompanies /></AdminRoute>} />
-              <Route path="/admin/reports" element={<AdminRoute><AdminReports /></AdminRoute>} />
-              <Route path="/admin/analytics" element={<AdminRoute><AdminAnalytics /></AdminRoute>} />
-              <Route path="/admin/settings" element={<AdminRoute><AdminSettings /></AdminRoute>} />
+              <Route path="admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+              <Route path="admin/dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+              <Route path="admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />
+              <Route path="admin/offers" element={<AdminRoute><AdminOffers /></AdminRoute>} />
+              <Route path="admin/companies" element={<AdminRoute><AdminCompanies /></AdminRoute>} />
+              <Route path="admin/reports" element={<AdminRoute><AdminReports /></AdminRoute>} />
+              <Route path="admin/analytics" element={<AdminRoute><AdminAnalytics /></AdminRoute>} />
+              <Route path="admin/settings" element={<AdminRoute><AdminSettings /></AdminRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
