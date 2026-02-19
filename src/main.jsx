@@ -6,6 +6,7 @@ import { ApplicationProvider } from './context/ApplicationContext'
 import { ThemeProvider } from './context/ThemeContext'
 import './lib/i18n' // Initialize i18n before App
 import './index.css'
+import './accessibility-contrast.css'
 import App from './App.jsx'
 
 /**
