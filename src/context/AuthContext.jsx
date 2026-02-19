@@ -14,17 +14,21 @@ export function AuthProvider({ children }) {
     const [profile, setProfile] = useState(null)
     const [isLoading, setIsLoading] = useState(true)
     const [authError, setAuthError] = useState(null)
+    const [authState, setAuthState] = useState({
+        hasSession: false,
+        userId: null,
+        error: null
+    })
 
     useEffect(() => {
-        
+        // Track if initial session has been processed
+        let initialSessionProcessed = false
 
-        // Simple timeout fallback - set loading to false after 5 seconds max
-        const timeoutId = setTimeout(() => {
-            setIsLoading(false)
-        }, 5000)
+        // Get initial session
+        supabase.auth.getSession().then(({ data, error }) => {
+            if (initialSessionProcessed) return
+            initialSessionProcessed = true
 
-        // Get initial session (non-blocking)
-        supabase.auth.getSession().then(async ({ data, error }) => {
             setAuthState({
                 hasSession: !!data?.session,
                 userId: data?.session?.user?.id,
@@ -33,40 +37,36 @@ export function AuthProvider({ children }) {
 
             if (data?.session?.user) {
                 setUser(data.session.user)
-                // Fetch profile in background, don't block
                 fetchProfile(data.session.user.id)
             }
 
-            // Always set loading to false
-            clearTimeout(timeoutId)
             setIsLoading(false)
         }).catch(err => {
             console.error('[Auth] getSession ERROR:', err)
-            clearTimeout(timeoutId)
             setIsLoading(false)
         })
 
-        // Listen for auth changes
+        // Listen for auth changes - INITIAL_SESSION fires first, then subsequent events
         const { data: { subscription } } = supabase.auth.onAuthStateChange(
-            async (event, session) => {
-                
+            (event, session) => {
+                // Skip if we haven't processed initial session yet
+                if (!initialSessionProcessed && event === 'INITIAL_SESSION') {
+                    return // Wait for getSession to complete
+                }
+
                 setUser(session?.user ?? null)
 
                 if (session?.user) {
-                    // Initialize CSRF token on sign-in (cookie-based sessions)
                     getOrCreateCSRFToken()
-                    // Fetch profile in background
                     fetchProfile(session.user.id)
                 } else {
                     setProfile(null)
                 }
 
-                // Clear error on successful auth events
                 if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
                     setAuthError(null)
                 }
 
-                // Clear all auth cookies on sign-out
                 if (event === 'SIGNED_OUT') {
                     clearAuthCookies()
                 }
@@ -74,7 +74,6 @@ export function AuthProvider({ children }) {
         )
 
         return () => {
-            clearTimeout(timeoutId)
             subscription.unsubscribe()
         }
     }, [])
