@@ -76,7 +76,7 @@ function TermsOfService() {
                     <h2>6. Privacy</h2>
                     <p>
                         Your privacy is important to us. Please review our{' '}
-                        <Link to="/privacy-policy">Privacy Policy</Link> to understand how we collect,
+                        <Link to="/legal/privacy">Privacy Policy</Link> to understand how we collect,
                         use, and protect your information.
                     </p>
 
