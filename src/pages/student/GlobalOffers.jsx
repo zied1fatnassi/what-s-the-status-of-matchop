@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
     Search, MapPin, Building2, Globe, ExternalLink, Calendar,
@@ -130,6 +131,7 @@ function OfferSkeleton() {
 
 // ─── OFFER CARD COMPONENT ───────────────────────────────────
 function OfferCard({ offer }) {
+    const navigate = useNavigate()
     const timeLeft = useMemo(() => getTimeRemaining(offer.expiresAt), [offer.expiresAt])
     const isUrgent = timeLeft && !timeLeft.includes('d')
 
@@ -142,9 +144,9 @@ function OfferCard({ offer }) {
             window.open(url, '_blank', 'noopener')
         } else {
             // Internal offer: navigate to swipe or detail
-            window.location.href = '/student/swipe'
+            navigate('/student/swipe')
         }
-    }, [offer])
+    }, [offer, navigate])
 
     return (
         <motion.article
