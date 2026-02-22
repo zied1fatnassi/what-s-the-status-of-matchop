@@ -22,6 +22,7 @@ import { ALL_SKILLS } from '../../data/skills'
 import ErrorToast from '../../components/ErrorToast'
 import ErrorBoundary from '../../components/ErrorBoundary'
 import './StudentProfile.css'
+import './StudentProfileEditor.css'
 
 // ============================================================================
 // PROFILE PREVIEW MODAL
@@ -738,143 +739,7 @@ function StudentProfile() {
                 completion={completion}
             />
 
-            {toast && <ErrorToast {...toast} onClose={hideToast} />}
-
-            <style>{`
-                .profile-page { min-height: 100vh; background: var(--bento-bg); padding: 24px 16px; }
-                .profile-container { max-width: 800px; margin: 0 auto; }
-                .profile-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-                .profile-header h1 { color: var(--text-primary); font-size: 28px; font-weight: 700; margin: 0; }
-                .completion-indicator { display: flex; align-items: center; gap: 6px; background: var(--glass-surface); color: var(--accent-teal); padding: 8px 16px; border-radius: 20px; font-weight: 600; font-size: 14px; border: 1px solid var(--accent-teal); }
-                .completion-bar-wrapper { height: 6px; background: var(--glass-border); border-radius: 3px; margin-bottom: 24px; overflow: hidden; }
-                .completion-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent-teal), var(--primary)); border-radius: 3px; }
-                
-                .profile-section { background: var(--bento-card); border-radius: 16px; padding: 28px; margin-bottom: 16px; box-shadow: var(--shadow-md); border: 1px solid var(--bento-card-border-subtle); }
-                .profile-section h2 { display: flex; align-items: center; gap: 10px; font-size: 18px; color: var(--text-primary); margin: 0 0 20px; padding-bottom: 12px; border-bottom: 1px solid var(--glass-border); }
-                
-                .avatar-area { display: flex; flex-direction: column; align-items: center; margin-bottom: 24px; }
-                .avatar { width: 120px; height: 120px; border-radius: 50%; overflow: hidden; cursor: pointer; position: relative; background: var(--glass-surface); border: 4px solid var(--glass-border); box-shadow: var(--shadow-md); }
-                .avatar img { width: 100%; height: 100%; object-fit: cover; }
-                .avatar-fallback { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--text-muted); }
-                .avatar-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; color: white; opacity: 0; transition: opacity 0.2s; }
-                .avatar:hover .avatar-overlay { opacity: 1; }
-                .avatar-hint { margin-top: 8px; font-size: 13px; color: var(--text-secondary); }
-                
-                .field { margin-bottom: 16px; }
-                .field label { display: flex; align-items: center; gap: 6px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; font-size: 14px; }
-                .field input, .field textarea, .add-row input, .form-grid input, .form-grid select, .add-form textarea { width: 100%; padding: 12px 14px; border: 1.5px solid var(--input-border); border-radius: 10px; font-size: 15px; transition: all 0.2s; background: var(--input-bg); color: var(--text-primary); }
-                .field input:focus, .field textarea:focus, .add-row input:focus, .form-grid input:focus, .form-grid select:focus, .add-form textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); background: var(--input-focus-bg); }
-                .char-count { display: block; text-align: right; font-size: 12px; color: var(--text-muted); margin-top: 4px; }
-                
-                .bio-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-                .ai-improve-btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; background: linear-gradient(135deg, #8b5cf6, #6366f1); color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
-                .ai-improve-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4); }
-                .ai-improve-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-                .ai-error { display: flex; align-items: center; gap: 6px; background: rgba(239, 68, 68, 0.1); color: var(--accent-red); padding: 8px 12px; border-radius: 8px; font-size: 13px; margin-bottom: 10px; border: 1px solid rgba(239, 68, 68, 0.2); }
-                
-                .checkbox-row { display: flex; align-items: center; gap: 8px; font-size: 14px; margin-bottom: 12px; cursor: pointer; color: var(--text-primary); }
-                .checkbox-row input { width: auto; }
-                
-                .skills-container { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; min-height: 32px; }
-                .skill-chip { display: inline-flex; align-items: center; gap: 6px; background: var(--primary-light); color: var(--primary-dark); padding: 8px 14px; border-radius: 20px; font-size: 14px; font-weight: 500; opacity: 0.8; }
-                .skill-chip button { background: none; border: none; padding: 0; cursor: pointer; color: var(--primary-dark); display: flex; }
-                .empty-text { color: var(--text-muted); font-style: italic; font-size: 14px; }
-                
-                .add-row { display: flex; gap: 10px; }
-                .add-btn { display: flex; align-items: center; gap: 4px; padding: 12px 20px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: background 0.2s; }
-                .add-btn:hover { background: var(--primary-hover); }
-                
-                .items-list { margin-bottom: 20px; }
-                .items-list.compact { display: flex; flex-wrap: wrap; gap: 12px; }
-                .item-card { display: flex; align-items: flex-start; gap: 16px; padding: 16px; background: var(--glass-surface); border-radius: 12px; margin-bottom: 12px; border: 1px solid var(--glass-border); }
-                .item-card.compact { flex: 1; min-width: 200px; margin-bottom: 0; }
-                .item-icon { width: 48px; height: 48px; border-radius: 8px; background: var(--primary-light); display: flex; align-items: center; justify-content: center; color: var(--primary); flex-shrink: 0; opacity: 0.7; }
-                .item-info { flex: 1; min-width: 0; }
-                .item-info h3 { font-size: 16px; font-weight: 600; color: var(--text-primary); margin: 0 0 4px; }
-                .item-subtitle { color: var(--primary); font-weight: 500; font-size: 14px; margin: 0 0 4px; }
-                .item-meta { font-size: 13px; color: var(--text-secondary); margin: 0 0 4px; }
-                .item-desc { font-size: 14px; color: var(--text-secondary); margin: 8px 0 0; line-height: 1.5; }
-                .item-link { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; color: var(--primary); text-decoration: none; margin-top: 6px; }
-                .item-link:hover { text-decoration: underline; }
-                
-                .delete-btn { background: rgba(239, 68, 68, 0.1); color: var(--accent-red); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 8px; padding: 10px; cursor: pointer; transition: background 0.2s; flex-shrink: 0; }
-                .delete-btn:hover { background: rgba(239, 68, 68, 0.2); }
-                
-                .add-form { background: var(--glass-surface); border-radius: 12px; padding: 20px; border: 1px dashed var(--glass-border); margin-top: 16px; }
-                .add-form.compact { padding: 16px; }
-                .add-form h4 { display: flex; align-items: center; gap: 6px; margin: 0 0 14px; color: var(--text-primary); font-size: 15px; }
-                .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
-                @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
-                .add-form textarea { margin-bottom: 12px; }
-                .add-item-btn { width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 12px; background: var(--accent-green); color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; transition: transform 0.2s; }
-                .add-item-btn:hover:not(:disabled) { transform: translateY(-2px); }
-                .add-item-btn:disabled { opacity: 0.7; cursor: not-allowed; }
-                
-                .section-error { display: flex; align-items: center; gap: 8px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: var(--accent-red); padding: 12px 16px; border-radius: 10px; margin-bottom: 16px; font-size: 14px; }
-                
-                .bottom-actions { display: flex; gap: 12px; margin-top: 8px; }
-                .preview-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 18px; background: var(--bento-card); color: var(--primary); border: 2px solid var(--primary); border-radius: 14px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
-                .preview-btn:hover { background: var(--glass-surface); }
-                .save-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 18px; background: var(--primary); color: white; border: none; border-radius: 14px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
-                .save-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
-                .save-btn:disabled { opacity: 0.7; cursor: not-allowed; }
-                
-                .loading-state, .error-state { min-height: 60vh; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-primary); text-align: center; }
-                .error-state { background: var(--bento-card); border-radius: 16px; padding: 48px; color: var(--text-primary); max-width: 400px; margin: 80px auto; }
-                .error-state h2 { margin: 16px 0 8px; }
-                .error-state p { color: var(--text-secondary); margin-bottom: 24px; }
-                .error-state button { padding: 12px 32px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; }
-                .spin { animation: spin 1s linear infinite; }
-                @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-                
-                /* Preview Modal */
-                .preview-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
-                .preview-modal { background: var(--bento-card); border-radius: 24px; max-width: 440px; width: 100%; max-height: 90vh; overflow-y: auto; position: relative; box-shadow: var(--shadow-xl); border: 1px solid var(--glass-border); }
-                .preview-close { position: absolute; top: 16px; right: 16px; background: var(--glass-surface); border: 1px solid var(--glass-border); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-secondary); z-index: 10; }
-                .preview-close:hover { background: var(--glass-surface-hover); color: var(--primary); }
-                .preview-card { padding: 32px 24px; }
-                .preview-avatar { width: 120px; height: 120px; border-radius: 50%; margin: 0 auto 16px; overflow: hidden; background: var(--primary); box-shadow: 0 8px 24px var(--primary-glow); }
-                .preview-avatar img { width: 100%; height: 100%; object-fit: cover; }
-                .preview-avatar-fallback { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: white; }
-                .preview-name { text-align: center; font-size: 24px; font-weight: 700; color: var(--text-primary); margin: 0 0 4px; }
-                .preview-headline { text-align: center; color: var(--text-secondary); font-size: 14px; margin: 0 0 8px; }
-                .preview-location { display: flex; align-items: center; justify-content: center; gap: 4px; color: var(--text-secondary); font-size: 14px; margin: 0 0 12px; }
-                .preview-completion { display: flex; align-items: center; justify-content: center; gap: 6px; background: var(--accent-green); background: rgba(74, 222, 128, 0.1); color: var(--accent-green); padding: 6px 14px; border-radius: 16px; font-size: 12px; font-weight: 600; margin: 0 auto 20px; width: fit-content; }
-                .preview-section { margin-bottom: 16px; }
-                .preview-section h3 { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 8px; }
-                .preview-section p { color: var(--text-secondary); font-size: 14px; line-height: 1.6; margin: 0; }
-                .preview-skills { display: flex; flex-wrap: wrap; gap: 6px; }
-                .preview-skill-tag { background: var(--primary-light); color: var(--primary-dark); padding: 5px 12px; border-radius: 14px; font-size: 12px; font-weight: 500; opacity: 0.8; }
-                .preview-experiences { display: flex; flex-direction: column; gap: 10px; }
-                .preview-exp { background: var(--glass-surface); padding: 10px 14px; border-radius: 8px; border-left: 3px solid var(--primary); }
-                .preview-exp strong { display: block; color: var(--text-primary); font-size: 14px; }
-                .preview-exp-company { display: block; color: var(--primary); font-size: 13px; }
-                .preview-exp-date { display: block; color: var(--text-muted); font-size: 11px; margin-top: 2px; }
-                .preview-hint { text-align: center; color: var(--text-muted); font-size: 12px; padding: 14px; border-top: 1px solid var(--glass-border); margin: 0; }
-                
-                /* CV Section */
-                .cv-upload-area { position: relative; }
-                .cv-display { display: flex; align-items: center; gap: 16px; background: var(--glass-surface); padding: 16px; border-radius: 12px; border: 1px solid var(--glass-border); }
-                .cv-icon { color: var(--accent-red); }
-                .cv-info { flex: 1; }
-                .cv-label { display: block; font-weight: 600; color: var(--text-primary); font-size: 15px; margin-bottom: 6px; }
-                .cv-actions { display: flex; gap: 8px; }
-                .view-cv-btn, .change-cv-btn { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; padding: 6px 12px; border-radius: 8px; font-weight: 500; cursor: pointer; text-decoration: none; }
-                .view-cv-btn { background: var(--primary-light); color: var(--primary-dark); }
-                .view-cv-btn:hover { background: var(--primary-light); opacity: 0.7; }
-                .change-cv-btn { background: var(--bento-card); border: 1px solid var(--glass-border); color: var(--text-secondary); }
-                .change-cv-btn:hover { background: var(--glass-surface); }
-                
-                .cv-placeholder { border: 2px dashed var(--glass-border); border-radius: 12px; padding: 24px; text-align: center; cursor: pointer; transition: all 0.2s; background: var(--glass-surface); }
-                .cv-placeholder:hover { border-color: var(--primary); background: var(--primary-light); opacity: 0.7; }
-                .placeholder-icon { width: 48px; height: 48px; background: var(--bento-card); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; color: var(--text-muted); box-shadow: var(--shadow-sm); }
-                .cv-placeholder:hover .placeholder-icon { color: var(--primary); }
-                .cv-placeholder p { color: #374151; font-weight: 600; margin: 0 0 4px; }
-                .cv-placeholder span { color: #9ca3af; font-size: 13px; }
-                
-                .uploading-overlay { position: absolute; inset: 0; background: rgba(255,255,255,0.8); display: flex; align-items: center; justify-content: center; gap: 8px; color: #3b82f6; font-weight: 600; border-radius: 12px; }
-            `}</style>
-        </div>
+            {toast && <ErrorToast {...toast} onClose={hideToast} />}        </div>
     )
 }
 
@@ -885,3 +750,5 @@ export default function StudentProfileWithErrorBoundary() {
         </ErrorBoundary>
     )
 }
+
+

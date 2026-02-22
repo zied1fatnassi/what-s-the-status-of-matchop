@@ -8,17 +8,17 @@
 
 -- InstaDeep (Tunis Centre)
 UPDATE companies 
-SET location_point = ST_SetSRID(ST_MakePoint(10.1815, 36.8065), 4326) -- Long, Lat
+SET location_point = gis.ST_SetSRID(gis.ST_MakePoint(10.1815, 36.8065), 4326) -- Long, Lat
 WHERE company_name = 'InstaDeep';
 
 -- Vermeg (Les Berges du Lac)
 UPDATE companies 
-SET location_point = ST_SetSRID(ST_MakePoint(10.2300, 36.8300), 4326) 
+SET location_point = gis.ST_SetSRID(gis.ST_MakePoint(10.2300, 36.8300), 4326) 
 WHERE company_name = 'Vermeg';
 
 -- Student Ahmed (Ariana)
 UPDATE students
-SET location_point = ST_SetSRID(ST_MakePoint(10.1800, 36.8600), 4326)
+SET location_point = gis.ST_SetSRID(gis.ST_MakePoint(10.1800, 36.8600), 4326)
 WHERE display_name = 'Ahmed Tounsi';
 
 
@@ -39,7 +39,7 @@ BEGIN
             'Java Dev (Sousse)', 
             ARRAY['Java', 'Spring'], 
             'Sousse', 
-            ST_SetSRID(ST_MakePoint(10.6084, 35.8256), 4326),
+            gis.ST_SetSRID(gis.ST_MakePoint(10.6084, 35.8256), 4326),
             'active'
         );
 
@@ -50,7 +50,7 @@ BEGIN
             'Java Dev (Tunis - Lac)', 
             ARRAY['Java', 'Spring'], 
             'Tunis', 
-            ST_SetSRID(ST_MakePoint(10.2300, 36.8300), 4326),
+            gis.ST_SetSRID(gis.ST_MakePoint(10.2300, 36.8300), 4326),
             'active'
         );
     END IF;

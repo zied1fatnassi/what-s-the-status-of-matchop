@@ -214,61 +214,15 @@ export default function AdminSettings() {
             </div>
 
             {/* Save Button */}
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '2rem' }}>
+            <div className="admin-settings-actions">
                 <button
-                    className="admin-btn admin-btn-success"
+                    className="admin-btn admin-btn-success admin-btn-lg"
                     onClick={saveSettings}
                     disabled={saving}
-                    style={{ padding: '1rem 2rem', fontSize: '1rem' }}
                 >
                     {saving ? 'Saving...' : '💾 Save Settings'}
                 </button>
             </div>
-
-            <style>{`
-                .admin-message {
-                    padding: 1rem;
-                    border-radius: 8px;
-                    margin-bottom: 1.5rem;
-                }
-                .admin-message.success {
-                    background: rgba(76, 175, 80, 0.2);
-                    border: 1px solid rgba(76, 175, 80, 0.3);
-                    color: #81c784;
-                }
-                .admin-message.error {
-                    background: rgba(244, 67, 54, 0.2);
-                    border: 1px solid rgba(244, 67, 54, 0.3);
-                    color: #e57373;
-                }
-                .settings-toggle {
-                    margin-bottom: 1.25rem;
-                    padding: 1rem;
-                    background: rgba(255, 255, 255, 0.05);
-                    border-radius: 8px;
-                }
-                .settings-toggle.warning {
-                    background: rgba(255, 152, 0, 0.1);
-                    border: 1px solid rgba(255, 152, 0, 0.2);
-                }
-                .settings-toggle label {
-                    display: flex;
-                    align-items: center;
-                    gap: 0.75rem;
-                    cursor: pointer;
-                    color: white;
-                }
-                .settings-toggle input[type="checkbox"] {
-                    width: 20px;
-                    height: 20px;
-                    cursor: pointer;
-                }
-                .setting-description {
-                    margin: 0.5rem 0 0 1.75rem;
-                    color: rgba(255, 255, 255, 0.5);
-                    font-size: 0.85rem;
-                }
-            `}</style>
         </div>
     )
 }

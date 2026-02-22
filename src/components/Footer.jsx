@@ -14,7 +14,7 @@ const Footer = () => {
             borderTop: '1px solid var(--glass-border)',
             padding: 'clamp(1.5rem, 5vw, 3rem) var(--space-3, 1rem)',
             marginTop: 'auto',
-            paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + clamp(1.5rem, 5vw, 3rem))'
+            paddingBottom: 'calc(var(--safe-bottom) + clamp(1.5rem, 5vw, 3rem))'
         }}>
             <div className="container" style={{ maxWidth: '1200px', margin: '0 auto' }}>
                 <div style={{

@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { X, MapPin, DollarSign, Clock, Building2, Briefcase, Flag } from 'lucide-react'
 import ReportModal from './ReportModal'
+import { lockOverlayScroll, unlockOverlayScroll } from '../lib/overlayLock'
 import './OfferDetailModal.css'
 
 /**
@@ -10,6 +11,19 @@ function OfferDetailModal({ offer, onClose }) {
     const [showReport, setShowReport] = useState(false)
 
     if (!offer) return null
+
+    useEffect(() => {
+        const handleEsc = (event) => {
+            if (event.key === 'Escape') onClose()
+        }
+
+        lockOverlayScroll()
+        document.addEventListener('keydown', handleEsc)
+        return () => {
+            unlockOverlayScroll()
+            document.removeEventListener('keydown', handleEsc)
+        }
+    }, [onClose])
 
     // Extract company info for reporting
     const companyProfile = {

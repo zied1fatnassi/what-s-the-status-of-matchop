@@ -216,7 +216,7 @@ export default function AdminAnalytics() {
                 </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '1.5rem' }}>
+            <div className="admin-analytics-grid">
                 {/* Top Companies */}
                 <div className="admin-section">
                     <h2>🏢 Top Companies by Offers</h2>
@@ -272,69 +272,6 @@ export default function AdminAnalytics() {
                 </div>
             </div>
 
-            <style>{`
-                .analytics-bars {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 1rem;
-                }
-                .analytics-bar-item {
-                    display: flex;
-                    align-items: center;
-                    gap: 1rem;
-                }
-                .bar-label {
-                    min-width: 100px;
-                    color: rgba(255, 255, 255, 0.8);
-                }
-                .bar-container {
-                    flex: 1;
-                    height: 24px;
-                    background: rgba(255, 255, 255, 0.1);
-                    border-radius: 12px;
-                    overflow: hidden;
-                }
-                .bar-fill {
-                    height: 100%;
-                    border-radius: 12px;
-                    transition: width 0.5s ease;
-                }
-                .bar-fill.student { background: linear-gradient(90deg, #2196f3, #64b5f6); }
-                .bar-fill.company { background: linear-gradient(90deg, #4caf50, #81c784); }
-                .bar-fill.admin { background: linear-gradient(90deg, #ff9800, #ffb74d); }
-                .bar-value {
-                    min-width: 50px;
-                    text-align: right;
-                    color: white;
-                    font-weight: 600;
-                }
-                .analytics-list {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 0.5rem;
-                }
-                .analytics-list-item {
-                    display: flex;
-                    align-items: center;
-                    gap: 1rem;
-                    padding: 0.75rem 1rem;
-                    background: rgba(255, 255, 255, 0.05);
-                    border-radius: 8px;
-                }
-                .analytics-list-item .rank {
-                    color: #2196f3;
-                    font-weight: 600;
-                    min-width: 30px;
-                }
-                .analytics-list-item .name {
-                    flex: 1;
-                    color: white;
-                }
-                .analytics-list-item .value {
-                    color: rgba(255, 255, 255, 0.6);
-                    font-size: 0.9rem;
-                }
-            `}</style>
         </div>
     )
 }

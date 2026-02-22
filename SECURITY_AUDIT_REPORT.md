@@ -156,7 +156,7 @@
 | `database/password_reset_tokens.sql` | Token storage table + RLS |
 | `supabase/functions/secure-password-reset/index.ts` | Password reset Edge Function |
 | `supabase/functions/ingest-partner-offers/index.ts` | Partner offer ingestion Edge Function |
-| `supabase/migrations/20260213_partner_ingest_model.sql` | Partners table + offers columns migration |
+| `supabase/migrations/20260213010100_partner_ingest_model.sql` | Partners table + offers columns migration |
 
 ### Modified Files (7)
 | File | Change |

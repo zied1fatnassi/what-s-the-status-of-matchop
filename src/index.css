@@ -3,6 +3,15 @@
    Premium Dark/Light Theme with Robust Switching
    ================================ */
 
+@font-face {
+  font-family: 'Inter Fallback';
+  src: local('Segoe UI');
+  ascent-override: 90%;
+  descent-override: 22%;
+  line-gap-override: 0%;
+  size-adjust: 107%;
+}
+
 :root {
   /* --- 1. BRAND COLORS (Preserved) --- */
   --primary: #3b82f6;
@@ -56,6 +65,15 @@
   /* --- 5. BENTO GRID LAYOUT --- */
   --bento-gap: var(--space-4);
   --bento-padding: var(--space-6);
+
+  /* --- 6. RESPONSIVE LAYOUT CONTRACT --- */
+  --nav-height-mobile: 70px;
+  --nav-height-desktop: 90px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --page-x-padding: clamp(0.75rem, 2.5vw, 1.5rem);
 }
 
 /* ===================================
@@ -194,28 +212,49 @@
 
 html {
   overflow-x: hidden;
-  height: 100%;
+  height: 100dvh;
   height: -webkit-fill-available;
   background: var(--bento-bg);
 }
 
 body {
-  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'Inter', 'Inter Fallback', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   background: var(--bento-bg);
   color: var(--text-primary);
   line-height: 1.6;
-  min-height: 100vh;
+  min-height: 100dvh;
   min-height: -webkit-fill-available;
   overflow-x: hidden;
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
-  padding-left: env(safe-area-inset-left);
-  padding-right: env(safe-area-inset-right);
+  padding-top: var(--safe-top);
+  padding-bottom: var(--safe-bottom);
+  padding-left: var(--safe-left);
+  padding-right: var(--safe-right);
   -webkit-overflow-scrolling: touch;
 }
 
+body.navbar-menu-open {
+  overflow: hidden;
+}
+
+body.overlay-open {
+  overflow: hidden;
+  overscroll-behavior: contain;
+}
+
+/* Stabilize third-party bottom widget position to avoid CLS from late repositioning. */
+#comp-tabbar,
+.commentedio-bm4dsx {
+  position: fixed !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  top: auto !important;
+  transition: none !important;
+  animation: none !important;
+}
+
 #root {
-  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   background: var(--bento-bg);
@@ -754,12 +793,12 @@ textarea {
 
 /* Safe scroll padding for fixed headers */
 .page-with-navbar {
-  padding-top: calc(80px + env(safe-area-inset-top));
+  padding-top: calc(var(--nav-height-desktop) + var(--safe-top));
 }
 
 @media (max-width: 767px) {
   .page-with-navbar {
-    padding-top: calc(70px + env(safe-area-inset-top));
+    padding-top: calc(var(--nav-height-mobile) + var(--safe-top));
   }
 }
 
@@ -779,15 +818,71 @@ textarea {
 .app-main {
   flex: 1;
   width: 100%;
-  padding-top: 90px;
+  padding-top: calc(var(--nav-height-mobile) + var(--safe-top));
 }
 .app-main--landing {
   padding-top: 0;
 }
+.footer-placeholder {
+  min-height: 280px;
+}
 @media (max-width: 768px) {
-  .app-main {
-    padding-top: 70px; /* mobile navbar is shorter */
+  .footer-placeholder {
+    min-height: 340px;
   }
+}
+
+@media (min-width: 768px) {
+  .app-main {
+    padding-top: calc(var(--nav-height-desktop) + var(--safe-top));
+  }
+}
+
+@media (max-width: 767px) {
+  body.navbar-menu-open,
+  body.overlay-open {
+    touch-action: none;
+  }
+}
+
+/* Shared page shells */
+.page-shell {
+  min-height: calc(100dvh - (var(--nav-height-mobile) + var(--safe-top)));
+  padding-bottom: var(--safe-bottom);
+}
+
+@media (min-width: 768px) {
+  .page-shell {
+    min-height: calc(100dvh - (var(--nav-height-desktop) + var(--safe-top)));
+  }
+}
+
+.page-shell--full {
+  min-height: 100dvh;
+}
+
+.content-shell {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding-left: var(--page-x-padding);
+  padding-right: var(--page-x-padding);
+}
+
+.sticky-under-navbar {
+  top: calc(var(--nav-height-mobile) + var(--safe-top));
+}
+
+@media (min-width: 768px) {
+  .sticky-under-navbar {
+    top: calc(var(--nav-height-desktop) + var(--safe-top));
+  }
+}
+
+.app-main,
+.page-shell,
+.content-shell {
+  overflow-x: clip;
 }
 
 /* ============================================================
@@ -864,7 +959,10 @@ textarea {
 /* Width/Height */
 .w-full { width: 100%; }
 .h-full { height: 100%; }
-.min-h-screen { min-height: 100vh; }
+.min-h-screen {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
 
 /* Colors */
 .text-red-500 { color: #ef4444; }

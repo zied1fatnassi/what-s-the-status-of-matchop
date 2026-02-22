@@ -11,14 +11,14 @@
 -- ============================================
 
 CREATE TABLE IF NOT EXISTS public.partners (
-    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     company_name TEXT NOT NULL,
     api_key_hash TEXT NOT NULL,          -- SHA-256 hash of the partner API key (never store plaintext)
-    status      TEXT NOT NULL DEFAULT 'pending'
-                CHECK (status IN ('pending', 'active', 'suspended', 'revoked')),
+    status TEXT NOT NULL DEFAULT 'pending'
+        CHECK (status IN ('pending', 'active', 'suspended', 'revoked')),
     contact_email TEXT,
-    created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
-    updated_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 -- Index for fast lookups by hashed key during ingestion
@@ -28,49 +28,61 @@ COMMENT ON TABLE public.partners IS 'Verified partner companies authorized to pu
 COMMENT ON COLUMN public.partners.api_key_hash IS 'SHA-256 hash of the X-Partner-Key header value';
 
 -- ============================================
--- 2. OFFERS TABLE — NEW COLUMNS
+-- 2. OFFERS TABLE - NEW COLUMNS
 -- ============================================
 
--- is_exclusive: Jobs that are ONLY available on MatchOp
-ALTER TABLE public.offers
-    ADD COLUMN IF NOT EXISTS is_exclusive BOOLEAN NOT NULL DEFAULT false;
+DO $$
+BEGIN
+    IF to_regclass('public.offers') IS NULL THEN
+        RAISE NOTICE 'Skipping partner ingest offer-column updates because public.offers does not exist yet.';
+        RETURN;
+    END IF;
 
--- is_leak: Internal roles posted by verified employees (insider knowledge)
-ALTER TABLE public.offers
-    ADD COLUMN IF NOT EXISTS is_leak BOOLEAN NOT NULL DEFAULT false;
+    -- is_exclusive: Jobs that are ONLY available on MatchOp
+    ALTER TABLE public.offers
+        ADD COLUMN IF NOT EXISTS is_exclusive BOOLEAN NOT NULL DEFAULT false;
 
--- bounty_value: Referral reward amount (0 = no bounty)
-ALTER TABLE public.offers
-    ADD COLUMN IF NOT EXISTS bounty_value NUMERIC(10, 2) NOT NULL DEFAULT 0
-    CHECK (bounty_value >= 0);
+    -- is_leak: Internal roles posted by verified employees (insider knowledge)
+    ALTER TABLE public.offers
+        ADD COLUMN IF NOT EXISTS is_leak BOOLEAN NOT NULL DEFAULT false;
 
--- partner_id: Links this offer to the partner who submitted it
-ALTER TABLE public.offers
-    ADD COLUMN IF NOT EXISTS partner_id UUID REFERENCES public.partners(id) ON DELETE SET NULL;
+    -- bounty_value: Referral reward amount (0 = no bounty)
+    ALTER TABLE public.offers
+        ADD COLUMN IF NOT EXISTS bounty_value NUMERIC(10, 2) NOT NULL DEFAULT 0
+        CHECK (bounty_value >= 0);
 
--- Index for filtering exclusive / leak / bounty offers
-CREATE INDEX IF NOT EXISTS idx_offers_exclusive ON public.offers (is_exclusive) WHERE is_exclusive = true;
-CREATE INDEX IF NOT EXISTS idx_offers_leak      ON public.offers (is_leak) WHERE is_leak = true;
-CREATE INDEX IF NOT EXISTS idx_offers_bounty    ON public.offers (bounty_value) WHERE bounty_value > 0;
-CREATE INDEX IF NOT EXISTS idx_offers_partner   ON public.offers (partner_id);
+    -- partner_id: Links this offer to the partner who submitted it
+    ALTER TABLE public.offers
+        ADD COLUMN IF NOT EXISTS partner_id UUID REFERENCES public.partners(id) ON DELETE SET NULL;
+
+    -- Index for filtering exclusive / leak / bounty offers
+    CREATE INDEX IF NOT EXISTS idx_offers_exclusive ON public.offers (is_exclusive) WHERE is_exclusive = true;
+    CREATE INDEX IF NOT EXISTS idx_offers_leak      ON public.offers (is_leak) WHERE is_leak = true;
+    CREATE INDEX IF NOT EXISTS idx_offers_bounty    ON public.offers (bounty_value) WHERE bounty_value > 0;
+    CREATE INDEX IF NOT EXISTS idx_offers_partner   ON public.offers (partner_id);
+END
+$$ LANGUAGE plpgsql;
 
 -- ============================================
--- 3. ROW LEVEL SECURITY — PARTNERS TABLE
+-- 3. ROW LEVEL SECURITY - PARTNERS TABLE
 -- ============================================
 
 ALTER TABLE public.partners ENABLE ROW LEVEL SECURITY;
 
--- Only service_role (Edge Functions) can manage partners — no client access
+-- Only service_role (Edge Functions) can manage partners - no client access
+DROP POLICY IF EXISTS "partners_service_only_select" ON public.partners;
 CREATE POLICY "partners_service_only_select"
     ON public.partners FOR SELECT
     TO service_role
     USING (true);
 
+DROP POLICY IF EXISTS "partners_service_only_insert" ON public.partners;
 CREATE POLICY "partners_service_only_insert"
     ON public.partners FOR INSERT
     TO service_role
     WITH CHECK (true);
 
+DROP POLICY IF EXISTS "partners_service_only_update" ON public.partners;
 CREATE POLICY "partners_service_only_update"
     ON public.partners FOR UPDATE
     TO service_role

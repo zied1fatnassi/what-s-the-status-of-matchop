@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
+import { lockOverlayScroll, unlockOverlayScroll } from '../../lib/overlayLock'
 import './Admin.css'
 
 export default function AdminReports() {
@@ -16,6 +17,12 @@ export default function AdminReports() {
     useEffect(() => {
         fetchReports()
     }, [currentPage, statusFilter])
+
+    useEffect(() => {
+        if (!showModal) return undefined
+        lockOverlayScroll()
+        return () => unlockOverlayScroll()
+    }, [showModal])
 
     async function fetchReports() {
         setLoading(true)
@@ -181,16 +188,16 @@ export default function AdminReports() {
                                 <tbody>
                                     {reports.map(report => (
                                         <tr key={report.id}>
-                                            <td>{report.reporter_email}</td>
-                                            <td>{report.reported_email}</td>
-                                            <td>{getReasonLabel(report.reason)}</td>
-                                            <td>
+                                            <td data-label="Reporter">{report.reporter_email}</td>
+                                            <td data-label="Reported User">{report.reported_email}</td>
+                                            <td data-label="Reason">{getReasonLabel(report.reason)}</td>
+                                            <td data-label="Status">
                                                 <span className={`status-badge status-${report.status}`}>
                                                     {report.status}
                                                 </span>
                                             </td>
-                                            <td>{new Date(report.created_at).toLocaleDateString()}</td>
-                                            <td>
+                                            <td data-label="Date">{new Date(report.created_at).toLocaleDateString()}</td>
+                                            <td data-label="Actions" className="admin-actions-cell">
                                                 <button
                                                     className="admin-btn admin-btn-primary admin-btn-sm"
                                                     onClick={() => {
@@ -271,7 +278,7 @@ export default function AdminReports() {
                                     />
                                 </div>
 
-                                <div className="admin-modal-actions" style={{ flexWrap: 'wrap' }}>
+                                <div className="admin-modal-actions admin-modal-actions--wrap">
                                     <button
                                         className="admin-btn admin-btn-danger"
                                         onClick={() => suspendReportedUser(selectedReport.id, selectedReport.reported_id)}

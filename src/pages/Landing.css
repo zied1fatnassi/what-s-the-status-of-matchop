@@ -4,17 +4,11 @@
    ================================ */
 
 .landing-page {
-    padding-top: 50px;
+    padding-top: 0;
     background: var(--bento-bg);
     color: var(--text-primary);
     overflow-x: hidden;
-    min-height: 100vh;
-}
-
-@media (min-width: 768px) {
-    .landing-page {
-        padding-top: 60px;
-    }
+    min-height: 100dvh;
 }
 
 /* Hero Section - Bento Main Stage */
@@ -30,7 +24,7 @@
 
 @media (min-width: 768px) {
     .hero {
-        min-height: calc(100vh - 60px);
+        min-height: calc(100dvh - 60px);
         padding: var(--space-10) 0;
     }
 }
@@ -704,10 +698,11 @@
 .match-score {
     font-size: 0.8rem;
     color: #0f766e; /* Darker teal for contrast */
-    [data-theme='dark'] & {
-        color: #2dd4bf;
-    }
     font-weight: 600;
+}
+
+[data-theme='dark'] .match-score {
+    color: #2dd4bf;
 }
 
 /* CTA Section */

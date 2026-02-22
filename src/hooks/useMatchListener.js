@@ -6,6 +6,11 @@ import { useAuth } from '../context/AuthContext'
  * Hook to listen for new matches in real-time
  * Subscribes to the matches table and notifies when a new match is created
  */
+const isMatchDebugEnabled = import.meta.env.DEV && import.meta.env.VITE_DEBUG_MATCHES === 'true'
+const debugLog = (...args) => {
+    if (isMatchDebugEnabled) console.log(...args)
+}
+
 export function useMatchListener() {
     const { user } = useAuth()
     const [newMatch, setNewMatch] = useState(null)
@@ -17,7 +22,7 @@ export function useMatchListener() {
     useEffect(() => {
         if (!user) return
 
-        console.log('[useMatchListener] Setting up real-time subscription for user:', user.id)
+        debugLog('[useMatchListener] Setting up real-time subscription for user:', user.id)
 
         // Subscribe to new matches for this student
         const channel = supabase
@@ -31,7 +36,7 @@ export function useMatchListener() {
                     filter: `student_id=eq.${user.id}`
                 },
                 (payload) => {
-                    console.log('[useMatchListener] New match detected!', payload)
+                    debugLog('[useMatchListener] New match detected!', payload)
 
                     // Fetch full match details with company info
                     fetchMatchDetails(payload.new.id)
@@ -69,7 +74,7 @@ export function useMatchListener() {
         }
 
         return () => {
-            console.log('[useMatchListener] Cleaning up real-time subscription')
+            debugLog('[useMatchListener] Cleaning up real-time subscription')
             supabase.removeChannel(channel)
         }
     }, [user])

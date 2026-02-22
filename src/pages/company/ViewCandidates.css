@@ -4,14 +4,15 @@
 
 .candidates-page {
     min-height: 100vh;
+    min-height: 100dvh;
     /* MOBILE FIRST: Smaller padding on mobile */
-    padding-top: 80px;
+    padding-top: 0;
     padding-bottom: var(--space-6);
 }
 
 @media (min-width: 768px) {
     .candidates-page {
-        padding-top: 100px;
+        padding-top: 0;
         padding-bottom: var(--space-10);
     }
 }

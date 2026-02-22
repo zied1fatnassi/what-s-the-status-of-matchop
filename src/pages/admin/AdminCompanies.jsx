@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
+import { lockOverlayScroll, unlockOverlayScroll } from '../../lib/overlayLock'
 import './Admin.css'
 
 export default function AdminCompanies() {
@@ -15,6 +16,12 @@ export default function AdminCompanies() {
     useEffect(() => {
         fetchCompanies()
     }, [currentPage, searchTerm])
+
+    useEffect(() => {
+        if (!showModal) return undefined
+        lockOverlayScroll()
+        return () => unlockOverlayScroll()
+    }, [showModal])
 
     async function fetchCompanies() {
         setLoading(true)
@@ -152,31 +159,26 @@ export default function AdminCompanies() {
                                 <tbody>
                                     {companies.map(company => (
                                         <tr key={company.id}>
-                                            <td style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                            <td data-label="Company" className="admin-company-cell">
                                                 {company.logo_url && (
-                                                    <img 
+                                                    <img
                                                         src={company.logo_url} 
                                                         alt="" 
-                                                        style={{ 
-                                                            width: 32, 
-                                                            height: 32, 
-                                                            borderRadius: '8px',
-                                                            objectFit: 'cover'
-                                                        }} 
+                                                        className="admin-company-logo"
                                                     />
                                                 )}
                                                 {company.company_name}
                                             </td>
-                                            <td>{company.industry || 'N/A'}</td>
-                                            <td>{company.location || 'N/A'}</td>
-                                            <td>{company.offerCount}</td>
-                                            <td>
+                                            <td data-label="Industry">{company.industry || 'N/A'}</td>
+                                            <td data-label="Location">{company.location || 'N/A'}</td>
+                                            <td data-label="Offers">{company.offerCount}</td>
+                                            <td data-label="Verified">
                                                 <span className={`status-badge ${company.verified ? 'status-active' : 'status-pending'}`}>
                                                     {company.verified ? 'Verified' : 'Pending'}
                                                 </span>
                                             </td>
-                                            <td>{new Date(company.created_at).toLocaleDateString()}</td>
-                                            <td>
+                                            <td data-label="Joined">{new Date(company.created_at).toLocaleDateString()}</td>
+                                            <td data-label="Actions" className="admin-actions-cell">
                                                 <button
                                                     className="admin-btn admin-btn-primary admin-btn-sm"
                                                     onClick={() => {
@@ -186,7 +188,6 @@ export default function AdminCompanies() {
                                                 >
                                                     View
                                                 </button>
-                                                {' '}
                                                 {company.verified ? (
                                                     <button
                                                         className="admin-btn admin-btn-warning admin-btn-sm"
@@ -202,7 +203,6 @@ export default function AdminCompanies() {
                                                         Verify
                                                     </button>
                                                 )}
-                                                {' '}
                                                 <button
                                                     className="admin-btn admin-btn-danger admin-btn-sm"
                                                     onClick={() => deleteCompany(company.id)}
@@ -244,16 +244,10 @@ export default function AdminCompanies() {
                         <h2>{selectedCompany.company_name}</h2>
                         
                         {selectedCompany.logo_url && (
-                            <img 
+                            <img
                                 src={selectedCompany.logo_url} 
                                 alt={selectedCompany.company_name}
-                                style={{ 
-                                    width: 100, 
-                                    height: 100, 
-                                    borderRadius: '16px',
-                                    objectFit: 'cover',
-                                    marginBottom: '1rem'
-                                }} 
+                                className="admin-company-logo admin-company-logo--modal"
                             />
                         )}
 

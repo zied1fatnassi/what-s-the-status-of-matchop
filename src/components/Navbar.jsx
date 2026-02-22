@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Menu, X, User, Briefcase, Heart, Home, LogOut, Globe, ChevronDown, Moon, Sun } from 'lucide-react'
@@ -17,14 +17,14 @@ import './Navbar.css'
 function Navbar({ isLanding = false }) {
     const [isOpen, setIsOpen] = useState(false)
     const [langOpen, setLangOpen] = useState(false)
+    const langSwitcherRef = useRef(null)
     const location = useLocation()
     const navigate = useNavigate()
     const { t, i18n } = useTranslation()
     const { isLoggedIn, isStudent, isCompany, isLoading, signOut, user } = useAuth()
-    const { theme, setTheme, isDark } = useTheme()
+    const { theme, setTheme } = useTheme()
     const hasSession = isLoggedIn && !!user
 
-    // Toggle between light and dark modes
     const toggleTheme = () => {
         setTheme(theme === 'dark' ? 'light' : 'dark')
     }
@@ -43,16 +43,15 @@ function Navbar({ isLanding = false }) {
         { to: '/company/profile', icon: <User size={18} />, label: t('nav.profile') },
     ]
 
-    // Determine links based on user type, with fallback for when type isn't loaded yet
     const links = isStudent ? studentLinks : isCompany ? companyLinks : []
     const logoTarget = hasSession ? '/discovery' : '/'
 
     const languages = [
-        { code: 'en', label: 'EN', fullLabel: 'English', flag: '🇬🇧' },
-        { code: 'fr', label: 'FR', fullLabel: 'Français', flag: '🇫🇷' },
+        { code: 'en', label: 'EN', fullLabel: 'English' },
+        { code: 'fr', label: 'FR', fullLabel: 'Francais' },
     ]
 
-    const currentLang = languages.find(l => l.code === i18n.language) || languages[0]
+    const currentLang = languages.find((lang) => lang.code === i18n.language) || languages[0]
 
     const changeLanguage = (code) => {
         i18n.changeLanguage(code)
@@ -60,10 +59,8 @@ function Navbar({ isLanding = false }) {
     }
 
     const handleLogout = async () => {
-        console.log('[Navbar] Logout clicked')
         try {
             await signOut()
-            console.log('[Navbar] signOut completed, navigating to /')
             navigate('/')
             setIsOpen(false)
         } catch (err) {
@@ -71,18 +68,58 @@ function Navbar({ isLanding = false }) {
         }
     }
 
+    useEffect(() => {
+        setIsOpen(false)
+        setLangOpen(false)
+    }, [location.pathname])
+
+    useEffect(() => {
+        const handleEsc = (event) => {
+            if (event.key === 'Escape') {
+                setIsOpen(false)
+                setLangOpen(false)
+            }
+        }
+
+        document.addEventListener('keydown', handleEsc)
+        return () => document.removeEventListener('keydown', handleEsc)
+    }, [])
+
+    useEffect(() => {
+        if (!langOpen) return undefined
+
+        const handleOutsideClick = (event) => {
+            if (!langSwitcherRef.current?.contains(event.target)) {
+                setLangOpen(false)
+            }
+        }
+
+        document.addEventListener('mousedown', handleOutsideClick)
+        return () => document.removeEventListener('mousedown', handleOutsideClick)
+    }, [langOpen])
+
+    useEffect(() => {
+        document.body.classList.toggle('navbar-menu-open', isOpen)
+        return () => document.body.classList.remove('navbar-menu-open')
+    }, [isOpen])
+
     return (
         <nav className={`navbar${isLanding ? ' navbar--landing' : ''}`}>
             <div className="navbar-container">
-                {/* Logo */}
                 <Link to={logoTarget} className="navbar-logo">
                     <Logo size="small" showText={true} />
                 </Link>
 
-                {/* Center Links (when logged in) */}
                 {hasSession && (
-                    <div className={`navbar-links ${isOpen ? 'active' : ''}`}>
-                        {links.map(link => (
+                    <div
+                        className={`navbar-links ${isOpen ? 'active' : ''}`}
+                        onClick={(event) => {
+                            if (event.target === event.currentTarget) {
+                                setIsOpen(false)
+                            }
+                        }}
+                    >
+                        {links.map((link) => (
                             <Link
                                 key={link.to}
                                 to={link.to}
@@ -93,16 +130,21 @@ function Navbar({ isLanding = false }) {
                                 <span>{link.label}</span>
                             </Link>
                         ))}
+
+                        <button onClick={handleLogout} className="btn btn-secondary btn-sm logout-btn logout-btn--mobile">
+                            <LogOut size={16} />
+                            <span>{t('nav.logout')}</span>
+                        </button>
                     </div>
                 )}
 
-                {/* Right Section */}
                 <div className="navbar-right">
-                    {/* Language Switcher */}
-                    <div className="lang-switcher">
+                    <div className="lang-switcher" ref={langSwitcherRef}>
                         <button
                             className="lang-btn"
                             onClick={() => setLangOpen(!langOpen)}
+                            aria-label="Change language"
+                            aria-expanded={langOpen}
                         >
                             <Globe size={16} />
                             <span>{currentLang.label}</span>
@@ -111,13 +153,12 @@ function Navbar({ isLanding = false }) {
 
                         {langOpen && (
                             <div className="lang-dropdown">
-                                {languages.map(lang => (
+                                {languages.map((lang) => (
                                     <button
                                         key={lang.code}
                                         className={`lang-option ${i18n.language === lang.code ? 'active' : ''}`}
                                         onClick={() => changeLanguage(lang.code)}
                                     >
-                                        <span>{lang.flag}</span>
                                         <span>{lang.fullLabel}</span>
                                     </button>
                                 ))}
@@ -125,18 +166,17 @@ function Navbar({ isLanding = false }) {
                         )}
                     </div>
 
-                    {/* Theme Toggle */}
                     <button
                         className="theme-toggle-btn"
                         onClick={toggleTheme}
                         title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+                        aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
                     >
                         {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
                     </button>
 
-                    {/* Auth Buttons (when not logged in and not loading) */}
-                    {!hasSession && !isLoading && (
-                        <div className="navbar-auth">
+                    {!hasSession && (
+                        <div className={`navbar-auth ${isLoading ? 'is-loading' : ''}`} aria-hidden={isLoading}>
                             <Link to="/student/signup" className="btn btn-secondary btn-sm">
                                 {t('landing.ctaStudent')}
                             </Link>
@@ -146,17 +186,15 @@ function Navbar({ isLanding = false }) {
                         </div>
                     )}
 
-                    {/* Logout (when logged in) */}
                     {hasSession && (
-                        <button onClick={handleLogout} className="btn btn-secondary btn-sm logout-btn">
+                        <button onClick={handleLogout} className="btn btn-secondary btn-sm logout-btn logout-btn--desktop">
                             <LogOut size={16} />
                             <span>{t('nav.logout')}</span>
                         </button>
                     )}
 
-                    {/* Mobile Toggle */}
                     {hasSession && (
-                        <button className="navbar-toggle" onClick={() => setIsOpen(!isOpen)}>
+                        <button className="navbar-toggle" onClick={() => setIsOpen(!isOpen)} aria-label="Toggle navigation menu" aria-expanded={isOpen}>
                             {isOpen ? <X size={24} /> : <Menu size={24} />}
                         </button>
                     )}

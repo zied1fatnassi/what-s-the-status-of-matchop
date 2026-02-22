@@ -1,34 +1,17 @@
 import { useState } from 'react'
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import './Dashboard.css'
 
 const DashboardLoading = () => (
-    <div style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
-    }}>
-        <div style={{
-            width: '40px',
-            height: '40px',
-            border: '3px solid rgba(255,255,255,0.1)',
-            borderTop: '3px solid #2196f3',
-            borderRadius: '50%',
-            animation: 'spin 1s linear infinite'
-        }} />
-        <style>{`
-            @keyframes spin {
-                0% { transform: rotate(0deg); }
-                100% { transform: rotate(360deg); }
-            }
-        `}</style>
+    <div className="dashboard-loading">
+        <div className="dashboard-loading-spinner" />
     </div>
 )
 
 const UnknownRoleFallback = ({ onSignOut, isSigningOut, email }) => (
     <div style={{
-        minHeight: '100vh',
+        minHeight: '100dvh',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',

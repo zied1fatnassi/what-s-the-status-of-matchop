@@ -5,8 +5,63 @@
 
 -- 1. EXTENSIONS
 -- ============================================================================
-CREATE EXTENSION IF NOT EXISTS pg_trgm;
-CREATE EXTENSION IF NOT EXISTS postgis;
+CREATE SCHEMA IF NOT EXISTS extensions;
+CREATE SCHEMA IF NOT EXISTS gis;
+
+DO $$
+DECLARE
+    _schema text;
+    _owner text;
+BEGIN
+    SELECT n.nspname, pg_get_userbyid(e.extowner)
+    INTO _schema, _owner
+    FROM pg_extension e
+    JOIN pg_namespace n ON n.oid = e.extnamespace
+    WHERE e.extname = 'pg_trgm'
+    LIMIT 1;
+
+    IF _schema IS NOT NULL AND _schema <> 'extensions' THEN
+        IF _owner = current_user THEN
+            EXECUTE 'ALTER EXTENSION pg_trgm SET SCHEMA extensions';
+        ELSE
+            RAISE EXCEPTION
+                'Extension "pg_trgm" is in schema "%" and owned by "%". Current role "%" cannot move it to "extensions".',
+                _schema,
+                coalesce(_owner, '<unknown>'),
+                current_user;
+        END IF;
+    END IF;
+END
+$$ LANGUAGE plpgsql;
+
+DO $$
+DECLARE
+    _schema text;
+    _owner text;
+BEGIN
+    SELECT n.nspname, pg_get_userbyid(e.extowner)
+    INTO _schema, _owner
+    FROM pg_extension e
+    JOIN pg_namespace n ON n.oid = e.extnamespace
+    WHERE e.extname = 'postgis'
+    LIMIT 1;
+
+    IF _schema IS NOT NULL AND _schema <> 'gis' THEN
+        IF _owner = current_user THEN
+            EXECUTE 'ALTER EXTENSION postgis SET SCHEMA gis';
+        ELSE
+            RAISE EXCEPTION
+                'Extension "postgis" is in schema "%" and owned by "%". Current role "%" cannot move it to "gis".',
+                _schema,
+                coalesce(_owner, '<unknown>'),
+                current_user;
+        END IF;
+    END IF;
+END
+$$ LANGUAGE plpgsql;
+
+CREATE EXTENSION IF NOT EXISTS pg_trgm WITH SCHEMA extensions;
+CREATE EXTENSION IF NOT EXISTS postgis WITH SCHEMA gis;
 
 -- 2. SCHEMA UPDATES (Adding Brains & Maps)
 -- ============================================================================
@@ -17,15 +72,15 @@ ADD COLUMN IF NOT EXISTS elo_score INT DEFAULT 1000;
 
 -- B. Students (Add Geospatial Location)
 ALTER TABLE students 
-ADD COLUMN IF NOT EXISTS location_point GEOGRAPHY(Point);
+ADD COLUMN IF NOT EXISTS location_point gis.GEOGRAPHY(Point);
 
 -- B2. Companies (Add Geospatial Location)
 ALTER TABLE companies 
-ADD COLUMN IF NOT EXISTS location_point GEOGRAPHY(Point);
+ADD COLUMN IF NOT EXISTS location_point gis.GEOGRAPHY(Point);
 
 -- C. Offers (Add Geospatial Location)
 ALTER TABLE offers 
-ADD COLUMN IF NOT EXISTS location_point GEOGRAPHY(Point);
+ADD COLUMN IF NOT EXISTS location_point gis.GEOGRAPHY(Point);
 
 
 -- 3. INDEXES (for Speed)
@@ -40,10 +95,10 @@ CREATE INDEX IF NOT EXISTS idx_students_skills ON students USING GIN(skills);
 -- ============================================================================
 
 -- A. Helper: Calculate Distance (in km)
-CREATE OR REPLACE FUNCTION get_distance_km(p1 GEOGRAPHY, p2 GEOGRAPHY)
+CREATE OR REPLACE FUNCTION get_distance_km(p1 gis.GEOGRAPHY, p2 gis.GEOGRAPHY)
 RETURNS INT AS $$
 BEGIN
-    RETURN (ST_Distance(p1, p2) / 1000)::INT;
+    RETURN (gis.ST_Distance(p1, p2) / 1000)::INT;
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 
@@ -87,7 +142,7 @@ RETURNS TABLE (
     recency_bonus INT
 ) AS $$
 DECLARE
-    s_loc GEOGRAPHY;
+    s_loc gis.GEOGRAPHY;
     s_skills TEXT[];
 BEGIN
     -- Get Student Context
@@ -102,7 +157,7 @@ BEGIN
         c.logo_url,
         (
             (get_skill_score(s_skills, o.req_skills) * 60) + -- 60% weight to Skills
-            (CASE WHEN ST_DWithin(s_loc, o.location_point, max_distance_km * 1000) THEN 30 ELSE 0 END) + -- 30% weight Distance
+            (CASE WHEN gis.ST_DWithin(s_loc, o.location_point, max_distance_km * 1000) THEN 30 ELSE 0 END) + -- 30% weight Distance
             (CASE WHEN o.created_at > NOW() - INTERVAL '7 days' THEN 10 ELSE 0 END) -- 10% Recency
         )::INT as score,
         (get_skill_score(s_skills, o.req_skills) * 100)::INT as skill_match_pct,
@@ -117,7 +172,7 @@ BEGIN
         WHERE sw.student_id = student_uuid AND sw.offer_id = o.id
     )
     -- Distance Filter (if student has location)
-    AND (s_loc IS NULL OR ST_DWithin(s_loc, o.location_point, max_distance_km * 1000))
+    AND (s_loc IS NULL OR gis.ST_DWithin(s_loc, o.location_point, max_distance_km * 1000))
     ORDER BY score DESC
     LIMIT limit_count OFFSET offset_count;
 END;

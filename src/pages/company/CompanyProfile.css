@@ -1,0 +1,192 @@
+.company-profile-page {
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding: var(--space-4) var(--page-x-padding);
+    padding-bottom: calc(var(--space-10) + var(--safe-bottom));
+}
+
+.company-profile-container {
+    width: 100%;
+    max-width: 960px;
+    margin: 0 auto;
+}
+
+.company-profile-header {
+    margin-bottom: var(--space-5);
+}
+
+.company-profile-header h1 {
+    margin: 0;
+    font-size: clamp(1.5rem, 6vw, 2rem);
+    color: var(--text-primary);
+}
+
+.company-profile-header p {
+    margin: var(--space-2) 0 0;
+    color: var(--text-secondary);
+}
+
+.company-profile-form {
+    padding: var(--space-4);
+    border-radius: var(--radius-xl);
+}
+
+.company-profile-photo-section {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+}
+
+.company-profile-photo-upload {
+    position: relative;
+}
+
+.company-profile-photo-placeholder {
+    width: 96px;
+    height: 96px;
+    border-radius: var(--radius-xl);
+    border: 1px dashed var(--glass-border);
+    background: var(--glass-surface);
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.company-profile-photo-edit-btn {
+    position: absolute;
+    right: -8px;
+    bottom: -8px;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 999px;
+    background: var(--primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.company-profile-photo-info h3 {
+    margin: 0;
+    color: var(--text-primary);
+}
+
+.company-profile-photo-info p {
+    margin: var(--space-1) 0 0;
+    color: var(--text-secondary);
+}
+
+.company-profile-section {
+    margin-bottom: var(--space-6);
+}
+
+.company-profile-section-title {
+    margin: 0 0 var(--space-3);
+    font-size: 1.05rem;
+    color: var(--text-primary);
+}
+
+.company-profile-section-description {
+    margin: 0 0 var(--space-3);
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.company-profile-input-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+}
+
+.company-profile-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.company-profile-input-label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.company-profile-input {
+    width: 100%;
+    border: 1px solid var(--input-border);
+    border-radius: var(--radius-lg);
+    background: var(--input-bg);
+    color: var(--text-primary);
+    padding: 0.75rem 0.9rem;
+}
+
+.company-profile-input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.company-profile-textarea {
+    min-height: 110px;
+    resize: vertical;
+}
+
+.company-profile-char-count {
+    text-align: right;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+}
+
+.company-profile-chip-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+}
+
+.company-profile-chip {
+    border: 1px solid var(--glass-border);
+    border-radius: 999px;
+    background: var(--glass-surface);
+    color: var(--text-secondary);
+    padding: 0.45rem 0.8rem;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.company-profile-chip.selected {
+    background: linear-gradient(135deg, #42a5f5 0%, #1976d2 100%);
+    color: white;
+    border-color: transparent;
+}
+
+.company-profile-actions {
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--glass-border);
+}
+
+.company-profile-actions .btn {
+    width: 100%;
+    justify-content: center;
+}
+
+@media (min-width: 768px) {
+    .company-profile-page {
+        padding-top: var(--space-6);
+    }
+
+    .company-profile-form {
+        padding: var(--space-6);
+    }
+
+    .company-profile-input-row {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .company-profile-actions .btn {
+        width: auto;
+    }
+}

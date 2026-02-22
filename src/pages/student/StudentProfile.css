@@ -4,15 +4,15 @@
    ================================ */
 
 .profile-page {
-    padding-top: 80px;
+    padding-top: 0;
     padding-bottom: var(--space-8);
-    min-height: 100vh;
+    min-height: 100dvh;
     background: var(--bento-bg);
 }
 
 @media (min-width: 768px) {
     .profile-page {
-        padding-top: 120px;
+        padding-top: 0;
         padding-bottom: var(--space-12);
     }
 }
@@ -385,7 +385,7 @@
 /* Mobile Adjustments */
 @media (max-width: 768px) {
     .profile-page {
-        padding-top: 80px;
+        padding-top: 0;
     }
 
     .form-grid {

@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { X, AlertTriangle, CheckCircle } from 'lucide-react'
 import { useReporting } from '../hooks/useReporting'
+import { lockOverlayScroll, unlockOverlayScroll } from '../lib/overlayLock'
 import './ReportModal.css'
 
 /**
@@ -13,12 +14,25 @@ function ReportModal({ reportedUser, onClose }) {
     const { reportUser, isReporting } = useReporting()
 
     const reasons = [
-        { value: 'spam', label: '🚫 Spam or Unwanted Messages', description: 'Sending unsolicited or repetitive messages' },
-        { value: 'fake_profile', label: '🎭 Fake Profile or Impersonation', description: 'Pretending to be someone else or using fake information' },
-        { value: 'harassment', label: '⚠️ Harassment or Bullying', description: 'Threatening, abusive, or offensive behavior' },
-        { value: 'inappropriate_content', label: '🔞 Inappropriate Content', description: 'Sharing explicit, violent, or offensive content' },
-        { value: 'other', label: '❓ Other', description: 'Any other concern not listed above' }
+        { value: 'spam', label: 'Spam or Unwanted Messages', description: 'Sending unsolicited or repetitive messages' },
+        { value: 'fake_profile', label: 'Fake Profile or Impersonation', description: 'Pretending to be someone else or using fake information' },
+        { value: 'harassment', label: 'Harassment or Bullying', description: 'Threatening, abusive, or offensive behavior' },
+        { value: 'inappropriate_content', label: 'Inappropriate Content', description: 'Sharing explicit, violent, or offensive content' },
+        { value: 'other', label: 'Other', description: 'Any other concern not listed above' }
     ]
+
+    useEffect(() => {
+        const handleEsc = (event) => {
+            if (event.key === 'Escape') onClose()
+        }
+
+        lockOverlayScroll()
+        document.addEventListener('keydown', handleEsc)
+        return () => {
+            unlockOverlayScroll()
+            document.removeEventListener('keydown', handleEsc)
+        }
+    }, [onClose])
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -35,8 +49,8 @@ function ReportModal({ reportedUser, onClose }) {
 
     if (submitted) {
         return (
-            <div className="modal-overlay" onClick={onClose}>
-                <div className="modal-content report-modal" onClick={e => e.stopPropagation()}>
+            <div className="report-modal-overlay" onClick={onClose}>
+                <div className="report-modal-dialog report-modal" onClick={e => e.stopPropagation()}>
                     <div className="report-success">
                         <CheckCircle size={64} className="success-icon" />
                         <h2>Report Submitted</h2>
@@ -48,20 +62,20 @@ function ReportModal({ reportedUser, onClose }) {
     }
 
     return (
-        <div className="modal-overlay" onClick={onClose}>
-            <div className="modal-content report-modal" onClick={e => e.stopPropagation()}>
-                <div className="modal-header">
-                    <div className="header-content">
+        <div className="report-modal-overlay" onClick={onClose}>
+            <div className="report-modal-dialog report-modal" onClick={e => e.stopPropagation()}>
+                <div className="report-modal-header">
+                    <div className="report-modal-header-content">
                         <AlertTriangle size={24} className="warning-icon" />
                         <h2>Report {reportedUser.name}</h2>
                     </div>
-                    <button onClick={onClose} className="close-btn" aria-label="Close">
+                    <button onClick={onClose} className="report-modal-close-btn" aria-label="Close">
                         <X size={24} />
                     </button>
                 </div>
 
                 <form onSubmit={handleSubmit} className="report-form">
-                    <div className="form-group">
+                    <div className="report-form-group">
                         <label>Why are you reporting this user?</label>
                         <div className="reason-options">
                             {reasons.map(r => (
@@ -86,7 +100,7 @@ function ReportModal({ reportedUser, onClose }) {
                         </div>
                     </div>
 
-                    <div className="form-group">
+                    <div className="report-form-group">
                         <label htmlFor="details">Additional Details (Optional)</label>
                         <textarea
                             id="details"
@@ -106,7 +120,7 @@ function ReportModal({ reportedUser, onClose }) {
                         </p>
                     </div>
 
-                    <div className="modal-actions">
+                    <div className="report-modal-actions">
                         <button
                             type="button"
                             onClick={onClose}

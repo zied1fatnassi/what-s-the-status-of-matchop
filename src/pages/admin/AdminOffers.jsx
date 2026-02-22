@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
+import { lockOverlayScroll, unlockOverlayScroll } from '../../lib/overlayLock'
 import './Admin.css'
 
 export default function AdminOffers() {
@@ -16,6 +17,12 @@ export default function AdminOffers() {
     useEffect(() => {
         fetchOffers()
     }, [currentPage, statusFilter, searchTerm])
+
+    useEffect(() => {
+        if (!showModal) return undefined
+        lockOverlayScroll()
+        return () => unlockOverlayScroll()
+    }, [showModal])
 
     async function fetchOffers() {
         setLoading(true)
@@ -153,16 +160,16 @@ export default function AdminOffers() {
                                 <tbody>
                                     {offers.map(offer => (
                                         <tr key={offer.id}>
-                                            <td>{offer.title}</td>
-                                            <td>{offer.companies?.company_name || 'N/A'}</td>
-                                            <td>{offer.location || 'Remote'}</td>
-                                            <td>
+                                            <td data-label="Title">{offer.title}</td>
+                                            <td data-label="Company">{offer.companies?.company_name || 'N/A'}</td>
+                                            <td data-label="Location">{offer.location || 'Remote'}</td>
+                                            <td data-label="Status">
                                                 <span className={`status-badge status-${offer.status}`}>
                                                     {offer.status}
                                                 </span>
                                             </td>
-                                            <td>{new Date(offer.created_at).toLocaleDateString()}</td>
-                                            <td>
+                                            <td data-label="Created">{new Date(offer.created_at).toLocaleDateString()}</td>
+                                            <td data-label="Actions" className="admin-actions-cell">
                                                 <button
                                                     className="admin-btn admin-btn-primary admin-btn-sm"
                                                     onClick={() => {
@@ -172,7 +179,6 @@ export default function AdminOffers() {
                                                 >
                                                     View
                                                 </button>
-                                                {' '}
                                                 {offer.status === 'active' ? (
                                                     <button
                                                         className="admin-btn admin-btn-warning admin-btn-sm"
@@ -188,7 +194,6 @@ export default function AdminOffers() {
                                                         Activate
                                                     </button>
                                                 )}
-                                                {' '}
                                                 <button
                                                     className="admin-btn admin-btn-danger admin-btn-sm"
                                                     onClick={() => deleteOffer(offer.id)}

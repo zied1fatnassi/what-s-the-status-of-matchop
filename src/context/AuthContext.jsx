@@ -1,17 +1,37 @@
-import { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react'
+import { createContext, useContext, useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { supabase } from '../lib/supabase'
 import { autoVerifyEmail } from '../lib/verification'
 import { clearAuthCookies, getOrCreateCSRFToken } from '../lib/cookieStorage'
 import { requestPasswordReset } from '../lib/passwordReset'
+import { isE2EMockModeEnabled, getE2EMockRole, getE2EMockUser } from '../lib/e2eMock'
 
 /**
  * Auth Context for managing user authentication state with Supabase
  * SECURITY: All authentication goes through Supabase - no demo/bypass mode
  */
 const AuthContext = createContext(null)
-const isDev = import.meta.env.DEV
+const isAuthDebugEnabled = import.meta.env.DEV && import.meta.env.VITE_DEBUG_AUTH === 'true'
+const isE2EMockMode = isE2EMockModeEnabled()
 const debugLog = (...args) => {
-    if (isDev) console.log(...args)
+    if (isAuthDebugEnabled) console.log(...args)
+}
+
+function createMockProfile(mockUser) {
+    if (!mockUser) return null
+    const role = mockUser?.user_metadata?.type || 'guest'
+    return {
+        id: mockUser.id,
+        email: mockUser.email,
+        verified: true,
+        user_profiles: role === 'guest'
+            ? []
+            : [{
+                id: `e2e-profile-${role}`,
+                user_id: mockUser.id,
+                profile_type: role,
+                is_default: true
+            }]
+    }
 }
 
 export function AuthProvider({ children }) {
@@ -19,8 +39,25 @@ export function AuthProvider({ children }) {
     const [profile, setProfile] = useState(null)
     const [isLoading, setIsLoading] = useState(true)
     const [authError, setAuthError] = useState(null)
+    const inFlightProfileFetchRef = useRef(new Map())
+    const lastProfileFetchRef = useRef({ userId: null, timestamp: 0 })
+
+    const syncMockAuthState = useCallback(() => {
+        const role = getE2EMockRole()
+        const mockUser = getE2EMockUser()
+        debugLog('[Auth][E2E] Syncing mock auth state:', role)
+        setUser(mockUser)
+        setProfile(createMockProfile(mockUser))
+        setIsLoading(false)
+        setAuthError(null)
+    }, [])
 
     useEffect(() => {
+        if (isE2EMockMode) {
+            syncMockAuthState()
+            return undefined
+        }
+
         debugLog('[Auth] Starting auth initialization...')
 
         // Simple timeout fallback - set loading to false after 5 seconds max
@@ -56,11 +93,19 @@ export function AuthProvider({ children }) {
                 debugLog('[Auth] onAuthStateChange:', event, session?.user?.id)
                 setUser(session?.user ?? null)
 
+                const shouldRefreshProfile = session?.user && (
+                    event === 'SIGNED_IN' ||
+                    event === 'INITIAL_SESSION' ||
+                    event === 'USER_UPDATED'
+                )
+
                 if (session?.user) {
-                    // Initialize CSRF token on sign-in (cookie-based sessions)
-                    getOrCreateCSRFToken()
-                    // Fetch profile in background
-                    fetchProfile(session.user.id)
+                    if (shouldRefreshProfile) {
+                        // Initialize CSRF token on sign-in (cookie-based sessions)
+                        getOrCreateCSRFToken()
+                        // Fetch profile in background
+                        fetchProfile(session.user.id)
+                    }
                 } else {
                     setProfile(null)
                 }
@@ -81,9 +126,30 @@ export function AuthProvider({ children }) {
             clearTimeout(timeoutId)
             subscription.unsubscribe()
         }
-    }, [])
+    }, [syncMockAuthState])
 
-    const fetchProfile = useCallback(async (userId) => {
+    const fetchProfile = useCallback(async (userId, options = {}) => {
+        if (isE2EMockMode) {
+            const mockUser = getE2EMockUser()
+            const mockProfile = createMockProfile(mockUser)
+            setProfile(mockProfile)
+            return mockProfile
+        }
+
+        const { force = false } = options
+        if (!userId) return null
+
+        const lastFetch = lastProfileFetchRef.current
+        const now = Date.now()
+        if (!force && lastFetch.userId === userId && now - lastFetch.timestamp < 1000) {
+            return null
+        }
+
+        if (!force && inFlightProfileFetchRef.current.has(userId)) {
+            return inFlightProfileFetchRef.current.get(userId)
+        }
+
+        const fetchTask = (async () => {
         try {
             debugLog('[Auth] fetchProfile called for:', userId)
 
@@ -94,11 +160,47 @@ export function AuthProvider({ children }) {
 
             // The actual fetch request
             const fetchPromise = (async () => {
-                let { data, error } = await supabase
-                    .from('profiles')
-                    .select('*, students(*), companies(*), user_profiles(*)')
-                    .eq('id', userId)
-                    .single()
+                const loadProfile = async () => {
+                    const baseResult = await supabase
+                        .from('profiles')
+                        .select('*')
+                        .eq('id', userId)
+                        .single()
+
+                    if (baseResult.error || !baseResult.data) {
+                        return baseResult
+                    }
+
+                    const profileData = baseResult.data
+                    const [studentResult, companyResult, userProfilesResult] = await Promise.all([
+                        supabase.from('students').select('*').eq('id', userId).maybeSingle(),
+                        supabase.from('companies').select('*').eq('id', userId).maybeSingle(),
+                        supabase.from('user_profiles').select('*').eq('user_id', userId)
+                    ])
+
+                    if (!studentResult.error) {
+                        profileData.students = studentResult.data
+                    } else {
+                        debugLog('[Auth] students relation unavailable:', studentResult.error.message)
+                    }
+
+                    if (!companyResult.error) {
+                        profileData.companies = companyResult.data
+                    } else {
+                        debugLog('[Auth] companies relation unavailable:', companyResult.error.message)
+                    }
+
+                    if (!userProfilesResult.error) {
+                        profileData.user_profiles = userProfilesResult.data || []
+                    } else {
+                        profileData.user_profiles = []
+                        debugLog('[Auth] user_profiles relation unavailable:', userProfilesResult.error.message)
+                    }
+
+                    return { data: profileData, error: null }
+                }
+
+                let { data, error } = await loadProfile()
 
                 // If profile doesn't exist, try to create it from user metadata
                 if (error?.code === 'PGRST116') {
@@ -148,11 +250,7 @@ export function AuthProvider({ children }) {
                                 }
 
                                 // Fetch the newly created profile
-                                const result = await supabase
-                                    .from('profiles')
-                                    .select('*, students(*), companies(*), user_profiles(*)')
-                                    .eq('id', userId)
-                                    .single()
+                                const result = await loadProfile()
                                 data = result.data
                                 error = result.error
                             }
@@ -172,20 +270,31 @@ export function AuthProvider({ children }) {
             if (!error && data) {
                 debugLog('[Auth] Profile fetched successfully')
                 setProfile(data)
+                lastProfileFetchRef.current = { userId, timestamp: Date.now() }
             }
         } catch (err) {
             console.error('[Auth] Critical error (timeout or crash) fetching profile:', err)
+        }
+        })()
+
+        inFlightProfileFetchRef.current.set(userId, fetchTask)
+        try {
+            return await fetchTask
+        } finally {
+            inFlightProfileFetchRef.current.delete(userId)
         }
     }, [])
 
     // Auto-verify email when user confirms their email
     useEffect(() => {
+        if (isE2EMockMode) return
+
         if (user?.email_confirmed_at && profile && !profile.verified) {
             debugLog('[Auth] Auto-verifying email for user:', user.id)
             autoVerifyEmail(user.id, user.email_confirmed_at).then(result => {
                 if (result.success) {
                     debugLog('[Auth] Email verification badge added')
-                    fetchProfile(user.id) // Refresh profile to show badge
+                    fetchProfile(user.id, { force: true }) // Refresh profile to show badge
                 }
             })
         }
@@ -203,6 +312,26 @@ export function AuthProvider({ children }) {
      * @returns {Promise<{data: object, error: Error|null, needsEmailVerification: boolean}>}
      */
     const signUp = useCallback(async (email, password, userType, userData = {}) => {
+        if (isE2EMockMode) {
+            const mockUser = {
+                id: `e2e-${userType}-user`,
+                email: email || `${userType}@e2e.local`,
+                user_metadata: {
+                    type: userType,
+                    name: userData?.name || `${userType} E2E`
+                },
+                email_confirmed_at: new Date().toISOString()
+            }
+            setUser(mockUser)
+            setProfile(createMockProfile(mockUser))
+            setAuthError(null)
+            return {
+                data: { user: mockUser, session: { user: mockUser } },
+                error: null,
+                needsEmailVerification: false
+            }
+        }
+
         setAuthError(null)
 
         try {
@@ -296,6 +425,24 @@ export function AuthProvider({ children }) {
      * @returns {Promise<{data: object, error: Error|null}>}
      */
     const signIn = useCallback(async (email, password) => {
+        if (isE2EMockMode) {
+            const role = email?.includes('admin')
+                ? 'admin'
+                : email?.includes('company')
+                    ? 'company'
+                    : 'student'
+            const mockUser = {
+                id: `e2e-${role}-user`,
+                email: email || `${role}@e2e.local`,
+                user_metadata: { type: role, name: `${role} E2E` },
+                email_confirmed_at: new Date().toISOString()
+            }
+            setUser(mockUser)
+            setProfile(createMockProfile(mockUser))
+            setAuthError(null)
+            return { data: { user: mockUser, session: { user: mockUser } }, error: null }
+        }
+
         setAuthError(null)
 
         try {
@@ -332,6 +479,13 @@ export function AuthProvider({ children }) {
      * Sign out the current user
      */
     const signOut = useCallback(async () => {
+        if (isE2EMockMode) {
+            setUser(null)
+            setProfile(null)
+            setAuthError(null)
+            return
+        }
+
         setAuthError(null)
 
         const { error } = await supabase.auth.signOut()
@@ -354,6 +508,10 @@ export function AuthProvider({ children }) {
      * @returns {Promise<{error: Error|null}>}
      */
     const resendVerificationEmail = useCallback(async (email) => {
+        if (isE2EMockMode) {
+            return { error: null }
+        }
+
         try {
             const { error } = await supabase.auth.resend({
                 type: 'signup',
@@ -374,6 +532,10 @@ export function AuthProvider({ children }) {
      * @returns {Promise<{error: Error|null}>}
      */
     const resetPassword = useCallback(async (email) => {
+        if (isE2EMockMode) {
+            return { error: null }
+        }
+
         try {
             const result = await requestPasswordReset(email)
             return { error: result?.error || null }
@@ -386,6 +548,11 @@ export function AuthProvider({ children }) {
      * Update user profile
      */
     const updateProfile = useCallback(async (updates) => {
+        if (isE2EMockMode) {
+            setProfile(prev => ({ ...(prev || {}), ...updates }))
+            return { error: null }
+        }
+
         if (!user) return { error: 'Not authenticated' }
 
         const { error } = await supabase

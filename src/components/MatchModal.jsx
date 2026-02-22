@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Heart, MessageCircle, X, Calendar, Video, Mail, Clock, CheckCircle } from 'lucide-react'
+import { lockOverlayScroll, unlockOverlayScroll } from '../lib/overlayLock'
 import './MatchModal.css'
 
 function MatchModal({ match, onClose, userType }) {
@@ -12,7 +13,21 @@ function MatchModal({ match, onClose, userType }) {
 
         // Create confetti effect
         createConfetti()
-    }, [])
+
+        const handleEsc = (event) => {
+            if (event.key === 'Escape') {
+                onClose()
+            }
+        }
+
+        lockOverlayScroll()
+        document.addEventListener('keydown', handleEsc)
+
+        return () => {
+            unlockOverlayScroll()
+            document.removeEventListener('keydown', handleEsc)
+        }
+    }, [onClose])
 
     const createConfetti = () => {
         const colors = ['#2196f3', '#42a5f5', '#64b5f6', '#90caf9', '#1976d2']

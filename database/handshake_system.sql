@@ -113,7 +113,7 @@ RETURNS TABLE (
     company_active BOOLEAN
 ) AS $$
 DECLARE
-    s_loc GEOGRAPHY;
+    s_loc gis.GEOGRAPHY;
     s_skills TEXT[];
 BEGIN
     -- Get Student Context
@@ -131,7 +131,7 @@ BEGIN
             (
                 (get_skill_score(s_skills, o.req_skills) * 60) +
                 (CASE WHEN s_loc IS NOT NULL AND o.location_point IS NOT NULL
-                      AND ST_DWithin(s_loc, o.location_point, max_distance_km * 1000)
+                      AND gis.ST_DWithin(s_loc, o.location_point, max_distance_km * 1000)
                  THEN 30 ELSE 0 END) +
                 (CASE WHEN o.created_at > NOW() - INTERVAL '7 days' THEN 10 ELSE 0 END)
             )
@@ -160,7 +160,7 @@ BEGIN
         WHERE sw.student_id = student_uuid AND sw.offer_id = o.id
     )
     AND (s_loc IS NULL OR o.location_point IS NULL
-         OR ST_DWithin(s_loc, o.location_point, max_distance_km * 1000))
+         OR gis.ST_DWithin(s_loc, o.location_point, max_distance_km * 1000))
     ORDER BY score DESC
     LIMIT limit_count OFFSET offset_count;
 END;

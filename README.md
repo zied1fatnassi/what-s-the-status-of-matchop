@@ -1,6 +1,6 @@
-# MatchOp — Match Your Opportunity
+﻿# MatchOp â€” Match Your Opportunity
 
-> A full-stack, AI-powered student–company matching platform with a Tinder-style swipe interface, real-time chat, intelligent job recommendations, and an automated MENA job aggregator.
+> A full-stack, AI-powered studentâ€“company matching platform with a Tinder-style swipe interface, real-time chat, intelligent job recommendations, and an automated MENA job aggregator.
 
 ![Version](https://img.shields.io/badge/version-1.0.0-6366f1)
 ![React](https://img.shields.io/badge/React-19.2.0-61DAFB)
@@ -89,7 +89,7 @@
 
 | Item | Detail |
 |------|--------|
-| **Project Name** | MatchOp — Match Your Opportunity |
+| **Project Name** | MatchOp â€” Match Your Opportunity |
 | **Type** | Web Application (Single Page Application) |
 | **Target Market** | Tunisia and MENA region |
 | **Primary Language** | French & English (bilingual) |
@@ -130,7 +130,7 @@
 - Swipe right = Like (apply), swipe left = Pass, super-like available.
 - Card displays: match score percentage, company logo, verification badge, job title, description, location, salary, skills, and source badge for external jobs.
 - Filter panel: work type, contract type, salary range (4 TND brackets), industry (8 categories).
-- Undo last swipe (UI reversal only — DB swipe committed).
+- Undo last swipe (UI reversal only â€” DB swipe committed).
 - When both student and company swipe right, a match is auto-created by database trigger.
 - External job right-swipe opens the URL in a new tab (no match creation).
 
@@ -212,7 +212,7 @@
 ### 2.4 Technical Constraints
 
 - No server-side rendering (pure SPA).
-- No Tailwind CSS — custom CSS design system with hand-written utility classes.
+- No Tailwind CSS â€” custom CSS design system with hand-written utility classes.
 - Free-tier AI models only (OpenRouter Llama 3.2 3B, HuggingFace all-MiniLM-L6-v2).
 - Supabase free tier limits apply.
 - Single-region deployment (EU Central recommended for Tunisia proximity).
@@ -285,48 +285,48 @@
 ### 4.1 High-Level Architecture
 
 ```
-┌──────────────────────────────────────────────────────────────┐
-│                    CLIENT (Vercel SPA)                        │
-│  ┌─────────┐  ┌──────────┐  ┌──────────┐  ┌──────────────┐ │
-│  │ React 19│  │ Router v7│  │Framer Mot│  │ i18next      │ │
-│  │   App   │──│ 38 routes│  │  Swipe   │  │ EN/FR        │ │
-│  └────┬────┘  └──────────┘  └──────────┘  └──────────────┘ │
-│       │                                                      │
-│  ┌────┴────────────────────────────────────────────────────┐ │
-│  │            Context Providers                             │ │
-│  │  AuthContext → ApplicationContext → ThemeContext          │ │
-│  └────┬────────────────────────────────────────────────────┘ │
-└───────┼──────────────────────────────────────────────────────┘
-        │ HTTPS / WSS
-┌───────┼──────────────────────────────────────────────────────┐
-│       │          SUPABASE CLOUD                              │
-│  ┌────┴────┐  ┌──────────┐  ┌──────────┐  ┌──────────────┐ │
-│  │  Auth   │  │PostgreSQL│  │ Realtime  │  │   Storage    │ │
-│  │  (JWT)  │  │+ pgvector│  │(WebSocket)│  │  (avatars,   │ │
-│  │         │  │+ PostGIS │  │           │  │   CVs)       │ │
-│  └─────────┘  │+ pg_trgm │  └──────────┘  └──────────────┘ │
-│               └────┬─────┘                                   │
-│  ┌─────────────────┴───────────────────────────────────────┐ │
-│  │              Edge Functions (Deno)                        │ │
-│  │  ai-job-description  │  ai-profile-polisher              │ │
-│  │  generate-embedding  │  get-matched-jobs                 │ │
-│  │  match-recommendations│  suggest-icebreakers             │ │
-│  └──────────┬───────────────────────┬──────────────────────┘ │
-└─────────────┼───────────────────────┼────────────────────────┘
-              │                       │
-     ┌────────┴────────┐    ┌────────┴────────┐
-     │   OpenRouter     │    │  HuggingFace    │
-     │ Llama 3.2 3B    │    │ all-MiniLM-L6-v2│
-     │ (job desc, bio,  │    │ (384-dim vectors)│
-     │  icebreakers)    │    │                  │
-     └─────────────────┘    └──────────────────┘
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚                    CLIENT (Vercel SPA)                        â”‚
+â”‚  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â” â”‚
+â”‚  â”‚ React 19â”‚  â”‚ Router v7â”‚  â”‚Framer Motâ”‚  â”‚ i18next      â”‚ â”‚
+â”‚  â”‚   App   â”‚â”€â”€â”‚ 38 routesâ”‚  â”‚  Swipe   â”‚  â”‚ EN/FR        â”‚ â”‚
+â”‚  â””â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”˜  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜ â”‚
+â”‚       â”‚                                                      â”‚
+â”‚  â”Œâ”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â” â”‚
+â”‚  â”‚            Context Providers                             â”‚ â”‚
+â”‚  â”‚  AuthContext â†’ ApplicationContext â†’ ThemeContext          â”‚ â”‚
+â”‚  â””â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜ â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+        â”‚ HTTPS / WSS
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚       â”‚          SUPABASE CLOUD                              â”‚
+â”‚  â”Œâ”€â”€â”€â”€â”´â”€â”€â”€â”€â”  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â” â”‚
+â”‚  â”‚  Auth   â”‚  â”‚PostgreSQLâ”‚  â”‚ Realtime  â”‚  â”‚   Storage    â”‚ â”‚
+â”‚  â”‚  (JWT)  â”‚  â”‚+ pgvectorâ”‚  â”‚(WebSocket)â”‚  â”‚  (avatars,   â”‚ â”‚
+â”‚  â”‚         â”‚  â”‚+ PostGIS â”‚  â”‚           â”‚  â”‚   CVs)       â”‚ â”‚
+â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜  â”‚+ pg_trgm â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜ â”‚
+â”‚               â””â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”˜                                   â”‚
+â”‚  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â” â”‚
+â”‚  â”‚              Edge Functions (Deno)                        â”‚ â”‚
+â”‚  â”‚  ai-job-description  â”‚  ai-profile-polisher              â”‚ â”‚
+â”‚  â”‚  generate-embedding  â”‚  get-matched-jobs                 â”‚ â”‚
+â”‚  â”‚  match-recommendationsâ”‚  suggest-icebreakers             â”‚ â”‚
+â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜ â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+              â”‚                       â”‚
+     â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”    â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”
+     â”‚   OpenRouter     â”‚    â”‚  HuggingFace    â”‚
+     â”‚ Llama 3.2 3B    â”‚    â”‚ all-MiniLM-L6-v2â”‚
+     â”‚ (job desc, bio,  â”‚    â”‚ (384-dim vectors)â”‚
+     â”‚  icebreakers)    â”‚    â”‚                  â”‚
+     â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜    â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
 
-┌──────────────────────────────────────────────────────────────┐
-│                JOB CRAWLER (Node.js)                          │
-│  kernel.js → [linkedin, tanitjobs, keejobs, wuzzuf, bayt]    │
-│           → [WeWorkRemotely RSS, Jobspresso RSS]             │
-│           → Scrapestack API → Supabase external_jobs         │
-└──────────────────────────────────────────────────────────────┘
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚                JOB CRAWLER (Node.js)                          â”‚
+â”‚  kernel.js â†’ [linkedin, tanitjobs, keejobs, wuzzuf, bayt]    â”‚
+â”‚           â†’ [WeWorkRemotely RSS, Jobspresso RSS]             â”‚
+â”‚           â†’ Scrapestack API â†’ Supabase external_jobs         â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
 ```
 
 ### 4.2 Provider Hierarchy
@@ -334,10 +334,10 @@
 ```
 <StrictMode>
   <BrowserRouter>
-    <AuthProvider>          ← Supabase auth session + profile state
-      <ApplicationProvider> ← localStorage job application tracking
-        <ThemeProvider>     ← light/dark/system via data-theme attribute
-          <App />           ← Routes + Navbar + Footer + Diagnostics
+    <AuthProvider>          â† Supabase auth session + profile state
+      <ApplicationProvider> â† localStorage job application tracking
+        <ThemeProvider>     â† light/dark/system via data-theme attribute
+          <App />           â† Routes + Navbar + Footer + Diagnostics
         </ThemeProvider>
       </ApplicationProvider>
     </AuthProvider>
@@ -345,49 +345,49 @@
 </StrictMode>
 ```
 
-### 4.3 Data Flow: Swipe → Match → Chat
+### 4.3 Data Flow: Swipe â†’ Match â†’ Chat
 
 ```
 Student swipes RIGHT on offer
-  │
-  ├── INSERT student_swipes (student_id, offer_id, 'right')
-  │
-  ├── DB Trigger: on_student_swipe_match
-  │     └── SELECT company_swipes WHERE student_id AND direction='right'
-  │           ├── [Company already swiped right] → INSERT matches → Realtime event
-  │           └── [No company swipe yet]         → Wait
-  │
-  ├── (Later) Company swipes RIGHT on student
-  │     ├── INSERT company_swipes (company_id, student_id, 'right')
-  │     └── DB Trigger: on_company_swipe_match
-  │           └── SELECT student_swipes WHERE student_id AND direction='right'
-  │                 └── [Student already swiped right] → INSERT matches → Realtime event
-  │
-  └── Match created → useMatchListener fires → MatchModal displayed
-        └── "Send a Message" → Navigate to /chat/:matchId → WebSocket subscription
+  â”‚
+  â”œâ”€â”€ INSERT student_swipes (student_id, offer_id, 'right')
+  â”‚
+  â”œâ”€â”€ DB Trigger: on_student_swipe_match
+  â”‚     â””â”€â”€ SELECT company_swipes WHERE student_id AND direction='right'
+  â”‚           â”œâ”€â”€ [Company already swiped right] â†’ INSERT matches â†’ Realtime event
+  â”‚           â””â”€â”€ [No company swipe yet]         â†’ Wait
+  â”‚
+  â”œâ”€â”€ (Later) Company swipes RIGHT on student
+  â”‚     â”œâ”€â”€ INSERT company_swipes (company_id, student_id, 'right')
+  â”‚     â””â”€â”€ DB Trigger: on_company_swipe_match
+  â”‚           â””â”€â”€ SELECT student_swipes WHERE student_id AND direction='right'
+  â”‚                 â””â”€â”€ [Student already swiped right] â†’ INSERT matches â†’ Realtime event
+  â”‚
+  â””â”€â”€ Match created â†’ useMatchListener fires â†’ MatchModal displayed
+        â””â”€â”€ "Send a Message" â†’ Navigate to /chat/:matchId â†’ WebSocket subscription
 ```
 
 ### 4.4 AI Matching Pipeline
 
 ```
 Student saves profile (bio, skills, headline)
-  │
-  └── generate-embedding Edge Function
-        ├── HuggingFace: all-MiniLM-L6-v2 → 384-dim vector
-        └── UPDATE students SET embedding = [...]
+  â”‚
+  â””â”€â”€ generate-embedding Edge Function
+        â”œâ”€â”€ HuggingFace: all-MiniLM-L6-v2 â†’ 384-dim vector
+        â””â”€â”€ UPDATE students SET embedding = [...]
 
 Company creates offer (title, description, skills)
-  │
-  └── generate-embedding Edge Function
-        ├── HuggingFace: all-MiniLM-L6-v2 → 384-dim vector
-        └── UPDATE offers SET embedding = [...]
+  â”‚
+  â””â”€â”€ generate-embedding Edge Function
+        â”œâ”€â”€ HuggingFace: all-MiniLM-L6-v2 â†’ 384-dim vector
+        â””â”€â”€ UPDATE offers SET embedding = [...]
 
 Student opens swipe page
-  │
-  └── get-matched-jobs Edge Function
-        ├── [Has embedding?] → RPC match_jobs_for_student
-        │     └── SELECT offers ORDER BY cosine_similarity DESC
-        └── [No embedding]  → Fallback: recent active offers
+  â”‚
+  â””â”€â”€ get-matched-jobs Edge Function
+        â”œâ”€â”€ [Has embedding?] â†’ RPC match_jobs_for_student
+        â”‚     â””â”€â”€ SELECT offers ORDER BY cosine_similarity DESC
+        â””â”€â”€ [No embedding]  â†’ Fallback: recent active offers
 ```
 
 ---
@@ -396,194 +396,197 @@ Student opens swipe page
 
 ```
 matchop/
-├── .env                          # Environment variables (git-ignored)
-├── .env.local                    # Local override (git-ignored)
-├── .gitignore
-├── index.html                    # SPA entry point (meta tags, fonts, OG tags)
-├── package.json                  # Dependencies & scripts
-├── vite.config.js                # Build config (chunk splitting, aliases)
-├── vitest.config.js              # Test config (jsdom, coverage)
-├── vercel.json                   # Vercel SPA rewrites
-├── eslint.config.js              # ESLint flat config
-├── LICENSE                       # MIT License
-│
-├── public/                       # Static assets
-│   ├── favicon.svg               # App favicon
-│   └── founder.jpg               # Founder photo
-│
-├── src/
-│   ├── main.jsx                  # App entry: provider hierarchy + env debug
-│   ├── App.jsx                   # Root component: routes + layout
-│   ├── App.css                   # (Legacy Vite boilerplate)
-│   ├── index.css                 # Design system (892 lines)
-│   │
-│   ├── assets/
-│   │   └── react.svg             # React logo asset
-│   │
-│   ├── components/               # 36 reusable UI components
-│   │   ├── Navbar.jsx + .css     # Top nav (role-based, hamburger, lang, theme)
-│   │   ├── SwipeCard.jsx + .css  # Draggable job card (Framer Motion)
-│   │   ├── MatchModal.jsx + .css # Match celebration (confetti)
-│   │   ├── OfferDetailModal.jsx + .css  # Full job detail view
-│   │   ├── FilterPanel.jsx + .css       # Swipe deck filters
-│   │   ├── ChatBubble.jsx + .css        # Chat message bubble
-│   │   ├── RouteGuards.jsx       # ProtectedRoute, PublicRoute, AdminRoute
-│   │   ├── ErrorBoundary.jsx     # Catch render errors
-│   │   ├── Footer.jsx            # Site footer
-│   │   ├── Logo.jsx + .css       # Animated brand logo
-│   │   ├── ScrollToTop.jsx       # Scroll reset on navigation
-│   │   ├── DiagnosticHelper.jsx  # Debug overlay
-│   │   ├── SkeletonLoader.jsx + .css    # Content loading skeleton
-│   │   ├── VerificationBadge.jsx + .css # Email/LinkedIn/manual badge
-│   │   ├── ApplicationToast.jsx + .css  # Application sent toast
-│   │   ├── AuthToast.jsx + .css         # Auth event toasts
-│   │   ├── ErrorToast.jsx + .css        # Error notification
-│   │   ├── MatchToast.jsx + .css        # Match toast notification
-│   │   ├── ReportModal.jsx + .css       # Report user modal
-│   │   ├── BlockConfirmModal.jsx        # Block confirmation dialog
-│   │   ├── ThemeToggle.css              # Theme toggle styles
-│   │   │
-│   │   └── forms/                # Form components
-│   │       ├── FormComponents.jsx + .css
-│   │       ├── FormEducationSelector.jsx
-│   │       ├── FormLocationSelector.jsx
-│   │       ├── SuggestionInput.jsx + .css
-│   │
-│   ├── context/                  # React Context providers
-│   │   ├── AuthContext.jsx       # Auth state, signUp, signIn, signOut, profile
-│   │   ├── ApplicationContext.jsx # Job application tracking (localStorage)
-│   │   └── ThemeContext.jsx      # Dark/light/system theme
-│   │
-│   ├── hooks/                    # Custom React hooks (14 total)
-│   │   ├── index.js              # Barrel export
-│   │   ├── useJobOffers.js       # Fetch & swipe on job offers
-│   │   ├── useMatches.js         # Match data + swipe history
-│   │   ├── useMatchListener.js   # Realtime match subscription
-│   │   ├── useMessages.js        # Chat messages CRUD + realtime
-│   │   ├── useCandidates.js      # Company's candidate list
-│   │   ├── useExternalJobs.js    # External jobs (paginated, filtered)
-│   │   ├── useGlobalOffers.js    # Global offers listing
-│   │   ├── useStudentProfile.js  # Student profile CRUD + embedding
-│   │   ├── useImageUpload.js     # Avatar upload to Storage
-│   │   ├── useCVUpload.js        # CV upload to Storage
-│   │   ├── useBlocking.js        # Block/unblock user
-│   │   ├── useReporting.js       # Report user
-│   │   └── useLoadingError.js    # Loading/error state helper
-│   │
-│   ├── pages/                    # Route page components
-│   │   ├── Landing.jsx + .css    # Public homepage
-│   │   ├── ForgotPassword.jsx    # Password reset request
-│   │   ├── ResetPassword.jsx     # Password reset confirm
-│   │   ├── About.jsx             # About page
-│   │   ├── Blog.jsx              # Blog page
-│   │   ├── Contact.jsx           # Contact page
-│   │   │
-│   │   ├── student/              # Student pages (8 components)
-│   │   │   ├── StudentSignup.jsx + .css
-│   │   │   ├── StudentLogin.jsx
-│   │   │   ├── StudentProfile.jsx + .css
-│   │   │   ├── StudentSwipe.jsx + .css
-│   │   │   ├── StudentMatches.jsx + .css
-│   │   │   ├── StudentChat.jsx + .css
-│   │   │   ├── GlobalJobs.jsx + .css
-│   │   │   └── GlobalOffers.jsx + .css
-│   │   │
-│   │   ├── company/              # Company pages (7 components)
-│   │   │   ├── CompanySignup.jsx
-│   │   │   ├── CompanyLogin.jsx
-│   │   │   ├── CompanyProfile.jsx
-│   │   │   ├── PostOffer.jsx + .css
-│   │   │   ├── ViewCandidates.jsx + .css
-│   │   │   ├── CompanyMatches.jsx
-│   │   │   └── CompanyChat.jsx
-│   │   │
-│   │   ├── admin/                # Admin pages (7 components)
-│   │   │   ├── Admin.css
-│   │   │   ├── AdminDashboard.jsx
-│   │   │   ├── AdminUsers.jsx
-│   │   │   ├── AdminOffers.jsx
-│   │   │   ├── AdminCompanies.jsx
-│   │   │   ├── AdminReports.jsx
-│   │   │   ├── AdminAnalytics.jsx
-│   │   │   └── AdminSettings.jsx
-│   │   │
-│   │   └── legal/                # Legal pages
-│   │       ├── Legal.css
-│   │       ├── TermsOfService.jsx
-│   │       ├── PrivacyPolicy.jsx
-│   │       ├── Terms.jsx
-│   │       ├── Privacy.jsx
-│   │       └── Cookies.jsx
-│   │
-│   ├── lib/                      # Library utilities
-│   │   ├── supabase.js           # Supabase client init
-│   │   ├── i18n.js               # i18next config (en/fr)
-│   │   ├── validation.js         # Password, email, name validation + location data
-│   │   ├── verification.js       # LinkedIn/email verification
-│   │   ├── spamDetection.js      # Multi-tier spam detection
-│   │   ├── email.js              # Email stub (EmailJS removed)
-│   │   ├── storage.js            # Supabase storage helpers
-│   │   ├── spamDetection.test.js # Spam detection tests
-│   │   └── verification.test.js  # Verification tests
-│   │
-│   ├── data/                     # Static datasets
-│   │   ├── companies.js          # 87 Tunisian companies (autocomplete)
-│   │   ├── jobTitles.js          # Job title suggestions
-│   │   └── skills.js             # Skill suggestions
-│   │
-│   ├── locales/                  # Translation files
-│   │   ├── en.json               # English (~160 keys)
-│   │   └── fr.json               # French (~160 keys)
-│   │
-│   ├── types/
-│   │   └── index.js              # Type definitions / constants
-│   │
-│   ├── utils/
-│   │   ├── profileUtils.js       # PDF export, share link, clipboard
-│   │   └── smartScheduling.js    # Date detection + Google Calendar
-│   │
-│   └── test/
-│       └── setup.js              # Vitest setup file
-│
-├── database/                     # SQL migration & setup files (45 files)
-│   ├── 000_canonical_rls.sql     # Authoritative RLS policy file
-│   ├── schema.sql                # V1 schema
-│   ├── refactor_v2.sql           # V2 schema (current)
-│   ├── matching_engine.sql       # V3 matching (PostGIS + skills)
-│   ├── report_block_system.sql   # Report & block tables
-│   ├── create_external_jobs.sql  # External jobs table
-│   ├── storage.sql               # Storage bucket setup
-│   ├── admin_setup.sql           # Admin role tables
-│   ├── seed_v3.sql               # Seed data
-│   └── ...                       # Various fix/migration files
-│
-├── supabase/
-│   ├── functions/                # Edge Functions (6 Deno functions)
-│   │   ├── ai-job-description/index.ts
-│   │   ├── ai-profile-polisher/index.ts
-│   │   ├── generate-embedding/index.ts
-│   │   ├── get-matched-jobs/index.ts
-│   │   ├── match-recommendations/index.ts
-│   │   └── suggest-icebreakers/index.ts
-│   │
-│   └── migrations/               # Supabase-managed migrations
-│       ├── 20251222_external_jobs_rls.sql
-│       └── 20251222_vector_matching.sql
-│
-└── scripts/
-    ├── run_migration.js          # Migration runner
-    └── crawler/                  # Job aggregator
-        ├── kernel.js             # Main crawler orchestrator
-        ├── config.js             # Crawler configuration
-        ├── scrapestack-client.js # Scrapestack API client
-        ├── cleanup-dead-links.js # Dead link remover
-        └── scrapers/             # Site-specific scrapers
-            ├── index.js
-            ├── linkedin.js
-            ├── tanitjobs.js
-            ├── keejobs.js
-            ├── wuzzuf.js
-            └── bayt.js
+â”œâ”€â”€ .env                          # Environment variables (git-ignored)
+â”œâ”€â”€ .env.local                    # Local override (git-ignored)
+â”œâ”€â”€ .gitignore
+â”œâ”€â”€ index.html                    # SPA entry point (meta tags, fonts, OG tags)
+â”œâ”€â”€ package.json                  # Dependencies & scripts
+â”œâ”€â”€ vite.config.js                # Build config (chunk splitting, aliases)
+â”œâ”€â”€ vitest.config.js              # Test config (jsdom, coverage)
+â”œâ”€â”€ vercel.json                   # Vercel SPA rewrites
+â”œâ”€â”€ eslint.config.js              # ESLint flat config
+â”œâ”€â”€ LICENSE                       # MIT License
+â”‚
+â”œâ”€â”€ public/                       # Static assets
+â”‚   â”œâ”€â”€ favicon.svg               # App favicon
+â”‚   â””â”€â”€ founder.jpg               # Founder photo
+â”‚
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ main.jsx                  # App entry: provider hierarchy + env debug
+â”‚   â”œâ”€â”€ App.jsx                   # Root component: routes + layout
+â”‚   â”œâ”€â”€ App.css                   # (Legacy Vite boilerplate)
+â”‚   â”œâ”€â”€ index.css                 # Design system (892 lines)
+â”‚   â”‚
+â”‚   â”œâ”€â”€ assets/
+â”‚   â”‚   â””â”€â”€ react.svg             # React logo asset
+â”‚   â”‚
+â”‚   â”œâ”€â”€ components/               # 36 reusable UI components
+â”‚   â”‚   â”œâ”€â”€ Navbar.jsx + .css     # Top nav (role-based, hamburger, lang, theme)
+â”‚   â”‚   â”œâ”€â”€ SwipeCard.jsx + .css  # Draggable job card (Framer Motion)
+â”‚   â”‚   â”œâ”€â”€ MatchModal.jsx + .css # Match celebration (confetti)
+â”‚   â”‚   â”œâ”€â”€ OfferDetailModal.jsx + .css  # Full job detail view
+â”‚   â”‚   â”œâ”€â”€ FilterPanel.jsx + .css       # Swipe deck filters
+â”‚   â”‚   â”œâ”€â”€ ChatBubble.jsx + .css        # Chat message bubble
+â”‚   â”‚   â”œâ”€â”€ RouteGuards.jsx       # ProtectedRoute, PublicRoute, AdminRoute
+â”‚   â”‚   â”œâ”€â”€ ErrorBoundary.jsx     # Catch render errors
+â”‚   â”‚   â”œâ”€â”€ Footer.jsx            # Site footer
+â”‚   â”‚   â”œâ”€â”€ Logo.jsx + .css       # Animated brand logo
+â”‚   â”‚   â”œâ”€â”€ ScrollToTop.jsx       # Scroll reset on navigation
+â”‚   â”‚   â”œâ”€â”€ DiagnosticHelper.jsx  # Debug overlay
+â”‚   â”‚   â”œâ”€â”€ SkeletonLoader.jsx + .css    # Content loading skeleton
+â”‚   â”‚   â”œâ”€â”€ VerificationBadge.jsx + .css # Email/LinkedIn/manual badge
+â”‚   â”‚   â”œâ”€â”€ ApplicationToast.jsx + .css  # Application sent toast
+â”‚   â”‚   â”œâ”€â”€ AuthToast.jsx + .css         # Auth event toasts
+â”‚   â”‚   â”œâ”€â”€ ErrorToast.jsx + .css        # Error notification
+â”‚   â”‚   â”œâ”€â”€ MatchToast.jsx + .css        # Match toast notification
+â”‚   â”‚   â”œâ”€â”€ ReportModal.jsx + .css       # Report user modal
+â”‚   â”‚   â”œâ”€â”€ BlockConfirmModal.jsx        # Block confirmation dialog
+â”‚   â”‚   â”œâ”€â”€ ThemeToggle.css              # Theme toggle styles
+â”‚   â”‚   â”‚
+â”‚   â”‚   â””â”€â”€ forms/                # Form components
+â”‚   â”‚       â”œâ”€â”€ FormComponents.jsx + .css
+â”‚   â”‚       â”œâ”€â”€ FormEducationSelector.jsx
+â”‚   â”‚       â”œâ”€â”€ FormLocationSelector.jsx
+â”‚   â”‚       â”œâ”€â”€ SuggestionInput.jsx + .css
+â”‚   â”‚
+â”‚   â”œâ”€â”€ context/                  # React Context providers
+â”‚   â”‚   â”œâ”€â”€ AuthContext.jsx       # Auth state, signUp, signIn, signOut, profile
+â”‚   â”‚   â”œâ”€â”€ ApplicationContext.jsx # Job application tracking (localStorage)
+â”‚   â”‚   â””â”€â”€ ThemeContext.jsx      # Dark/light/system theme
+â”‚   â”‚
+â”‚   â”œâ”€â”€ hooks/                    # Custom React hooks (14 total)
+â”‚   â”‚   â”œâ”€â”€ index.js              # Barrel export
+â”‚   â”‚   â”œâ”€â”€ useJobOffers.js       # Fetch & swipe on job offers
+â”‚   â”‚   â”œâ”€â”€ useMatches.js         # Match data + swipe history
+â”‚   â”‚   â”œâ”€â”€ useMatchListener.js   # Realtime match subscription
+â”‚   â”‚   â”œâ”€â”€ useMessages.js        # Chat messages CRUD + realtime
+â”‚   â”‚   â”œâ”€â”€ useCandidates.js      # Company's candidate list
+â”‚   â”‚   â”œâ”€â”€ useExternalJobs.js    # External jobs (paginated, filtered)
+â”‚   â”‚   â”œâ”€â”€ useGlobalOffers.js    # Global offers listing
+â”‚   â”‚   â”œâ”€â”€ useStudentProfile.js  # Student profile CRUD + embedding
+â”‚   â”‚   â”œâ”€â”€ useImageUpload.js     # Avatar upload to Storage
+â”‚   â”‚   â”œâ”€â”€ useCVUpload.js        # CV upload to Storage
+â”‚   â”‚   â”œâ”€â”€ useBlocking.js        # Block/unblock user
+â”‚   â”‚   â”œâ”€â”€ useReporting.js       # Report user
+â”‚   â”‚   â””â”€â”€ useLoadingError.js    # Loading/error state helper
+â”‚   â”‚
+â”‚   â”œâ”€â”€ pages/                    # Route page components
+â”‚   â”‚   â”œâ”€â”€ Landing.jsx + .css    # Public homepage
+â”‚   â”‚   â”œâ”€â”€ ForgotPassword.jsx    # Password reset request
+â”‚   â”‚   â”œâ”€â”€ ResetPassword.jsx     # Password reset confirm
+â”‚   â”‚   â”œâ”€â”€ About.jsx             # About page
+â”‚   â”‚   â”œâ”€â”€ Blog.jsx              # Blog page
+â”‚   â”‚   â”œâ”€â”€ Contact.jsx           # Contact page
+â”‚   â”‚   â”‚
+â”‚   â”‚   â”œâ”€â”€ student/              # Student pages (8 components)
+â”‚   â”‚   â”‚   â”œâ”€â”€ StudentSignup.jsx + .css
+â”‚   â”‚   â”‚   â”œâ”€â”€ StudentLogin.jsx
+â”‚   â”‚   â”‚   â”œâ”€â”€ StudentProfile.jsx + .css
+â”‚   â”‚   â”‚   â”œâ”€â”€ StudentSwipe.jsx + .css
+â”‚   â”‚   â”‚   â”œâ”€â”€ StudentMatches.jsx + .css
+â”‚   â”‚   â”‚   â”œâ”€â”€ StudentChat.jsx + .css
+â”‚   â”‚   â”‚   â”œâ”€â”€ GlobalJobs.jsx + .css
+â”‚   â”‚   â”‚   â””â”€â”€ GlobalOffers.jsx + .css
+â”‚   â”‚   â”‚
+â”‚   â”‚   â”œâ”€â”€ company/              # Company pages (7 components)
+â”‚   â”‚   â”‚   â”œâ”€â”€ CompanySignup.jsx
+â”‚   â”‚   â”‚   â”œâ”€â”€ CompanyLogin.jsx
+â”‚   â”‚   â”‚   â”œâ”€â”€ CompanyProfile.jsx
+â”‚   â”‚   â”‚   â”œâ”€â”€ PostOffer.jsx + .css
+â”‚   â”‚   â”‚   â”œâ”€â”€ ViewCandidates.jsx + .css
+â”‚   â”‚   â”‚   â”œâ”€â”€ CompanyMatches.jsx
+â”‚   â”‚   â”‚   â””â”€â”€ CompanyChat.jsx
+â”‚   â”‚   â”‚
+â”‚   â”‚   â”œâ”€â”€ admin/                # Admin pages (7 components)
+â”‚   â”‚   â”‚   â”œâ”€â”€ Admin.css
+â”‚   â”‚   â”‚   â”œâ”€â”€ AdminDashboard.jsx
+â”‚   â”‚   â”‚   â”œâ”€â”€ AdminUsers.jsx
+â”‚   â”‚   â”‚   â”œâ”€â”€ AdminOffers.jsx
+â”‚   â”‚   â”‚   â”œâ”€â”€ AdminCompanies.jsx
+â”‚   â”‚   â”‚   â”œâ”€â”€ AdminReports.jsx
+â”‚   â”‚   â”‚   â”œâ”€â”€ AdminAnalytics.jsx
+â”‚   â”‚   â”‚   â””â”€â”€ AdminSettings.jsx
+â”‚   â”‚   â”‚
+â”‚   â”‚   â””â”€â”€ legal/                # Legal pages
+â”‚   â”‚       â”œâ”€â”€ Legal.css
+â”‚   â”‚       â”œâ”€â”€ TermsOfService.jsx
+â”‚   â”‚       â”œâ”€â”€ PrivacyPolicy.jsx
+â”‚   â”‚       â”œâ”€â”€ Terms.jsx
+â”‚   â”‚       â”œâ”€â”€ Privacy.jsx
+â”‚   â”‚       â””â”€â”€ Cookies.jsx
+â”‚   â”‚
+â”‚   â”œâ”€â”€ lib/                      # Library utilities
+â”‚   â”‚   â”œâ”€â”€ supabase.js           # Supabase client init
+â”‚   â”‚   â”œâ”€â”€ i18n.js               # i18next config (en/fr)
+â”‚   â”‚   â”œâ”€â”€ validation.js         # Password, email, name validation + location data
+â”‚   â”‚   â”œâ”€â”€ verification.js       # LinkedIn/email verification
+â”‚   â”‚   â”œâ”€â”€ spamDetection.js      # Multi-tier spam detection
+â”‚   â”‚   â”œâ”€â”€ email.js              # Email stub (EmailJS removed)
+â”‚   â”‚   â”œâ”€â”€ storage.js            # Supabase storage helpers
+â”‚   â”‚   â”œâ”€â”€ spamDetection.test.js # Spam detection tests
+â”‚   â”‚   â””â”€â”€ verification.test.js  # Verification tests
+â”‚   â”‚
+â”‚   â”œâ”€â”€ data/                     # Static datasets
+â”‚   â”‚   â”œâ”€â”€ companies.js          # 87 Tunisian companies (autocomplete)
+â”‚   â”‚   â”œâ”€â”€ jobTitles.js          # Job title suggestions
+â”‚   â”‚   â””â”€â”€ skills.js             # Skill suggestions
+â”‚   â”‚
+â”‚   â”œâ”€â”€ locales/                  # Translation files
+â”‚   â”‚   â”œâ”€â”€ en.json               # English (~160 keys)
+â”‚   â”‚   â””â”€â”€ fr.json               # French (~160 keys)
+â”‚   â”‚
+â”‚   â”œâ”€â”€ types/
+â”‚   â”‚   â””â”€â”€ index.js              # Type definitions / constants
+â”‚   â”‚
+â”‚   â”œâ”€â”€ utils/
+â”‚   â”‚   â”œâ”€â”€ profileUtils.js       # PDF export, share link, clipboard
+â”‚   â”‚   â””â”€â”€ smartScheduling.js    # Date detection + Google Calendar
+â”‚   â”‚
+â”‚   â””â”€â”€ test/
+â”‚       â””â”€â”€ setup.js              # Vitest setup file
+â”‚
+â”œâ”€â”€ database/                     # SQL migration & setup files (45 files)
+â”‚   â”œâ”€â”€ 000_canonical_rls.sql     # Authoritative RLS policy file
+â”‚   â”œâ”€â”€ schema.sql                # V1 schema
+â”‚   â”œâ”€â”€ refactor_v2.sql           # V2 schema (current)
+â”‚   â”œâ”€â”€ matching_engine.sql       # V3 matching (PostGIS + skills)
+â”‚   â”œâ”€â”€ report_block_system.sql   # Report & block tables
+â”‚   â”œâ”€â”€ create_external_jobs.sql  # External jobs table
+â”‚   â”œâ”€â”€ storage.sql               # Storage bucket setup
+â”‚   â”œâ”€â”€ admin_setup.sql           # Admin role tables
+â”‚   â”œâ”€â”€ seed_v3.sql               # Seed data
+â”‚   â””â”€â”€ ...                       # Various fix/migration files
+â”‚
+â”œâ”€â”€ supabase/
+â”‚   â”œâ”€â”€ functions/                # Edge Functions (6 Deno functions)
+â”‚   â”‚   â”œâ”€â”€ ai-job-description/index.ts
+â”‚   â”‚   â”œâ”€â”€ ai-profile-polisher/index.ts
+â”‚   â”‚   â”œâ”€â”€ generate-embedding/index.ts
+â”‚   â”‚   â”œâ”€â”€ get-matched-jobs/index.ts
+â”‚   â”‚   â”œâ”€â”€ match-recommendations/index.ts
+â”‚   â”‚   â””â”€â”€ suggest-icebreakers/index.ts
+â”‚   â”‚
+â”‚   â””â”€â”€ migrations/               # Supabase-managed migrations
+â”‚       â”œâ”€â”€ 20251222010100_vector_matching.sql
+â”‚       â”œâ”€â”€ 20251222010200_external_jobs_rls.sql
+â”‚       â”œâ”€â”€ 20260213010100_partner_ingest_model.sql
+â”‚       â”œâ”€â”€ 20260219005000_function_search_path_hardening.sql
+â”‚       â””â”€â”€ 20260219010100_public_schema_hardening.sql
+â”‚
+â””â”€â”€ scripts/
+    â”œâ”€â”€ run_migration.js          # Migration runner
+    â””â”€â”€ crawler/                  # Job aggregator
+        â”œâ”€â”€ kernel.js             # Main crawler orchestrator
+        â”œâ”€â”€ config.js             # Crawler configuration
+        â”œâ”€â”€ scrapestack-client.js # Scrapestack API client
+        â”œâ”€â”€ cleanup-dead-links.js # Dead link remover
+        â””â”€â”€ scrapers/             # Site-specific scrapers
+            â”œâ”€â”€ index.js
+            â”œâ”€â”€ linkedin.js
+            â”œâ”€â”€ tanitjobs.js
+            â”œâ”€â”€ keejobs.js
+            â”œâ”€â”€ wuzzuf.js
+            â””â”€â”€ bayt.js
 ```
 
 ---
@@ -610,30 +613,30 @@ CREATE TYPE match_status AS ENUM ('matched', 'accepted', 'rejected', 'archived')
 ### 6.3 Entity-Relationship Diagram
 
 ```
-AUTH_USERS ──1:1── PROFILES ──1:0..1── STUDENTS
-                      │                     │
-                      ├──1:0..1── COMPANIES  ├──1:N── EXPERIENCES
-                      │              │       ├──1:N── STUDENT_EDUCATION
-                      ├──1:N── MESSAGES      ├──1:N── STUDENT_SWIPES
-                      ├──1:N── BLOCKED_USERS └──1:N── MATCHES
-                      └──1:N── REPORTED_USERS
-                                     │
-                   COMPANIES ──1:N── OFFERS ──1:N── STUDENT_SWIPES
-                      │                │
-                      ├──1:N── COMPANY_SWIPES
-                      └──1:N── MATCHES
+AUTH_USERS â”€â”€1:1â”€â”€ PROFILES â”€â”€1:0..1â”€â”€ STUDENTS
+                      â”‚                     â”‚
+                      â”œâ”€â”€1:0..1â”€â”€ COMPANIES  â”œâ”€â”€1:Nâ”€â”€ EXPERIENCES
+                      â”‚              â”‚       â”œâ”€â”€1:Nâ”€â”€ STUDENT_EDUCATION
+                      â”œâ”€â”€1:Nâ”€â”€ MESSAGES      â”œâ”€â”€1:Nâ”€â”€ STUDENT_SWIPES
+                      â”œâ”€â”€1:Nâ”€â”€ BLOCKED_USERS â””â”€â”€1:Nâ”€â”€ MATCHES
+                      â””â”€â”€1:Nâ”€â”€ REPORTED_USERS
+                                     â”‚
+                   COMPANIES â”€â”€1:Nâ”€â”€ OFFERS â”€â”€1:Nâ”€â”€ STUDENT_SWIPES
+                      â”‚                â”‚
+                      â”œâ”€â”€1:Nâ”€â”€ COMPANY_SWIPES
+                      â””â”€â”€1:Nâ”€â”€ MATCHES
 
-                   MATCHES ──1:N── MESSAGES
+                   MATCHES â”€â”€1:Nâ”€â”€ MESSAGES
 
                    EXTERNAL_JOBS (standalone, populated by crawler)
 ```
 
 ### 6.4 Table Definitions
 
-#### `profiles` — Central user identity
+#### `profiles` â€” Central user identity
 | Column | Type | Constraints |
 |--------|------|-------------|
-| `id` | UUID | PK, FK → `auth.users(id)` ON DELETE CASCADE |
+| `id` | UUID | PK, FK â†’ `auth.users(id)` ON DELETE CASCADE |
 | `role` | `user_role` | NOT NULL (`'student'`, `'company'`, `'admin'`) |
 | `email` | TEXT | NOT NULL |
 | `verified` | BOOLEAN | DEFAULT FALSE |
@@ -644,10 +647,10 @@ AUTH_USERS ──1:1── PROFILES ──1:0..1── STUDENTS
 | `created_at` | TIMESTAMPTZ | DEFAULT NOW() |
 | `updated_at` | TIMESTAMPTZ | DEFAULT NOW() |
 
-#### `students` — Student-specific profile data
+#### `students` â€” Student-specific profile data
 | Column | Type | Constraints |
 |--------|------|-------------|
-| `id` | UUID | PK, FK → `profiles(id)` ON DELETE CASCADE |
+| `id` | UUID | PK, FK â†’ `profiles(id)` ON DELETE CASCADE |
 | `display_name` | TEXT | |
 | `bio` | TEXT | |
 | `location` | TEXT | "Governorate, City" format |
@@ -663,10 +666,10 @@ AUTH_USERS ──1:1── PROFILES ──1:0..1── STUDENTS
 | `embedding` | vector(384) | For semantic matching |
 | `location_point` | GEOGRAPHY(Point) | For geospatial queries |
 
-#### `companies` — Company-specific profile data
+#### `companies` â€” Company-specific profile data
 | Column | Type | Constraints |
 |--------|------|-------------|
-| `id` | UUID | PK, FK → `profiles(id)` ON DELETE CASCADE |
+| `id` | UUID | PK, FK â†’ `profiles(id)` ON DELETE CASCADE |
 | `company_name` | TEXT | |
 | `industry` | TEXT | |
 | `website` | TEXT | |
@@ -678,11 +681,11 @@ AUTH_USERS ──1:1── PROFILES ──1:0..1── STUDENTS
 | `embedding` | vector(384) | |
 | `location_point` | GEOGRAPHY(Point) | |
 
-#### `offers` — Job offers posted by companies
+#### `offers` â€” Job offers posted by companies
 | Column | Type | Constraints |
 |--------|------|-------------|
 | `id` | UUID | PK, DEFAULT `uuid_generate_v4()` |
-| `company_id` | UUID | FK → `companies(id)` ON DELETE CASCADE |
+| `company_id` | UUID | FK â†’ `companies(id)` ON DELETE CASCADE |
 | `title` | TEXT | NOT NULL |
 | `description` | TEXT | |
 | `location` | TEXT | |
@@ -696,53 +699,53 @@ AUTH_USERS ──1:1── PROFILES ──1:0..1── STUDENTS
 | `created_at` | TIMESTAMPTZ | DEFAULT NOW() |
 | `updated_at` | TIMESTAMPTZ | DEFAULT NOW() |
 
-#### `student_swipes` — Student actions on job offers
+#### `student_swipes` â€” Student actions on job offers
 | Column | Type | Constraints |
 |--------|------|-------------|
 | `id` | UUID | PK |
-| `student_id` | UUID | FK → `students(id)`, composite PK part |
-| `offer_id` | UUID | FK → `offers(id)`, composite PK part |
+| `student_id` | UUID | FK â†’ `students(id)`, composite PK part |
+| `offer_id` | UUID | FK â†’ `offers(id)`, composite PK part |
 | `direction` | TEXT | `'left'`, `'right'` |
 | `created_at` | TIMESTAMPTZ | DEFAULT NOW() |
 | | | UNIQUE(`student_id`, `offer_id`) |
 
-#### `company_swipes` — Company actions on candidates
+#### `company_swipes` â€” Company actions on candidates
 | Column | Type | Constraints |
 |--------|------|-------------|
 | `id` | UUID | PK |
-| `company_id` | UUID | FK → `companies(id)` |
-| `student_id` | UUID | FK → `students(id)` |
-| `offer_id` | UUID | FK → `offers(id)` |
+| `company_id` | UUID | FK â†’ `companies(id)` |
+| `student_id` | UUID | FK â†’ `students(id)` |
+| `offer_id` | UUID | FK â†’ `offers(id)` |
 | `direction` | TEXT | `'left'`, `'right'` |
 | `created_at` | TIMESTAMPTZ | DEFAULT NOW() |
 | | | UNIQUE(`company_id`, `student_id`, `offer_id`) |
 
-#### `matches` — Confirmed mutual interest
+#### `matches` â€” Confirmed mutual interest
 | Column | Type | Constraints |
 |--------|------|-------------|
 | `id` | UUID | PK, DEFAULT `uuid_generate_v4()` |
-| `student_id` | UUID | FK → `students(id)` |
-| `offer_id` | UUID | FK → `offers(id)` |
-| `company_id` | UUID | FK → `companies(id)` |
+| `student_id` | UUID | FK â†’ `students(id)` |
+| `offer_id` | UUID | FK â†’ `offers(id)` |
+| `company_id` | UUID | FK â†’ `companies(id)` |
 | `status` | `match_status` | DEFAULT `'matched'` |
 | `created_at` | TIMESTAMPTZ | DEFAULT NOW() |
 | | | UNIQUE(`student_id`, `offer_id`) |
 
-#### `messages` — Chat messages within matches
+#### `messages` â€” Chat messages within matches
 | Column | Type | Constraints |
 |--------|------|-------------|
 | `id` | UUID | PK, DEFAULT `uuid_generate_v4()` |
-| `match_id` | UUID | FK → `matches(id)` ON DELETE CASCADE |
-| `sender_id` | UUID | FK → `profiles(id)` |
+| `match_id` | UUID | FK â†’ `matches(id)` ON DELETE CASCADE |
+| `sender_id` | UUID | FK â†’ `profiles(id)` |
 | `content` | TEXT | NOT NULL |
 | `is_read` | BOOLEAN | DEFAULT FALSE |
 | `created_at` | TIMESTAMPTZ | DEFAULT NOW() |
 
-#### `experiences` — Student work experience
+#### `experiences` â€” Student work experience
 | Column | Type | Constraints |
 |--------|------|-------------|
 | `id` | UUID | PK |
-| `student_id` | UUID | FK → `students(id)` |
+| `student_id` | UUID | FK â†’ `students(id)` |
 | `company_name` | TEXT | |
 | `role` | TEXT | |
 | `description` | TEXT | |
@@ -750,11 +753,11 @@ AUTH_USERS ──1:1── PROFILES ──1:0..1── STUDENTS
 | `end_date` | DATE | NULL for current |
 | `is_current` | BOOLEAN | |
 
-#### `student_education` — Student education history
+#### `student_education` â€” Student education history
 | Column | Type | Constraints |
 |--------|------|-------------|
 | `id` | UUID | PK |
-| `student_id` | UUID | FK → `students(id)` |
+| `student_id` | UUID | FK â†’ `students(id)` |
 | `institution` | TEXT | |
 | `degree` | TEXT | |
 | `field_of_study` | TEXT | |
@@ -762,7 +765,7 @@ AUTH_USERS ──1:1── PROFILES ──1:0..1── STUDENTS
 | `end_date` | DATE | |
 | `is_current` | BOOLEAN | |
 
-#### `external_jobs` — Crawler-aggregated jobs
+#### `external_jobs` â€” Crawler-aggregated jobs
 | Column | Type | Constraints |
 |--------|------|-------------|
 | `id` | UUID | PK, DEFAULT `uuid_generate_v4()` |
@@ -779,25 +782,25 @@ AUTH_USERS ──1:1── PROFILES ──1:0..1── STUDENTS
 | `contact_email` | TEXT | |
 | `created_at` | TIMESTAMPTZ | DEFAULT NOW() |
 
-#### `blocked_users` — User blocking
+#### `blocked_users` â€” User blocking
 | Column | Type | Constraints |
 |--------|------|-------------|
 | `id` | UUID | PK |
-| `blocker_id` | UUID | FK → `profiles(id)` |
-| `blocked_id` | UUID | FK → `profiles(id)` |
+| `blocker_id` | UUID | FK â†’ `profiles(id)` |
+| `blocked_id` | UUID | FK â†’ `profiles(id)` |
 | `created_at` | TIMESTAMPTZ | DEFAULT NOW() |
 | | | UNIQUE(`blocker_id`, `blocked_id`) |
 
-#### `reported_users` — User reports
+#### `reported_users` â€” User reports
 | Column | Type | Constraints |
 |--------|------|-------------|
 | `id` | UUID | PK |
-| `reporter_id` | UUID | FK → `profiles(id)` |
-| `reported_id` | UUID | FK → `profiles(id)` |
+| `reporter_id` | UUID | FK â†’ `profiles(id)` |
+| `reported_id` | UUID | FK â†’ `profiles(id)` |
 | `reason` | TEXT | `'spam'`, `'fake_profile'`, `'harassment'`, `'inappropriate_content'`, `'other'` |
 | `details` | TEXT | Max 500 chars |
 | `status` | TEXT | `'pending'`, `'reviewed'`, `'dismissed'`, `'action_taken'` |
-| `reviewed_by` | UUID | FK → `profiles(id)` |
+| `reviewed_by` | UUID | FK â†’ `profiles(id)` |
 | `created_at` | TIMESTAMPTZ | DEFAULT NOW() |
 | | | UNIQUE(`reporter_id`, `reported_id`) |
 
@@ -805,7 +808,7 @@ AUTH_USERS ──1:1── PROFILES ──1:0..1── STUDENTS
 
 | Function | Purpose | Type |
 |----------|---------|------|
-| `calculate_match_score(student_uuid, offer_uuid)` | 70% skill overlap + 30% location match → 0-100 score | PLPGSQL |
+| `calculate_match_score(student_uuid, offer_uuid)` | 70% skill overlap + 30% location match â†’ 0-100 score | PLPGSQL |
 | `get_student_feed(student_uuid)` | Returns offers sorted by match score, excluding already-swiped | PLPGSQL |
 | `handle_new_match()` | Trigger function: checks cross-swipe and creates match | PLPGSQL |
 | `match_jobs_for_student(embedding, excluded_ids, count)` | pgvector cosine similarity search on offers | PLPGSQL |
@@ -820,8 +823,8 @@ AUTH_USERS ──1:1── PROFILES ──1:0..1── STUDENTS
 
 | Trigger | Table | Event | Function |
 |---------|-------|-------|----------|
-| `on_student_swipe_match` | `student_swipes` | AFTER INSERT | Check if company already swiped right → create match |
-| `on_company_swipe_match` | `company_swipes` | AFTER INSERT | Check if student already swiped right → create match |
+| `on_student_swipe_match` | `student_swipes` | AFTER INSERT | Check if company already swiped right â†’ create match |
+| `on_company_swipe_match` | `company_swipes` | AFTER INSERT | Check if student already swiped right â†’ create match |
 | `update_profiles_updated_at` | `profiles` | BEFORE UPDATE | `update_updated_at()` |
 | `update_offers_updated_at` | `offers` | BEFORE UPDATE | `update_updated_at()` |
 
@@ -854,19 +857,19 @@ All tables have RLS enabled. The authoritative policy file is `database/000_cano
 
 | Table | SELECT | INSERT | UPDATE | DELETE |
 |-------|--------|--------|--------|--------|
-| `profiles` | All authenticated | Own (`id = auth.uid()`) | Own | — |
-| `students` | All authenticated | Own | Own | — |
-| `companies` | All authenticated | Own | Own | — |
+| `profiles` | All authenticated | Own (`id = auth.uid()`) | Own | â€” |
+| `students` | All authenticated | Own | Own | â€” |
+| `companies` | All authenticated | Own | Own | â€” |
 | `offers` | Active OR own company | Own company | Own company | Own company |
-| `student_swipes` | Own student | Own student | — | — |
-| `company_swipes` | Own company | Own company | — | — |
-| `matches` | Participant (student or company) | Participant | Participant | — |
-| `messages` | Match member (via subquery) | Match member + own sender_id | Match member | — |
+| `student_swipes` | Own student | Own student | â€” | â€” |
+| `company_swipes` | Own company | Own company | â€” | â€” |
+| `matches` | Participant (student or company) | Participant | Participant | â€” |
+| `messages` | Match member (via subquery) | Match member + own sender_id | Match member | â€” |
 | `experiences` | All authenticated | Own student | Own student | Own student |
 | `student_education` | All authenticated | Own student | Own student | Own student |
-| `external_jobs` | All (authenticated + anon) | — | — | — |
-| `blocked_users` | Own blocker | Own blocker | — | Own blocker |
-| `reported_users` | Own reporter | Own reporter | — | — |
+| `external_jobs` | All (authenticated + anon) | â€” | â€” | â€” |
+| `blocked_users` | Own blocker | Own blocker | â€” | Own blocker |
+| `reported_users` | Own reporter | Own reporter | â€” | â€” |
 
 ### Storage Policies (Avatars Bucket)
 
@@ -883,9 +886,9 @@ All tables have RLS enabled. The authoritative policy file is `database/000_cano
 
 ### 8.1 Auth Flow
 
-1. **Sign Up**: `supabase.auth.signUp()` → creates `auth.users` record → inserts `profiles` row + `students`/`companies` row.
+1. **Sign Up**: `supabase.auth.signUp()` â†’ creates `auth.users` record â†’ inserts `profiles` row + `students`/`companies` row.
 2. **Email Verification**: If required, defers profile creation until email confirmed. On confirmation, `onAuthStateChange` fires and creates profile.
-3. **Sign In**: `supabase.auth.signInWithPassword()` → JWT stored in `localStorage` (key: `matchop-auth-token`).
+3. **Sign In**: `supabase.auth.signInWithPassword()` â†’ JWT stored in `localStorage` (key: `matchop-auth-token`).
 4. **Session Management**: Auto-refresh via `autoRefreshToken: true`. `detectSessionInUrl: true` handles OAuth/magic link redirects.
 5. **Profile Fetch**: On every auth state change, fetches `profiles` with `students(*)` or `companies(*)` join.
 6. **Auto-Profile Creation**: If authenticated user has no profile row (edge case), auto-creates from `user_metadata`.
@@ -909,8 +912,8 @@ const {
   resendVerificationEmail, // (email)
   resetPassword,           // (email)
   updateProfile,           // (updates)
-  refreshProfile,          // () → re-fetch profile
-  clearError,              // () → clear authError
+  refreshProfile,          // () â†’ re-fetch profile
+  clearError,              // () â†’ clear authError
 } = useAuth()
 ```
 
@@ -941,27 +944,27 @@ const {
 
 | Feature | Student | Company | Admin |
 |---------|---------|---------|-------|
-| Browse offers (swipe) | ✅ | — | — |
-| Apply to jobs | ✅ | — | — |
-| View matches | ✅ | ✅ | — |
-| Chat with match | ✅ | ✅ | — |
-| Edit own profile | ✅ | ✅ | — |
-| Upload avatar/CV | ✅ | ✅ | — |
-| Browse external jobs | ✅ | — | — |
-| Post offer | — | ✅ | — |
-| AI job description | — | ✅ | — |
-| View candidates | — | ✅ | — |
-| Swipe on candidates | — | ✅ | — |
-| Report user | ✅ | ✅ | — |
-| Block user | ✅ | ✅ | — |
-| Export PDF CV | ✅ | — | — |
-| AI bio polisher | ✅ | — | — |
-| Manage users | — | — | ✅ |
-| Manage offers | — | — | ✅ |
-| Manage companies | — | — | ✅ |
-| Review reports | — | — | ✅ |
-| View analytics | — | — | ✅ |
-| Platform settings | — | — | ✅ |
+| Browse offers (swipe) | âœ… | â€” | â€” |
+| Apply to jobs | âœ… | â€” | â€” |
+| View matches | âœ… | âœ… | â€” |
+| Chat with match | âœ… | âœ… | â€” |
+| Edit own profile | âœ… | âœ… | â€” |
+| Upload avatar/CV | âœ… | âœ… | â€” |
+| Browse external jobs | âœ… | â€” | â€” |
+| Post offer | â€” | âœ… | â€” |
+| AI job description | â€” | âœ… | â€” |
+| View candidates | â€” | âœ… | â€” |
+| Swipe on candidates | â€” | âœ… | â€” |
+| Report user | âœ… | âœ… | â€” |
+| Block user | âœ… | âœ… | â€” |
+| Export PDF CV | âœ… | â€” | â€” |
+| AI bio polisher | âœ… | â€” | â€” |
+| Manage users | â€” | â€” | âœ… |
+| Manage offers | â€” | â€” | âœ… |
+| Manage companies | â€” | â€” | âœ… |
+| Review reports | â€” | â€” | âœ… |
+| View analytics | â€” | â€” | âœ… |
+| Platform settings | â€” | â€” | âœ… |
 
 ---
 
@@ -1005,7 +1008,7 @@ Eagerly loaded: Navbar, Footer, RouteGuards, ScrollToTop, DiagnosticHelper, Auth
 ### 10.3 Entry Point (`main.jsx`)
 
 - Initializes i18n before rendering
-- Wraps `<App />` in provider hierarchy (see §4.2)
+- Wraps `<App />` in provider hierarchy (see Â§4.2)
 - Logs environment debug info on mount (href, userAgent, platform, screen dimensions, devicePixelRatio, cookies, localStorage)
 
 ### 10.4 App Component (`App.jsx`)
@@ -1024,9 +1027,9 @@ Eagerly loaded: Navbar, Footer, RouteGuards, ScrollToTop, DiagnosticHelper, Auth
 **Embedding Model**: `sentence-transformers/all-MiniLM-L6-v2` (384 dimensions) via HuggingFace Inference API.
 
 **Flow**:
-1. Student saves profile → `generate-embedding` edge function → stores 384-dim vector in `students.embedding`
-2. Company creates offer → `generate-embedding` edge function → stores 384-dim vector in `offers.embedding`
-3. Student opens swipe → `get-matched-jobs` edge function → `match_jobs_for_student` RPC → cosine similarity ranking
+1. Student saves profile â†’ `generate-embedding` edge function â†’ stores 384-dim vector in `students.embedding`
+2. Company creates offer â†’ `generate-embedding` edge function â†’ stores 384-dim vector in `offers.embedding`
+3. Student opens swipe â†’ `get-matched-jobs` edge function â†’ `match_jobs_for_student` RPC â†’ cosine similarity ranking
 4. Fallback: if no embedding, returns recent active offers
 
 **Vector Index**: HNSW with `vector_cosine_ops` for O(log n) approximate nearest neighbor search.
@@ -1041,13 +1044,13 @@ Three-factor composite score:
 |--------|--------|-------------|
 | Skill Match | 60% | Array intersection ratio (`matched_skills / total_required_skills`) |
 | Distance | 30% | `MAX(0, 1 - distance_km / max_distance_km)` via PostGIS `ST_Distance` |
-| Recency | 10% | `1 / (1 + days_since_posted)` — 7-day decay |
+| Recency | 10% | `1 / (1 + days_since_posted)` â€” 7-day decay |
 
 Excludes already-swiped offers and offers beyond `max_distance_km` (default 100 km).
 
 ### 11.3 AI Job Description Generator
 
-**Model**: OpenRouter → `meta-llama/llama-3.2-3b-instruct:free`
+**Model**: OpenRouter â†’ `meta-llama/llama-3.2-3b-instruct:free`
 
 **Input**: Job title (required), department, position type, tone (default: professional).
 
@@ -1073,7 +1076,7 @@ Excludes already-swiped offers and offers beyond `max_distance_km` (default 100 
 
 **Model**: Same as above.
 
-**Input**: Match ID → fetches student name/skills, offer title, company name.
+**Input**: Match ID â†’ fetches student name/skills, offer title, company name.
 
 **Output**: 3 conversation starter suggestions (< 150 chars each, JSON array).
 
@@ -1180,7 +1183,7 @@ When a new match appears, the MatchModal is triggered with celebration UI.
 When a chat message contains a date/time reference (e.g., "Let's meet Monday at 10am"), `detectDateInMessage()` identifies it and `generateCalendarUrl()` creates a Google Calendar link with a pre-filled event.
 
 Detected patterns:
-- Day names (Monday–Sunday)
+- Day names (Mondayâ€“Sunday)
 - "tomorrow", "today", "next week"
 - Month+day (e.g., "Dec 25th")
 - Clock times with am/pm (e.g., "2:30pm")
@@ -1191,7 +1194,7 @@ Detected patterns:
 
 ### 14.1 Overview
 
-MatchOp uses a **custom CSS design system** (892 lines in `index.css`) built on CSS custom properties. The design language is **bento-grid glassmorphism** — frosted glass cards on gradient backgrounds with generous border-radius and subtle shadows.
+MatchOp uses a **custom CSS design system** (892 lines in `index.css`) built on CSS custom properties. The design language is **bento-grid glassmorphism** â€” frosted glass cards on gradient backgrounds with generous border-radius and subtle shadows.
 
 There is **no Tailwind CSS**. Hand-written utility classes replace common Tailwind patterns.
 
@@ -1304,10 +1307,10 @@ Theme is applied via `data-theme` attribute on `<html>` and persisted in `localS
 
 | Breakpoint | Target |
 |------------|--------|
-| `max-width: 767px` | Mobile — disable hover transforms, 44px touch targets, 70px navbar |
-| `min-width: 640px` | Small tablets — 2-column grids |
-| `min-width: 768px` | Tablets — hover effects, hide mobile elements |
-| `min-width: 1024px` | Desktop — 3-column grids, wider container padding |
+| `max-width: 767px` | Mobile â€” disable hover transforms, 44px touch targets, 70px navbar |
+| `min-width: 640px` | Small tablets â€” 2-column grids |
+| `min-width: 768px` | Tablets â€” hover effects, hide mobile elements |
+| `min-width: 1024px` | Desktop â€” 3-column grids, wider container padding |
 
 ### 14.9 Typography
 
@@ -1343,7 +1346,7 @@ Theme is applied via `data-theme` attribute on `<html>` and persisted in `localS
 ### 15.2 Configuration
 
 - Library: `i18next` + `react-i18next`
-- Detection: `localStorage` → browser language → default `'en'`
+- Detection: `localStorage` â†’ browser language â†’ default `'en'`
 - Persistence: Saves to `localStorage` on change
 - RTL: Sets `dir` attribute on `<html>` when language is `'ar'`
 - Namespace: Single `translation` namespace
@@ -1376,7 +1379,7 @@ function Component() {
 }
 ```
 
-Language switcher in Navbar toggles between EN (🇬🇧) and FR (🇫🇷).
+Language switcher in Navbar toggles between EN (ðŸ‡¬ðŸ‡§) and FR (ðŸ‡«ðŸ‡·).
 
 ---
 
@@ -1443,7 +1446,7 @@ Language switcher in Navbar toggles between EN (🇬🇧) and FR (🇫🇷).
 
 ### 16.2 Route Guards
 
-- **`ProtectedRoute`**: Shows loading spinner while auth initializes. Redirects unauthenticated users to login. Optional `requiredType` enforces role — mismatched roles redirected to correct dashboard. Waits for profile load before role checking.
+- **`ProtectedRoute`**: Shows loading spinner while auth initializes. Redirects unauthenticated users to login. Optional `requiredType` enforces role â€” mismatched roles redirected to correct dashboard. Waits for profile load before role checking.
 - **`PublicRoute`**: Shows loading spinner while auth initializes. Redirects authenticated users to their role-appropriate dashboard.
 - **`AdminRoute`**: Checks `profile.role === 'admin'` or `user_metadata.type === 'admin'`. Non-admins redirected to their dashboard.
 
@@ -1467,13 +1470,13 @@ Language switcher in Navbar toggles between EN (🇬🇧) and FR (🇫🇷).
 
 | Component | Description | Key Props |
 |-----------|-------------|-----------|
-| `Navbar` | Top navigation with role-based links, language switcher, theme toggle, mobile hamburger | — |
+| `Navbar` | Top navigation with role-based links, language switcher, theme toggle, mobile hamburger | â€” |
 | `SwipeCard` | Draggable Framer Motion card for job offers | `offer`, `onSwipe(direction)`, `isTop`, `onViewDetails` |
 | `MatchModal` | Match celebration with confetti, dual avatars, next steps | `match`, `onClose`, `userType` |
 | `OfferDetailModal` | Full job detail overlay | `offer`, `onClose` |
 | `FilterPanel` | Swipe deck filter panel (work type, contract, salary, industry) | `filters`, `onFilterChange`, `onReset`, `jobCount` |
 | `ChatBubble` | Chat message bubble with sender/receiver styling | `message`, `isOwn` |
-| `Footer` | Site footer with brand, founder, links, legal, theme toggle | — |
+| `Footer` | Site footer with brand, founder, links, legal, theme toggle | â€” |
 | `Logo` | Animated MatchOp brand logo | `size`, `animated` |
 
 ### Feedback Components
@@ -1530,7 +1533,7 @@ Language switcher in Navbar toggles between EN (🇬🇧) and FR (🇫🇷).
 | `useCVUpload` | Storage (via `lib/storage.js`) | CV/resume upload | `uploading`, `upload()` |
 | `useBlocking` | `blocked_users` | Block/unblock users | `blockedUsers`, `blockUser()`, `unblockUser()` |
 | `useReporting` | `reported_users` | Report user with reason | `reportUser()`, `loading` |
-| `useLoadingError` | — (utility) | Generic loading/error state | `loading`, `error`, `setLoading()`, `setError()` |
+| `useLoadingError` | â€” (utility) | Generic loading/error state | `loading`, `error`, `setLoading()`, `setError()` |
 
 ---
 
@@ -1538,7 +1541,7 @@ Language switcher in Navbar toggles between EN (🇬🇧) and FR (🇫🇷).
 
 ### Landing Page
 - Hero: animated gradient orb, Logo, badge, headline, subtitle, dual CTA (Student/Company), trust-first status chips (Private, Invite, Dec 2025 launch)
-- How It Works: 3-step glass cards (Create Profile → Swipe & Match → Connect & Chat)
+- How It Works: 3-step glass cards (Create Profile â†’ Swipe & Match â†’ Connect & Chat)
 - For Students: 4 feature cards + signup CTA
 - For Companies: 4 feature cards + candidate pipeline mockup + hiring CTA
 - Final CTA: "Ready to Transform Your Career Journey?"
@@ -1581,26 +1584,26 @@ Language switcher in Navbar toggles between EN (🇬🇧) and FR (🇫🇷).
 | `AdminSettings` | Platform configuration |
 
 ### Legal Pages
-- `TermsOfService`, `PrivacyPolicy`, `Cookies` — standard legal content pages.
+- `TermsOfService`, `PrivacyPolicy`, `Cookies` â€” standard legal content pages.
 
 ### Static Pages
-- `About` — company info, mission, team
-- `Blog` — blog posts
-- `Contact` — contact form / info
+- `About` â€” company info, mission, team
+- `Blog` â€” blog posts
+- `Contact` â€” contact form / info
 
 ---
 
 ## 20. Supabase Edge Functions
 
-All 6 functions run on **Deno** in Supabase Edge Functions. They share a common pattern: CORS headers → Authorization header validation → Supabase client creation with user JWT → business logic.
+All 6 functions run on **Deno** in Supabase Edge Functions. They share a common pattern: CORS headers â†’ Authorization header validation â†’ Supabase client creation with user JWT â†’ business logic.
 
 | Function | AI Provider | Input | Output | Auth |
 |----------|-------------|-------|--------|------|
 | `ai-job-description` | OpenRouter (Llama 3.2) | `jobTitle`, `department`, `jobType`, `tone` | Markdown job description | JWT required |
-| `ai-profile-polisher` | OpenRouter (Llama 3.2) | `bio` (≥10 chars), `skills[]`, `headline` | Improved bio text | JWT required |
+| `ai-profile-polisher` | OpenRouter (Llama 3.2) | `bio` (â‰¥10 chars), `skills[]`, `headline` | Improved bio text | JWT required |
 | `generate-embedding` | HuggingFace (MiniLM-L6-v2) | `text`, `type` (`student`/`job`), `id` | Stores 384-dim vector in DB | JWT required |
-| `get-matched-jobs` | — (database only) | Student's JWT | Ranked offers (semantic or fallback) | JWT required |
-| `match-recommendations` | — (database only) | `limit`, `offset`, `distance` | PostGIS+skill scored offers | JWT required |
+| `get-matched-jobs` | â€” (database only) | Student's JWT | Ranked offers (semantic or fallback) | JWT required |
+| `match-recommendations` | â€” (database only) | `limit`, `offset`, `distance` | PostGIS+skill scored offers | JWT required |
 | `suggest-icebreakers` | OpenRouter (Llama 3.2) | `match_id` | 3 conversation starters (JSON) | JWT + ownership check |
 
 ### Environment Variables (Edge Functions)
@@ -1628,10 +1631,10 @@ All 6 functions run on **Deno** in Supabase Edge Functions. They share a common 
 | `getAuthErrorMessage(error)` | Maps Supabase error codes to user-friendly messages |
 
 **Exported Data**:
-- `TUNISIAN_GOVERNORATES` — 24 Tunisian governorates
-- `CITIES_BY_GOVERNORATE` — city arrays per governorate
-- `TUNISIAN_CITIES` — flat array (legacy)
-- `TUNISIAN_UNIVERSITIES` — public universities, engineering schools, private universities, ISETs
+- `TUNISIAN_GOVERNORATES` â€” 24 Tunisian governorates
+- `CITIES_BY_GOVERNORATE` â€” city arrays per governorate
+- `TUNISIAN_CITIES` â€” flat array (legacy)
+- `TUNISIAN_UNIVERSITIES` â€” public universities, engineering schools, private universities, ISETs
 
 ### `lib/spamDetection.js`
 
@@ -1661,7 +1664,7 @@ Supabase Storage helper functions for avatar and CV file operations.
 
 ### `lib/email.js`
 
-Stub module — `sendMatchEmail()` is a no-op returning `{ status: 'disabled' }`. EmailJS has been removed; export exists to keep imports stable.
+Stub module â€” `sendMatchEmail()` is a no-op returning `{ status: 'disabled' }`. EmailJS has been removed; export exists to keep imports stable.
 
 ### `utils/smartScheduling.js`
 
@@ -1789,7 +1792,7 @@ supabase functions deploy suggest-icebreakers
 - [ ] Verify SPA routing (deep links)
 - [ ] Check Vercel environment variables match Supabase project
 - [ ] Test signup flow (student + company)
-- [ ] Test swipe → match trigger
+- [ ] Test swipe â†’ match trigger
 - [ ] Test message send/receive
 - [ ] Verify Edge Functions: `supabase functions list`
 - [ ] Monitor Supabase logs for RLS violations
@@ -1800,7 +1803,7 @@ supabase functions deploy suggest-icebreakers
 
 ## 24. Environment Variables
 
-### Frontend (Vite — prefixed with `VITE_`)
+### Frontend (Vite â€” prefixed with `VITE_`)
 
 | Variable | Required | Description |
 |----------|----------|-------------|
@@ -1860,9 +1863,12 @@ cp .env.example .env
 #   3. database/report_block_system.sql (moderation)
 #   4. database/create_external_jobs.sql (crawler table)
 #   5. database/000_canonical_rls.sql   (RLS policies)
-#   6. supabase/migrations/20251222_vector_matching.sql  (vector search)
-#   7. supabase/migrations/20251222_external_jobs_rls.sql (external jobs RLS)
-#   8. database/auto_confirm_emails.sql (fix signup — see docs/EMAIL_SETUP.md)
+#   6. supabase/migrations/20251222010100_vector_matching.sql  (vector search)
+#   7. supabase/migrations/20251222010200_external_jobs_rls.sql (external jobs RLS)
+#   8. supabase/migrations/20260213010100_partner_ingest_model.sql (partner ingest model)
+#   9. supabase/migrations/20260219005000_function_search_path_hardening.sql (function search_path hardening)
+#  10. supabase/migrations/20260219010100_public_schema_hardening.sql (extensions/public hardening)
+#  11. database/auto_confirm_emails.sql (fix signup - see docs/EMAIL_SETUP.md)
 
 # 5. Start development server
 npm run dev
@@ -1916,7 +1922,7 @@ npm run scrape
 
 | Measure | Implementation |
 |---------|---------------|
-| Row Level Security | All tables have RLS policies (see §7) |
+| Row Level Security | All tables have RLS policies (see Â§7) |
 | JWT Authentication | Supabase Auth with auto-refresh |
 | Password Policy | Min 8 chars, uppercase, lowercase, number, special char |
 | Edge Function Auth | All 6 functions validate JWT before processing |
@@ -1951,7 +1957,7 @@ npm run scrape
 | ID | Bug | Impact | File(s) |
 |----|-----|--------|---------|
 | C5 | Auth buttons hidden on mobile via `display:none` | Mobile users cannot sign up from nav | `Navbar.css:163` |
-| C6 | Ghost Tailwind classes (`mb-4`, `text-primary`, `font-bold`) — Tailwind is NOT installed | Broken layout silently | Multiple components |
+| C6 | Ghost Tailwind classes (`mb-4`, `text-primary`, `font-bold`) â€” Tailwind is NOT installed | Broken layout silently | Multiple components |
 | C7 | `useMessages` falls back to fake local message on INSERT failure | Lost messages, false success | `useMessages.js` |
 | C9 | `PublicRoute` redirect loop when user logged in but profile not loaded | White screen / infinite redirect | `RouteGuards.jsx` |
 | C10 | Certifications, projects, languages, volunteer are local-only state | Data lost on page refresh | `useStudentProfile.js` |
@@ -1960,14 +1966,14 @@ npm run scrape
 
 | ID | Bug | Impact |
 |----|-----|--------|
-| M1 | `ProtectedRoute` checks role before profile loads → premature redirect | Confusing UX on slow connections |
+| M1 | `ProtectedRoute` checks role before profile loads â†’ premature redirect | Confusing UX on slow connections |
 | M3 | `useMatches` 30s timeout race condition | Shows "no data" then flashes |
 | M4 | `useExternalJobs` double-fetch on mount | Wasted API calls |
 | M5 | `useMatchListener` only subscribes for students | Companies get no realtime match notifications |
 | M6 | Module-level caches not user-scoped | Data leak between sessions |
 | M9 | `ApplicationContext` value not memoized | Re-renders all consumers |
 | M10 | Navbar language dropdown doesn't close on outside click | UX annoyance |
-| M11 | Swipe undo only reverses UI — DB swipe committed | Misleading feature |
+| M11 | Swipe undo only reverses UI â€” DB swipe committed | Misleading feature |
 | M12 | Two mobile breakpoints in navbar (768px vs 901px) | Broken layout 768-900px |
 
 ### Low
@@ -1989,7 +1995,7 @@ npm run scrape
 ### Phase 1: AI-Powered Matching Enhancement (Short-term)
 - Auto-generate embeddings on profile/offer save via database trigger
 - Preference weights in student profile (remote preference, salary minimum, contract type)
-- "Why this match?" explainability — show skill overlap percentage in SwipeCard
+- "Why this match?" explainability â€” show skill overlap percentage in SwipeCard
 - Create missing `recommend_matches_rpc` PostgreSQL function
 
 ### Phase 2: Real-Time Chat & Notifications (Short-term)
@@ -2010,13 +2016,13 @@ npm run scrape
 - Analytics: views per offer, swipe-right rate, time-to-match
 - Offer templates (save/load configurations)
 - Team accounts (`company_members` table with roles)
-- ATS-lite: pipeline stages (Applied → Screening → Interview → Offer → Hired) with drag-and-drop Kanban
+- ATS-lite: pipeline stages (Applied â†’ Screening â†’ Interview â†’ Offer â†’ Hired) with drag-and-drop Kanban
 
 ### Phase 5: Gamification & Engagement (Long-term)
 - Daily swipe streaks with XP points
 - Achievements system ("First Match", "10-Day Streak", "Profile Complete")
 - Opt-in leaderboard
-- Super Swipe — limited daily priority likes
+- Super Swipe â€” limited daily priority likes
 - Profile boost via streaks or premium
 
 ### Phase 6: Platform Growth (Long-term)
@@ -2070,11 +2076,12 @@ npm run build     # Build for production
 
 ## 31. License
 
-MIT License — Copyright (c) 2026 MatchOp.
+MIT License â€” Copyright (c) 2026 MatchOp.
 
 See [LICENSE](LICENSE) for full text.
 
 ---
 
-*Built with React, Supabase, and AI — for students, by builders.*
+*Built with React, Supabase, and AI â€” for students, by builders.*
+
 

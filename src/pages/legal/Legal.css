@@ -4,15 +4,16 @@
 
 .legal-page {
     min-height: 100vh;
+    min-height: 100dvh;
     background: var(--bg-gradient, linear-gradient(180deg, #0a0a0a 0%, #1a1a2e 100%));
     padding: var(--space-3);
-    padding-top: calc(70px + var(--space-3));
+    padding-top: var(--space-3);
 }
 
 @media (min-width: 768px) {
     .legal-page {
         padding: 2rem;
-        padding-top: calc(80px + 2rem);
+        padding-top: 2rem;
     }
 }
 

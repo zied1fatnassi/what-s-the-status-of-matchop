@@ -1,6 +1,6 @@
 .auth-toast {
     position: fixed;
-    top: 80px;
+    top: calc(var(--nav-height-mobile) + var(--safe-top) + var(--space-2));
     left: 50%;
     transform: translateX(-50%);
     display: flex;
@@ -12,9 +12,9 @@
     border: 1px solid var(--glass-border);
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-xl);
-    z-index: 9999;
+    z-index: 2300;
     animation: slideDown 0.3s ease-out;
-    max-width: 90vw;
+    max-width: min(90vw, 520px);
 }
 
 .auth-toast.exiting {
@@ -99,4 +99,10 @@
 .auth-toast-close:hover {
     background: rgba(255, 255, 255, 0.1);
     color: white;
+}
+
+@media (min-width: 768px) {
+    .auth-toast {
+        top: calc(var(--nav-height-desktop) + var(--safe-top) + var(--space-2));
+    }
 }

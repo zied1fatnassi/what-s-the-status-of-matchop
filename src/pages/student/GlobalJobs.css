@@ -3,16 +3,16 @@
    ================================ */
 
 .global-jobs-page {
-    min-height: 100vh;
+    min-height: 100dvh;
     /* MOBILE FIRST: Smaller padding on mobile */
-    padding-top: 70px;
+    padding-top: 0;
     padding-bottom: var(--space-6);
     background: transparent;
 }
 
 @media (min-width: 768px) {
     .global-jobs-page {
-        padding-top: 100px;
+        padding-top: 0;
         padding-bottom: var(--space-8);
     }
 }
@@ -155,8 +155,6 @@
         grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
         gap: var(--space-6);
     }
-}
-    padding: 0 var(--space-4);
 }
 
 .job-card {

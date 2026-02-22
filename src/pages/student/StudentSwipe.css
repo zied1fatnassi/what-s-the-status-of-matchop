@@ -4,9 +4,9 @@
    ================================ */
 
 .swipe-page {
-    min-height: 100vh;
+    min-height: 100dvh;
     min-height: -webkit-fill-available;
-    padding-top: 70px;
+    padding-top: 0;
     padding-bottom: var(--space-4);
     display: flex;
     align-items: center;
@@ -17,7 +17,7 @@
 
 @media (min-width: 768px) {
     .swipe-page {
-        padding-top: 80px;
+        padding-top: 0;
         padding-bottom: var(--space-6);
     }
 }
@@ -76,8 +76,8 @@
 .cards-stack {
     position: relative;
     width: 100%;
-    height: calc(100vh - 220px);
-    min-height: 400px;
+    height: calc(100dvh - 240px);
+    min-height: 340px;
     max-height: 520px;
     display: flex;
     align-items: center;
@@ -86,7 +86,7 @@
 
 @media (min-width: 480px) {
     .cards-stack {
-        height: 480px;
+        height: min(480px, calc(100dvh - 260px));
         max-height: 520px;
     }
 }
@@ -103,7 +103,7 @@
     align-items: center;
     justify-content: center;
     gap: var(--space-3);
-    padding-bottom: env(safe-area-inset-bottom);
+    padding-bottom: var(--safe-bottom);
 }
 
 @media (min-width: 768px) {

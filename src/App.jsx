@@ -7,6 +7,7 @@ import ScrollToTop from './components/ScrollToTop'
 import AuthToast from './components/AuthToast'
 import { ProtectedRoute, PublicRoute, AdminRoute } from './components/RouteGuards'
 import { useAuth } from './context/AuthContext'
+import './App.css'
 
 // Lazy load route-level pages for code splitting
 const Cookies = lazy(() => import('./pages/legal/Cookies'))
@@ -64,27 +65,8 @@ const toAppPath = (route) => `${PATH_SEPARATOR}${route}`
 
 // Minimal loading fallback for route transitions
 const RouteLoadingFallback = () => (
-  <div style={{
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    minHeight: '50vh',
-    color: 'white'
-  }}>
-    <div style={{
-      width: '40px',
-      height: '40px',
-      border: '3px solid rgba(255,255,255,0.1)',
-      borderTop: '3px solid #2196f3',
-      borderRadius: '50%',
-      animation: 'spin 1s linear infinite'
-    }} />
-    <style>{`
-      @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-      }
-    `}</style>
+  <div className="route-loading-fallback">
+    <div className="route-loading-spinner" />
   </div>
 )
 
@@ -220,7 +202,7 @@ function App() {
         />
       )}
 
-      <div className={isLanding ? 'app-wrapper app-wrapper--landing' : 'app-wrapper'} style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      <div className={isLanding ? 'app-wrapper app-wrapper--landing' : 'app-wrapper'}>
         <Navbar isLanding={isLanding} />
         <SpeedInsights />
         <Analytics />
@@ -288,7 +270,7 @@ function App() {
           </Suspense>
         </main>
 
-        <Suspense fallback={null}>
+        <Suspense fallback={<div className="footer-placeholder" aria-hidden="true" />}>
           <Footer />
         </Suspense>
       </div>

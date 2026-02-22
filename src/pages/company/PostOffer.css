@@ -4,7 +4,8 @@
 
 .post-offer-page {
     min-height: 100vh;
-    padding-top: 80px;
+    min-height: 100dvh;
+    padding-top: 0;
     padding-bottom: var(--space-8);
     padding-left: var(--space-3);
     padding-right: var(--space-3);
@@ -12,7 +13,7 @@
 
 @media (min-width: 768px) {
     .post-offer-page {
-        padding-top: 100px;
+        padding-top: 0;
         padding-bottom: var(--space-10);
         padding-left: var(--space-6);
         padding-right: var(--space-6);
@@ -275,7 +276,6 @@
     .no-skills-text {
         font-size: 0.9rem;
     }
-}
 }
 
 /* Already handled with mobile-first approach above - remove old media query */

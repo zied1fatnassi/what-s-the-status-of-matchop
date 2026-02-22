@@ -9,6 +9,10 @@ const offersCacheMap = new Map()
 const CACHE_TTL = 60000 // 60 seconds
 const FETCH_TIMEOUT = 15000 // 15 second timeout
 const EDGE_FUNCTION_TIMEOUT_MS = 8000 // 8s then fall back to direct query
+const isOffersDebugEnabled = import.meta.env.DEV && import.meta.env.VITE_DEBUG_OFFERS === 'true'
+const debugLog = (...args) => {
+    if (isOffersDebugEnabled) console.log(...args)
+}
 
 function getOffersCache(userId) {
     if (!offersCacheMap.has(userId)) {
@@ -36,7 +40,7 @@ export function useJobOffers() {
     }, [])
 
     const fetchOffers = useCallback(async (forceRefresh = false) => {
-        console.log('[useJobOffers] fetchOffers called, user:', user?.id, 'forceRefresh:', forceRefresh)
+        debugLog('[useJobOffers] fetchOffers called, user:', user?.id, 'forceRefresh:', forceRefresh)
 
         if (!user) {
             if (isMounted.current) {
@@ -51,7 +55,7 @@ export function useJobOffers() {
         const cacheValid = cache.data && (now - cache.timestamp) < CACHE_TTL
 
         if (cacheValid && !forceRefresh) {
-            console.log('[useJobOffers] Using cached data')
+            debugLog('[useJobOffers] Using cached data')
             const cachedOffers = cache.data.filter(
                 o => !cache.swipedIds.has(o.id)
             )
@@ -168,7 +172,7 @@ export function useJobOffers() {
                     }))
                 }
             } catch (extErr) {
-                console.warn('Failed to fetch external jobs:', extErr)
+                debugLog('[useJobOffers] Failed to fetch external jobs:', extErr)
             }
 
             // ==========================================
@@ -207,6 +211,7 @@ export function useJobOffers() {
 
     const swipe = useCallback(async (offerId, direction) => {
         if (!user?.id) return { error: 'Not authenticated' }
+        const normalizedDirection = direction === 'super' ? 'right' : direction
 
         // Optimistically remove from view
         setOffers(prev => prev.filter(o => o.id !== offerId))
@@ -214,7 +219,7 @@ export function useJobOffers() {
 
         // For External jobs, we don't save to DB (yet)
         if (typeof offerId === 'string' && offerId.startsWith('ext-')) {
-            console.log('[useJobOffers] Swiped external job:', offerId, direction)
+            debugLog('[useJobOffers] Swiped external job:', offerId, direction)
             return { error: null }
         }
 
@@ -224,7 +229,7 @@ export function useJobOffers() {
             .insert({
                 student_id: user.id,
                 offer_id: offerId,
-                direction
+                direction: normalizedDirection
             })
 
         if (swipeError) {
@@ -234,7 +239,7 @@ export function useJobOffers() {
 
         // On RIGHT swipe: also create an Intro (Handshake System)
         // This makes the student's interest visible to the company immediately
-        if (direction === 'right') {
+        if (normalizedDirection === 'right') {
             const { data: introResult, error: introError } = await supabase
                 .rpc('create_intro_from_swipe', {
                     p_student_id: user.id,
@@ -245,7 +250,7 @@ export function useJobOffers() {
                 console.warn('[useJobOffers] Intro creation warning:', introError.message)
                 // Non-fatal: swipe is already recorded, intro is a bonus
             } else {
-                console.log('[useJobOffers] Intro created:', introResult)
+                debugLog('[useJobOffers] Intro created:', introResult)
             }
         }
 

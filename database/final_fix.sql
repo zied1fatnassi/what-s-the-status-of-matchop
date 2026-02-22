@@ -23,7 +23,7 @@ VALUES ('00000000-0000-0000-0000-000000000001', 'instadeep@company.com', 'compan
 ON CONFLICT DO NOTHING;
 
 INSERT INTO companies (id, company_name, location_point)
-VALUES ('00000000-0000-0000-0000-000000000001', 'InstaDeep', ST_SetSRID(ST_MakePoint(10.1815, 36.8065), 4326))
+VALUES ('00000000-0000-0000-0000-000000000001', 'InstaDeep', gis.ST_SetSRID(gis.ST_MakePoint(10.1815, 36.8065), 4326))
 ON CONFLICT DO NOTHING;
 
 INSERT INTO offers (company_id, title, req_skills, location, location_point, status)
@@ -32,7 +32,7 @@ VALUES (
     'Senior AI Engineer', 
     ARRAY['Python', 'AI', 'TensorFlow'], 
     'Tunis', 
-    ST_SetSRID(ST_MakePoint(10.1815, 36.8065), 4326),
+    gis.ST_SetSRID(gis.ST_MakePoint(10.1815, 36.8065), 4326),
     'active'
 )
 ON CONFLICT DO NOTHING;

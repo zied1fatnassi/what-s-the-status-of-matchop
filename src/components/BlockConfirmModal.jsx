@@ -1,15 +1,30 @@
+import { useEffect } from 'react'
 import { UserX, AlertTriangle } from 'lucide-react'
+import { lockOverlayScroll, unlockOverlayScroll } from '../lib/overlayLock'
 import './ReportModal.css'
 
 /**
  * Confirmation modal for blocking users
  */
 function BlockConfirmModal({ user, onConfirm, onCancel, isBlocking }) {
+    useEffect(() => {
+        const handleEsc = (event) => {
+            if (event.key === 'Escape') onCancel()
+        }
+
+        lockOverlayScroll()
+        document.addEventListener('keydown', handleEsc)
+        return () => {
+            unlockOverlayScroll()
+            document.removeEventListener('keydown', handleEsc)
+        }
+    }, [onCancel])
+
     return (
-        <div className="modal-overlay" onClick={onCancel}>
-            <div className="modal-content block-confirm-modal" onClick={e => e.stopPropagation()}>
-                <div className="modal-header">
-                    <div className="header-content">
+        <div className="report-modal-overlay" onClick={onCancel}>
+            <div className="report-modal-dialog block-confirm-modal" onClick={e => e.stopPropagation()}>
+                <div className="report-modal-header">
+                    <div className="report-modal-header-content">
                         <UserX size={24} className="warning-icon" />
                         <h2>Block {user.name}?</h2>
                     </div>
@@ -29,7 +44,7 @@ function BlockConfirmModal({ user, onConfirm, onCancel, isBlocking }) {
                     </div>
                 </div>
 
-                <div className="modal-actions">
+                <div className="report-modal-actions">
                     <button
                         type="button"
                         onClick={onCancel}

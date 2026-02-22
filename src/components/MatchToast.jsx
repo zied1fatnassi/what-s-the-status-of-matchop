@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { X, Heart } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { lockOverlayScroll, unlockOverlayScroll } from '../lib/overlayLock'
 import './MatchToast.css'
 
 /**
@@ -9,9 +10,22 @@ import './MatchToast.css'
  */
 function MatchToast({ match, onClose }) {
     useEffect(() => {
+        const handleEsc = (event) => {
+            if (event.key === 'Escape') {
+                onClose()
+            }
+        }
+
+        lockOverlayScroll()
+        document.addEventListener('keydown', handleEsc)
+
         // Auto-dismiss after 8 seconds
         const timer = setTimeout(onClose, 8000)
-        return () => clearTimeout(timer)
+        return () => {
+            clearTimeout(timer)
+            unlockOverlayScroll()
+            document.removeEventListener('keydown', handleEsc)
+        }
     }, [onClose])
 
     if (!match) return null

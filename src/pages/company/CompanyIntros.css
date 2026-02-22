@@ -5,13 +5,14 @@
 
 .intros-page {
     min-height: 100vh;
-    padding-top: 80px;
+    min-height: 100dvh;
+    padding-top: 0;
     padding-bottom: var(--space-6);
 }
 
 @media (min-width: 768px) {
     .intros-page {
-        padding-top: 100px;
+        padding-top: 0;
         padding-bottom: var(--space-10);
     }
 }

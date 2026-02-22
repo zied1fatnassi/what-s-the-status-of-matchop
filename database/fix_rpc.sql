@@ -22,7 +22,7 @@ LANGUAGE plpgsql
 SECURITY DEFINER -- <--- CRITICAL CHANGE: Runs as Admin
 AS $$
 DECLARE
-    s_loc GEOGRAPHY;
+    s_loc gis.GEOGRAPHY;
     s_skills TEXT[];
 BEGIN
     -- Get Student Context
@@ -37,7 +37,7 @@ BEGIN
         c.logo_url,
         (
             (get_skill_score(s_skills, o.req_skills) * 60) + 
-            (CASE WHEN ST_DWithin(s_loc, o.location_point, max_distance_km * 1000) THEN 30 ELSE 0 END) + 
+            (CASE WHEN gis.ST_DWithin(s_loc, o.location_point, max_distance_km * 1000) THEN 30 ELSE 0 END) + 
             (CASE WHEN o.created_at > NOW() - INTERVAL '7 days' THEN 10 ELSE 0 END)
         )::INT as score,
         (get_skill_score(s_skills, o.req_skills) * 100)::INT as skill_match_pct,
@@ -50,7 +50,7 @@ BEGIN
         SELECT 1 FROM student_swipes sw 
         WHERE sw.student_id = student_uuid AND sw.offer_id = o.id
     )
-    AND (s_loc IS NULL OR ST_DWithin(s_loc, o.location_point, max_distance_km * 1000))
+    AND (s_loc IS NULL OR gis.ST_DWithin(s_loc, o.location_point, max_distance_km * 1000))
     ORDER BY score DESC
     LIMIT limit_count OFFSET offset_count;
 END;

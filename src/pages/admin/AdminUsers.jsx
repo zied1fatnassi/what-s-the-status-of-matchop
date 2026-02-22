@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
+import { lockOverlayScroll, unlockOverlayScroll } from '../../lib/overlayLock'
 import './Admin.css'
 
 export default function AdminUsers() {
@@ -17,6 +18,12 @@ export default function AdminUsers() {
     useEffect(() => {
         fetchUsers()
     }, [currentPage, roleFilter, statusFilter, searchTerm])
+
+    useEffect(() => {
+        if (!showModal) return undefined
+        lockOverlayScroll()
+        return () => unlockOverlayScroll()
+    }, [showModal])
 
     async function fetchUsers() {
         setLoading(true)
@@ -194,20 +201,20 @@ export default function AdminUsers() {
                                 <tbody>
                                     {users.map(user => (
                                         <tr key={user.id}>
-                                            <td>{getUserDisplayName(user)}</td>
-                                            <td>{user.email}</td>
-                                            <td>
+                                            <td data-label="User">{getUserDisplayName(user)}</td>
+                                            <td data-label="Email">{user.email}</td>
+                                            <td data-label="Role">
                                                 <span className={`status-badge status-${getUserRole(user) === 'admin' ? 'active' : 'pending'}`}>
                                                     {getUserRole(user)}
                                                 </span>
                                             </td>
-                                            <td>
+                                            <td data-label="Status">
                                                 <span className={`status-badge ${user.suspended ? 'status-suspended' : 'status-active'}`}>
                                                     {user.suspended ? 'Suspended' : 'Active'}
                                                 </span>
                                             </td>
-                                            <td>{new Date(user.created_at).toLocaleDateString()}</td>
-                                            <td>
+                                            <td data-label="Joined">{new Date(user.created_at).toLocaleDateString()}</td>
+                                            <td data-label="Actions" className="admin-actions-cell">
                                                 <button
                                                     className="admin-btn admin-btn-primary admin-btn-sm"
                                                     onClick={() => {
@@ -217,7 +224,6 @@ export default function AdminUsers() {
                                                 >
                                                     Edit
                                                 </button>
-                                                {' '}
                                                 {user.suspended ? (
                                                     <button
                                                         className="admin-btn admin-btn-success admin-btn-sm"

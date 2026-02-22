@@ -1,0 +1,2 @@
+-- Local seed placeholder.
+-- Intentionally empty: project data seeding is handled by manual scripts in database/.

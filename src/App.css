@@ -1,40 +1,33 @@
-/* App styles - keeping minimal as main styles are in index.css */
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+.app-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100dvh;
 }
 
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+.route-loading-fallback {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100dvh;
+    color: var(--text-primary);
 }
 
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.route-loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-top: 3px solid #2196f3;
+    border-radius: 50%;
+    animation: route-loading-spin 1s linear infinite;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
+@keyframes route-loading-spin {
+    from {
+        transform: rotate(0deg);
+    }
 
-  to {
-    transform: rotate(360deg);
-  }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
-}

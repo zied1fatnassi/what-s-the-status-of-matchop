@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import './RouteGuards.css'
 
 const PROFILE_WAIT_TIMEOUT_MS = 5000
 
@@ -8,27 +9,8 @@ const PROFILE_WAIT_TIMEOUT_MS = 5000
  * Loading spinner for auth state resolution
  */
 const AuthLoadingSpinner = () => (
-    <div style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        minHeight: '100vh',
-        background: 'linear-gradient(135deg, #0d47a1 0%, #1565c0 50%, #1976d2 100%)'
-    }}>
-        <div style={{
-            width: '48px',
-            height: '48px',
-            border: '4px solid rgba(255,255,255,0.2)',
-            borderTop: '4px solid #2196f3',
-            borderRadius: '50%',
-            animation: 'spin 1s linear infinite'
-        }} />
-        <style>{`
-            @keyframes spin {
-                0% { transform: rotate(0deg); }
-                100% { transform: rotate(360deg); }
-            }
-        `}</style>
+    <div className="route-guard-loading">
+        <div className="route-guard-spinner" />
     </div>
 )
 

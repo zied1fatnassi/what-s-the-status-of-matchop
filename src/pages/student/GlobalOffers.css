@@ -5,15 +5,15 @@
 
 /* ---- Page Container ---- */
 .offers-page {
-    min-height: 100vh;
-    padding-top: 70px;
+    min-height: 100dvh;
+    padding-top: 0;
     padding-bottom: var(--space-6);
     background: transparent;
 }
 
 @media (min-width: 768px) {
     .offers-page {
-        padding-top: 100px;
+        padding-top: 0;
         padding-bottom: var(--space-8);
     }
 }
@@ -131,7 +131,7 @@
     flex-direction: column;
     gap: var(--space-3);
     position: sticky;
-    top: 60px;
+    top: calc(var(--nav-height-mobile) + var(--safe-top));
     z-index: 50;
     transition: box-shadow 0.3s ease;
 }
@@ -149,7 +149,7 @@
         flex-direction: row;
         flex-wrap: wrap;
         gap: var(--space-3);
-        top: 70px;
+        top: calc(var(--nav-height-desktop) + var(--safe-top));
     }
 }
 

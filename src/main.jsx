@@ -8,6 +8,7 @@ import './lib/i18n' // Initialize i18n before App
 import './index.css'
 import './accessibility-contrast.css'
 import App from './App.jsx'
+import { initWebVitalsDebug } from './lib/webVitalsDebug'
 
 /**
  * MatchOp - Match the Opportunity
@@ -20,6 +21,8 @@ import App from './App.jsx'
  * - ApplicationProvider for managing job applications
  * - i18next for internationalization
  */
+initWebVitalsDebug()
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>

@@ -81,7 +81,7 @@ function AuthCallback() {
 
     return (
         <div style={{
-            minHeight: '100vh',
+            minHeight: '100dvh',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -99,7 +99,7 @@ function AuthCallback() {
             }}>
                 {status === 'processing' && (
                     <>
-                        <Loader2 size={48} style={{ color: 'var(--primary)', animation: 'spin 1s linear infinite' }} />
+                        <Loader2 size={48} className="animate-spin" style={{ color: 'var(--primary)' }} />
                         <h2 style={{ margin: 0 }}>Verifying your email...</h2>
                         <p style={{ color: 'var(--text-secondary)', margin: 0 }}>
                             Please wait while we confirm your account.
@@ -141,13 +141,6 @@ function AuthCallback() {
                     </>
                 )}
             </div>
-
-            <style>{`
-                @keyframes spin {
-                    0% { transform: rotate(0deg); }
-                    100% { transform: rotate(360deg); }
-                }
-            `}</style>
         </div>
     )
 }
