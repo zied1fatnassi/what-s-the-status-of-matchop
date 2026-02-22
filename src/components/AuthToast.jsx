@@ -42,7 +42,12 @@ function AuthToast({ type = 'success', message, duration = 5000, onClose }) {
             <div className="auth-toast-content">
                 <p>{message}</p>
             </div>
-            <button className="auth-toast-close" onClick={handleClose}>
+            <button
+                type="button"
+                className="auth-toast-close"
+                onClick={handleClose}
+                aria-label="Close notification"
+            >
                 <X size={18} />
             </button>
         </div>

@@ -96,7 +96,7 @@ function StudentChat() {
         <div className="chat-page">
             {/* Chat Header */}
             <div className="chat-header glass-card">
-                <Link to="/student/matches" className="back-btn">
+                <Link to="/student/matches" className="back-btn" aria-label="Back to matches">
                     <ArrowLeft size={24} />
                 </Link>
 
@@ -118,13 +118,13 @@ function StudentChat() {
                 </div>
 
                 <div className="chat-actions">
-                    <button className="action-icon">
+                    <button type="button" className="action-icon" aria-label="Call company">
                         <Phone size={20} />
                     </button>
-                    <button className="action-icon">
+                    <button type="button" className="action-icon" aria-label="Start video call">
                         <Video size={20} />
                     </button>
-                    <button className="action-icon">
+                    <button type="button" className="action-icon" aria-label="More actions">
                         <MoreVertical size={20} />
                     </button>
                 </div>
@@ -161,7 +161,7 @@ function StudentChat() {
 
             {/* Input */}
             <form className="chat-input-container" onSubmit={handleSend}>
-                <button type="button" className="attach-btn">
+                <button type="button" className="attach-btn" aria-label="Attach file">
                     <Paperclip size={20} />
                 </button>
                 <input
@@ -174,6 +174,7 @@ function StudentChat() {
                 <button
                     type="submit"
                     className="send-btn"
+                    aria-label="Send message"
                     disabled={!newMessage.trim()}
                 >
                     <Send size={20} />

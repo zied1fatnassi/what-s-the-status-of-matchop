@@ -112,6 +112,7 @@ function Navbar({ isLanding = false }) {
 
                 {hasSession && (
                     <div
+                        id="navbar-links"
                         className={`navbar-links ${isOpen ? 'active' : ''}`}
                         onClick={(event) => {
                             if (event.target === event.currentTarget) {
@@ -169,6 +170,7 @@ function Navbar({ isLanding = false }) {
                     <button
                         className="theme-toggle-btn"
                         onClick={toggleTheme}
+                        aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
                         title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
                         aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
                     >
@@ -194,7 +196,14 @@ function Navbar({ isLanding = false }) {
                     )}
 
                     {hasSession && (
-                        <button className="navbar-toggle" onClick={() => setIsOpen(!isOpen)} aria-label="Toggle navigation menu" aria-expanded={isOpen}>
+                        <button
+                            type="button"
+                            className="navbar-toggle"
+                            onClick={() => setIsOpen(!isOpen)}
+                            aria-label={isOpen ? 'Close navigation menu' : 'Open navigation menu'}
+                            aria-expanded={isOpen}
+                            aria-controls="navbar-links"
+                        >
                             {isOpen ? <X size={24} /> : <Menu size={24} />}
                         </button>
                     )}

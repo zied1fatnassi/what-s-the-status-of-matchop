@@ -2,25 +2,37 @@ import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 dotenv.config();
 
-// 1. CONFIGURATION
-const SUPABASE_URL = 'https://kedqldpdvycbnznejbbl.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtlZHFsZHBkdnljYm56bmVqYmJsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwNzI2OTEsImV4cCI6MjA4MTY0ODY5MX0.vCBQy38Nh4-MbHLKu68ki1EVCNB72f8Q64-lnixcmeE';
-
-if (!SUPABASE_URL || !SUPABASE_KEY) {
-    console.error('❌ Missing Credentials');
-    process.exit(1);
+function getEnv(name, fallbackName) {
+    return process.env[name] || (fallbackName ? process.env[fallbackName] : '');
 }
+
+function requireEnv(name, fallbackName) {
+    const value = getEnv(name, fallbackName);
+    if (!value) {
+        const alias = fallbackName ? ` (or ${fallbackName})` : '';
+        console.error(`Missing required env var: ${name}${alias}`);
+        process.exit(1);
+    }
+    return value;
+}
+
+// 1. CONFIGURATION
+const SUPABASE_URL = requireEnv('SUPABASE_URL', 'VITE_SUPABASE_URL');
+const SUPABASE_KEY = requireEnv('SUPABASE_ANON_KEY', 'VITE_SUPABASE_ANON_KEY');
+const TEST_EMAIL = requireEnv('MATCHOP_TEST_EMAIL');
+const TEST_PASSWORD = requireEnv('MATCHOP_TEST_PASSWORD');
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
+
 async function main() {
-    console.log('🚀 Testing Matchop V3 API...');
+    console.log(' Testing Matchop V3 API...');
 
     // 2. AUTHENTICATION
-    const email = 'student@tek-up.tn';
-    const password = 'password123';
+    const email = TEST_EMAIL;
+    const password = TEST_PASSWORD;
 
-    console.log(`\n🔑 Authenticating as ${email}...`);
+    console.log(`\n Authenticating as ${email}...`);
 
     const { data: { session }, error: authError } = await supabase.auth.signInWithPassword({
         email,
@@ -28,15 +40,15 @@ async function main() {
     });
 
     if (authError || !session) {
-        console.error('❌ Login Failed:', authError?.message || 'No Session (Check Email Confirmation!)');
+        console.error(' Login Failed:', authError?.message || 'No Session (Check Email Confirmation!)');
         return;
     }
 
-    console.log('   ✅ Signed In. ID:', session.user.id);
+    console.log('    Signed In. ID:', session.user.id);
 
     // 3. SYNC PROFILE DATA (CRITICAL STEP)
     // We must ensure this Auth User has the "Ahmed Tounsi" data for the Algo to work.
-    console.log('\n📝 Syncing Student Profile Data...');
+    console.log('\n Syncing Student Profile Data...');
 
     // A. Check if Profile exists
     const { data: existingProfile, error: checkError } = await supabase
@@ -46,29 +58,29 @@ async function main() {
         .single();
 
     if (checkError && checkError.code !== 'PGRST116') {
-        console.warn('   ⚠️  Profile Check Error (Ignoring):', checkError.message);
+        console.warn('     Profile Check Error (Ignoring):', checkError.message);
     }
 
     if (!existingProfile) {
-        console.log('   ℹ️  Profile not found via client. Attempting Insert...');
+        console.log('     Profile not found via client. Attempting Insert...');
         const { error: insertError } = await supabase.from('profiles').insert({
             id: session.user.id,
             email: email,
             role: 'student'
         });
         if (insertError) {
-            console.warn('   ⚠️ Profile Insert Failed (Might already exist?):', insertError.message);
+            console.warn('    Profile Insert Failed (Might already exist?):', insertError.message);
             // Do NOT return. Proceed.
         }
     } else {
-        console.log('   ℹ️  Profile exists. Updating...');
+        console.log('     Profile exists. Updating...');
         const { error: updateError } = await supabase.from('profiles').update({
             email: email,
             role: 'student'
         }).eq('id', session.user.id);
 
         if (updateError) {
-            console.warn('   ⚠️ Profile Update Failed:', updateError.message);
+            console.warn('    Profile Update Failed:', updateError.message);
         }
     }
 
@@ -80,7 +92,7 @@ async function main() {
         .single();
 
     if (studentCheckError && studentCheckError.code !== 'PGRST116') {
-        console.warn('   ⚠️  Student Check Error (Ignoring):', studentCheckError.message);
+        console.warn('     Student Check Error (Ignoring):', studentCheckError.message);
     }
 
     const studentData = {
@@ -92,23 +104,23 @@ async function main() {
     };
 
     if (!existingStudent) {
-        console.log('   ℹ️  Student record not found via client. Attempting Insert...');
+        console.log('     Student record not found via client. Attempting Insert...');
         const { error: studentInsertError } = await supabase.from('students').insert(studentData);
         if (studentInsertError) {
-            console.warn('   ⚠️ Student Insert Failed:', studentInsertError.message);
+            console.warn('    Student Insert Failed:', studentInsertError.message);
         }
     } else {
-        console.log('   ℹ️  Student record exists. Updating...');
+        console.log('     Student record exists. Updating...');
         const { error: studentUpdateError } = await supabase.from('students').update(studentData).eq('id', session.user.id);
         if (studentUpdateError) {
-            console.warn('   ⚠️ Student Update Failed:', studentUpdateError.message);
+            console.warn('    Student Update Failed:', studentUpdateError.message);
         }
     }
 
-    console.log('   ✅ Profile Sync Attempted. Proceeding to Match Engine...');
+    console.log('    Profile Sync Attempted. Proceeding to Match Engine...');
 
     // DEBUG: Check Data Existence
-    console.log('\n🔍 Debugging Data Existence...');
+    console.log('\n Debugging Data Existence...');
     const { count: offerCount, error: offerErr } = await supabase
         .from('offers')
         .select('*', { count: 'exact', head: true });
@@ -122,7 +134,7 @@ async function main() {
 
 
     // 4. INVOKE FUNCTION
-    console.log('\n📡 Invoking match-recommendations...');
+    console.log('\n Invoking match-recommendations...');
 
     const { data, error } = await supabase.functions.invoke('match-recommendations', {
         body: {
@@ -133,16 +145,16 @@ async function main() {
     });
 
     if (error) {
-        console.error('❌ API Error Object:', error);
+        console.error(' API Error Object:', error);
         // Sometimes the 'error' object from invoke contains the response itself if it's a 4xx/5xx
         if (error.context && typeof error.context.json === 'function') {
             try {
                 const body = await error.context.json();
-                console.error('❌ API Response Body:', body);
+                console.error(' API Response Body:', body);
             } catch (e) { console.error('   (Could not parse error body)'); }
         }
     } else {
-        console.log('✅ Success! Recommendations received:');
+        console.log(' Success! Recommendations received:');
         console.log('---------------------------------------------------');
         const results = data.data || []; // Access the nested 'data' property
         if (Array.isArray(results) && results.length > 0) {
@@ -156,9 +168,9 @@ async function main() {
             // Validation
             const topMatch = results[0];
             if (topMatch.company_name === 'InstaDeep' && topMatch.match_score >= 80) {
-                console.log('\n🎯 VALIDATION PASSED: Correctly recommended InstaDeep (Tunis) as top match!');
+                console.log('\n VALIDATION PASSED: Correctly recommended InstaDeep (Tunis) as top match!');
             } else {
-                console.log('\n⚠️ VALIDATION WARNING: Unexpected top match.');
+                console.log('\n VALIDATION WARNING: Unexpected top match.');
             }
 
         } else {

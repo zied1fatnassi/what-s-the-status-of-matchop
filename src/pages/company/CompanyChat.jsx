@@ -90,7 +90,7 @@ function CompanyChat() {
         <div className="chat-page">
             {/* Chat Header */}
             <div className="chat-header glass-card">
-                <Link to="/company/matches" className="back-btn">
+                <Link to="/company/matches" className="back-btn" aria-label="Back to matches">
                     <ArrowLeft size={24} />
                 </Link>
 
@@ -112,13 +112,13 @@ function CompanyChat() {
                 </div>
 
                 <div className="chat-actions">
-                    <button className="action-icon">
+                    <button type="button" className="action-icon" aria-label="Schedule interview">
                         <Calendar size={20} />
                     </button>
-                    <button className="action-icon">
+                    <button type="button" className="action-icon" aria-label="Start video call">
                         <Video size={20} />
                     </button>
-                    <button className="action-icon">
+                    <button type="button" className="action-icon" aria-label="More actions">
                         <MoreVertical size={20} />
                     </button>
                 </div>
@@ -150,7 +150,7 @@ function CompanyChat() {
 
             {/* Input */}
             <form className="chat-input-container" onSubmit={handleSend}>
-                <button type="button" className="attach-btn">
+                <button type="button" className="attach-btn" aria-label="Attach file">
                     <Paperclip size={20} />
                 </button>
                 <input
@@ -163,6 +163,7 @@ function CompanyChat() {
                 <button
                     type="submit"
                     className="send-btn"
+                    aria-label="Send message"
                     disabled={!newMessage.trim()}
                 >
                     <Send size={20} />
