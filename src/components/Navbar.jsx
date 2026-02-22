@@ -44,6 +44,11 @@ function Navbar({ isLanding = false }) {
     ]
 
     const links = isStudent ? studentLinks : isCompany ? companyLinks : []
+    const guestMobileLinks = [
+        { to: '/student/signup', icon: <User size={18} />, label: t('landing.ctaStudent') },
+        { to: '/company/signup', icon: <Briefcase size={18} />, label: t('landing.ctaCompany'), className: 'navbar-link--primary' },
+    ]
+    const mobileLinks = hasSession ? links : guestMobileLinks
     const logoTarget = hasSession ? '/discovery' : '/'
 
     const languages = [
@@ -110,34 +115,34 @@ function Navbar({ isLanding = false }) {
                     <Logo size="small" showText={true} />
                 </Link>
 
-                {hasSession && (
-                    <div
-                        id="navbar-links"
-                        className={`navbar-links ${isOpen ? 'active' : ''}`}
-                        onClick={(event) => {
-                            if (event.target === event.currentTarget) {
-                                setIsOpen(false)
-                            }
-                        }}
-                    >
-                        {links.map((link) => (
-                            <Link
-                                key={link.to}
-                                to={link.to}
-                                className={`navbar-link ${location.pathname === link.to ? 'active' : ''}`}
-                                onClick={() => setIsOpen(false)}
-                            >
-                                {link.icon}
-                                <span>{link.label}</span>
-                            </Link>
-                        ))}
+                <div
+                    id="navbar-links"
+                    className={`navbar-links ${hasSession ? '' : 'navbar-links--guest'} ${isOpen ? 'active' : ''}`}
+                    onClick={(event) => {
+                        if (event.target === event.currentTarget) {
+                            setIsOpen(false)
+                        }
+                    }}
+                >
+                    {mobileLinks.map((link) => (
+                        <Link
+                            key={link.to}
+                            to={link.to}
+                            className={`navbar-link ${link.className || ''} ${location.pathname === link.to ? 'active' : ''}`}
+                            onClick={() => setIsOpen(false)}
+                        >
+                            {link.icon}
+                            <span>{link.label}</span>
+                        </Link>
+                    ))}
 
+                    {hasSession && (
                         <button onClick={handleLogout} className="btn btn-secondary btn-sm logout-btn logout-btn--mobile">
                             <LogOut size={16} />
                             <span>{t('nav.logout')}</span>
                         </button>
-                    </div>
-                )}
+                    )}
+                </div>
 
                 <div className="navbar-right">
                     <div className="lang-switcher" ref={langSwitcherRef}>
@@ -172,7 +177,6 @@ function Navbar({ isLanding = false }) {
                         onClick={toggleTheme}
                         aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
                         title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-                        aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
                     >
                         {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
                     </button>
@@ -195,18 +199,16 @@ function Navbar({ isLanding = false }) {
                         </button>
                     )}
 
-                    {hasSession && (
-                        <button
-                            type="button"
-                            className="navbar-toggle"
-                            onClick={() => setIsOpen(!isOpen)}
-                            aria-label={isOpen ? 'Close navigation menu' : 'Open navigation menu'}
-                            aria-expanded={isOpen}
-                            aria-controls="navbar-links"
-                        >
-                            {isOpen ? <X size={24} /> : <Menu size={24} />}
-                        </button>
-                    )}
+                    <button
+                        type="button"
+                        className="navbar-toggle"
+                        onClick={() => setIsOpen(!isOpen)}
+                        aria-label={isOpen ? 'Close navigation menu' : 'Open navigation menu'}
+                        aria-expanded={isOpen}
+                        aria-controls="navbar-links"
+                    >
+                        {isOpen ? <X size={24} /> : <Menu size={24} />}
+                    </button>
                 </div>
             </div>
         </nav>
