@@ -237,3 +237,21 @@ npm run test:mobile
 4. `chore(deps): remove unused runtime and dev dependencies`
 5. `chore(database): prune superseded fix/final/nuclear sql patches`
 6. `chore(lint): resolve eslint errors and align lint config to repo runtime`
+
+## Post-Cleanup Fix - Remove Commented Integration
+
+Issue observed: Commented widget still appeared in deployed MatchOp pages.
+
+### Removed with evidence
+
+- `index.html`: removed `<script defer src="https://cdn.commented.io/latest.js"></script>`
+- `vercel.json`: removed `https://cdn.commented.io` from CSP `script-src`
+- `vercel.json`: removed `https://*.commented.io` from CSP `connect-src`
+- `src/index.css`: removed stale selector `.commentedio-bm4dsx` and related third-party widget positioning block
+
+Verification after removal:
+
+- `rg -n -i -uu "commented|commented\\.io|cdn\\.commented|comp-tabbar|commentedio" .` -> no matches
+- `npm run build` -> pass
+- `npm run test:run` -> pass (28/28)
+- `npm run lint` -> pass

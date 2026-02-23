@@ -241,18 +241,6 @@ body.overlay-open {
   overscroll-behavior: contain;
 }
 
-/* Stabilize third-party bottom widget position to avoid CLS from late repositioning. */
-#comp-tabbar,
-.commentedio-bm4dsx {
-  position: fixed !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  top: auto !important;
-  transition: none !important;
-  animation: none !important;
-}
-
 #root {
   min-height: 100dvh;
   display: flex;
