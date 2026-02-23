@@ -12,8 +12,7 @@
     "test": "vitest",
     "test:run": "vitest run",
     "test:mobile": "playwright test --config=playwright.mobile.config.js",
-    "test:mobile:update": "playwright test --config=playwright.mobile.config.js --update-snapshots",
-    "ingest:test": "node scripts/test-partner-ingest.js"
+    "test:mobile:update": "playwright test --config=playwright.mobile.config.js --update-snapshots"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.89.0",
