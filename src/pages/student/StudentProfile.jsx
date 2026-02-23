@@ -27,7 +27,7 @@ import './StudentProfileEditor.css'
 // ============================================================================
 // PROFILE PREVIEW MODAL
 // ============================================================================
-function ProfilePreviewModal({ isOpen, onClose, profile, experiences, education, certifications, projects, languages, completion }) {
+function ProfilePreviewModal({ isOpen, onClose, profile, experiences, education, languages, completion }) {
     if (!isOpen) return null
 
     return (
@@ -91,9 +91,11 @@ function ProfilePreviewModal({ isOpen, onClose, profile, experiences, education,
 // SECTION WRAPPER COMPONENT
 // ============================================================================
 function ProfileSection({ icon: Icon, title, children, error }) {
+    const IconComponent = Icon
+
     return (
         <section className="profile-section">
-            <h2><Icon size={20} /> {title}</h2>
+            <h2><IconComponent size={20} /> {title}</h2>
             {error && <div className="section-error"><AlertCircle size={16} />{error}</div>}
             {children}
         </section>
@@ -104,6 +106,8 @@ function ProfileSection({ icon: Icon, title, children, error }) {
 // MAIN PROFILE COMPONENT
 // ============================================================================
 function StudentProfile() {
+    void motion
+
     const { user } = useAuth()
     const {
         profile, experiences, education, certifications, projects, languages, volunteer,
@@ -735,7 +739,7 @@ function StudentProfile() {
             <ProfilePreviewModal
                 isOpen={showPreview} onClose={() => setShowPreview(false)}
                 profile={formData} experiences={experiences} education={education}
-                certifications={certifications} projects={projects} languages={languages}
+                languages={languages}
                 completion={completion}
             />
 

@@ -30,7 +30,7 @@ export function useJobOffers() {
     const [offers, setOffers] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
-    const { user, isStudent } = useAuth()
+    const { user } = useAuth()
     const isMounted = useRef(true)
 
 

@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Search, MapPin, Building2, Globe, ExternalLink, Calendar, Briefcase, Loader2, Send } from 'lucide-react'
 import { useExternalJobs } from '../../hooks/useExternalJobs'
-import Navbar from '../../components/Navbar' // Assuming Navbar is used here or in layout
 import { useAuth } from '../../context/AuthContext'
 import { useStudentProfile } from '../../hooks/useStudentProfile'
 import { useToast } from '../../hooks/useLoadingError'
@@ -10,6 +9,8 @@ import ErrorToast from '../../components/ErrorToast'
 import './GlobalJobs.css'
 
 export default function GlobalJobs() {
+    void motion
+
     const {
         jobs, loading, error, filters, setFilters,
         page, totalPages, nextPage, prevPage, refresh

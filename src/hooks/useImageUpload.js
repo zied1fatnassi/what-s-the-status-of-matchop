@@ -59,12 +59,12 @@ export function useImageUpload(userId, bucket = 'avatars') {
                     `${userId}/avatar.webp`,
                     `${userId}/avatar.gif`
                 ])
-            } catch (e) {
+            } catch {
                 console.log('No old avatars to delete')
             }
 
             // Upload new avatar
-            const { data, error: uploadError } = await supabase.storage
+            const { data: _data, error: uploadError } = await supabase.storage
                 .from(bucket)
                 .upload(fileName, file, {
                     cacheControl: '3600',

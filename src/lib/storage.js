@@ -10,7 +10,7 @@ export async function uploadAvatar(userId, file) {
     const fileExt = file.name.split('.').pop()
     const fileName = `${userId}.${fileExt}`
 
-    const { data, error } = await supabase.storage
+    const { data: _data, error } = await supabase.storage
         .from('avatars')
         .upload(fileName, file, { upsert: true })
 
@@ -33,7 +33,7 @@ export async function uploadCV(userId, file) {
     const fileExt = file.name.split('.').pop()
     const fileName = `${userId}/cv.${fileExt}`
 
-    const { data, error } = await supabase.storage
+    const { data: _data, error } = await supabase.storage
         .from('cvs')
         .upload(fileName, file, { upsert: true })
 
@@ -90,7 +90,7 @@ export async function uploadCompanyLogo(companyId, file) {
     const fileExt = file.name.split('.').pop()
     const fileName = `${companyId}.${fileExt}`
 
-    const { data, error } = await supabase.storage
+    const { data: _data, error } = await supabase.storage
         .from('company-logos')
         .upload(fileName, file, { upsert: true })
 

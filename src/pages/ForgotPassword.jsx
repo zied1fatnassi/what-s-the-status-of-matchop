@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Mail, ArrowLeft, CheckCircle, Loader2, KeyRound } from 'lucide-react'
-import { validateEmail, getAuthErrorMessage } from '../lib/validation'
+import { validateEmail } from '../lib/validation'
 import { requestPasswordReset } from '../lib/passwordReset'
 import '../pages/student/StudentSignup.css'
 

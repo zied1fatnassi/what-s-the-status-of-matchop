@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { Mail, Lock, Building2, ArrowRight, CheckCircle, Globe, Loader2, AlertCircle, RefreshCw } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
-import { validatePassword, validateEmail, validateName, getPasswordStrengthInfo, getAuthErrorMessage, validateURL } from '../../lib/validation'
+import { validatePassword, validateEmail, validateName, getPasswordStrengthInfo, getAuthErrorMessage } from '../../lib/validation'
 import '../student/StudentSignup.css'
 
 /**

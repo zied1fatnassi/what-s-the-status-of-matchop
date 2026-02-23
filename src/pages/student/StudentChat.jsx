@@ -10,7 +10,7 @@ import './StudentChat.css'
 function StudentChat() {
     const { matchId } = useParams()
     const { user } = useAuth()
-    const { messages, sendMessage, subscribeToMessages, loading: messagesLoading } = useMessages(matchId)
+    const { messages, sendMessage } = useMessages(matchId)
     const [newMessage, setNewMessage] = useState('')
     const [matchDetails, setMatchDetails] = useState(null)
     const [loadingDetails, setLoadingDetails] = useState(true)

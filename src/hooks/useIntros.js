@@ -129,7 +129,7 @@ export function useIntros(statusFilter = 'pending') {
 
             const counts = { pending: 0, accepted: 0, declined: 0, expired: 0 }
             data?.forEach(row => {
-                if (counts.hasOwnProperty(row.status)) {
+                if (Object.hasOwn(counts, row.status)) {
                     counts[row.status]++
                 }
             })

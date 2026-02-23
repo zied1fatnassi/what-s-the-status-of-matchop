@@ -10,9 +10,9 @@ import './OfferDetailModal.css'
 function OfferDetailModal({ offer, onClose }) {
     const [showReport, setShowReport] = useState(false)
 
-    if (!offer) return null
-
     useEffect(() => {
+        if (!offer) return undefined
+
         const handleEsc = (event) => {
             if (event.key === 'Escape') onClose()
         }
@@ -23,7 +23,9 @@ function OfferDetailModal({ offer, onClose }) {
             unlockOverlayScroll()
             document.removeEventListener('keydown', handleEsc)
         }
-    }, [onClose])
+    }, [offer, onClose])
+
+    if (!offer) return null
 
     // Extract company info for reporting
     const companyProfile = {

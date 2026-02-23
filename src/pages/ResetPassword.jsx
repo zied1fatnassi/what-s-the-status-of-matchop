@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { Lock, Eye, EyeOff, CheckCircle, Loader2, KeyRound } from 'lucide-react'
-import { validatePassword, getAuthErrorMessage } from '../lib/validation'
+import { validatePassword } from '../lib/validation'
 import { validateResetToken, executePasswordReset, getResetParamsFromURL } from '../lib/passwordReset'
 import '../pages/student/StudentSignup.css'
 
@@ -22,7 +22,6 @@ const COMPANY_LOGIN_PATH = '/company/login'
  */
 function ResetPassword() {
     const navigate = useNavigate()
-    const location = useLocation()
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
     const [showPassword, setShowPassword] = useState(false)
@@ -31,7 +30,6 @@ function ResetPassword() {
     const [isSuccess, setIsSuccess] = useState(false)
     const [isTokenValid, setIsTokenValid] = useState(false)
     const [isCheckingToken, setIsCheckingToken] = useState(true)
-    const [tokenExpiry, setTokenExpiry] = useState(null)
     const [resetToken, setResetToken] = useState(null)
     const [resetEmail, setResetEmail] = useState(null)
 
@@ -62,13 +60,12 @@ function ResetPassword() {
                 if (active) {
                     if (result.valid) {
                         setIsTokenValid(true)
-                        setTokenExpiry(result.expiresAt)
                     } else {
                         setError(result.error || 'Your reset link is invalid or has expired. Please request a new one.')
                         setIsTokenValid(false)
                     }
                 }
-            } catch (err) {
+            } catch {
                 if (active) {
                     setError('Failed to validate reset link. Please try again or request a new one.')
                     setIsTokenValid(false)

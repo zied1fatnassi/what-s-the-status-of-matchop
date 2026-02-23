@@ -20,7 +20,6 @@ function StudentSwipe() {
     const [swipeHistory, setSwipeHistory] = useState([])
     const [selectedOffer, setSelectedOffer] = useState(null)
     const [showToast, setShowToast] = useState(false)
-    const [toastCompany, setToastCompany] = useState('')
     const [toastIsExternal, setToastIsExternal] = useState(false)
     const [toastTitle, setToastTitle] = useState('Application was sent!')
     const [toastVariant, setToastVariant] = useState('application')
@@ -53,13 +52,11 @@ function StudentSwipe() {
 
         // Show toast IMMEDIATELY before any async operations
         if (direction === 'left') {
-            setToastCompany(offerToSwipe.company)
             setToastIsExternal(false)
             setToastTitle('Not interested')
             setToastVariant('rejected')
             setShowToast(true)
         } else if (direction === 'right' || direction === 'super') {
-            setToastCompany(offerToSwipe.company)
             setToastIsExternal(isExternal)
             if (direction === 'super') {
                 setToastTitle('Added to favorites')

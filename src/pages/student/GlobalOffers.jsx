@@ -273,6 +273,8 @@ function OfferCard({ offer }) {
 
 // ─── MAIN PAGE COMPONENT ────────────────────────────────────
 export default function GlobalOffers() {
+    void motion
+
     const {
         offers, loading, error, filters, setFilters,
         page, totalPages, totalCount, nextPage, prevPage,

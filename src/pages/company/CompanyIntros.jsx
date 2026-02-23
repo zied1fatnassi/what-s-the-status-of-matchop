@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import {
     Handshake, Check, X, CheckCheck, XCircle,
     Loader, AlertCircle, RefreshCw, Clock,
@@ -22,7 +21,6 @@ function CompanyIntros() {
     const [selectedIds, setSelectedIds] = useState(new Set())
     const [newMatch, setNewMatch] = useState(null)
     const [processing, setProcessing] = useState(new Set())
-    const navigate = useNavigate()
 
     const toggleSelect = (id) => {
         setSelectedIds(prev => {

@@ -1,5 +1,5 @@
 import { forwardRef, useImperativeHandle } from 'react'
-import { motion, useMotionValue, useTransform, useSpring, useAnimation } from 'framer-motion'
+import { motion, useMotionValue, useTransform, useAnimation } from 'framer-motion'
 import { MapPin, Briefcase, DollarSign, Clock, Info, Sparkles, ExternalLink, Crown, EyeOff, Coins } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import VerificationBadge from './VerificationBadge'
@@ -10,6 +10,8 @@ import './SwipeCard.css'
  * Smooth gesture-based animations like Tinder
  */
 const SwipeCard = forwardRef(function SwipeCard({ offer, onSwipe, isTop, onViewDetails }, ref) {
+    void motion
+
     const x = useMotionValue(0)
     const rotate = useTransform(x, [-200, 200], [-25, 25]) // Slightly reduced rotation for stability
     const opacity = useTransform(x, [-200, -150, 0, 150, 200], [0, 1, 1, 1, 0])
@@ -17,10 +19,6 @@ const SwipeCard = forwardRef(function SwipeCard({ offer, onSwipe, isTop, onViewD
     // Like/Pass indicator opacity
     const likeOpacity = useTransform(x, [0, 100], [0, 1])
     const passOpacity = useTransform(x, [0, -100], [0, 1])
-
-    // Spring physics for "satisfying" snap back
-    const rotateSpring = useSpring(rotate, { stiffness: 400, damping: 25 })
-    const xSpring = useSpring(x, { stiffness: 400, damping: 25 }) // Smoother follow
 
     const controls = useAnimation() // Initialize animation controls
 
@@ -79,7 +77,7 @@ const SwipeCard = forwardRef(function SwipeCard({ offer, onSwipe, isTop, onViewD
             dragConstraints={{ left: 0, right: 0 }}
             dragElastic={0.5} // Stiffer resistance (was 0.7)
             onDragEnd={handleDragEnd}
-            onClick={(e) => {
+            onClick={() => {
                 // Only trigger if not dragging
                 if (Math.abs(x.get()) < 5) onViewDetails?.(offer)
             }}

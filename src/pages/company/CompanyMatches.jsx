@@ -66,7 +66,6 @@ function CompanyMatches() {
                             const studentProfile = match.student_profiles
                             const profile = studentProfile?.profiles
                             const studentName = profile?.name || 'Unknown Candidate'
-                            const studentEmail = profile?.email || ''
                             const studentBio = studentProfile?.bio || 'Student'
                             const studentSkills = studentProfile?.skills || []
                             const avatarUrl = profile?.avatar_url

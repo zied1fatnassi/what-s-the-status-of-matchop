@@ -24,7 +24,7 @@ export default function AdminSettings() {
 
     async function fetchSettings() {
         try {
-            const { data, error } = await supabase
+            const { data } = await supabase
                 .from('app_settings')
                 .select('*')
                 .single()
@@ -32,7 +32,7 @@ export default function AdminSettings() {
             if (data) {
                 setSettings(data.settings || settings)
             }
-        } catch (error) {
+        } catch {
             console.log('No settings found, using defaults')
         } finally {
             setLoading(false)

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
 import { TUNISIAN_GOVERNORATES } from '../lib/validation'
@@ -38,7 +38,7 @@ export function useStudentProfile() {
     // ========================================================================
     // COMPLETION CALCULATION
     // ========================================================================
-    const calculateCompletion = (prof, exps = experiences, edu = education, certs = certifications, projs = projects, langs = languages) => {
+    const calculateCompletion = (prof, exps = experiences, edu = education, certs = certifications, langs = languages) => {
         if (!prof) return setCompletion(0)
 
         let filled = 0
@@ -180,7 +180,7 @@ export function useStudentProfile() {
 
         try {
             // Remove fields that don't exist in DB
-            const { headline, governorate, location, ...otherUpdates } = updates
+            const { governorate, location } = updates
 
             // WHITELIST: Only send columns that exist in the DB
             const validCols = ['display_name', 'bio', 'skills', 'avatar_url', 'headline', 'open_to_work', 'cv_url']
@@ -287,7 +287,8 @@ export function useStudentProfile() {
         setExperiencesError(null)
 
         try {
-            const { student_id, ...safeUpdates } = updates
+            const safeUpdates = { ...updates }
+            delete safeUpdates.student_id
 
             const { data, error } = await supabase
                 .from('experiences')
@@ -395,7 +396,8 @@ export function useStudentProfile() {
         setEducationError(null)
 
         try {
-            const { student_id, ...safeUpdates } = updates
+            const safeUpdates = { ...updates }
+            delete safeUpdates.student_id
 
             const { data, error } = await supabase
                 .from('student_education')

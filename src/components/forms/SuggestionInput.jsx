@@ -1,11 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
-import { ChevronDown, Plus, Search } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import './SuggestionInput.css';
 
 export default function SuggestionInput({ value, onChange, options = [], placeholder, className = '' }) {
     const [isOpen, setIsOpen] = useState(false);
     const containerRef = useRef(null);
-    const [hasInteracted, setHasInteracted] = useState(false);
 
     // Filter options based on input value
     const filteredOptions = options.filter(opt =>
