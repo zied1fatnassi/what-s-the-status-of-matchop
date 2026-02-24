@@ -644,6 +644,110 @@
     gap: var(--space-3);
 }
 
+.pipeline-loop {
+    padding: 0;
+}
+
+.pipeline-orbit {
+    position: relative;
+    height: 520px;
+    background: transparent;
+    overflow: visible;
+    isolation: isolate;
+}
+
+.pipeline-orbit::before {
+    content: '';
+    position: absolute;
+    width: 360px;
+    height: 360px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: var(--radius-full);
+    border: 1px dashed rgba(37, 99, 235, 0.3);
+    z-index: 0;
+}
+
+.pipeline-node {
+    position: absolute;
+    z-index: 2;
+    pointer-events: auto;
+}
+
+.pipeline-node-card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: var(--radius-full);
+    border: 3px solid rgba(255, 255, 255, 0.85);
+    box-shadow: 0 10px 26px rgba(15, 23, 42, 0.2);
+    background: var(--bg-main);
+    overflow: hidden;
+    transform: scale(1);
+    transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+    will-change: transform;
+    cursor: pointer;
+}
+
+.pipeline-node.is-hovered {
+    z-index: 12;
+}
+
+.pipeline-node.is-hovered .pipeline-node-card,
+.pipeline-node-card:hover {
+    transform: scale(1.22);
+    border-color: rgba(37, 99, 235, 0.75);
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.34);
+}
+
+.pipeline-node-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.pipeline-node-duplicate-mask,
+.pipeline-node-duplicate {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    overflow: hidden;
+}
+
+.pipeline-core {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 164px;
+    height: 164px;
+    border-radius: var(--radius-full);
+    border: 1px solid rgba(37, 99, 235, 0.35);
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.16) 0%, rgba(13, 148, 136, 0.16) 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    z-index: 1;
+    box-shadow: var(--shadow-sm);
+}
+
+.pipeline-core-label {
+    color: var(--text-primary);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+    max-width: 82px;
+}
+
+.pipeline-core-value {
+    color: var(--text-secondary);
+    font-size: 0.7rem;
+}
+
 .mock-candidate {
     display: flex;
     align-items: center;
@@ -684,6 +788,26 @@
     background: linear-gradient(135deg, #7c3aed, #6d28d9);
 }
 
+.mock-avatar.avatar-4 {
+    background: linear-gradient(135deg, #f97316, #ea580c);
+}
+
+.mock-avatar.avatar-5 {
+    background: linear-gradient(135deg, #f43f5e, #e11d48);
+}
+
+.mock-avatar.avatar-6 {
+    background: linear-gradient(135deg, #14b8a6, #0f766e);
+}
+
+.mock-avatar.avatar-7 {
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+}
+
+.mock-avatar.avatar-8 {
+    background: linear-gradient(135deg, #06b6d4, #0891b2);
+}
+
 .mock-info {
     display: flex;
     flex-direction: column;
@@ -703,6 +827,44 @@
 
 [data-theme='dark'] .match-score {
     color: #2dd4bf;
+}
+
+[data-theme='dark'] .pipeline-orbit {
+    background: transparent;
+}
+
+[data-theme='dark'] .pipeline-orbit::before {
+    border-color: rgba(45, 212, 191, 0.32);
+}
+
+[data-theme='dark'] .pipeline-core {
+    border-color: rgba(45, 212, 191, 0.36);
+    background: linear-gradient(135deg, rgba(45, 212, 191, 0.16) 0%, rgba(96, 165, 250, 0.16) 100%);
+}
+
+[data-theme='dark'] .pipeline-node-card {
+    border-color: rgba(30, 41, 59, 0.95);
+    box-shadow: 0 10px 28px rgba(2, 6, 23, 0.45);
+}
+
+.pipeline-showcase {
+    max-width: 620px;
+    margin: 0 auto;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    overflow: visible;
+}
+
+.pipeline-showcase .mock-header {
+    background: transparent;
+    border-bottom: 0;
+    padding: 0 0 var(--space-3);
+    text-align: center;
+}
+
+.pipeline-showcase .mock-title {
+    font-size: 1.2rem;
 }
 
 /* CTA Section */
@@ -893,6 +1055,24 @@
 
     .feature-content p {
         font-size: 1rem;
+    }
+
+    .pipeline-loop {
+        padding: 0;
+    }
+
+    .pipeline-orbit {
+        height: 430px;
+    }
+
+    .pipeline-orbit::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .pipeline-core {
+        width: 134px;
+        height: 134px;
     }
 
     /* Footer: Simplify for Mobile */

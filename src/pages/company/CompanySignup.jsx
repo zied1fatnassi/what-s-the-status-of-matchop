@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { Mail, Lock, Building2, ArrowRight, CheckCircle, Globe, Loader2, AlertCircle, RefreshCw } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import { validatePassword, validateEmail, validateName, getPasswordStrengthInfo, getAuthErrorMessage } from '../../lib/validation'
+import PasswordInput from '../../components/forms/PasswordInput'
 import '../student/StudentSignup.css'
 
 /**
@@ -300,16 +301,15 @@ function CompanySignup() {
                                     <label className="input-label">Password</label>
                                     <div className="input-with-icon">
                                         <Lock size={20} className="input-icon" />
-                                        <input
-                                            type="password"
+                                        <PasswordInput
                                             name="password"
-                                            className="input"
-                                            placeholder="••••••••"
+                                            placeholder="Create a strong password"
                                             value={formData.password}
                                             onChange={handleChange}
                                             disabled={isLoading}
                                             required
                                             autoComplete="new-password"
+                                            hasLeadingIcon
                                         />
                                     </div>
 
