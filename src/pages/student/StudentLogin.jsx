@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { Mail, Lock, ArrowRight, GraduationCap, Loader2, AlertCircle } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import { validateEmail, getAuthErrorMessage } from '../../lib/validation'
+import PasswordInput from '../../components/forms/PasswordInput'
 import './StudentSignup.css'
 import './StudentAuthLayout.css'
 
@@ -104,16 +105,15 @@ function StudentLogin() {
                             <label>Password</label>
                             <div className="student-auth-input-wrapper">
                                 <Lock size={20} className="student-auth-input-icon" />
-                                <input
-                                    type="password"
+                                <PasswordInput
                                     name="password"
-                                    className="input"
                                     placeholder="Enter your password"
                                     value={formData.password}
                                     onChange={handleChange}
                                     disabled={isLoading}
                                     required
                                     autoComplete="current-password"
+                                    hasLeadingIcon
                                 />
                             </div>
                             <div className="student-auth-forgot">

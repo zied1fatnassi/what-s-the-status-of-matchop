@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { Mail, Lock, ArrowRight, Building2, Loader2 } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import { validateEmail, getAuthErrorMessage } from '../../lib/validation'
+import PasswordInput from '../../components/forms/PasswordInput'
 import '../student/StudentSignup.css'
 
 /**
@@ -118,16 +119,15 @@ function CompanyLogin() {
                                 <label className="input-label">Password</label>
                                 <div className="input-with-icon">
                                     <Lock size={20} className="input-icon" />
-                                    <input
-                                        type="password"
+                                    <PasswordInput
                                         name="password"
-                                        className="input"
-                                        placeholder="••••••••"
+                                        placeholder="Enter your password"
                                         value={formData.password}
                                         onChange={handleChange}
                                         disabled={isLoading}
                                         required
                                         autoComplete="current-password"
+                                        hasLeadingIcon
                                     />
                                 </div>
                             </div>
@@ -162,4 +162,3 @@ function CompanyLogin() {
 }
 
 export default CompanyLogin
-
