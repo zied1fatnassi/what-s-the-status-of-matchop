@@ -216,7 +216,7 @@ export function AuthProvider({ children }) {
                 if (error?.code === 'PGRST116' || error?.code === 'PROFILE_NOT_FOUND') {
                     const { data: { user } } = await supabase.auth.getUser()
                     if (user?.user_metadata) {
-                        const { type, name } = user.user_metadata
+                        const { type, name, website, sector } = user.user_metadata
                         if (type && name) {
                             debugLog('[Auth] Profile not found, creating from user metadata...')
                             const { error: insertError } = await supabase
@@ -254,8 +254,9 @@ export function AuthProvider({ children }) {
                                     await supabase.from('companies').insert({
                                         id: userId,
                                         company_name: name || 'Company',
-                                        industry: '',
-                                        description: ''
+                                        industry: sector || '',
+                                        description: '',
+                                        website: website || null
                                     })
                                 }
 
@@ -345,11 +346,18 @@ export function AuthProvider({ children }) {
         setAuthError(null)
 
         try {
+            const metadata = { type: userType, name: userData.name || 'User' }
+            if (userType === 'company') {
+                metadata.website = userData.website || null
+                metadata.sector = userData.sector || null
+                metadata.size = userData.size || null
+            }
+
             const { data, error } = await supabase.auth.signUp({
                 email,
                 password,
                 options: {
-                    data: { type: userType, name: userData.name || 'User' },
+                    data: metadata,
                     emailRedirectTo: `${window.location.origin}/auth/callback`
                 }
             })
@@ -412,7 +420,8 @@ export function AuthProvider({ children }) {
                             id: data.user.id,
                             company_name: userData.name || 'Company',
                             industry: userData.sector || '',
-                            description: userData.description || ''
+                            description: userData.description || '',
+                            website: userData.website || null
                         })
                     }
                 } catch (profileErr) {
