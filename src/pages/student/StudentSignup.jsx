@@ -195,10 +195,11 @@ function StudentSignup() {
 
                     <form onSubmit={handleSubmit} className="login-form">
                         <div className="student-auth-group">
-                            <label>Full Name</label>
+                            <label htmlFor="student-signup-name">Full Name</label>
                             <div className="student-auth-input-wrapper">
                                 <User size={20} className="student-auth-input-icon" />
                                 <input
+                                    id="student-signup-name"
                                     type="text"
                                     name="name"
                                     className="input"
@@ -213,10 +214,11 @@ function StudentSignup() {
                         </div>
 
                         <div className="student-auth-group">
-                            <label>Email Address</label>
+                            <label htmlFor="student-signup-email">Email Address</label>
                             <div className="student-auth-input-wrapper">
                                 <Mail size={20} className="student-auth-input-icon" />
                                 <input
+                                    id="student-signup-email"
                                     type="email"
                                     name="email"
                                     className="input"
@@ -231,10 +233,11 @@ function StudentSignup() {
                         </div>
 
                         <div className="student-auth-group">
-                            <label>Password</label>
+                            <label htmlFor="student-signup-password">Password</label>
                             <div className="student-auth-input-wrapper">
                                 <Lock size={20} className="student-auth-input-icon" />
                                 <PasswordInput
+                                    id="student-signup-password"
                                     name="password"
                                     placeholder="Create a strong password"
                                     value={formData.password}
@@ -267,10 +270,11 @@ function StudentSignup() {
                         </div>
 
                         <div className="student-auth-group">
-                            <label>University</label>
+                            <label htmlFor="student-signup-university">University</label>
                             <div className="student-auth-input-wrapper">
                                 <GraduationCap size={20} className="student-auth-input-icon" />
                                 <select
+                                    id="student-signup-university"
                                     name="university"
                                     className="input"
                                     value={formData.university}
@@ -289,8 +293,9 @@ function StudentSignup() {
                         <div className="student-auth-group">
                             <div className="student-auth-split-fields">
                                 <div>
-                                    <label>Major</label>
+                                    <label htmlFor="student-signup-major">Major</label>
                                     <input
+                                        id="student-signup-major"
                                         type="text"
                                         name="major"
                                         className="input"
@@ -301,8 +306,9 @@ function StudentSignup() {
                                     />
                                 </div>
                                 <div>
-                                    <label>Graduation Year</label>
+                                    <label htmlFor="student-signup-graduation-year">Graduation Year</label>
                                     <input
+                                        id="student-signup-graduation-year"
                                         type="number"
                                         name="graduationYear"
                                         className="input"
