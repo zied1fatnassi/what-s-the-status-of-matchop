@@ -118,10 +118,13 @@ EXCEPTION
 END
 $$ LANGUAGE plpgsql;
 
--- Fail loudly if targeted extensions are still in public schema.
+-- Validation:
+-- In managed Supabase, extension ownership is often controlled by supabase_admin.
+-- If current role cannot move extensions, emit notices instead of aborting migration.
 DO $$
 DECLARE
     _remaining text;
+    _owned_by_current_user text;
 BEGIN
     SELECT string_agg(e.extname, ', ' ORDER BY e.extname)
     INTO _remaining
@@ -130,12 +133,31 @@ BEGIN
     WHERE n.nspname = 'public'
       AND e.extname IN ('postgis', 'pg_trgm', 'vector');
 
+    SELECT string_agg(e.extname, ', ' ORDER BY e.extname)
+    INTO _owned_by_current_user
+    FROM pg_extension e
+    JOIN pg_namespace n ON n.oid = e.extnamespace
+    WHERE n.nspname = 'public'
+      AND e.extname IN ('postgis', 'pg_trgm', 'vector')
+      AND pg_get_userbyid(e.extowner) = current_user;
+
+    IF _owned_by_current_user IS NOT NULL THEN
+        RAISE EXCEPTION
+            'Extensions still installed in public schema and owned by current role (%): %',
+            current_user,
+            _owned_by_current_user;
+    END IF;
+
     IF _remaining IS NOT NULL THEN
-        RAISE EXCEPTION 'Extensions still installed in public schema: %', _remaining;
+        RAISE NOTICE
+            'Extensions still in public schema but not owned by current role (%): %. Managed project support may be required to move them.',
+            current_user,
+            _remaining;
     END IF;
 
     IF to_regclass('public.spatial_ref_sys') IS NOT NULL THEN
-        RAISE EXCEPTION 'public.spatial_ref_sys is still in public schema';
+        RAISE NOTICE
+            'public.spatial_ref_sys remains in public schema; this is expected while PostGIS is managed by another owner.';
     END IF;
 END
 $$ LANGUAGE plpgsql;

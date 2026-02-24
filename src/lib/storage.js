@@ -30,17 +30,43 @@ export async function uploadAvatar(userId, file) {
  * @returns {Promise<string>} File path in the cvs bucket (NOT a URL)
  */
 export async function uploadCV(userId, file) {
-    const fileExt = file.name.split('.').pop()
+    const rawExt = (file.name.split('.').pop() || '').toLowerCase()
+    const fileExt = ['pdf', 'doc', 'docx'].includes(rawExt) ? rawExt : 'pdf'
     const fileName = `${userId}/cv.${fileExt}`
+    const uploadOptions = {
+        upsert: true,
+        contentType: file.type || undefined
+    }
 
     const { data: _data, error } = await supabase.storage
         .from('cvs')
-        .upload(fileName, file, { upsert: true })
+        .upload(fileName, file, uploadOptions)
 
-    if (error) throw error
+    if (!error) {
+        // Return the storage path, not a public URL (bucket is private)
+        return fileName
+    }
 
-    // Return the storage path, not a public URL (bucket is private)
-    return fileName
+    const errorMessage = String(error?.message || '')
+    const isRlsError = /row-level security|not allowed|permission/i.test(errorMessage)
+
+    // Fallback path for projects where INSERT is allowed but UPDATE (upsert) is blocked by RLS.
+    if (isRlsError) {
+        const timestampedPath = `${userId}/cv-${Date.now()}.${fileExt}`
+        const { error: retryError } = await supabase.storage
+            .from('cvs')
+            .upload(timestampedPath, file, {
+                upsert: false,
+                contentType: file.type || undefined
+            })
+
+        if (!retryError) {
+            return timestampedPath
+        }
+    }
+
+    throw error
+
 }
 
 /**

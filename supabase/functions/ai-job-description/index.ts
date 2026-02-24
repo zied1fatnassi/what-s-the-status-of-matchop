@@ -6,6 +6,37 @@ const corsHeaders = {
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+function buildFallbackDescription(
+    jobTitle: string,
+    department?: string,
+    jobType?: string,
+    tone = 'professional'
+) {
+    const normalizedTone = tone || 'professional'
+    const normalizedType = jobType || 'Internship'
+    const normalizedDepartment = department ? ` in ${department}` : ''
+
+    return `## About the role
+We are hiring a **${jobTitle}**${normalizedDepartment}. This ${normalizedType.toLowerCase()} position is ideal for someone eager to learn, contribute quickly, and grow in a ${normalizedTone} team environment.
+
+## Key Responsibilities
+- Contribute to active projects and support day-to-day execution.
+- Collaborate with teammates to deliver high-quality outcomes.
+- Communicate progress, blockers, and solutions clearly.
+- Follow best practices for planning, documentation, and delivery.
+
+## What You'll Learn
+- Real-world workflows and collaboration standards.
+- Technical and professional skills relevant to the role.
+- How to work effectively in cross-functional teams.
+
+## Qualifications
+- Strong motivation to learn and take ownership of tasks.
+- Good communication and teamwork skills.
+- Basic background relevant to the role (coursework, projects, or internships).
+- Ability to work in a ${normalizedTone} and fast-paced environment.`
+}
+
 serve(async (req) => {
     // Handle CORS preflight
     if (req.method === 'OPTIONS') {
@@ -49,11 +80,14 @@ serve(async (req) => {
         const apiKey = Deno.env.get('OPENROUTER_API_KEY')
         if (!apiKey) {
             return new Response(JSON.stringify({
-                success: false,
-                error: 'OpenRouter API key not configured'
+                success: true,
+                description: buildFallbackDescription(jobTitle, department, jobType, tone),
+                fallback: true,
+                provider: 'local',
+                warning: 'OPENROUTER_API_KEY is not configured'
             }), {
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-                status: 500,
+                status: 200,
             })
         }
 
@@ -96,16 +130,32 @@ Write in a ${tone} but energetic tone that appeals to young professionals.`
             const errorData = await response.text()
             console.error('OpenRouter API Error:', errorData)
             return new Response(JSON.stringify({
-                success: false,
-                error: `OpenRouter API error: ${response.status}`
+                success: true,
+                description: buildFallbackDescription(jobTitle, department, jobType, tone),
+                fallback: true,
+                provider: 'local',
+                warning: `OpenRouter API error: ${response.status}`
             }), {
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-                status: 500,
+                status: 200,
             })
         }
 
         const data = await response.json()
         const description = data.choices?.[0]?.message?.content || ''
+
+        if (!description.trim()) {
+            return new Response(JSON.stringify({
+                success: true,
+                description: buildFallbackDescription(jobTitle, department, jobType, tone),
+                fallback: true,
+                provider: 'local',
+                warning: 'AI response was empty'
+            }), {
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+                status: 200,
+            })
+        }
 
         return new Response(JSON.stringify({
             success: true,
@@ -119,7 +169,7 @@ Write in a ${tone} but energetic tone that appeals to young professionals.`
         console.error('AI Job Description Error:', error)
         return new Response(JSON.stringify({
             success: false,
-            error: error.message || 'An unexpected error occurred'
+            error: error instanceof Error ? error.message : 'An unexpected error occurred'
         }), {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
             status: 500,

@@ -15,6 +15,35 @@ function PostOffer() {
     const [aiLoading, setAiLoading] = useState(false)
     const [aiError, setAiError] = useState(null)
 
+    const generateDescriptionLocally = () => {
+        const title = offer.title?.trim() || 'this role'
+        const department = offer.department?.trim()
+        const type = offer.type?.trim() || 'Internship'
+        const location = offer.locationType === 'remote'
+            ? 'Remote'
+            : (offer.location?.trim() || 'our office')
+
+        return `## About the role
+We are looking for a motivated candidate to join us as **${title}**${department ? ` in our ${department} team` : ''}. In this ${type.toLowerCase()} opportunity, you will work closely with experienced teammates and contribute to real projects from day one.
+
+## Key Responsibilities
+- Collaborate with the team to deliver high-quality work on active projects.
+- Support daily execution, documentation, and reporting for assigned tasks.
+- Communicate progress clearly and raise blockers early.
+- Participate in planning, feedback sessions, and continuous improvement.
+
+## What You'll Learn
+- Practical project execution in a real company environment.
+- Collaboration and communication across technical and non-technical teams.
+- Industry best practices for quality, delivery, and ownership.
+
+## Qualifications
+- Strong interest in ${department || 'the field'} and willingness to learn quickly.
+- Good communication and teamwork skills.
+- Reliability, curiosity, and attention to detail.
+- Availability for a ${type.toLowerCase()} based in ${location}.`
+    }
+
     // Generate job description using AI
     const generateDescription = async () => {
         if (!offer.title.trim()) {
@@ -43,8 +72,9 @@ function PostOffer() {
                 throw new Error(data?.error || 'Failed to generate description')
             }
         } catch (error) {
-            console.error('AI generation error:', error)
-            setAiError(error.message || 'Failed to generate description. Please try again.')
+            console.warn('AI generation unavailable, using local template:', error)
+            setOffer(prev => ({ ...prev, description: generateDescriptionLocally() }))
+            setAiError('AI service is unavailable. A smart template was inserted; edit it as needed.')
         } finally {
             setAiLoading(false)
         }

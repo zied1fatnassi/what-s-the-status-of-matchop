@@ -6,13 +6,23 @@ import './MatchModal.css'
 
 function MatchModal({ match, onClose, userType }) {
     const [isVisible, setIsVisible] = useState(false)
+    const [confettiPieces, setConfettiPieces] = useState([])
 
     useEffect(() => {
         // Delay animation start
-        setTimeout(() => setIsVisible(true), 100)
+        const animationTimer = setTimeout(() => setIsVisible(true), 100)
 
         // Create confetti effect
-        createConfetti()
+        const colors = ['#2196f3', '#42a5f5', '#64b5f6', '#90caf9', '#1976d2']
+        setConfettiPieces(
+            Array.from({ length: 50 }, (_, index) => ({
+                id: index,
+                left: `${Math.random() * 100}%`,
+                backgroundColor: colors[Math.floor(Math.random() * colors.length)],
+                animationDelay: `${Math.random() * 2}s`,
+                animationDuration: `${Math.random() * 2 + 3}s`
+            }))
+        )
 
         const handleEsc = (event) => {
             if (event.key === 'Escape') {
@@ -24,27 +34,11 @@ function MatchModal({ match, onClose, userType }) {
         document.addEventListener('keydown', handleEsc)
 
         return () => {
+            clearTimeout(animationTimer)
             unlockOverlayScroll()
             document.removeEventListener('keydown', handleEsc)
         }
     }, [onClose])
-
-    const createConfetti = () => {
-        const colors = ['#2196f3', '#42a5f5', '#64b5f6', '#90caf9', '#1976d2']
-        const container = document.querySelector('.match-modal-overlay')
-
-        for (let i = 0; i < 50; i++) {
-            const confetti = document.createElement('div')
-            confetti.className = 'confetti'
-            confetti.style.left = Math.random() * 100 + '%'
-            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)]
-            confetti.style.animationDelay = Math.random() * 2 + 's'
-            confetti.style.animationDuration = (Math.random() * 2 + 3) + 's'
-            container?.appendChild(confetti)
-
-            setTimeout(() => confetti.remove(), 5000)
-        }
-    }
 
     const chatLink = userType === 'student'
         ? `/student/chat/${match?.id}`
@@ -65,6 +59,18 @@ function MatchModal({ match, onClose, userType }) {
 
     return (
         <div className={`match-modal-overlay ${isVisible ? 'visible' : ''}`}>
+            {confettiPieces.map(piece => (
+                <div
+                    key={piece.id}
+                    className="confetti"
+                    style={{
+                        left: piece.left,
+                        backgroundColor: piece.backgroundColor,
+                        animationDelay: piece.animationDelay,
+                        animationDuration: piece.animationDuration
+                    }}
+                />
+            ))}
             <div className="match-modal match-modal-expanded">
                 <button className="close-btn" onClick={onClose}>
                     <X size={24} />

@@ -20,6 +20,7 @@ export default function GlobalJobs() {
     const { toast, showSuccess, showError, hideToast } = useToast()
 
     const [applyingId, setApplyingId] = useState(null)
+    const [failedLogos, setFailedLogos] = useState(() => new Set())
 
     // Simplified One-Click Apply (opens email client or job link)
     const handleSmartApply = async (job) => {
@@ -120,7 +121,25 @@ export default function GlobalJobs() {
                         >
                             <div className="job-header">
                                 <div className="company-logo-placeholder">
-                                    {job.logo_url ? <img src={job.logo_url} alt="logo" loading="lazy" decoding="async" width="56" height="56" onError={(e) => { e.target.style.display = 'none'; e.target.parentElement.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-building-2"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>' }} /> : <Building2 size={24} />}
+                                    {job.logo_url && !failedLogos.has(job.id) ? (
+                                        <img
+                                            src={job.logo_url}
+                                            alt={`${job.company_name || 'Company'} logo`}
+                                            loading="lazy"
+                                            decoding="async"
+                                            width="56"
+                                            height="56"
+                                            onError={() => {
+                                                setFailedLogos(prev => {
+                                                    const next = new Set(prev)
+                                                    next.add(job.id)
+                                                    return next
+                                                })
+                                            }}
+                                        />
+                                    ) : (
+                                        <Building2 size={24} />
+                                    )}
                                 </div>
                                 <div className="job-info">
                                     <h3>{job.title}</h3>

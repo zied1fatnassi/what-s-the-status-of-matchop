@@ -6,6 +6,35 @@ const corsHeaders = {
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+function improveBioLocally(bio: string, skills: string[] = [], headline = '') {
+    let improved = bio.trim()
+
+    if (!improved) return improved
+
+    improved = improved.replace(/(^|\.\s+)([a-z])/g, (_, prefix, letter) => `${prefix}${letter.toUpperCase()}`)
+    improved = improved.charAt(0).toUpperCase() + improved.slice(1)
+
+    if (!improved.match(/^(I am|I'm|As a|With|A passionate|A dedicated|A motivated)/i)) {
+        const role = headline || 'professional'
+        improved = `As a dedicated ${role}, ${improved.charAt(0).toLowerCase()}${improved.slice(1)}`
+    }
+
+    if (!/[.!?]$/.test(improved)) {
+        improved += '.'
+    }
+
+    if (skills.length > 0) {
+        const skillsMentioned = skills.some((skill) =>
+            improved.toLowerCase().includes(String(skill).toLowerCase())
+        )
+        if (!skillsMentioned) {
+            improved += ` My key skills include ${skills.slice(0, 5).join(', ')}.`
+        }
+    }
+
+    return improved
+}
+
 serve(async (req) => {
     // Handle CORS preflight
     if (req.method === 'OPTIONS') {
@@ -49,11 +78,14 @@ serve(async (req) => {
         const apiKey = Deno.env.get('OPENROUTER_API_KEY')
         if (!apiKey) {
             return new Response(JSON.stringify({
-                success: false,
-                error: 'OpenRouter API key not configured'
+                success: true,
+                bio: improveBioLocally(bio, skills, headline),
+                fallback: true,
+                provider: 'local',
+                warning: 'OPENROUTER_API_KEY is not configured'
             }), {
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-                status: 500,
+                status: 200,
             })
         }
 
@@ -98,16 +130,32 @@ Only output the improved bio text, nothing else.`
             const errorData = await response.text()
             console.error('OpenRouter API Error:', errorData)
             return new Response(JSON.stringify({
-                success: false,
-                error: `AI service error: ${response.status}`
+                success: true,
+                bio: improveBioLocally(bio, skills, headline),
+                fallback: true,
+                provider: 'local',
+                warning: `AI service error: ${response.status}`
             }), {
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-                status: 500,
+                status: 200,
             })
         }
 
         const data = await response.json()
         const improvedBio = data.choices?.[0]?.message?.content?.trim() || ''
+
+        if (!improvedBio) {
+            return new Response(JSON.stringify({
+                success: true,
+                bio: improveBioLocally(bio, skills, headline),
+                fallback: true,
+                provider: 'local',
+                warning: 'AI response was empty'
+            }), {
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+                status: 200,
+            })
+        }
 
         return new Response(JSON.stringify({
             success: true,
@@ -121,7 +169,7 @@ Only output the improved bio text, nothing else.`
         console.error('Profile Polisher Error:', error)
         return new Response(JSON.stringify({
             success: false,
-            error: error.message || 'An unexpected error occurred'
+            error: error instanceof Error ? error.message : 'An unexpected error occurred'
         }), {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
             status: 500,

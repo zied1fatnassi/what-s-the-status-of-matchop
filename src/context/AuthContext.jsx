@@ -165,10 +165,20 @@ export function AuthProvider({ children }) {
                         .from('profiles')
                         .select('*')
                         .eq('id', userId)
-                        .single()
+                        .maybeSingle()
 
-                    if (baseResult.error || !baseResult.data) {
+                    if (baseResult.error) {
                         return baseResult
+                    }
+
+                    if (!baseResult.data) {
+                        return {
+                            data: null,
+                            error: {
+                                code: 'PROFILE_NOT_FOUND',
+                                message: 'Profile does not exist yet'
+                            }
+                        }
                     }
 
                     const profileData = baseResult.data
@@ -203,7 +213,7 @@ export function AuthProvider({ children }) {
                 let { data, error } = await loadProfile()
 
                 // If profile doesn't exist, try to create it from user metadata
-                if (error?.code === 'PGRST116') {
+                if (error?.code === 'PGRST116' || error?.code === 'PROFILE_NOT_FOUND') {
                     const { data: { user } } = await supabase.auth.getUser()
                     if (user?.user_metadata) {
                         const { type, name } = user.user_metadata
