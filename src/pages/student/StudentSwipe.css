@@ -72,6 +72,56 @@
     }
 }
 
+.stack-mode-panel {
+    width: 100%;
+    max-width: 440px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.stack-mode-toggle {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-2);
+    padding: var(--space-2);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--bento-card-border-subtle);
+    background: var(--bento-card);
+}
+
+.stack-mode-btn {
+    border: 1px solid var(--bento-card-border-subtle);
+    background: transparent;
+    color: var(--text-secondary);
+    border-radius: var(--radius-md);
+    padding: 0.55rem 0.7rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--duration-fast) var(--ease-in-out);
+}
+
+.stack-mode-btn.active {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: color-mix(in srgb, var(--primary) 8%, transparent);
+}
+
+.stack-mode-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.stack-mode-notice {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    border-left: 3px solid var(--primary);
+    padding: var(--space-2) var(--space-3);
+    background: var(--bento-card);
+    border-radius: var(--radius-md);
+}
+
 /* Card Stack */
 .cards-stack {
     position: relative;

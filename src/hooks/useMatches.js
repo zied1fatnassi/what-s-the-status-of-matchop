@@ -2,6 +2,34 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
 
+function isPremiumActive(profile) {
+    if (!profile?.is_premium) return false
+    if (!profile?.premium_expires_at) return true
+
+    const expiresAt = Date.parse(profile.premium_expires_at)
+    return Number.isFinite(expiresAt) && expiresAt > Date.now()
+}
+
+async function fetchPremiumFlags(studentIds) {
+    if (!Array.isArray(studentIds) || studentIds.length === 0) {
+        return new Map()
+    }
+
+    const { data, error } = await supabase
+        .from('profiles')
+        .select('id, is_premium, premium_expires_at')
+        .in('id', studentIds)
+
+    if (error) {
+        console.warn('[useMatches] premium flags lookup failed:', error.message)
+        return new Map()
+    }
+
+    return new Map(
+        (data || []).map((profile) => [profile.id, isPremiumActive(profile)])
+    )
+}
+
 // User-scoped in-memory cache for matches
 // Map<`${userId}:${role}`  →  { data, timestamp }>
 const matchesCacheMap = new Map()
@@ -137,13 +165,35 @@ export function useMatches() {
                 return
             }
 
-            // Update user-scoped cache
-            setCacheEntry(user.id, role, data || [])
+            let normalizedMatches = data || []
 
-            console.log('[useMatches] Success, found', data?.length || 0, 'matches, setting loading=false')
+            if (isCompany && normalizedMatches.length > 0) {
+                const studentIds = Array.from(
+                    new Set(
+                        normalizedMatches
+                            .map((match) => match.student_id)
+                            .filter(Boolean)
+                    )
+                )
+
+                const premiumFlags = await fetchPremiumFlags(studentIds)
+                normalizedMatches = normalizedMatches.map((match) => ({
+                    ...match,
+                    candidate: {
+                        ...(match.candidate || {}),
+                        id: match.student_id,
+                        is_premium_active: premiumFlags.get(match.student_id) === true
+                    }
+                }))
+            }
+
+            // Update user-scoped cache
+            setCacheEntry(user.id, role, normalizedMatches)
+
+            console.log('[useMatches] Success, found', normalizedMatches.length || 0, 'matches, setting loading=false')
 
             if (isMounted.current) {
-                setMatches(data || [])
+                setMatches(normalizedMatches)
                 setError(null)
                 setLoading(false)
             }

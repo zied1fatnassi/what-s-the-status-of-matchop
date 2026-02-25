@@ -437,7 +437,45 @@ function createMockSupabase() {
         from(tableName) {
             return createMockQuery(tableName, () => currentUser)
         },
-        rpc: async () => createMockResponse(null),
+        rpc: async (fn) => {
+            if (fn === 'get_swipe_limit_status') {
+                return createMockResponse({
+                    allowed: true,
+                    code: 'OK',
+                    effective_plan: 'standard',
+                    daily_count: 0,
+                    limit_count: 20,
+                    remaining: 20,
+                    reached: false
+                })
+            }
+
+            if (fn === 'record_student_swipe_with_limit') {
+                return createMockResponse({
+                    success: true,
+                    code: 'OK',
+                    message: 'Swipe recorded',
+                    usage: {
+                        allowed: true,
+                        code: 'OK',
+                        effective_plan: 'standard',
+                        daily_count: 1,
+                        limit_count: 20,
+                        remaining: 19,
+                        reached: false
+                    }
+                })
+            }
+
+            if (fn === 'create_intro_from_swipe') {
+                return createMockResponse({
+                    success: true,
+                    intro_id: 'intro-e2e'
+                })
+            }
+
+            return createMockResponse(null)
+        },
         channel() {
             return channelObject
         },
@@ -465,6 +503,25 @@ function createMockSupabase() {
                         data: {
                             success: true,
                             bio: bio ? `${bio.trim()}\n\nOpen to new opportunities and collaboration.` : bio
+                        },
+                        error: null
+                    }
+                }
+
+                if (name === 'record-swipe') {
+                    return {
+                        data: {
+                            success: true,
+                            code: 'OK',
+                            usage: {
+                                allowed: true,
+                                code: 'OK',
+                                effective_plan: 'standard',
+                                daily_count: 1,
+                                limit_count: 20,
+                                remaining: 19,
+                                reached: false
+                            }
                         },
                         error: null
                     }

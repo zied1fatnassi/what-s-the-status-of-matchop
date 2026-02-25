@@ -64,17 +64,25 @@ USING (
 
 -- Companies can read CVs for students they are matched with.
 DROP POLICY IF EXISTS "cvs_select_matched_company" ON storage.objects;
-CREATE POLICY "cvs_select_matched_company"
-ON storage.objects FOR SELECT
-TO authenticated
-USING (
-    bucket_id = 'cvs'
-    AND EXISTS (
-        SELECT 1
-        FROM public.matches AS m
-        WHERE m.company_id = auth.uid()
-          AND m.student_id::text = (storage.foldername(name))[1]
-    )
-);
+DO $$
+BEGIN
+    IF to_regclass('public.matches') IS NULL THEN
+        RAISE NOTICE 'Skipping cvs_select_matched_company policy because public.matches does not exist.';
+    ELSE
+        CREATE POLICY "cvs_select_matched_company"
+        ON storage.objects FOR SELECT
+        TO authenticated
+        USING (
+            bucket_id = 'cvs'
+            AND EXISTS (
+                SELECT 1
+                FROM public.matches AS m
+                WHERE m.company_id = auth.uid()
+                  AND m.student_id::text = (storage.foldername(name))[1]
+            )
+        );
+    END IF;
+END
+$$ LANGUAGE plpgsql;
 
 COMMIT;

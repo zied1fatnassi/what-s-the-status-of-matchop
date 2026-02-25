@@ -2,6 +2,34 @@ import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
 
+function isPremiumActive(profile) {
+    if (!profile?.is_premium) return false
+    if (!profile?.premium_expires_at) return true
+
+    const expiresAt = Date.parse(profile.premium_expires_at)
+    return Number.isFinite(expiresAt) && expiresAt > Date.now()
+}
+
+async function fetchPremiumFlags(studentIds) {
+    if (!Array.isArray(studentIds) || studentIds.length === 0) {
+        return new Map()
+    }
+
+    const { data, error } = await supabase
+        .from('profiles')
+        .select('id, is_premium, premium_expires_at')
+        .in('id', studentIds)
+
+    if (error) {
+        console.warn('[useCandidates] premium flags lookup failed:', error.message)
+        return new Map()
+    }
+
+    return new Map(
+        (data || []).map((profile) => [profile.id, isPremiumActive(profile)])
+    )
+}
+
 /**
  * Hook to fetch students who swiped right on company's offers
  * Returns list of candidates with their information
@@ -104,7 +132,12 @@ export function useCandidates() {
                 })
             })
 
-            let candidatesList = Array.from(uniqueStudents.values())
+            const premiumFlags = await fetchPremiumFlags(Array.from(uniqueStudents.keys()))
+
+            let candidatesList = Array.from(uniqueStudents.values()).map((candidate) => ({
+                ...candidate,
+                is_premium_active: premiumFlags.get(candidate.id) === true
+            }))
 
             // Apply filters
             if (filters.skills.length > 0) {

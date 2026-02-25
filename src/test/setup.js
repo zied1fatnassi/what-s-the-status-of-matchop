@@ -1,5 +1,8 @@
 import '@testing-library/jest-dom'
 
+// React 19 act() warning suppression for jsdom integration tests.
+globalThis.IS_REACT_ACT_ENVIRONMENT = true
+
 // Mock Supabase for tests
 vi.mock('../lib/supabase', () => ({
     supabase: {
