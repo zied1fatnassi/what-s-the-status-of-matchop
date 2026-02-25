@@ -8,6 +8,13 @@
 --   4) Enforce at DB layer (trigger) for all insert paths.
 -- ============================================================
 
+DO $swipe_usage_daily_limit$
+BEGIN
+    IF to_regclass('public.profiles') IS NULL THEN
+        RAISE NOTICE 'Skipping swipe_usage daily limit migration because public.profiles does not exist yet.';
+        RETURN;
+    END IF;
+
 CREATE TABLE IF NOT EXISTS public.swipe_usage (
     user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
     usage_day DATE NOT NULL,
@@ -449,3 +456,6 @@ ON CONFLICT (user_id, usage_day)
 DO UPDATE
 SET swipe_count = EXCLUDED.swipe_count,
     updated_at = now();
+
+END
+$swipe_usage_daily_limit$ LANGUAGE plpgsql;
