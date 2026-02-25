@@ -17,6 +17,318 @@
         "postJob": "Publier",
         "logout": "Déconnexion"
     },
+    "footer": {
+        "tagline": "Connecter les talents aux opportunites\ngrace a une decouverte alimentee par l'IA.",
+        "sections": {
+            "company": "Entreprise",
+            "legal": "Juridique",
+            "appearance": "Apparence"
+        },
+        "links": {
+            "aboutUs": "A propos",
+            "contact": "Contact",
+            "termsOfService": "Conditions d'utilisation",
+            "privacyPolicy": "Politique de confidentialite",
+            "cookiePolicy": "Politique des cookies"
+        },
+        "theme": {
+            "light": "Clair",
+            "dark": "Sombre",
+            "auto": "Auto"
+        },
+        "rightsReserved": "© {{year}} MatchOp. Tous droits reserves."
+    },
+    "aboutPage": {
+        "title": "A propos de MatchOp",
+        "subtitle": "Revolutionner les opportunites pour les talents tunisiens.",
+        "description": "Fonde par les developpeurs full-stack et orateurs en leadership Iheb Massabi et Zied Fatnassi, MatchOp comble l'ecart entre les diplomes tunisiens ambitieux et des stages de haute qualite dans le monde entier. Nous avons cree cette plateforme basee sur l'IA a partir de nos propres frustrations - trouver des opportunites pertinentes malgre nos competences et notre motivation.",
+        "cards": {
+            "mission": {
+                "title": "Notre Mission",
+                "description": "Permettre a chaque etudiant tunisien de reveler son potentiel grace a un matching sans biais, axe sur les competences. Fini les candidatures sans fin ou les barrieres - place a de vraies connexions avec des entreprises qui valorisent l'excellence."
+            },
+            "whyStarted": {
+                "title": "Pourquoi Nous Avons Commence",
+                "description": "En tant qu'entrepreneurs ayant pris la parole sur le leadership et l'innovation, nous avons maitrise le developpement full-stack mais avons rencontre des blocages pour trouver des roles a la hauteur de notre potentiel. Aujourd'hui, MatchOp propose des offres verifiees et de qualite afin que les nouveaux diplomes decrochent stages et emplois plus rapidement - en Tunisie et a l'international."
+            },
+            "globalImpact": {
+                "title": "Portee Globale, Impact Local",
+                "description": "Nous connectons les esprits les plus brillants de Tunisie a des opportunites internationales a distance. Les competences n'ont pas de frontieres, nous non plus. Chaque etudiant et chaque entreprise sur notre plateforme est verifie pour garantir la confiance et la qualite."
+            }
+        },
+        "cta": {
+            "title": "Rejoignez le mouvement.",
+            "subtitle": "Swipez vers votre reussite."
+        }
+    },
+    "contactPage": {
+        "title": "Contactez-nous",
+        "subtitle": "Vous avez des questions sur MatchOp ? Nous sommes la pour vous aider. Contactez notre equipe pour le support, les partenariats ou toute demande generale.",
+        "info": {
+            "emailLabel": "Ecrivez-nous",
+            "emailValue": "support@matchop.tn",
+            "phoneLabel": "Appelez-nous",
+            "phoneValue": "+216 71 123 456",
+            "addressLabel": "Rendez-nous visite",
+            "addressValue": "5111 Avenue Mahdia, El Mourouj"
+        },
+        "success": {
+            "title": "Merci !",
+            "message": "Votre message a ete envoye avec succes. Nous vous repondrons des que possible.",
+            "sendAnother": "Envoyer un autre message"
+        },
+        "form": {
+            "nameLabel": "Votre nom",
+            "namePlaceholder": "ex. Sarah Smith",
+            "emailLabel": "Adresse e-mail",
+            "emailPlaceholder": "sarah@example.com",
+            "subjectLabel": "Sujet",
+            "subjectPlaceholder": "De quoi s'agit-il ?",
+            "messageLabel": "Message",
+            "messagePlaceholder": "Comment pouvons-nous vous aider ?",
+            "sending": "Envoi...",
+            "sendMessage": "Envoyer le message"
+        },
+        "errors": {
+            "requiredFields": "Veuillez remplir tous les champs.",
+            "invalidEmail": "Veuillez saisir une adresse e-mail valide."
+        }
+    },
+    "termsPage": {
+        "backToHome": "Retour a l'accueil",
+        "title": "Conditions d'utilisation",
+        "lastUpdated": "Derniere mise a jour : 20 decembre 2024",
+        "sections": {
+            "acceptance": {
+                "title": "1. Acceptation des Conditions",
+                "body": "En accedant et en utilisant MatchOp (\"la Plateforme\"), vous acceptez d'etre lie par ces Conditions d'utilisation. Si vous n'acceptez pas ces conditions, veuillez ne pas utiliser nos services."
+            },
+            "service": {
+                "title": "2. Description du Service",
+                "body": "MatchOp est une plateforme de mise en relation professionnelle qui connecte les etudiants et jeunes diplomes avec des entreprises en recherche de talents. Notre service comprend :",
+                "items": {
+                    "profile": "Creation et gestion de profil",
+                    "discovery": "Decouverte d'opportunites via le swipe",
+                    "matching": "Mise en relation entre etudiants et entreprises",
+                    "messaging": "Messagerie directe entre profils apparies"
+                }
+            },
+            "accounts": {
+                "title": "3. Comptes Utilisateur",
+                "registrationTitle": "3.1 Inscription",
+                "registrationBody": "Pour utiliser notre Plateforme, vous devez creer un compte avec des informations exactes et completes. Vous etes responsable de la confidentialite de vos identifiants.",
+                "typesTitle": "3.2 Types de Comptes",
+                "typesBody": "MatchOp propose deux types de comptes :",
+                "items": {
+                    "studentLabel": "Comptes Etudiant :",
+                    "studentBody": "Pour les personnes a la recherche d'opportunites professionnelles",
+                    "companyLabel": "Comptes Entreprise :",
+                    "companyBody": "Pour les organisations souhaitant recruter des talents"
+                }
+            },
+            "conduct": {
+                "title": "4. Conduite des Utilisateurs",
+                "body": "Les utilisateurs s'engagent a ne pas :",
+                "items": {
+                    "falseInfo": "Fournir des informations fausses ou trompeuses",
+                    "harassment": "Harceler, abuser ou nuire a d'autres utilisateurs",
+                    "unlawful": "Utiliser la Plateforme a des fins illegales",
+                    "unauthorizedAccess": "Tenter d'obtenir un acces non autorise a nos systemes",
+                    "spam": "Envoyer du spam ou des messages non sollicites"
+                }
+            },
+            "content": {
+                "title": "5. Contenu",
+                "body": "Vous conservez la propriete du contenu que vous soumettez a MatchOp. En publiant du contenu, vous nous accordez une licence non exclusive pour utiliser, afficher et distribuer ce contenu sur notre Plateforme."
+            },
+            "privacy": {
+                "title": "6. Confidentialite",
+                "prefix": "Votre vie privee est importante pour nous. Veuillez consulter notre",
+                "link": "Politique de Confidentialite",
+                "suffix": "pour comprendre comment nous collectons, utilisons et protegeons vos informations."
+            },
+            "termination": {
+                "title": "7. Resiliation",
+                "body": "Nous nous reservons le droit de suspendre ou de resilier les comptes qui enfreignent ces Conditions d'utilisation ou pour toute autre raison a notre discretion."
+            },
+            "disclaimers": {
+                "title": "8. Clauses de Non-Responsabilite",
+                "body": "MatchOp est fourni \"tel quel\" sans garantie d'aucune sorte. Nous ne garantissons pas que vous trouverez un emploi ou des candidats adaptes via notre Plateforme."
+            },
+            "liability": {
+                "title": "9. Limitation de Responsabilite",
+                "body": "Dans les limites autorisees par la loi, MatchOp ne pourra etre tenu responsable des dommages indirects, accessoires ou consecutifs decoulant de votre utilisation de la Plateforme."
+            },
+            "changes": {
+                "title": "10. Modifications des Conditions",
+                "body": "Nous pouvons mettre a jour ces Conditions d'utilisation de temps a autre. Nous informerons les utilisateurs des changements importants par e-mail ou via la Plateforme."
+            },
+            "contact": {
+                "title": "Contactez-nous",
+                "prefix": "Si vous avez des questions concernant ces Conditions d'utilisation, veuillez nous contacter a :"
+            }
+        }
+    },
+    "privacyPage": {
+        "backToHome": "Retour a l'accueil",
+        "title": "Politique de Confidentialite",
+        "lastUpdated": "Derniere mise a jour : 20 decembre 2024",
+        "sections": {
+            "introduction": {
+                "title": "1. Introduction",
+                "body": "Chez MatchOp, nous prenons votre vie privee au serieux. Cette Politique de Confidentialite explique comment nous collectons, utilisons, divulguons et protégeons vos informations lorsque vous utilisez notre plateforme de mise en relation professionnelle."
+            },
+            "collection": {
+                "title": "2. Informations Que Nous Collectons",
+                "personalTitle": "2.1 Informations Personnelles",
+                "personalBody": "Nous collectons les informations que vous fournissez directement, notamment :",
+                "personalItems": {
+                    "nameEmail": "Nom et adresse e-mail",
+                    "education": "Parcours academique (pour les etudiants)",
+                    "companyInfo": "Informations d'entreprise (pour les employeurs)",
+                    "profileDetails": "Details du profil, competences et experience",
+                    "messages": "Messages echanges via notre Plateforme"
+                },
+                "usageTitle": "2.2 Informations d'Utilisation",
+                "usageBody": "Nous collectons automatiquement certaines informations lorsque vous utilisez notre Plateforme :",
+                "usageItems": {
+                    "deviceBrowser": "Informations sur l'appareil et le navigateur",
+                    "ipLocation": "Adresse IP et donnees de localisation",
+                    "pagesFeatures": "Pages visitees et fonctionnalites utilisees",
+                    "swipeHistory": "Preferences de swipe et historique de matchs"
+                }
+            },
+            "usage": {
+                "title": "3. Comment Nous Utilisons Vos Informations",
+                "body": "Nous utilisons les informations collectees pour :",
+                "items": {
+                    "provideImprove": "Fournir et ameliorer nos services de matching",
+                    "accountManagement": "Creer et gerer votre compte",
+                    "facilitateConnections": "Faciliter les connexions entre etudiants et entreprises",
+                    "notifications": "Envoyer des notifications concernant les matchs et les messages",
+                    "analytics": "Analyser les usages pour ameliorer la Plateforme",
+                    "security": "Assurer la securite et prevenir la fraude"
+                }
+            },
+            "sharing": {
+                "title": "4. Partage des Informations",
+                "body": "Nous pouvons partager vos informations avec :",
+                "items": {
+                    "otherUsersLabel": "Autres Utilisateurs :",
+                    "otherUsersBody": "Les informations de profil sont visibles pour les correspondances potentielles",
+                    "providersLabel": "Prestataires de Services :",
+                    "providersBody": "Des tiers qui nous aident a exploiter la Plateforme",
+                    "legalLabel": "Exigences Legales :",
+                    "legalBody": "Lorsque la loi l'exige ou pour proteger nos droits"
+                },
+                "noSell": "Nous ne vendons pas vos informations personnelles a des tiers."
+            },
+            "security": {
+                "title": "5. Securite des Donnees",
+                "body": "Nous mettons en place des mesures de securite appropriees pour proteger vos informations, y compris le chiffrement, des serveurs securises et des evaluations regulieres. Toutefois, aucune methode de transmission sur Internet n'est securisee a 100%."
+            },
+            "rights": {
+                "title": "6. Vos Droits",
+                "body": "Vous avez le droit de :",
+                "items": {
+                    "access": "Acceder a vos donnees personnelles et les telecharger",
+                    "correct": "Corriger les informations inexactes",
+                    "delete": "Supprimer votre compte et les donnees associees",
+                    "optOut": "Vous opposer aux communications marketing",
+                    "portability": "Demander la portabilite des donnees"
+                }
+            },
+            "cookies": {
+                "title": "7. Cookies",
+                "body": "Nous utilisons des cookies et des technologies similaires pour ameliorer votre experience, analyser l'utilisation et personnaliser le contenu. Vous pouvez gerer vos preferences de cookies via les parametres de votre navigateur."
+            },
+            "children": {
+                "title": "8. Vie Privee des Enfants",
+                "body": "MatchOp n'est pas destine aux utilisateurs de moins de 16 ans. Nous ne collectons pas sciemment d'informations aupres d'enfants de moins de 16 ans."
+            },
+            "international": {
+                "title": "9. Utilisateurs Internationaux",
+                "body": "Si vous accedez a MatchOp depuis un pays autre que notre pays d'exploitation, vos informations peuvent etre transferees et traitees dans d'autres juridictions."
+            },
+            "changes": {
+                "title": "10. Modifications de Cette Politique",
+                "body": "Nous pouvons mettre a jour cette Politique de Confidentialite periodiquement. Nous vous informerons de tout changement important en publiant la nouvelle politique sur la Plateforme et en mettant a jour la date de \"Derniere mise a jour\"."
+            },
+            "contact": {
+                "title": "Contactez-nous",
+                "prefix": "Si vous avez des questions sur cette Politique de Confidentialite ou sur vos donnees, veuillez nous contacter a :"
+            }
+        }
+    },
+    "cookiesPage": {
+        "backToHome": "Retour a l'accueil",
+        "title": "Politique des Cookies",
+        "lastUpdated": "Derniere mise a jour : 15 fevrier 2026",
+        "sections": {
+            "whatAre": {
+                "title": "1. Que Sont les Cookies",
+                "body": "Les cookies sont de petits fichiers texte places sur votre ordinateur ou appareil mobile lorsque vous visitez un site web. Ils sont largement utilises pour faire fonctionner les sites plus efficacement et fournir des informations aux proprietaires du site. Les cookies permettent a un site de reconnaitre votre appareil et de memoriser des informations sur votre visite, comme vos preferences et vos parametres."
+            },
+            "howUse": {
+                "title": "2. Comment Nous Utilisons les Cookies",
+                "body": "MatchOp utilise des cookies et des technologies de suivi similaires pour ameliorer votre experience sur notre plateforme. Plus precisement, nous utilisons les cookies pour :",
+                "items": {
+                    "authenticateLabel": "Authentifier les utilisateurs :",
+                    "authenticateBody": "Vous garder connecte de maniere securisee lorsque vous naviguez entre les pages",
+                    "rememberLabel": "Memoriser les preferences :",
+                    "rememberBody": "Enregistrer votre langue, theme et parametres d'affichage",
+                    "performanceLabel": "Ameliorer les performances :",
+                    "performanceBody": "Comprendre vos interactions avec la plateforme afin d'optimiser la rapidite et la fiabilite",
+                    "analyzeLabel": "Analyser l'usage :",
+                    "analyzeBody": "Collecter des donnees anonymisees sur le trafic et l'adoption des fonctionnalites",
+                    "securityLabel": "Assurer la securite :",
+                    "securityBody": "Detecter et prevenir les activites frauduleuses via des jetons CSRF et la validation de session"
+                }
+            },
+            "types": {
+                "title": "3. Types de Cookies Que Nous Utilisons",
+                "essentialTitle": "3.1 Cookies Essentiels",
+                "essentialBody": "Ces cookies sont strictement necessaires au fonctionnement de notre plateforme. Ils permettent des fonctionnalites de base telles que l'authentification, la gestion de session et les fonctions de securite. Sans ces cookies, la plateforme ne peut pas fonctionner correctement. Les cookies essentiels ne peuvent pas etre desactives.",
+                "functionalTitle": "3.2 Cookies Fonctionnels",
+                "functionalBody": "Les cookies fonctionnels nous permettent de memoriser les choix que vous faites sur la plateforme, tels que votre langue preferee, le theme (mode clair ou sombre) et d'autres preferences d'affichage. Ces cookies ameliorent votre experience mais ne sont pas strictement necessaires au fonctionnement de la plateforme.",
+                "analyticsTitle": "3.3 Cookies d'Analyse",
+                "analyticsBody": "Nous pouvons utiliser des cookies d'analyse pour collecter des informations anonymisees sur la facon dont les visiteurs utilisent la plateforme. Cela nous aide a comprendre quelles pages sont les plus populaires, comment les utilisateurs naviguent et ou nous pouvons nous ameliorer. Toutes les donnees collectees sont agregees et anonymes."
+            },
+            "duration": {
+                "title": "4. Duree des Cookies",
+                "body": "Les cookies utilises sur MatchOp se repartissent en deux categories selon leur duree de vie :",
+                "items": {
+                    "sessionLabel": "Cookies de session :",
+                    "sessionBody": "Cookies temporaires supprimes lorsque vous fermez votre navigateur web. Ils sont principalement utilises pour l'authentification et la securite.",
+                    "persistentLabel": "Cookies persistants :",
+                    "persistentBody": "Cookies qui restent sur votre appareil pendant une duree definie ou jusqu'a leur suppression manuelle. Ils servent a memoriser vos preferences entre les visites."
+                }
+            },
+            "thirdParty": {
+                "title": "5. Cookies Tiers",
+                "body": "Notre plateforme peut utiliser des services tiers - tels que Supabase pour l'authentification et la gestion de base de donnees - qui definissent leurs propres cookies. Ces cookies tiers sont regis par les politiques de confidentialite de ces services. Nous ne controlons pas les cookies tiers et n'y avons pas acces."
+            },
+            "managing": {
+                "title": "6. Gestion de Vos Preferences de Cookies",
+                "body": "Vous avez un controle total sur les cookies stockes sur votre appareil. La plupart des navigateurs web vous permettent de gerer les cookies via leurs parametres. Vous pouvez :",
+                "items": {
+                    "viewDelete": "Voir et supprimer les cookies deja stockes sur votre appareil",
+                    "block": "Bloquer tous les cookies ou seulement les cookies tiers",
+                    "notify": "Configurer votre navigateur pour etre averti lorsqu'un cookie est defini",
+                    "autoClear": "Parametrer votre navigateur pour supprimer automatiquement les cookies a la fermeture",
+                    "note": "Veuillez noter que la desactivation des cookies essentiels peut vous empecher d'utiliser certaines fonctionnalites de la plateforme, y compris la connexion et l'acces a votre compte."
+                }
+            },
+            "changes": {
+                "title": "7. Modifications de Cette Politique",
+                "body": "Nous pouvons mettre a jour cette Politique des Cookies de temps a autre pour refleter les evolutions technologiques, legales ou de nos pratiques de donnees. Lorsque nous apportons des changements importants, nous vous en informerons en mettant a jour la date de \"Derniere mise a jour\" en haut de cette page."
+            },
+            "contact": {
+                "title": "Contactez-nous",
+                "prefix": "Si vous avez des questions sur notre utilisation des cookies ou cette politique, veuillez nous contacter a :"
+            }
+        }
+    },
     "landing": {
         "badge": "L'Avenir du Recrutement",
         "heroTitle": "Swipez vers",
@@ -113,14 +425,23 @@
         "keepSwiping": "Continuer à Swiper"
     },
     "matches": {
-        "yourMatches": "Vos Matchs",
-        "studentsSubtitle": "Entreprises intéressées par votre profil",
-        "companiesSubtitle": "Candidats qui ont matché avec vos opportunités",
+        "yourMatches": "Vos matchs",
+        "studentsSubtitle": "Entreprises interessees par votre profil",
+        "companiesSubtitle": "Candidats qui ont matche avec vos opportunites",
+        "loading": "Chargement de vos matchs...",
+        "loadError": "Echec du chargement des matchs",
+        "recently": "Recent",
+        "unknownCandidate": "Candidat inconnu",
+        "unknownCompany": "Entreprise inconnue",
+        "studentFallback": "Etudiant",
+        "jobOpportunity": "Opportunite d'emploi",
+        "remote": "Teletravail",
         "noMatchesYet": "Pas encore de matchs",
-        "keepSwipingTip": "Continuez à swiper pour trouver votre opportunité parfaite !",
-        "startSwiping": "Commencer à Swiper",
-        "viewCandidates": "Voir les Candidats",
-        "startConversation": "Démarrez la conversation !"
+        "companyEmptyDesc": "Quand vous matchez avec des candidats, ils apparaitront ici !",
+        "keepSwipingTip": "Continuez a swiper pour trouver votre opportunite parfaite !",
+        "startSwiping": "Commencer a swiper",
+        "viewCandidates": "Voir les candidats",
+        "startConversation": "Demarrez la conversation !"
     },
     "chat": {
         "online": "En ligne",
@@ -130,30 +451,165 @@
     },
     "candidates": {
         "title": "Candidats",
-        "subtitle": "{count} candidats intéressés par vos offres",
+        "subtitle": "{{count}} candidats interesses par vos offres",
+        "loading": "Chargement des candidats...",
+        "loadError": "Echec du chargement des candidats",
         "filter": "Filtrer",
+        "filterCandidates": "Filtrer les candidats",
+        "skillsLabel": "Competences (separees par des virgules)",
+        "skillsPlaceholder": "React, Python, IA",
+        "locationLabel": "Ville",
+        "locationPlaceholder": "Tunis",
+        "applyFilters": "Appliquer les filtres",
+        "clearAll": "Tout effacer",
+        "clearFilters": "Effacer les filtres",
+        "interested": "Interesse",
+        "appliedFor": "Postule pour",
+        "pass": "Refuser",
+        "acceptCreateMatch": "Accepter - Creer un match",
         "noCandidates": "Pas encore de candidats",
-        "noCandidatesDesc": "Les candidats intéressés par vos offres apparaîtront ici."
+        "noCandidatesDesc": "Les candidats interesses par vos offres apparaitront ici."
     },
     "postJob": {
         "title": "Publier une Nouvelle Opportunité",
         "subtitle": "Créez une offre d'emploi attractive pour attirer les meilleurs talents",
         "basicInfo": "Informations de Base",
         "jobTitle": "Intitulé du Poste",
+        "titlePlaceholder": "Stage de fin d'etudes - Developpeur Full Stack",
         "department": "Département",
+        "departmentPlaceholder": "Technologies de l'information, Marketing...",
         "type": "Type",
+        "jobTypes": {
+            "internship": "Stage",
+            "fullTime": "Temps plein",
+            "partTime": "Temps partiel",
+            "contract": "Contrat"
+        },
         "jobDescription": "Description du Poste",
+        "magicRewrite": "Reecriture magique",
+        "magicRewriteTooltip": "Generer une description IA a partir du titre du poste",
+        "generating": "Generation...",
+        "descriptionPlaceholder": "Decrivez le role, les responsabilites et ce que le candidat apprendra... Ou cliquez sur 'Reecriture magique' pour generer avec l'IA.",
         "requirements": "Prérequis",
+        "requirementsPlaceholder": "Listez les qualifications et l'experience requises...",
         "locationCompensation": "Lieu & Rémunération",
         "onsite": "Sur site",
         "remote": "Télétravail",
         "hybrid": "Hybride",
+        "locationLabel": "Ville",
+        "governoratePlaceholder": "Gouvernorat",
+        "cityPlaceholder": "Ville",
+        "citySelectGovernorateFirst": "Selectionnez d'abord un gouvernorat",
         "compensation": "Rémunération",
+        "compensationPlaceholder": "1500 TND / mois",
         "duration": "Durée",
+        "durationPlaceholder": "3 mois, 6 mois, indeterminee",
         "requiredSkills": "Compétences Requises",
         "addSkill": "Ajouter une compétence...",
         "noSkillsAdded": "Aucune compétence ajoutée",
-        "publish": "Publier l'Opportunité"
+        "publish": "Publier l'Opportunité",
+        "publishing": "Publication...",
+        "successTitle": "Succes !",
+        "successMessage": "Votre opportunite a ete publiee.",
+        "errors": {
+            "enterTitleFirst": "Veuillez d'abord saisir un titre de poste",
+            "failedGenerateDescription": "Echec de la generation de description",
+            "aiUnavailableFallback": "Le service IA est indisponible. Un modele intelligent a ete insere ; modifiez-le selon vos besoins.",
+            "failedPost": "Echec de publication de l'offre : {{message}}"
+        }
+    },
+    "companyProfile": {
+        "loading": "Chargement du profil entreprise...",
+        "title": "Profil Entreprise",
+        "subtitle": "Presentez votre entreprise et sa culture aux candidats",
+        "companyFallbackName": "Votre entreprise",
+        "photo": {
+            "chooseLogo": "Choisir le logo de l'entreprise",
+            "uploadLogo": "Televerser le logo de l'entreprise",
+            "uploadingLogo": "Televersement du logo..."
+        },
+        "sections": {
+            "about": "A propos de l'entreprise",
+            "culture": "Culture d'entreprise",
+            "benefits": "Avantages et Benefices",
+            "social": "Reseaux Sociaux"
+        },
+        "fields": {
+            "companyName": "Nom de l'entreprise",
+            "description": "Description",
+            "descriptionPlaceholder": "Decrivez votre entreprise, votre mission et ce qui rend votre equipe unique...",
+            "headquarters": "Siege social",
+            "website": "Site web",
+            "websitePlaceholder": "https://votre-entreprise.com",
+            "culturePrompt": "Decrivez votre environnement de travail, la dynamique de l'equipe et ce qui rend votre culture unique...",
+            "culturePlaceholder": "Expliquez aux candidats ce que c'est de travailler avec votre equipe...",
+            "platform": "Plateforme",
+            "selectPlatform": "Selectionnez une plateforme",
+            "socialLinksEmpty": "Aucun lien social ajoute"
+        },
+        "location": {
+            "governoratePlaceholder": "Gouvernorat",
+            "cityPlaceholder": "Ville",
+            "citySelectGovernorateFirst": "Selectionnez d'abord un gouvernorat"
+        },
+        "actions": {
+            "edit": "Modifier",
+            "lock": "Verrouiller",
+            "updateWebsite": "Mettre a jour le site",
+            "updating": "Mise a jour...",
+            "add": "Ajouter",
+            "remove": "Supprimer",
+            "saveProfile": "Enregistrer le profil",
+            "saving": "Enregistrement..."
+        },
+        "benefitsDescription": "Selectionnez les avantages que vous offrez aux employes",
+        "socialDescription": "Selectionnez et ajoutez les reseaux sociaux de votre entreprise.",
+        "social": {
+            "fallbackPlatform": "plateforme",
+            "platforms": {
+                "instagram": "Instagram",
+                "linkedin": "LinkedIn",
+                "facebook": "Facebook",
+                "x": "X"
+            },
+            "placeholders": {
+                "instagram": "https://instagram.com/votre-entreprise",
+                "linkedin": "https://linkedin.com/company/votre-entreprise",
+                "facebook": "https://facebook.com/votre-entreprise",
+                "x": "https://x.com/votre-entreprise"
+            }
+        },
+        "benefitsOptions": {
+            "remoteWork": "Teletravail",
+            "healthInsurance": "Assurance sante",
+            "flexibleHours": "Horaires flexibles",
+            "k401": "401k",
+            "stockOptions": "Stock options",
+            "gymMembership": "Abonnement salle de sport",
+            "paidTimeOff": "Conges payes",
+            "learningBudget": "Budget formation",
+            "freeLunch": "Dejeuner offert",
+            "parentalLeave": "Conge parental"
+        },
+        "messages": {
+            "noProfile": "Aucun profil entreprise trouve pour ce compte.",
+            "loadFailed": "Echec du chargement du profil entreprise.",
+            "logoUploaded": "Logo televerse avec succes.",
+            "websiteUpdated": "Site web mis a jour avec succes.",
+            "websiteUpdateFailed": "Echec de la mise a jour du site web.",
+            "saved": "Profil enregistre avec succes.",
+            "saveFailed": "Echec de l'enregistrement du profil."
+        },
+        "validation": {
+            "companyNameRequired": "Le nom de l'entreprise est requis.",
+            "validUrlRequired": "Veuillez saisir une URL valide commencant par http:// ou https://",
+            "validPlatformUrl": "Veuillez saisir une URL valide pour {{platform}}."
+        },
+        "errors": {
+            "logoTooLarge": "Le logo est trop volumineux. Taille maximale: 5 Mo.",
+            "uploadDeniedByRls": "Televersement refuse. Verifiez vos permissions ou la politique de securite des lignes.",
+            "uploadFailedDefault": "Echec du televersement du logo."
+        }
     },
     "empty": {
         "noMatches": "Pas encore de matchs",
@@ -166,3 +622,5 @@
         "bounty": "Prime"
     }
 }
+
+

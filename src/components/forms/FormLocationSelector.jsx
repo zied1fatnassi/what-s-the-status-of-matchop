@@ -13,6 +13,9 @@ export function FormLocationSelector({
     cityValue,
     onGovernorateChange,
     onCityChange,
+    governoratePlaceholder = 'Gouvernorat / Governorate',
+    cityPlaceholder = 'Ville / City',
+    cityDisabledPlaceholder = "Selectionnez d'abord un gouvernorat / Select governorate first",
     required = false,
     disabled = false,
     error = null,
@@ -20,17 +23,15 @@ export function FormLocationSelector({
 }) {
     const [availableCities, setAvailableCities] = useState([])
 
-    // Update available cities when governorate changes
     useEffect(() => {
         if (governorateValue && CITIES_BY_GOVERNORATE[governorateValue]) {
             setAvailableCities(CITIES_BY_GOVERNORATE[governorateValue])
-            // Reset city if it's not in the new governorate's list
             if (cityValue && !CITIES_BY_GOVERNORATE[governorateValue].includes(cityValue)) {
-                onCityChange('')
+                onCityChange?.('')
             }
         } else {
             setAvailableCities([])
-            onCityChange('')
+            onCityChange?.('')
         }
     }, [governorateValue])
 
@@ -56,7 +57,6 @@ export function FormLocationSelector({
             )}
 
             <div className="form-location-grid">
-                {/* Governorate Selector */}
                 <select
                     className={`form-input ${error ? 'form-input-error' : ''}`}
                     value={governorateValue || ''}
@@ -64,7 +64,7 @@ export function FormLocationSelector({
                     required={required}
                     disabled={disabled}
                 >
-                    <option value="">Gouvernorat / Governorate</option>
+                    <option value="">{governoratePlaceholder}</option>
                     {TUNISIAN_GOVERNORATES.map((gov) => (
                         <option key={gov} value={gov}>
                             {gov}
@@ -72,7 +72,6 @@ export function FormLocationSelector({
                     ))}
                 </select>
 
-                {/* City Selector */}
                 <select
                     className={`form-input ${error ? 'form-input-error' : ''}`}
                     value={cityValue || ''}
@@ -81,7 +80,7 @@ export function FormLocationSelector({
                     disabled={disabled || !governorateValue}
                 >
                     <option value="">
-                        {governorateValue ? 'Ville / City' : 'Sélectionnez d\'abord un gouvernorat'}
+                        {governorateValue ? cityPlaceholder : cityDisabledPlaceholder}
                     </option>
                     {availableCities.map((city) => (
                         <option key={city} value={city}>

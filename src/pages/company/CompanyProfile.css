@@ -22,6 +22,10 @@
 
 .company-profile-header {
     margin-bottom: var(--space-5);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .company-profile-header h1 {
@@ -33,6 +37,7 @@
 .company-profile-header p {
     margin: var(--space-2) 0 0;
     color: var(--text-secondary);
+    text-align: center;
 }
 
 .company-profile-form {
@@ -254,6 +259,22 @@
 .company-profile-social-add-row .btn,
 .company-profile-social-link-item .btn {
     align-self: end;
+    width: 130px;
+    justify-content: center;
+}
+
+.company-profile-remove-btn {
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.company-profile-remove-btn svg {
+    transition: color 0.15s ease;
+}
+
+.company-profile-remove-btn:active {
+    background: var(--error, #dc2626);
+    border-color: var(--error, #dc2626);
+    color: #ffffff;
 }
 
 .company-profile-social-links-list {

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
-import { MessageCircle, GraduationCap, Loader, AlertCircle, RefreshCw } from 'lucide-react'
+import { MessageCircle, GraduationCap, Loader, AlertCircle, RefreshCw, Users } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { useMatches } from '../../hooks/useMatches'
 import '../student/StudentMatches.css'
 
@@ -8,6 +9,7 @@ import '../student/StudentMatches.css'
  * Shows real matches from Supabase, not mock data
  */
 function CompanyMatches() {
+    const { t, i18n } = useTranslation()
     const { matches, loading, error, refresh } = useMatches()
 
     // Loading state
@@ -16,12 +18,12 @@ function CompanyMatches() {
             <div className="matches-page">
                 <div className="container">
                     <div className="matches-header">
-                        <h1>Your Matches</h1>
-                        <p>Candidates who matched with your opportunities</p>
+                        <h1>{t('matches.yourMatches')}</h1>
+                        <p>{t('matches.companiesSubtitle')}</p>
                     </div>
                     <div className="matches-loading">
                         <Loader className="animate-spin" size={48} />
-                        <p>Loading your matches...</p>
+                        <p>{t('matches.loading')}</p>
                     </div>
                 </div>
             </div>
@@ -34,16 +36,16 @@ function CompanyMatches() {
             <div className="matches-page">
                 <div className="container">
                     <div className="matches-header">
-                        <h1>Your Matches</h1>
-                        <p>Candidates who matched with your opportunities</p>
+                        <h1>{t('matches.yourMatches')}</h1>
+                        <p>{t('matches.companiesSubtitle')}</p>
                     </div>
                     <div className="matches-error glass-card">
                         <AlertCircle size={48} className="text-red-500" />
-                        <h3>Failed to load matches</h3>
+                        <h3>{t('matches.loadError')}</h3>
                         <p>{error}</p>
                         <button className="btn btn-primary" onClick={() => refresh()}>
                             <RefreshCw size={18} />
-                            Try Again
+                            {t('common.retry')}
                         </button>
                     </div>
                 </div>
@@ -55,8 +57,8 @@ function CompanyMatches() {
         <div className="matches-page">
             <div className="container">
                 <div className="matches-header">
-                    <h1>Your Matches</h1>
-                    <p>Candidates who matched with your opportunities</p>
+                    <h1>{t('matches.yourMatches')}</h1>
+                    <p>{t('matches.companiesSubtitle')}</p>
                 </div>
 
                 {matches.length > 0 ? (
@@ -65,13 +67,13 @@ function CompanyMatches() {
                             // Extract student info from the joined data
                             const studentProfile = match.student_profiles
                             const profile = studentProfile?.profiles
-                            const studentName = profile?.name || 'Unknown Candidate'
-                            const studentBio = studentProfile?.bio || 'Student'
+                            const studentName = profile?.name || t('matches.unknownCandidate')
+                            const studentBio = studentProfile?.bio || t('matches.studentFallback')
                             const studentSkills = studentProfile?.skills || []
                             const avatarUrl = profile?.avatar_url
                             const matchedAt = match.matched_at
-                                ? new Date(match.matched_at).toLocaleDateString()
-                                : 'Recently'
+                                ? new Date(match.matched_at).toLocaleDateString(i18n.language)
+                                : t('matches.recently')
 
                             return (
                                 <Link
@@ -93,7 +95,7 @@ function CompanyMatches() {
                                             <span className="match-time">{matchedAt}</span>
                                         </div>
 
-                                        <p className="match-title">{studentBio.substring(0, 50) || 'Student'}</p>
+                                        <p className="match-title">{studentBio.substring(0, 50) || t('matches.studentFallback')}</p>
 
                                         {studentSkills.length > 0 && (
                                             <div className="match-location">
@@ -107,7 +109,7 @@ function CompanyMatches() {
                                         ) : (
                                             <p className="match-message no-message">
                                                 <MessageCircle size={14} />
-                                                Start the conversation!
+                                                {t('matches.startConversation')}
                                             </p>
                                         )}
                                     </div>
@@ -119,11 +121,13 @@ function CompanyMatches() {
                     </div>
                 ) : (
                     <div className="no-matches glass-card">
-                        <div className="empty-icon">🤝</div>
-                        <h2>No matches yet</h2>
-                        <p>When you match with candidates, they'll appear here!</p>
+                        <div className="empty-icon" aria-hidden="true">
+                            <Users size={64} />
+                        </div>
+                        <h2>{t('matches.noMatchesYet')}</h2>
+                        <p>{t('matches.companyEmptyDesc')}</p>
                         <Link to="/company/candidates" className="btn btn-primary">
-                            View Candidates
+                            {t('matches.viewCandidates')}
                         </Link>
                     </div>
                 )}

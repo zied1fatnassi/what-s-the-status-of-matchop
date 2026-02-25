@@ -1,35 +1,50 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Camera, Edit3, Loader2, Plus, Save, Globe, Link as LinkIcon } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+import { Camera, Edit3, Loader2, Plus, Save, Globe, Link as LinkIcon, Trash2 } from 'lucide-react'
 import { FormLocationSelector } from '../../components/forms/FormComponents'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../context/AuthContext'
 import { useCompanyLogoUpload } from '../../hooks/useCompanyLogoUpload'
 import './CompanyProfile.css'
 
-const SOCIAL_PLATFORM_OPTIONS = [
+const SOCIAL_PLATFORM_DEFS = [
     {
         value: 'instagram',
-        label: 'Instagram',
-        placeholder: 'https://instagram.com/your-company',
+        labelKey: 'companyProfile.social.platforms.instagram',
+        placeholderKey: 'companyProfile.social.placeholders.instagram',
     },
     {
         value: 'linkedin',
-        label: 'LinkedIn',
-        placeholder: 'https://linkedin.com/company/your-company',
+        labelKey: 'companyProfile.social.platforms.linkedin',
+        placeholderKey: 'companyProfile.social.placeholders.linkedin',
     },
     {
         value: 'facebook',
-        label: 'Facebook',
-        placeholder: 'https://facebook.com/your-company',
+        labelKey: 'companyProfile.social.platforms.facebook',
+        placeholderKey: 'companyProfile.social.placeholders.facebook',
     },
     {
         value: 'x',
-        label: 'X',
-        placeholder: 'https://x.com/your-company',
+        labelKey: 'companyProfile.social.platforms.x',
+        placeholderKey: 'companyProfile.social.placeholders.x',
     },
 ]
 
+const BENEFIT_OPTION_DEFS = [
+    { value: 'Remote Work', labelKey: 'companyProfile.benefitsOptions.remoteWork' },
+    { value: 'Health Insurance', labelKey: 'companyProfile.benefitsOptions.healthInsurance' },
+    { value: 'Flexible Hours', labelKey: 'companyProfile.benefitsOptions.flexibleHours' },
+    { value: '401k', labelKey: 'companyProfile.benefitsOptions.k401' },
+    { value: 'Stock Options', labelKey: 'companyProfile.benefitsOptions.stockOptions' },
+    { value: 'Gym Membership', labelKey: 'companyProfile.benefitsOptions.gymMembership' },
+    { value: 'Paid Time Off', labelKey: 'companyProfile.benefitsOptions.paidTimeOff' },
+    { value: 'Learning Budget', labelKey: 'companyProfile.benefitsOptions.learningBudget' },
+    { value: 'Free Lunch', labelKey: 'companyProfile.benefitsOptions.freeLunch' },
+    { value: 'Parental Leave', labelKey: 'companyProfile.benefitsOptions.parentalLeave' },
+]
+
 function CompanyProfile() {
+    const { t, i18n } = useTranslation()
     const { user, profile } = useAuth()
     const [formData, setFormData] = useState({
         name: '',
@@ -79,8 +94,27 @@ function CompanyProfile() {
         }
     }
 
+    const socialPlatformOptions = useMemo(
+        () =>
+            SOCIAL_PLATFORM_DEFS.map((platform) => ({
+                ...platform,
+                label: t(platform.labelKey),
+                placeholder: t(platform.placeholderKey),
+            })),
+        [t, i18n.language]
+    )
+
+    const availableBenefits = useMemo(
+        () =>
+            BENEFIT_OPTION_DEFS.map((benefit) => ({
+                ...benefit,
+                label: t(benefit.labelKey),
+            })),
+        [t, i18n.language]
+    )
+
     const getSocialPlatformMeta = (platformValue) =>
-        SOCIAL_PLATFORM_OPTIONS.find((platform) => platform.value === platformValue)
+        socialPlatformOptions.find((platform) => platform.value === platformValue)
 
     const addSocialPlatform = () => {
         if (!socialSelection) return
@@ -121,7 +155,7 @@ function CompanyProfile() {
         authUserId: user?.id,
         companyProfileId,
         bucket: 'company-logos',
-        companyNameFallback: formData.name || user?.user_metadata?.name || 'Company',
+        companyNameFallback: formData.name || user?.user_metadata?.name || t('companyProfile.companyFallbackName'),
     })
 
     useEffect(() => {
@@ -140,7 +174,7 @@ function CompanyProfile() {
             if (!companyProfileId) {
                 if (!ignore) {
                     setIsLoading(false)
-                    setMessage({ type: 'error', text: 'No company profile found for this account.' })
+                    setMessage({ type: 'error', text: t('companyProfile.messages.noProfile') })
                 }
                 return
             }
@@ -192,7 +226,7 @@ function CompanyProfile() {
                 }
             } catch (error) {
                 if (!ignore) {
-                    setMessage({ type: 'error', text: error.message || 'Failed to load company profile.' })
+                    setMessage({ type: 'error', text: error.message || t('companyProfile.messages.loadFailed') })
                 }
             } finally {
                 if (!ignore) {
@@ -208,11 +242,6 @@ function CompanyProfile() {
         }
     }, [companyProfileId, profile?.companies?.company_name, profile?.companies?.logo_url, user?.user_metadata?.name])
 
-    const availableBenefits = [
-        'Remote Work', 'Health Insurance', 'Flexible Hours', '401k', 'Stock Options',
-        'Gym Membership', 'Paid Time Off', 'Learning Budget', 'Free Lunch', 'Parental Leave'
-    ]
-
     const handleToggleBenefit = (benefit) => {
         if (formData.benefits.includes(benefit)) {
             setFormData((prev) => ({ ...prev, benefits: prev.benefits.filter((b) => b !== benefit) }))
@@ -225,15 +254,15 @@ function CompanyProfile() {
         const raw = String(err?.message || '')
         const lower = raw.toLowerCase()
         if (lower.includes('5mb') || lower.includes('too large')) {
-            return 'Logo file is too large. Maximum size is 5MB.'
+            return t('companyProfile.errors.logoTooLarge')
         }
         if (lower.includes('row-level security') || lower.includes('permission') || lower.includes('not allowed') || err?.code === 'RLS_DENIED') {
-            return 'Upload denied by RLS policy. Ensure this user can write to their own folder in the logo bucket and update their company row.'
+            return t('companyProfile.errors.uploadDeniedByRls')
         }
         if (lower.includes('invalid file type')) {
             return raw
         }
-        return raw || 'Failed to upload company logo.'
+        return raw || t('companyProfile.errors.uploadFailedDefault')
     }
 
     const handleLogoChange = async (event) => {
@@ -274,7 +303,7 @@ function CompanyProfile() {
             const cacheBustedUrl = `${url}${url.includes('?') ? '&' : '?'}t=${Date.now()}`
             setFormData((prev) => ({ ...prev, logoUrl: url }))
             setLogoPreviewUrl(cacheBustedUrl)
-            setMessage({ type: 'success', text: 'Company logo uploaded.' })
+            setMessage({ type: 'success', text: t('companyProfile.messages.logoUploaded') })
         } catch (error) {
             const readableMessage = getUploadErrorMessage(error)
             setMessage({ type: 'error', text: readableMessage })
@@ -295,14 +324,14 @@ function CompanyProfile() {
 
     const updateWebsite = async () => {
         if (!companyProfileId) {
-            setWebsiteError('No company profile found for this account.')
-            setMessage({ type: 'error', text: 'No company profile found for this account.' })
+            setWebsiteError(t('companyProfile.messages.noProfile'))
+            setMessage({ type: 'error', text: t('companyProfile.messages.noProfile') })
             return
         }
 
         const cleanWebsite = normalizeUrlValue(formData.website)
         if (!isValidWebsiteUrl(cleanWebsite)) {
-            const validationMessage = 'Enter a valid URL starting with http:// or https://'
+            const validationMessage = t('companyProfile.validation.validUrlRequired')
             setWebsiteError(validationMessage)
             setMessage({ type: 'error', text: validationMessage })
             return
@@ -325,9 +354,9 @@ function CompanyProfile() {
             const persistedWebsite = data?.website || ''
             setFormData((prev) => ({ ...prev, website: persistedWebsite }))
             setWebsiteBaseline(persistedWebsite)
-            setMessage({ type: 'success', text: 'Website URL updated.' })
+            setMessage({ type: 'success', text: t('companyProfile.messages.websiteUpdated') })
         } catch (error) {
-            const errorMessage = error.message || 'Failed to update website URL.'
+            const errorMessage = error.message || t('companyProfile.messages.websiteUpdateFailed')
             setWebsiteError(errorMessage)
             setMessage({ type: 'error', text: errorMessage })
         } finally {
@@ -339,17 +368,17 @@ function CompanyProfile() {
         e.preventDefault()
 
         if (!companyProfileId) {
-            setMessage({ type: 'error', text: 'No company profile found for this account.' })
+            setMessage({ type: 'error', text: t('companyProfile.messages.noProfile') })
             return
         }
 
         if (!formData.name.trim()) {
-            setMessage({ type: 'error', text: 'Company name is required.' })
+            setMessage({ type: 'error', text: t('companyProfile.validation.companyNameRequired') })
             return
         }
 
         if (!isValidWebsiteUrl(formData.website)) {
-            const validationMessage = 'Enter a valid URL starting with http:// or https://'
+            const validationMessage = t('companyProfile.validation.validUrlRequired')
             setWebsiteError(validationMessage)
             setMessage({ type: 'error', text: validationMessage })
             return
@@ -359,8 +388,11 @@ function CompanyProfile() {
             (socialLink) => socialLink.url && !isValidWebsiteUrl(socialLink.url)
         )
         if (invalidSocialLink) {
-            const invalidPlatform = getSocialPlatformMeta(invalidSocialLink.platform)?.label || 'social link'
-            setMessage({ type: 'error', text: `Enter a valid ${invalidPlatform} URL starting with http:// or https://` })
+            const invalidPlatform = getSocialPlatformMeta(invalidSocialLink.platform)?.label || t('companyProfile.social.fallbackPlatform')
+            setMessage({
+                type: 'error',
+                text: t('companyProfile.validation.validPlatformUrl', { platform: invalidPlatform }),
+            })
             return
         }
 
@@ -416,9 +448,9 @@ function CompanyProfile() {
                     : ''
             )
             setIsEditingName(false)
-            setMessage({ type: 'success', text: 'Company profile saved.' })
+            setMessage({ type: 'success', text: t('companyProfile.messages.saved') })
         } catch (error) {
-            setMessage({ type: 'error', text: error.message || 'Failed to save company profile.' })
+            setMessage({ type: 'error', text: error.message || t('companyProfile.messages.saveFailed') })
         } finally {
             setIsSaving(false)
         }
@@ -429,7 +461,7 @@ function CompanyProfile() {
             <div className="company-profile-page">
                 <div className="company-profile-container company-profile-loading">
                     <Loader2 size={24} className="animate-spin" />
-                    <p>Loading company profile...</p>
+                    <p>{t('companyProfile.loading')}</p>
                 </div>
             </div>
         )
@@ -439,8 +471,8 @@ function CompanyProfile() {
         <div className="company-profile-page">
             <div className="company-profile-container">
                 <div className="company-profile-header">
-                    <h1>Company Profile</h1>
-                    <p>Tell candidates about your company and culture</p>
+                    <h1>{t('companyProfile.title')}</h1>
+                    <p>{t('companyProfile.subtitle')}</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="company-profile-form glass-card">
@@ -466,12 +498,12 @@ function CompanyProfile() {
                                         logoInputRef.current?.click()
                                     }
                                 }}
-                                aria-label="Choose company logo"
+                                aria-label={t('companyProfile.photo.chooseLogo')}
                             >
                                 {logoPreviewUrl ? (
                                     <img
                                         src={logoPreviewUrl}
-                                        alt={`${formData.name || 'Company'} logo`}
+                                        alt={`${formData.name || t('companyProfile.companyFallbackName')} logo`}
                                         className="company-profile-photo-image"
                                     />
                                 ) : (
@@ -489,7 +521,7 @@ function CompanyProfile() {
                             <label
                                 htmlFor={logoInputId}
                                 className="company-profile-photo-edit-btn"
-                                aria-label="Upload company logo"
+                                aria-label={t('companyProfile.photo.uploadLogo')}
                                 aria-disabled={isUploadingLogo ? 'true' : 'false'}
                                 onClick={(event) => {
                                     if (isUploadingLogo) {
@@ -501,15 +533,15 @@ function CompanyProfile() {
                             </label>
                         </div>
                         <div className="company-profile-photo-info">
-                            <h3>{formData.name || 'Company'}</h3>
-                            {isUploadingLogo && <p>Uploading logo...</p>}
+                            <h3>{formData.name || t('companyProfile.companyFallbackName')}</h3>
+                            {isUploadingLogo && <p>{t('companyProfile.photo.uploadingLogo')}</p>}
                         </div>
                     </div>
 
                     <div className="company-profile-section">
-                        <h3 className="company-profile-section-title">About Your Company</h3>
+                        <h3 className="company-profile-section-title">{t('companyProfile.sections.about')}</h3>
                         <div className="company-profile-input-group">
-                            <label className="company-profile-input-label">Company Name</label>
+                            <label className="company-profile-input-label">{t('companyProfile.fields.companyName')}</label>
                             <div className="company-profile-name-row">
                                 <input
                                     type="text"
@@ -525,16 +557,16 @@ function CompanyProfile() {
                                     onClick={() => setIsEditingName((prev) => !prev)}
                                 >
                                     <Edit3 size={16} />
-                                    {isEditingName ? 'Lock' : 'Edit'}
+                                    {isEditingName ? t('companyProfile.actions.lock') : t('companyProfile.actions.edit')}
                                 </button>
                             </div>
                         </div>
 
                         <div className="company-profile-input-group">
-                            <label className="company-profile-input-label">Description</label>
+                            <label className="company-profile-input-label">{t('companyProfile.fields.description')}</label>
                             <textarea
                                 className="company-profile-input company-profile-textarea"
-                                placeholder="Tell candidates what makes your company special..."
+                                placeholder={t('companyProfile.fields.descriptionPlaceholder')}
                                 value={formData.description}
                                 onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
                                 maxLength={1000}
@@ -545,23 +577,26 @@ function CompanyProfile() {
                         <div className="company-profile-input-row">
                             <div className="company-profile-input-group">
                                 <FormLocationSelector
-                                    label="Headquarters"
+                                    label={t('companyProfile.fields.headquarters')}
                                     governorateValue={formData.governorate}
                                     cityValue={formData.location}
                                     onGovernorateChange={(val) => setFormData((prev) => ({ ...prev, governorate: val }))}
                                     onCityChange={(val) => setFormData((prev) => ({ ...prev, location: val }))}
+                                    governoratePlaceholder={t('companyProfile.location.governoratePlaceholder')}
+                                    cityPlaceholder={t('companyProfile.location.cityPlaceholder')}
+                                    cityDisabledPlaceholder={t('companyProfile.location.citySelectGovernorateFirst')}
                                 />
                             </div>
 
                             <div className="company-profile-input-group">
                                 <label className="company-profile-input-label">
                                     <Globe size={16} />
-                                    Website
+                                    {t('companyProfile.fields.website')}
                                 </label>
                                 <input
                                     type="text"
                                     className="company-profile-input"
-                                    placeholder="No website on file. Add https://your-company.com"
+                                    placeholder={t('companyProfile.fields.websitePlaceholder')}
                                     value={formData.website}
                                     onChange={(e) => {
                                         setFormData((prev) => ({ ...prev, website: e.target.value }))
@@ -580,7 +615,7 @@ function CompanyProfile() {
                                             disabled={isUpdatingWebsite || isSaving || isUploadingLogo}
                                         >
                                             {isUpdatingWebsite ? <Loader2 size={16} className="animate-spin" /> : null}
-                                            {isUpdatingWebsite ? 'Updating...' : 'Update Website'}
+                                            {isUpdatingWebsite ? t('companyProfile.actions.updating') : t('companyProfile.actions.updateWebsite')}
                                         </button>
                                     </div>
                                 )}
@@ -589,12 +624,12 @@ function CompanyProfile() {
                     </div>
 
                     <div className="company-profile-section">
-                        <h3 className="company-profile-section-title">Company Culture</h3>
+                        <h3 className="company-profile-section-title">{t('companyProfile.sections.culture')}</h3>
                         <div className="company-profile-input-group">
-                            <label className="company-profile-input-label">What is it like to work here?</label>
+                            <label className="company-profile-input-label">{t('companyProfile.fields.culturePrompt')}</label>
                             <textarea
                                 className="company-profile-input company-profile-textarea"
-                                placeholder="Describe your work environment, team dynamics, and what makes your culture unique..."
+                                placeholder={t('companyProfile.fields.culturePlaceholder')}
                                 value={formData.culture}
                                 onChange={(e) => setFormData((prev) => ({ ...prev, culture: e.target.value }))}
                                 maxLength={500}
@@ -603,31 +638,31 @@ function CompanyProfile() {
                     </div>
 
                     <div className="company-profile-section">
-                        <h3 className="company-profile-section-title">Benefits & Perks</h3>
-                        <p className="company-profile-section-description">Select the benefits you offer to employees</p>
+                        <h3 className="company-profile-section-title">{t('companyProfile.sections.benefits')}</h3>
+                        <p className="company-profile-section-description">{t('companyProfile.benefitsDescription')}</p>
 
                         <div className="company-profile-chip-grid">
-                            {availableBenefits.map(benefit => (
+                            {availableBenefits.map((benefit) => (
                                 <button
-                                    key={benefit}
+                                    key={benefit.value}
                                     type="button"
-                                    className={`company-profile-chip ${formData.benefits.includes(benefit) ? 'selected' : ''}`}
-                                    onClick={() => handleToggleBenefit(benefit)}
+                                    className={`company-profile-chip ${formData.benefits.includes(benefit.value) ? 'selected' : ''}`}
+                                    onClick={() => handleToggleBenefit(benefit.value)}
                                 >
-                                    {formData.benefits.includes(benefit) ? '?' : '+'} {benefit}
+                                    {formData.benefits.includes(benefit.value) ? '?' : '+'} {benefit.label}
                                 </button>
                             ))}
                         </div>
                     </div>
 
                     <div className="company-profile-section">
-                        <h3 className="company-profile-section-title">Social Links</h3>
-                        <p className="company-profile-section-description">Select and add your company social platforms.</p>
+                        <h3 className="company-profile-section-title">{t('companyProfile.sections.social')}</h3>
+                        <p className="company-profile-section-description">{t('companyProfile.socialDescription')}</p>
                         <div className="company-profile-social-add-row">
                             <div className="company-profile-input-group">
                                 <label htmlFor="company-social-platform-select" className="company-profile-input-label">
                                     <LinkIcon size={16} />
-                                    Platform
+                                    {t('companyProfile.fields.platform')}
                                 </label>
                                 <select
                                     id="company-social-platform-select"
@@ -635,8 +670,8 @@ function CompanyProfile() {
                                     value={socialSelection}
                                     onChange={(e) => setSocialSelection(e.target.value)}
                                 >
-                                    <option value="">Select platform</option>
-                                    {SOCIAL_PLATFORM_OPTIONS
+                                    <option value="">{t('companyProfile.fields.selectPlatform')}</option>
+                                    {socialPlatformOptions
                                         .filter((platform) => !formData.socialLinks.some((socialLink) => socialLink.platform === platform.value))
                                         .map((platform) => (
                                             <option key={platform.value} value={platform.value}>
@@ -652,7 +687,7 @@ function CompanyProfile() {
                                 disabled={!socialSelection}
                             >
                                 <Plus size={16} />
-                                Add
+                                {t('companyProfile.actions.add')}
                             </button>
                         </div>
 
@@ -677,24 +712,25 @@ function CompanyProfile() {
                                             </div>
                                             <button
                                                 type="button"
-                                                className="btn btn-secondary"
+                                                className="btn btn-secondary company-profile-remove-btn"
                                                 onClick={() => removeSocialPlatform(socialLink.platform)}
                                             >
-                                                Remove
+                                                <Trash2 size={16} />
+                                                {t('companyProfile.actions.remove')}
                                             </button>
                                         </div>
                                     )
                                 })}
                             </div>
                         ) : (
-                            <p className="company-profile-social-empty">No social links added yet.</p>
+                            <p className="company-profile-social-empty">{t('companyProfile.fields.socialLinksEmpty')}</p>
                         )}
                     </div>
 
                     <div className="company-profile-actions">
                         <button type="submit" className="btn btn-primary btn-lg" disabled={isSaving || isUploadingLogo || isUpdatingWebsite}>
                             {isSaving ? <Loader2 size={20} className="animate-spin" /> : <Save size={20} />}
-                            {isSaving ? 'Saving...' : 'Save Profile'}
+                            {isSaving ? t('companyProfile.actions.saving') : t('companyProfile.actions.saveProfile')}
                         </button>
                     </div>
                 </form>

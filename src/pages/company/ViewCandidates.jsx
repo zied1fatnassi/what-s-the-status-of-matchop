@@ -1,10 +1,12 @@
 import { useState } from 'react'
-import { Heart, X, Eye, Filter, Grid, List, Loader, AlertCircle, RefreshCw } from 'lucide-react'
+import { Heart, X, Filter, Grid, List, Loader, AlertCircle, RefreshCw, Users } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { useCandidates } from '../../hooks/useCandidates'
 import MatchToast from '../../components/MatchToast'
 import './ViewCandidates.css'
 
 function ViewCandidates() {
+    const { t } = useTranslation()
     const { candidates, loading, error, filters, setFilters, swipeOnCandidate, refresh } = useCandidates()
     const [viewMode, setViewMode] = useState('grid')
     const [newMatch, setNewMatch] = useState(null)
@@ -56,7 +58,7 @@ function ViewCandidates() {
                 <div className="container">
                     <div className="candidates-loading">
                         <Loader className="animate-spin" size={48} />
-                        <p>Loading candidates...</p>
+                        <p>{t('candidates.loading')}</p>
                     </div>
                 </div>
             </div>
@@ -69,11 +71,11 @@ function ViewCandidates() {
                 <div className="container">
                     <div className="candidates-error glass-card">
                         <AlertCircle size={48} className="text-red-500" />
-                        <h3>Failed to load candidates</h3>
+                        <h3>{t('candidates.loadError')}</h3>
                         <p>{error}</p>
                         <button className="btn btn-primary" onClick={refresh}>
                             <RefreshCw size={18} />
-                            Try Again
+                            {t('common.retry')}
                         </button>
                     </div>
                 </div>
@@ -86,8 +88,8 @@ function ViewCandidates() {
             <div className="container">
                 <div className="candidates-header">
                     <div className="header-left">
-                        <h1>Candidates</h1>
-                        <p>{candidates.length} students interested in your offers</p>
+                        <h1>{t('candidates.title')}</h1>
+                        <p>{t('candidates.subtitle', { count: candidates.length })}</p>
                         {(filters.skills.length > 0 || filters.location) && (
                             <div className="active-filters">
                                 {filters.skills.map(skill => (
@@ -96,20 +98,24 @@ function ViewCandidates() {
                                         <button onClick={() => setFilters({
                                             ...filters,
                                             skills: filters.skills.filter(s => s !== skill)
-                                        })}>×</button>
+                                        })}>
+                                            <X size={12} />
+                                        </button>
                                     </span>
                                 ))}
                                 {filters.location && (
                                     <span className="filter-tag">
-                                        📍 {filters.location}
+                                        {t('candidates.locationLabel')}: {filters.location}
                                         <button onClick={() => setFilters({
                                             ...filters,
                                             location: ''
-                                        })}>×</button>
+                                        })}>
+                                            <X size={12} />
+                                        </button>
                                     </span>
                                 )}
                                 <button className="clear-filters-btn" onClick={clearFilters}>
-                                    Clear all
+                                    {t('candidates.clearAll')}
                                 </button>
                             </div>
                         )}
@@ -121,7 +127,7 @@ function ViewCandidates() {
                             onClick={() => setShowFilters(!showFilters)}
                         >
                             <Filter size={18} />
-                            Filter
+                            {t('candidates.filter')}
                         </button>
                         <div className="view-toggle">
                             <button
@@ -142,24 +148,24 @@ function ViewCandidates() {
 
                 {showFilters && (
                     <div className="filters-panel glass-card">
-                        <h3>Filter Candidates</h3>
+                        <h3>{t('candidates.filterCandidates')}</h3>
                         <div className="filter-inputs">
                             <div className="input-group">
-                                <label>Skills (comma-separated)</label>
+                                <label>{t('candidates.skillsLabel')}</label>
                                 <input
                                     type="text"
                                     className="input"
-                                    placeholder="React, Python, AI"
+                                    placeholder={t('candidates.skillsPlaceholder')}
                                     value={filterForm.skills}
                                     onChange={(e) => setFilterForm({ ...filterForm, skills: e.target.value })}
                                 />
                             </div>
                             <div className="input-group">
-                                <label>Location</label>
+                                <label>{t('candidates.locationLabel')}</label>
                                 <input
                                     type="text"
                                     className="input"
-                                    placeholder="Tunis"
+                                    placeholder={t('candidates.locationPlaceholder')}
                                     value={filterForm.location}
                                     onChange={(e) => setFilterForm({ ...filterForm, location: e.target.value })}
                                 />
@@ -167,10 +173,10 @@ function ViewCandidates() {
                         </div>
                         <div className="filter-actions">
                             <button className="btn btn-secondary" onClick={() => setShowFilters(false)}>
-                                Cancel
+                                {t('common.cancel')}
                             </button>
                             <button className="btn btn-primary" onClick={applyFilters}>
-                                Apply Filters
+                                {t('candidates.applyFilters')}
                             </button>
                         </div>
                     </div>
@@ -189,13 +195,13 @@ function ViewCandidates() {
                                             </span>
                                         )}
                                     </div>
-                                    <span className="interested-tag">Interested</span>
+                                    <span className="interested-tag">{t('candidates.interested')}</span>
                                 </div>
 
                                 <div className="candidate-info">
                                     <h3>{candidate.name}</h3>
-                                    <p className="candidate-title">Applied for: {candidate.offerTitle}</p>
-                                    <p className="candidate-location">📍 {candidate.location}</p>
+                                    <p className="candidate-title">{t('candidates.appliedFor')}: {candidate.offerTitle}</p>
+                                    <p className="candidate-location">{t('candidates.locationLabel')}: {candidate.location}</p>
                                 </div>
 
                                 <div className="candidate-skills">
@@ -211,14 +217,14 @@ function ViewCandidates() {
                                     <button
                                         className="action-btn pass"
                                         onClick={() => handlePass(candidate)}
-                                        title="Pass"
+                                        title={t('candidates.pass')}
                                     >
                                         <X size={20} />
                                     </button>
                                     <button
                                         className="action-btn like"
                                         onClick={() => handleLike(candidate)}
-                                        title="Accept - Create Match"
+                                        title={t('candidates.acceptCreateMatch')}
                                     >
                                         <Heart size={20} />
                                     </button>
@@ -228,12 +234,14 @@ function ViewCandidates() {
                     </div>
                 ) : (
                     <div className="no-candidates glass-card">
-                        <div className="empty-icon">👥</div>
-                        <h2>No candidates yet</h2>
-                        <p>Students who swipe right on your offers will appear here.</p>
+                        <div className="empty-icon" aria-hidden="true">
+                            <Users size={64} />
+                        </div>
+                        <h2>{t('candidates.noCandidates')}</h2>
+                        <p>{t('candidates.noCandidatesDesc')}</p>
                         {(filters.skills.length > 0 || filters.location) && (
                             <button className="btn btn-secondary" onClick={clearFilters}>
-                                Clear Filters
+                                {t('candidates.clearFilters')}
                             </button>
                         )}
                     </div>

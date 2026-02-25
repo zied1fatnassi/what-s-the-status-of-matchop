@@ -1,19 +1,35 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { Briefcase, MapPin, DollarSign, Clock, FileText, Plus, X, Send, Loader, Sparkles } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../context/AuthContext'
 import { FormLocationSelector } from '../../components/forms/FormComponents'
-import ApplicationToast from '../../components/ApplicationToast'
 import './PostOffer.css'
 
 function PostOffer() {
     const navigate = useNavigate()
     const { user } = useAuth()
+    const { t } = useTranslation()
     const [loading, setLoading] = useState(false)
     const [showSuccess, setShowSuccess] = useState(false)
     const [aiLoading, setAiLoading] = useState(false)
     const [aiError, setAiError] = useState(null)
+
+    const [offer, setOffer] = useState({
+        title: '',
+        department: '',
+        type: 'Internship',
+        location: '',
+        governorate: '',
+        locationType: 'onsite',
+        salary: '',
+        duration: '',
+        description: '',
+        requirements: '',
+        skills: [],
+    })
+    const [newSkill, setNewSkill] = useState('')
 
     const generateDescriptionLocally = () => {
         const title = offer.title?.trim() || 'this role'
@@ -44,10 +60,9 @@ We are looking for a motivated candidate to join us as **${title}**${department 
 - Availability for a ${type.toLowerCase()} based in ${location}.`
     }
 
-    // Generate job description using AI
     const generateDescription = async () => {
         if (!offer.title.trim()) {
-            setAiError('Please enter a job title first')
+            setAiError(t('postJob.errors.enterTitleFirst'))
             return
         }
 
@@ -69,30 +84,16 @@ We are looking for a motivated candidate to join us as **${title}**${department 
             if (data?.success && data?.description) {
                 setOffer(prev => ({ ...prev, description: data.description }))
             } else {
-                throw new Error(data?.error || 'Failed to generate description')
+                throw new Error(data?.error || t('postJob.errors.failedGenerateDescription'))
             }
         } catch (error) {
             console.warn('AI generation unavailable, using local template:', error)
             setOffer(prev => ({ ...prev, description: generateDescriptionLocally() }))
-            setAiError('AI service is unavailable. A smart template was inserted; edit it as needed.')
+            setAiError(t('postJob.errors.aiUnavailableFallback'))
         } finally {
             setAiLoading(false)
         }
     }
-
-    const [offer, setOffer] = useState({
-        title: '',
-        department: '',
-        type: 'Internship',
-        location: '',
-        locationType: 'onsite',
-        salary: '',
-        duration: '',
-        description: '',
-        requirements: '',
-        skills: [],
-    })
-    const [newSkill, setNewSkill] = useState('')
 
     const handleAddSkill = () => {
         if (newSkill.trim() && !offer.skills.includes(newSkill.trim())) {
@@ -123,7 +124,6 @@ We are looking for a motivated candidate to join us as **${title}**${department 
 
             if (error) throw error
 
-            // Generate embedding for semantic matching
             if (data?.id) {
                 const textForEmbedding = [
                     offer.title,
@@ -142,7 +142,7 @@ We are looking for a motivated candidate to join us as **${title}**${department 
             }, 2000)
         } catch (error) {
             console.error('Error posting offer:', error)
-            alert('Failed to post offer: ' + error.message)
+            alert(t('postJob.errors.failedPost', { message: error.message }))
         } finally {
             setLoading(false)
         }
@@ -152,26 +152,25 @@ We are looking for a motivated candidate to join us as **${title}**${department 
         <div className="post-offer-page">
             <div className="container">
                 <div className="page-header">
-                    <h1>Post a New Opportunity</h1>
-                    <p>Create an engaging job listing to attract top talent</p>
+                    <h1>{t('postJob.title')}</h1>
+                    <p>{t('postJob.subtitle')}</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="offer-form">
                     <div className="form-grid">
-                        {/* Left Column - Main Info */}
                         <div className="form-column">
                             <div className="form-card glass-card">
                                 <h3 className="card-title">
                                     <Briefcase size={20} />
-                                    Basic Information
+                                    {t('postJob.basicInfo')}
                                 </h3>
 
                                 <div className="input-group">
-                                    <label className="input-label">Titre du poste / Job Title *</label>
+                                    <label className="input-label">{t('postJob.jobTitle')} *</label>
                                     <input
                                         type="text"
                                         className="input"
-                                        placeholder="Stage de fin d'études - Développeur Full Stack"
+                                        placeholder={t('postJob.titlePlaceholder')}
                                         value={offer.title}
                                         onChange={(e) => setOffer({ ...offer, title: e.target.value })}
                                         required
@@ -180,27 +179,27 @@ We are looking for a motivated candidate to join us as **${title}**${department 
 
                                 <div className="input-row">
                                     <div className="input-group">
-                                        <label className="input-label">Département / Department</label>
+                                        <label className="input-label">{t('postJob.department')}</label>
                                         <input
                                             type="text"
                                             className="input"
-                                            placeholder="Technologies de l'Information, Marketing..."
+                                            placeholder={t('postJob.departmentPlaceholder')}
                                             value={offer.department}
                                             onChange={(e) => setOffer({ ...offer, department: e.target.value })}
                                         />
                                     </div>
 
                                     <div className="input-group">
-                                        <label className="input-label">Type</label>
+                                        <label className="input-label">{t('postJob.type')}</label>
                                         <select
                                             className="input"
                                             value={offer.type}
                                             onChange={(e) => setOffer({ ...offer, type: e.target.value })}
                                         >
-                                            <option value="Internship">Internship</option>
-                                            <option value="Full-time">Full-time</option>
-                                            <option value="Part-time">Part-time</option>
-                                            <option value="Contract">Contract</option>
+                                            <option value="Internship">{t('postJob.jobTypes.internship')}</option>
+                                            <option value="Full-time">{t('postJob.jobTypes.fullTime')}</option>
+                                            <option value="Part-time">{t('postJob.jobTypes.partTime')}</option>
+                                            <option value="Contract">{t('postJob.jobTypes.contract')}</option>
                                         </select>
                                     </div>
                                 </div>
@@ -209,24 +208,24 @@ We are looking for a motivated candidate to join us as **${title}**${department 
                                     <div className="label-row">
                                         <label className="input-label">
                                             <FileText size={16} />
-                                            Description du poste / Job Description *
+                                            {t('postJob.jobDescription')} *
                                         </label>
                                         <button
                                             type="button"
                                             className="magic-rewrite-btn"
                                             onClick={generateDescription}
                                             disabled={aiLoading || !offer.title.trim()}
-                                            title="Generate AI description based on job title"
+                                            title={t('postJob.magicRewriteTooltip')}
                                         >
                                             {aiLoading ? (
                                                 <>
                                                     <Loader className="animate-spin" size={16} />
-                                                    Generating...
+                                                    {t('postJob.generating')}
                                                 </>
                                             ) : (
                                                 <>
                                                     <Sparkles size={16} />
-                                                    ✨ Magic Rewrite
+                                                    {t('postJob.magicRewrite')}
                                                 </>
                                             )}
                                         </button>
@@ -236,7 +235,7 @@ We are looking for a motivated candidate to join us as **${title}**${department 
                                     )}
                                     <textarea
                                         className="input textarea"
-                                        placeholder="Décrivez le rôle, les responsabilités et ce que le candidat apprendra... Or click 'Magic Rewrite' to generate with AI!"
+                                        placeholder={t('postJob.descriptionPlaceholder')}
                                         value={offer.description}
                                         onChange={(e) => setOffer({ ...offer, description: e.target.value })}
                                         required
@@ -244,10 +243,10 @@ We are looking for a motivated candidate to join us as **${title}**${department 
                                 </div>
 
                                 <div className="input-group">
-                                    <label className="input-label">Prérequis / Requirements</label>
+                                    <label className="input-label">{t('postJob.requirements')}</label>
                                     <textarea
                                         className="input textarea"
-                                        placeholder="Listez les qualifications et l'expérience requises..."
+                                        placeholder={t('postJob.requirementsPlaceholder')}
                                         value={offer.requirements}
                                         onChange={(e) => setOffer({ ...offer, requirements: e.target.value })}
                                     />
@@ -255,12 +254,11 @@ We are looking for a motivated candidate to join us as **${title}**${department 
                             </div>
                         </div>
 
-                        {/* Right Column - Details */}
                         <div className="form-column">
                             <div className="form-card glass-card">
                                 <h3 className="card-title">
                                     <MapPin size={20} />
-                                    Location & Compensation
+                                    {t('postJob.locationCompensation')}
                                 </h3>
 
                                 <div className="location-options">
@@ -271,7 +269,7 @@ We are looking for a motivated candidate to join us as **${title}**${department 
                                             className={`location-option ${offer.locationType === type ? 'active' : ''}`}
                                             onClick={() => setOffer({ ...offer, locationType: type })}
                                         >
-                                            {type.charAt(0).toUpperCase() + type.slice(1)}
+                                            {t(`postJob.${type}`)}
                                         </button>
                                     ))}
                                 </div>
@@ -279,11 +277,14 @@ We are looking for a motivated candidate to join us as **${title}**${department 
                                 {offer.locationType !== 'remote' && (
                                     <div className="input-group">
                                         <FormLocationSelector
-                                            label="Ville / Location"
+                                            label={t('postJob.locationLabel')}
                                             governorateValue={offer.governorate}
                                             cityValue={offer.location}
                                             onGovernorateChange={(val) => setOffer(prev => ({ ...prev, governorate: val }))}
                                             onCityChange={(val) => setOffer(prev => ({ ...prev, location: val }))}
+                                            governoratePlaceholder={t('postJob.governoratePlaceholder')}
+                                            cityPlaceholder={t('postJob.cityPlaceholder')}
+                                            cityDisabledPlaceholder={t('postJob.citySelectGovernorateFirst')}
                                             required
                                         />
                                     </div>
@@ -293,12 +294,12 @@ We are looking for a motivated candidate to join us as **${title}**${department 
                                     <div className="input-group">
                                         <label className="input-label">
                                             <DollarSign size={16} />
-                                            Salaire / Compensation
+                                            {t('postJob.compensation')}
                                         </label>
                                         <input
                                             type="text"
                                             className="input"
-                                            placeholder="1500 TND / mois"
+                                            placeholder={t('postJob.compensationPlaceholder')}
                                             value={offer.salary}
                                             onChange={(e) => setOffer({ ...offer, salary: e.target.value })}
                                         />
@@ -307,12 +308,12 @@ We are looking for a motivated candidate to join us as **${title}**${department 
                                     <div className="input-group">
                                         <label className="input-label">
                                             <Clock size={16} />
-                                            Durée / Duration
+                                            {t('postJob.duration')}
                                         </label>
                                         <input
                                             type="text"
                                             className="input"
-                                            placeholder="3 mois, 6 mois, Indéterminé"
+                                            placeholder={t('postJob.durationPlaceholder')}
                                             value={offer.duration}
                                             onChange={(e) => setOffer({ ...offer, duration: e.target.value })}
                                         />
@@ -321,13 +322,13 @@ We are looking for a motivated candidate to join us as **${title}**${department 
                             </div>
 
                             <div className="form-card glass-card">
-                                <h3 className="card-title">Required Skills</h3>
+                                <h3 className="card-title">{t('postJob.requiredSkills')}</h3>
 
                                 <div className="skills-input-container">
                                     <input
                                         type="text"
                                         className="input"
-                                        placeholder="Add a skill..."
+                                        placeholder={t('postJob.addSkill')}
                                         value={newSkill}
                                         onChange={(e) => setNewSkill(e.target.value)}
                                         onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddSkill())}
@@ -351,7 +352,7 @@ We are looking for a motivated candidate to join us as **${title}**${department 
                                         </span>
                                     ))}
                                     {offer.skills.length === 0 && (
-                                        <span className="no-skills-text">No skills added yet</span>
+                                        <span className="no-skills-text">{t('postJob.noSkillsAdded')}</span>
                                     )}
                                 </div>
                             </div>
@@ -364,12 +365,12 @@ We are looking for a motivated candidate to join us as **${title}**${department 
                                 {loading ? (
                                     <>
                                         <Loader className="animate-spin" size={20} />
-                                        Publishing...
+                                        {t('postJob.publishing')}
                                     </>
                                 ) : (
                                     <>
                                         <Send size={20} />
-                                        Publish Opportunity
+                                        {t('postJob.publish')}
                                     </>
                                 )}
                             </button>
@@ -383,8 +384,8 @@ We are looking for a motivated candidate to join us as **${title}**${department 
                             <Send size={20} />
                         </div>
                         <div>
-                            <h4 className="font-bold">Success!</h4>
-                            <p className="text-sm opacity-90">Your opportunity has been published.</p>
+                            <h4 className="font-bold">{t('postJob.successTitle')}</h4>
+                            <p className="text-sm opacity-90">{t('postJob.successMessage')}</p>
                         </div>
                     </div>
                 )}
