@@ -74,6 +74,7 @@ vi.mock('../lib/supabase', () => ({
 
 vi.mock('../lib/swipeStackApi', () => ({
     fetchSwipeStack: vi.fn(),
+    isNoProfileError: vi.fn(() => false),
     isPaywallError: vi.fn(() => false)
 }))
 
@@ -202,4 +203,3 @@ describe('useJobOffers integration', () => {
         expect(recordSwipeActionMock).toHaveBeenCalledTimes(1)
     })
 })
-

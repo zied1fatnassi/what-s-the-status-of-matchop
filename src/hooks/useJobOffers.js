@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
-import { fetchSwipeStack, isPaywallError } from '../lib/swipeStackApi'
+import { fetchSwipeStack, isNoProfileError, isPaywallError } from '../lib/swipeStackApi'
 import { recordSwipeAction, isSwipeLimitReachedError } from '../lib/swipeActionApi'
 import {
     DEFAULT_STANDARD_DAILY_SWIPE_LIMIT,
@@ -400,6 +400,15 @@ export function useJobOffers() {
             }
             await getDailyUsage({ forceRefresh })
         } catch (err) {
+            if (isNoProfileError(err)) {
+                if (isMounted.current) {
+                    setError('Your account profile is still being prepared. Please refresh in a moment.')
+                    setNotice('If this keeps happening, sign out and sign back in.')
+                    setLoading(false)
+                }
+                return
+            }
+
             if (isPaywallError(err)) {
                 if (isMounted.current) {
                     setPaywall({

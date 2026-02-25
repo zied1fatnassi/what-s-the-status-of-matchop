@@ -1,11 +1,6 @@
-<<<<<<< HEAD
-import { useState } from 'react'
-import { Heart, X, Filter, Grid, List, Loader, AlertCircle, RefreshCw, Users } from 'lucide-react'
-import { useTranslation } from 'react-i18next'
-=======
 import { useMemo, useState } from 'react'
-import { Heart, X, Filter, Grid, List, Loader, AlertCircle, RefreshCw, Sparkles } from 'lucide-react'
->>>>>>> 733b7574e39c1223b797609846a289dc896d6eb2
+import { Heart, X, Filter, Grid, List, Loader, AlertCircle, RefreshCw, Sparkles, Users } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { useCandidates } from '../../hooks/useCandidates'
 import MatchToast from '../../components/MatchToast'
 import './ViewCandidates.css'
@@ -114,13 +109,8 @@ function ViewCandidates() {
             <div className="container">
                 <div className="candidates-header">
                     <div className="header-left">
-<<<<<<< HEAD
                         <h1>{t('candidates.title')}</h1>
                         <p>{t('candidates.subtitle', { count: candidates.length })}</p>
-=======
-                        <h1>Candidates</h1>
-                        <p>{visibleCandidates.length} students interested in your offers</p>
->>>>>>> 733b7574e39c1223b797609846a289dc896d6eb2
                         {(filters.skills.length > 0 || filters.location) && (
                             <div className="active-filters">
                                 {filters.skills.map(skill => (
@@ -235,16 +225,12 @@ function ViewCandidates() {
                                             </span>
                                         )}
                                     </div>
-<<<<<<< HEAD
-                                    <span className="interested-tag">{t('candidates.interested')}</span>
-=======
                                     <div className="candidate-tags">
-                                        <span className="interested-tag">Interested</span>
+                                        <span className="interested-tag">{t('candidates.interested')}</span>
                                         {candidate.is_premium_active && (
                                             <span className="premium-tag">Premium</span>
                                         )}
                                     </div>
->>>>>>> 733b7574e39c1223b797609846a289dc896d6eb2
                                 </div>
 
                                 <div className="candidate-info">

@@ -37,6 +37,10 @@ export function isPaywallError(error) {
     return error?.code === 'PAYWALL'
 }
 
+export function isNoProfileError(error) {
+    return error?.code === 'NO_PROFILE'
+}
+
 export async function fetchSwipeStack({ mode, limit = 20, cursor = null }) {
     const { data, error } = await supabase.functions.invoke(SWIPE_STACK_FN, {
         body: { mode, limit, cursor }

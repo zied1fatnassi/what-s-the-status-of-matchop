@@ -524,7 +524,7 @@ serve(async (req) => {
       .in('id', candidateProfileIds)
 
     if (profilesRes.error || !profilesRes.data || profilesRes.data.length === 0) {
-      return jsonResponse({ code: 'PROFILE_NOT_FOUND', message: 'No profile found for authenticated user' }, 404)
+      return jsonResponse({ code: 'NO_PROFILE', message: 'No profile found for authenticated user' }, 409)
     }
 
     const profiles = profilesRes.data as Array<{

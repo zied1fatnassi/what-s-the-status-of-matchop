@@ -64,24 +64,16 @@ function CompanyMatches() {
                 {matches.length > 0 ? (
                     <div className="matches-list">
                         {matches.map(match => {
-<<<<<<< HEAD
-                            // Extract student info from the joined data
-                            const studentProfile = match.student_profiles
-                            const profile = studentProfile?.profiles
-                            const studentName = profile?.name || t('matches.unknownCandidate')
-                            const studentBio = studentProfile?.bio || t('matches.studentFallback')
-                            const studentSkills = studentProfile?.skills || []
-                            const avatarUrl = profile?.avatar_url
-=======
                             // Extract student info from joined data (supports legacy + new payload shapes)
                             const student = match.students || match.student_profiles
                             const studentProfile = match.student_profile || match.profiles || match.student_profiles?.profiles
-                            const studentName = student?.display_name || studentProfile?.name || 'Unknown Candidate'
-                            const studentBio = studentProfile?.bio || student?.bio || 'Student'
-                            const studentSkills = Array.isArray(student?.skills) ? student.skills : []
+                            const studentName = student?.display_name || studentProfile?.name || t('matches.unknownCandidate')
+                            const studentBio = studentProfile?.bio || student?.bio || t('matches.studentFallback')
+                            const studentSkills = Array.isArray(student?.skills)
+                                ? student.skills
+                                : (Array.isArray(match.student_profiles?.skills) ? match.student_profiles.skills : [])
                             const avatarUrl = studentProfile?.avatar_url
                             const isPremiumActive = Boolean(match?.candidate?.is_premium_active)
->>>>>>> 733b7574e39c1223b797609846a289dc896d6eb2
                             const matchedAt = match.matched_at
                                 ? new Date(match.matched_at).toLocaleDateString(i18n.language)
                                 : t('matches.recently')
