@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { ArrowLeft } from 'lucide-react'
 import './Legal.css'
 
@@ -7,107 +8,105 @@ import './Legal.css'
  * Displays the application's terms and conditions
  */
 function TermsOfService() {
+    const { t } = useTranslation()
+
     return (
         <div className="legal-page">
             <div className="legal-container">
                 <Link to="/" className="legal-back-link">
                     <ArrowLeft size={18} />
-                    Back to Home
+                    {t('termsPage.backToHome')}
                 </Link>
 
                 <header className="legal-header">
-                    <h1>Terms of Service</h1>
-                    <p className="last-updated">Last updated: December 20, 2024</p>
+                    <h1>{t('termsPage.title')}</h1>
+                    <p className="last-updated">{t('termsPage.lastUpdated')}</p>
                 </header>
 
                 <div className="legal-content">
-                    <h2>1. Acceptance of Terms</h2>
+                    <h2>{t('termsPage.sections.acceptance.title')}</h2>
                     <p>
-                        By accessing and using MatchOp ("the Platform"), you agree to be bound by these
-                        Terms of Service. If you do not agree to these terms, please do not use our services.
+                        {t('termsPage.sections.acceptance.body')}
                     </p>
 
-                    <h2>2. Description of Service</h2>
+                    <h2>{t('termsPage.sections.service.title')}</h2>
                     <p>
-                        MatchOp is a job matching platform that connects students and recent graduates
-                        with companies seeking talent. Our service includes:
+                        {t('termsPage.sections.service.body')}
                     </p>
                     <ul>
-                        <li>Profile creation and management</li>
-                        <li>Job opportunity discovery through swiping</li>
-                        <li>Matching between students and companies</li>
-                        <li>Direct messaging between matched parties</li>
+                        <li>{t('termsPage.sections.service.items.profile')}</li>
+                        <li>{t('termsPage.sections.service.items.discovery')}</li>
+                        <li>{t('termsPage.sections.service.items.matching')}</li>
+                        <li>{t('termsPage.sections.service.items.messaging')}</li>
                     </ul>
 
-                    <h2>3. User Accounts</h2>
-                    <h3>3.1 Registration</h3>
+                    <h2>{t('termsPage.sections.accounts.title')}</h2>
+                    <h3>{t('termsPage.sections.accounts.registrationTitle')}</h3>
                     <p>
-                        To use our Platform, you must create an account with accurate and complete
-                        information. You are responsible for maintaining the confidentiality of your
-                        account credentials.
+                        {t('termsPage.sections.accounts.registrationBody')}
                     </p>
 
-                    <h3>3.2 Account Types</h3>
+                    <h3>{t('termsPage.sections.accounts.typesTitle')}</h3>
                     <p>
-                        MatchOp offers two types of accounts:
+                        {t('termsPage.sections.accounts.typesBody')}
                     </p>
                     <ul>
-                        <li><strong>Student Accounts:</strong> For individuals seeking job opportunities</li>
-                        <li><strong>Company Accounts:</strong> For organizations looking to hire talent</li>
+                        <li>
+                            <strong>{t('termsPage.sections.accounts.items.studentLabel')}</strong>{' '}
+                            {t('termsPage.sections.accounts.items.studentBody')}
+                        </li>
+                        <li>
+                            <strong>{t('termsPage.sections.accounts.items.companyLabel')}</strong>{' '}
+                            {t('termsPage.sections.accounts.items.companyBody')}
+                        </li>
                     </ul>
 
-                    <h2>4. User Conduct</h2>
-                    <p>Users agree not to:</p>
+                    <h2>{t('termsPage.sections.conduct.title')}</h2>
+                    <p>{t('termsPage.sections.conduct.body')}</p>
                     <ul>
-                        <li>Provide false or misleading information</li>
-                        <li>Harass, abuse, or harm other users</li>
-                        <li>Use the Platform for any unlawful purpose</li>
-                        <li>Attempt to gain unauthorized access to our systems</li>
-                        <li>Spam or send unsolicited messages</li>
+                        <li>{t('termsPage.sections.conduct.items.falseInfo')}</li>
+                        <li>{t('termsPage.sections.conduct.items.harassment')}</li>
+                        <li>{t('termsPage.sections.conduct.items.unlawful')}</li>
+                        <li>{t('termsPage.sections.conduct.items.unauthorizedAccess')}</li>
+                        <li>{t('termsPage.sections.conduct.items.spam')}</li>
                     </ul>
 
-                    <h2>5. Content</h2>
+                    <h2>{t('termsPage.sections.content.title')}</h2>
                     <p>
-                        You retain ownership of content you submit to MatchOp. By posting content,
-                        you grant us a non-exclusive license to use, display, and distribute that
-                        content on our Platform.
+                        {t('termsPage.sections.content.body')}
                     </p>
 
-                    <h2>6. Privacy</h2>
+                    <h2>{t('termsPage.sections.privacy.title')}</h2>
                     <p>
-                        Your privacy is important to us. Please review our{' '}
-                        <Link to="/legal/privacy">Privacy Policy</Link> to understand how we collect,
-                        use, and protect your information.
+                        {t('termsPage.sections.privacy.prefix')}{' '}
+                        <Link to="/legal/privacy">{t('termsPage.sections.privacy.link')}</Link>{' '}
+                        {t('termsPage.sections.privacy.suffix')}
                     </p>
 
-                    <h2>7. Termination</h2>
+                    <h2>{t('termsPage.sections.termination.title')}</h2>
                     <p>
-                        We reserve the right to suspend or terminate accounts that violate these
-                        Terms of Service or for any other reason at our discretion.
+                        {t('termsPage.sections.termination.body')}
                     </p>
 
-                    <h2>8. Disclaimers</h2>
+                    <h2>{t('termsPage.sections.disclaimers.title')}</h2>
                     <p>
-                        MatchOp is provided "as is" without warranties of any kind. We do not guarantee
-                        that you will find employment or suitable candidates through our Platform.
+                        {t('termsPage.sections.disclaimers.body')}
                     </p>
 
-                    <h2>9. Limitation of Liability</h2>
+                    <h2>{t('termsPage.sections.liability.title')}</h2>
                     <p>
-                        To the maximum extent permitted by law, MatchOp shall not be liable for any
-                        indirect, incidental, or consequential damages arising from your use of the Platform.
+                        {t('termsPage.sections.liability.body')}
                     </p>
 
-                    <h2>10. Changes to Terms</h2>
+                    <h2>{t('termsPage.sections.changes.title')}</h2>
                     <p>
-                        We may update these Terms of Service from time to time. We will notify users
-                        of significant changes via email or through the Platform.
+                        {t('termsPage.sections.changes.body')}
                     </p>
 
                     <div className="legal-contact">
-                        <h2>Contact Us</h2>
+                        <h2>{t('termsPage.sections.contact.title')}</h2>
                         <p>
-                            If you have questions about these Terms of Service, please contact us at:{' '}
+                            {t('termsPage.sections.contact.prefix')}{' '}
                             <a href="mailto:legal@matchop.com">legal@matchop.com</a>
                         </p>
                     </div>

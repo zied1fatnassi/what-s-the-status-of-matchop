@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { ArrowLeft } from 'lucide-react'
 import './Legal.css'
 
@@ -7,117 +8,117 @@ import './Legal.css'
  * Displays the application's privacy policy and data handling practices
  */
 function PrivacyPolicy() {
+    const { t } = useTranslation()
+
     return (
         <div className="legal-page">
             <div className="legal-container">
                 <Link to="/" className="legal-back-link">
                     <ArrowLeft size={18} />
-                    Back to Home
+                    {t('privacyPage.backToHome')}
                 </Link>
 
                 <header className="legal-header">
-                    <h1>Privacy Policy</h1>
-                    <p className="last-updated">Last updated: December 20, 2024</p>
+                    <h1>{t('privacyPage.title')}</h1>
+                    <p className="last-updated">{t('privacyPage.lastUpdated')}</p>
                 </header>
 
                 <div className="legal-content">
-                    <h2>1. Introduction</h2>
+                    <h2>{t('privacyPage.sections.introduction.title')}</h2>
                     <p>
-                        At MatchOp, we take your privacy seriously. This Privacy Policy explains how
-                        we collect, use, disclose, and safeguard your information when you use our
-                        job matching platform.
+                        {t('privacyPage.sections.introduction.body')}
                     </p>
 
-                    <h2>2. Information We Collect</h2>
-                    <h3>2.1 Personal Information</h3>
-                    <p>We collect information you provide directly, including:</p>
+                    <h2>{t('privacyPage.sections.collection.title')}</h2>
+                    <h3>{t('privacyPage.sections.collection.personalTitle')}</h3>
+                    <p>{t('privacyPage.sections.collection.personalBody')}</p>
                     <ul>
-                        <li>Name and email address</li>
-                        <li>Educational background (for students)</li>
-                        <li>Company information (for employers)</li>
-                        <li>Profile details, skills, and experience</li>
-                        <li>Messages exchanged through our Platform</li>
+                        <li>{t('privacyPage.sections.collection.personalItems.nameEmail')}</li>
+                        <li>{t('privacyPage.sections.collection.personalItems.education')}</li>
+                        <li>{t('privacyPage.sections.collection.personalItems.companyInfo')}</li>
+                        <li>{t('privacyPage.sections.collection.personalItems.profileDetails')}</li>
+                        <li>{t('privacyPage.sections.collection.personalItems.messages')}</li>
                     </ul>
 
-                    <h3>2.2 Usage Information</h3>
-                    <p>We automatically collect certain information when you use our Platform:</p>
+                    <h3>{t('privacyPage.sections.collection.usageTitle')}</h3>
+                    <p>{t('privacyPage.sections.collection.usageBody')}</p>
                     <ul>
-                        <li>Device and browser information</li>
-                        <li>IP address and location data</li>
-                        <li>Pages visited and features used</li>
-                        <li>Swiping preferences and match history</li>
+                        <li>{t('privacyPage.sections.collection.usageItems.deviceBrowser')}</li>
+                        <li>{t('privacyPage.sections.collection.usageItems.ipLocation')}</li>
+                        <li>{t('privacyPage.sections.collection.usageItems.pagesFeatures')}</li>
+                        <li>{t('privacyPage.sections.collection.usageItems.swipeHistory')}</li>
                     </ul>
 
-                    <h2>3. How We Use Your Information</h2>
-                    <p>We use collected information to:</p>
+                    <h2>{t('privacyPage.sections.usage.title')}</h2>
+                    <p>{t('privacyPage.sections.usage.body')}</p>
                     <ul>
-                        <li>Provide and improve our matching services</li>
-                        <li>Create and manage your account</li>
-                        <li>Facilitate connections between students and companies</li>
-                        <li>Send notifications about matches and messages</li>
-                        <li>Analyze usage patterns to improve the Platform</li>
-                        <li>Ensure security and prevent fraud</li>
+                        <li>{t('privacyPage.sections.usage.items.provideImprove')}</li>
+                        <li>{t('privacyPage.sections.usage.items.accountManagement')}</li>
+                        <li>{t('privacyPage.sections.usage.items.facilitateConnections')}</li>
+                        <li>{t('privacyPage.sections.usage.items.notifications')}</li>
+                        <li>{t('privacyPage.sections.usage.items.analytics')}</li>
+                        <li>{t('privacyPage.sections.usage.items.security')}</li>
                     </ul>
 
-                    <h2>4. Information Sharing</h2>
-                    <p>We may share your information with:</p>
+                    <h2>{t('privacyPage.sections.sharing.title')}</h2>
+                    <p>{t('privacyPage.sections.sharing.body')}</p>
                     <ul>
-                        <li><strong>Other Users:</strong> Profile information is visible to potential matches</li>
-                        <li><strong>Service Providers:</strong> Third parties who help us operate the Platform</li>
-                        <li><strong>Legal Requirements:</strong> When required by law or to protect our rights</li>
+                        <li>
+                            <strong>{t('privacyPage.sections.sharing.items.otherUsersLabel')}</strong>{' '}
+                            {t('privacyPage.sections.sharing.items.otherUsersBody')}
+                        </li>
+                        <li>
+                            <strong>{t('privacyPage.sections.sharing.items.providersLabel')}</strong>{' '}
+                            {t('privacyPage.sections.sharing.items.providersBody')}
+                        </li>
+                        <li>
+                            <strong>{t('privacyPage.sections.sharing.items.legalLabel')}</strong>{' '}
+                            {t('privacyPage.sections.sharing.items.legalBody')}
+                        </li>
                     </ul>
                     <p>
-                        We do not sell your personal information to third parties.
+                        {t('privacyPage.sections.sharing.noSell')}
                     </p>
 
-                    <h2>5. Data Security</h2>
+                    <h2>{t('privacyPage.sections.security.title')}</h2>
                     <p>
-                        We implement appropriate security measures to protect your information, including
-                        encryption, secure servers, and regular security assessments. However, no method
-                        of transmission over the Internet is 100% secure.
+                        {t('privacyPage.sections.security.body')}
                     </p>
 
-                    <h2>6. Your Rights</h2>
-                    <p>You have the right to:</p>
+                    <h2>{t('privacyPage.sections.rights.title')}</h2>
+                    <p>{t('privacyPage.sections.rights.body')}</p>
                     <ul>
-                        <li>Access and download your personal data</li>
-                        <li>Correct inaccurate information</li>
-                        <li>Delete your account and associated data</li>
-                        <li>Opt out of marketing communications</li>
-                        <li>Request data portability</li>
+                        <li>{t('privacyPage.sections.rights.items.access')}</li>
+                        <li>{t('privacyPage.sections.rights.items.correct')}</li>
+                        <li>{t('privacyPage.sections.rights.items.delete')}</li>
+                        <li>{t('privacyPage.sections.rights.items.optOut')}</li>
+                        <li>{t('privacyPage.sections.rights.items.portability')}</li>
                     </ul>
 
-                    <h2>7. Cookies</h2>
+                    <h2>{t('privacyPage.sections.cookies.title')}</h2>
                     <p>
-                        We use cookies and similar technologies to enhance your experience, analyze
-                        usage, and personalize content. You can manage cookie preferences through
-                        your browser settings.
+                        {t('privacyPage.sections.cookies.body')}
                     </p>
 
-                    <h2>8. Children's Privacy</h2>
+                    <h2>{t('privacyPage.sections.children.title')}</h2>
                     <p>
-                        MatchOp is not intended for users under 16 years of age. We do not knowingly
-                        collect information from children under 16.
+                        {t('privacyPage.sections.children.body')}
                     </p>
 
-                    <h2>9. International Users</h2>
+                    <h2>{t('privacyPage.sections.international.title')}</h2>
                     <p>
-                        If you access MatchOp from outside our country of operation, your information
-                        may be transferred to and processed in different jurisdictions.
+                        {t('privacyPage.sections.international.body')}
                     </p>
 
-                    <h2>10. Changes to This Policy</h2>
+                    <h2>{t('privacyPage.sections.changes.title')}</h2>
                     <p>
-                        We may update this Privacy Policy periodically. We will notify you of any
-                        material changes by posting the new policy on our Platform and updating
-                        the "Last updated" date.
+                        {t('privacyPage.sections.changes.body')}
                     </p>
 
                     <div className="legal-contact">
-                        <h2>Contact Us</h2>
+                        <h2>{t('privacyPage.sections.contact.title')}</h2>
                         <p>
-                            If you have questions about this Privacy Policy or your data, please
-                            contact us at:{' '}
+                            {t('privacyPage.sections.contact.prefix')}{' '}
                             <a href="mailto:privacy@matchop.com">privacy@matchop.com</a>
                         </p>
                     </div>

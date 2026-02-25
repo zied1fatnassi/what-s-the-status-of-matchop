@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 function NotFound() {
+  const { t } = useTranslation()
   return (
     <section
       style={{
@@ -16,9 +18,9 @@ function NotFound() {
       }}
     >
       <h1 style={{ margin: 0, fontSize: '2rem' }}>404</h1>
-      <p style={{ margin: 0, opacity: 0.85 }}>Page not found.</p>
+      <p style={{ margin: 0, opacity: 0.85 }}>{t('notFound.message')}</p>
       <Link to="/" className="btn btn-primary">
-        Back to home
+        {t('notFound.backHome')}
       </Link>
     </section>
   )

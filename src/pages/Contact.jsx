@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Mail, Phone, MapPin, Send, CheckCircle } from 'lucide-react'
 
 const Contact = () => {
+    const { t } = useTranslation()
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [subject, setSubject] = useState('')
@@ -16,14 +18,14 @@ const Contact = () => {
 
         // Validate all fields are filled
         if (!name.trim() || !email.trim() || !subject.trim() || !message.trim()) {
-            setError('Please fill in all fields.')
+            setError(t('contactPage.errors.requiredFields'))
             return
         }
 
         // Validate email format
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
         if (!emailRegex.test(email)) {
-            setError('Please enter a valid email address.')
+            setError(t('contactPage.errors.invalidEmail'))
             return
         }
 
@@ -51,9 +53,9 @@ const Contact = () => {
 
                 {/* Info Side */}
                 <div>
-                    <h1 style={{ marginBottom: '1.5rem' }}>Get in Touch</h1>
+                    <h1 style={{ marginBottom: '1.5rem' }}>{t('contactPage.title')}</h1>
                     <p style={{ marginBottom: '3rem', fontSize: '1.1rem', color: 'var(--text-secondary)' }}>
-                        Have questions about MatchOp? We're here to help. Reach out to our team for support, partnerships, or generalized inquiries.
+                        {t('contactPage.subtitle')}
                     </p>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
@@ -62,8 +64,8 @@ const Contact = () => {
                                 <Mail size={24} />
                             </div>
                             <div>
-                                <h3 style={{ marginBottom: '0.25rem' }}>Email Us</h3>
-                                <p style={{ color: 'var(--text-secondary)' }}>support@matchop.tn</p>
+                                <h3 style={{ marginBottom: '0.25rem' }}>{t('contactPage.info.emailLabel')}</h3>
+                                <p style={{ color: 'var(--text-secondary)' }}>{t('contactPage.info.emailValue')}</p>
                             </div>
                         </div>
 
@@ -72,8 +74,8 @@ const Contact = () => {
                                 <Phone size={24} />
                             </div>
                             <div>
-                                <h3 style={{ marginBottom: '0.25rem' }}>Call Us</h3>
-                                <p style={{ color: 'var(--text-secondary)' }}>+216 71 123 456</p>
+                                <h3 style={{ marginBottom: '0.25rem' }}>{t('contactPage.info.phoneLabel')}</h3>
+                                <p style={{ color: 'var(--text-secondary)' }}>{t('contactPage.info.phoneValue')}</p>
                             </div>
                         </div>
 
@@ -82,8 +84,8 @@ const Contact = () => {
                                 <MapPin size={24} />
                             </div>
                             <div>
-                                <h3 style={{ marginBottom: '0.25rem' }}>Visit Us</h3>
-                                <p style={{ color: 'var(--text-secondary)' }}>5111 Avenue Mahdia, El Mourouj</p>
+                                <h3 style={{ marginBottom: '0.25rem' }}>{t('contactPage.info.addressLabel')}</h3>
+                                <p style={{ color: 'var(--text-secondary)' }}>{t('contactPage.info.addressValue')}</p>
                             </div>
                         </div>
                     </div>
@@ -94,12 +96,12 @@ const Contact = () => {
                     {isSent ? (
                         <div style={{ textAlign: 'center', padding: '2rem 0' }}>
                             <CheckCircle size={48} style={{ color: '#10b981', marginBottom: '1rem' }} />
-                            <h2 style={{ marginBottom: '0.5rem' }}>Thank You!</h2>
+                            <h2 style={{ marginBottom: '0.5rem' }}>{t('contactPage.success.title')}</h2>
                             <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem' }}>
-                                Your message has been sent successfully. We'll get back to you as soon as possible.
+                                {t('contactPage.success.message')}
                             </p>
                             <button className="btn btn-secondary" style={{ width: '100%' }} onClick={handleReset}>
-                                Send Another Message
+                                {t('contactPage.success.sendAnother')}
                             </button>
                         </div>
                     ) : (
@@ -110,23 +112,23 @@ const Contact = () => {
                                 </div>
                             )}
                             <div style={{ marginBottom: '1.5rem' }}>
-                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>Your Name</label>
-                                <input type="text" className="input" placeholder="e.g. Sarah Smith" value={name} onChange={(e) => setName(e.target.value)} />
+                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>{t('contactPage.form.nameLabel')}</label>
+                                <input type="text" className="input" placeholder={t('contactPage.form.namePlaceholder')} value={name} onChange={(e) => setName(e.target.value)} />
                             </div>
                             <div style={{ marginBottom: '1.5rem' }}>
-                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>Email Address</label>
-                                <input type="email" className="input" placeholder="sarah@example.com" value={email} onChange={(e) => setEmail(e.target.value)} />
+                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>{t('contactPage.form.emailLabel')}</label>
+                                <input type="email" className="input" placeholder={t('contactPage.form.emailPlaceholder')} value={email} onChange={(e) => setEmail(e.target.value)} />
                             </div>
                             <div style={{ marginBottom: '1.5rem' }}>
-                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>Subject</label>
-                                <input type="text" className="input" placeholder="What is this about?" value={subject} onChange={(e) => setSubject(e.target.value)} />
+                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>{t('contactPage.form.subjectLabel')}</label>
+                                <input type="text" className="input" placeholder={t('contactPage.form.subjectPlaceholder')} value={subject} onChange={(e) => setSubject(e.target.value)} />
                             </div>
                             <div style={{ marginBottom: '2rem' }}>
-                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>Message</label>
-                                <textarea className="input" rows="5" placeholder="How can we help you?" value={message} onChange={(e) => setMessage(e.target.value)}></textarea>
+                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>{t('contactPage.form.messageLabel')}</label>
+                                <textarea className="input" rows="5" placeholder={t('contactPage.form.messagePlaceholder')} value={message} onChange={(e) => setMessage(e.target.value)}></textarea>
                             </div>
                             <button className="btn btn-primary" style={{ width: '100%' }} type="submit" disabled={isSending}>
-                                {isSending ? 'Sending...' : 'Send Message'} {!isSending && <Send size={18} />}
+                                {isSending ? t('contactPage.form.sending') : t('contactPage.form.sendMessage')} {!isSending && <Send size={18} />}
                             </button>
                         </form>
                     )}

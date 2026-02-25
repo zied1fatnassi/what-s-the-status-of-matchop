@@ -273,6 +273,12 @@
     margin-bottom: 2px;
 }
 
+.candidate-location {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    margin-bottom: var(--space-3);
+}
+
 .candidate-university {
     color: var(--text-secondary);
     font-size: 0.85rem;
@@ -370,6 +376,9 @@
 }
 
 .empty-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     font-size: 64px;
     margin-bottom: var(--space-4);
     color: var(--text-muted);
