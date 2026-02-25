@@ -6,6 +6,29 @@ import { useAuth } from '../../context/AuthContext'
 import { useCompanyLogoUpload } from '../../hooks/useCompanyLogoUpload'
 import './CompanyProfile.css'
 
+const SOCIAL_PLATFORM_OPTIONS = [
+    {
+        value: 'instagram',
+        label: 'Instagram',
+        placeholder: 'https://instagram.com/your-company',
+    },
+    {
+        value: 'linkedin',
+        label: 'LinkedIn',
+        placeholder: 'https://linkedin.com/company/your-company',
+    },
+    {
+        value: 'facebook',
+        label: 'Facebook',
+        placeholder: 'https://facebook.com/your-company',
+    },
+    {
+        value: 'x',
+        label: 'X',
+        placeholder: 'https://x.com/your-company',
+    },
+]
+
 function CompanyProfile() {
     const { user, profile } = useAuth()
     const [formData, setFormData] = useState({
@@ -15,7 +38,7 @@ function CompanyProfile() {
         location: '',
         website: '',
         logoUrl: '',
-        linkedin: '',
+        socialLinks: [],
         culture: '',
         benefits: [],
     })
@@ -27,6 +50,7 @@ function CompanyProfile() {
     const [websiteError, setWebsiteError] = useState('')
     const [message, setMessage] = useState({ type: '', text: '' })
     const [logoPreviewUrl, setLogoPreviewUrl] = useState('')
+    const [socialSelection, setSocialSelection] = useState('')
     const logoInputRef = useRef(null)
     const tempLogoObjectUrlRef = useRef(null)
     const logoInputId = 'company-logo-upload-input'
@@ -53,6 +77,44 @@ function CompanyProfile() {
         } catch {
             return false
         }
+    }
+
+    const getSocialPlatformMeta = (platformValue) =>
+        SOCIAL_PLATFORM_OPTIONS.find((platform) => platform.value === platformValue)
+
+    const addSocialPlatform = () => {
+        if (!socialSelection) return
+        const exists = formData.socialLinks.some((socialLink) => socialLink.platform === socialSelection)
+        if (exists) return
+        setFormData((prev) => ({
+            ...prev,
+            socialLinks: [
+                ...prev.socialLinks,
+                {
+                    platform: socialSelection,
+                    url: '',
+                },
+            ],
+        }))
+        setSocialSelection('')
+    }
+
+    const removeSocialPlatform = (platformValue) => {
+        setFormData((prev) => ({
+            ...prev,
+            socialLinks: prev.socialLinks.filter((socialLink) => socialLink.platform !== platformValue),
+        }))
+    }
+
+    const updateSocialLink = (platformValue, urlValue) => {
+        setFormData((prev) => ({
+            ...prev,
+            socialLinks: prev.socialLinks.map((socialLink) =>
+                socialLink.platform === platformValue
+                    ? { ...socialLink, url: urlValue }
+                    : socialLink
+            ),
+        }))
     }
 
     const { uploadLogo, uploading: isUploadingLogo } = useCompanyLogoUpload({
@@ -293,6 +355,15 @@ function CompanyProfile() {
             return
         }
 
+        const invalidSocialLink = formData.socialLinks.find(
+            (socialLink) => socialLink.url && !isValidWebsiteUrl(socialLink.url)
+        )
+        if (invalidSocialLink) {
+            const invalidPlatform = getSocialPlatformMeta(invalidSocialLink.platform)?.label || 'social link'
+            setMessage({ type: 'error', text: `Enter a valid ${invalidPlatform} URL starting with http:// or https://` })
+            return
+        }
+
         try {
             setIsSaving(true)
             setMessage({ type: '', text: '' })
@@ -431,7 +502,7 @@ function CompanyProfile() {
                         </div>
                         <div className="company-profile-photo-info">
                             <h3>{formData.name || 'Company'}</h3>
-                            <p>{isUploadingLogo ? 'Uploading logo...' : 'Add your company logo'}</p>
+                            {isUploadingLogo && <p>Uploading logo...</p>}
                         </div>
                     </div>
 
@@ -551,19 +622,73 @@ function CompanyProfile() {
 
                     <div className="company-profile-section">
                         <h3 className="company-profile-section-title">Social Links</h3>
-                        <div className="company-profile-input-group">
-                            <label className="company-profile-input-label">
-                                <LinkIcon size={16} />
-                                LinkedIn
-                            </label>
-                            <input
-                                type="url"
-                                className="company-profile-input"
-                                placeholder="https://linkedin.com/company/sofrecom"
-                                value={formData.linkedin}
-                                onChange={(e) => setFormData((prev) => ({ ...prev, linkedin: e.target.value }))}
-                            />
+                        <p className="company-profile-section-description">Select and add your company social platforms.</p>
+                        <div className="company-profile-social-add-row">
+                            <div className="company-profile-input-group">
+                                <label htmlFor="company-social-platform-select" className="company-profile-input-label">
+                                    <LinkIcon size={16} />
+                                    Platform
+                                </label>
+                                <select
+                                    id="company-social-platform-select"
+                                    className="company-profile-input"
+                                    value={socialSelection}
+                                    onChange={(e) => setSocialSelection(e.target.value)}
+                                >
+                                    <option value="">Select platform</option>
+                                    {SOCIAL_PLATFORM_OPTIONS
+                                        .filter((platform) => !formData.socialLinks.some((socialLink) => socialLink.platform === platform.value))
+                                        .map((platform) => (
+                                            <option key={platform.value} value={platform.value}>
+                                                {platform.label}
+                                            </option>
+                                        ))}
+                                </select>
+                            </div>
+                            <button
+                                type="button"
+                                className="btn btn-secondary"
+                                onClick={addSocialPlatform}
+                                disabled={!socialSelection}
+                            >
+                                <Plus size={16} />
+                                Add
+                            </button>
                         </div>
+
+                        {formData.socialLinks.length > 0 ? (
+                            <div className="company-profile-social-links-list">
+                                {formData.socialLinks.map((socialLink) => {
+                                    const meta = getSocialPlatformMeta(socialLink.platform)
+                                    return (
+                                        <div key={socialLink.platform} className="company-profile-social-link-item">
+                                            <div className="company-profile-input-group">
+                                                <label className="company-profile-input-label">
+                                                    <LinkIcon size={16} />
+                                                    {meta?.label || socialLink.platform}
+                                                </label>
+                                                <input
+                                                    type="url"
+                                                    className="company-profile-input"
+                                                    placeholder={meta?.placeholder || 'https://'}
+                                                    value={socialLink.url}
+                                                    onChange={(e) => updateSocialLink(socialLink.platform, e.target.value)}
+                                                />
+                                            </div>
+                                            <button
+                                                type="button"
+                                                className="btn btn-secondary"
+                                                onClick={() => removeSocialPlatform(socialLink.platform)}
+                                            >
+                                                Remove
+                                            </button>
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                        ) : (
+                            <p className="company-profile-social-empty">No social links added yet.</p>
+                        )}
                     </div>
 
                     <div className="company-profile-actions">
