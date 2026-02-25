@@ -55,6 +55,7 @@
     gap: var(--space-2);
     width: 100%;
     justify-content: space-between;
+    flex-wrap: wrap;
 }
 
 @media (min-width: 768px) {
@@ -90,6 +91,16 @@
 .toggle-btn.active {
     background: var(--primary);
     color: white;
+}
+
+.premium-sort-toggle {
+    min-width: 172px;
+}
+
+.premium-sort-toggle.active {
+    background: rgba(37, 99, 235, 0.12);
+    border-color: rgba(37, 99, 235, 0.38);
+    color: var(--primary);
 }
 
 /* Candidates Grid - MOBILE FIRST: Single column */
@@ -164,6 +175,14 @@
     margin-bottom: var(--space-4);
 }
 
+.candidate-tags {
+    display: flex;
+    gap: var(--space-2);
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
 .candidate-avatar {
     position: relative;
     width: 64px;
@@ -198,6 +217,26 @@
     align-items: center;
     justify-content: center;
     color: white;
+}
+
+.interested-tag,
+.premium-tag {
+    padding: 0.2rem 0.6rem;
+    border-radius: var(--radius-full);
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.interested-tag {
+    background: rgba(13, 148, 136, 0.16);
+    color: var(--accent-teal);
+}
+
+.premium-tag {
+    background: rgba(245, 158, 11, 0.2);
+    color: #d97706;
 }
 
 .match-score {

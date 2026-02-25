@@ -1,0 +1,127 @@
+.premium-upsell-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2300;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-4);
+    padding-bottom: calc(var(--space-4) + var(--safe-bottom));
+    background:
+        radial-gradient(circle at 20% 20%, color-mix(in srgb, var(--primary) 18%, transparent), transparent 45%),
+        radial-gradient(circle at 80% 80%, color-mix(in srgb, var(--accent-teal) 15%, transparent), transparent 45%),
+        rgba(8, 10, 19, 0.55);
+    backdrop-filter: blur(14px) saturate(140%);
+}
+
+.premium-upsell-modal {
+    position: relative;
+    width: min(100%, 520px);
+    border-radius: var(--radius-xl);
+    border: 1px solid color-mix(in srgb, var(--glass-border, rgba(255, 255, 255, 0.2)) 75%, transparent);
+    background:
+        linear-gradient(
+            145deg,
+            color-mix(in srgb, var(--bento-card, rgba(20, 28, 45, 0.88)) 86%, transparent),
+            color-mix(in srgb, var(--bento-card-hover, rgba(16, 24, 39, 0.94)) 95%, transparent)
+        );
+    box-shadow: 0 24px 60px rgba(5, 8, 18, 0.5);
+    padding: var(--space-6);
+    color: var(--text-primary);
+}
+
+.premium-upsell-close {
+    position: absolute;
+    top: var(--space-3);
+    right: var(--space-3);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--bento-card-border-subtle);
+    border-radius: var(--radius-full);
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--duration-fast) var(--ease-in-out);
+}
+
+.premium-upsell-close:hover,
+.premium-upsell-close:focus-visible {
+    color: var(--text-primary);
+    border-color: color-mix(in srgb, var(--primary) 60%, transparent);
+    outline: none;
+}
+
+.premium-upsell-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 0.3rem 0.65rem;
+    border-radius: var(--radius-pill);
+    border: 1px solid color-mix(in srgb, var(--primary) 42%, transparent);
+    background: color-mix(in srgb, var(--primary) 16%, transparent);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+}
+
+.premium-upsell-title {
+    margin: var(--space-4) 0 var(--space-2);
+    font-size: clamp(1.3rem, 1.15rem + 0.9vw, 1.75rem);
+    line-height: 1.2;
+}
+
+.premium-upsell-subtitle {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+}
+
+.premium-upsell-features {
+    list-style: none;
+    margin: var(--space-5) 0 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-2);
+}
+
+.premium-upsell-features li {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--bento-card-border-subtle);
+    background: color-mix(in srgb, var(--bento-card) 88%, transparent);
+    color: var(--text-primary);
+    font-size: 0.92rem;
+}
+
+.premium-upsell-features svg {
+    color: var(--primary);
+    flex-shrink: 0;
+}
+
+.premium-upsell-actions {
+    margin-top: var(--space-5);
+    display: grid;
+    gap: var(--space-2);
+    grid-template-columns: 1fr;
+}
+
+.premium-upsell-actions .btn {
+    width: 100%;
+}
+
+@media (min-width: 560px) {
+    .premium-upsell-modal {
+        padding: var(--space-7);
+    }
+
+    .premium-upsell-actions {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+

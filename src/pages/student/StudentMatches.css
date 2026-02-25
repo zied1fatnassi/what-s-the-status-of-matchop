@@ -153,10 +153,29 @@
     margin-bottom: var(--space-1);
 }
 
+.match-heading {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-width: 0;
+}
+
 .match-company {
     font-size: 1.1rem;
     font-weight: 600;
     color: var(--text-primary);
+}
+
+.match-premium-badge {
+    padding: 0.18rem 0.55rem;
+    border-radius: var(--radius-full);
+    background: rgba(245, 158, 11, 0.16);
+    color: #b45309;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    flex-shrink: 0;
 }
 
 .match-time {

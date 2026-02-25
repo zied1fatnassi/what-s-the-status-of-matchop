@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Heart, X, Eye, Filter, Grid, List, Loader, AlertCircle, RefreshCw } from 'lucide-react'
+import { useMemo, useState } from 'react'
+import { Heart, X, Filter, Grid, List, Loader, AlertCircle, RefreshCw, Sparkles } from 'lucide-react'
 import { useCandidates } from '../../hooks/useCandidates'
 import MatchToast from '../../components/MatchToast'
 import './ViewCandidates.css'
@@ -7,6 +7,7 @@ import './ViewCandidates.css'
 function ViewCandidates() {
     const { candidates, loading, error, filters, setFilters, swipeOnCandidate, refresh } = useCandidates()
     const [viewMode, setViewMode] = useState('grid')
+    const [premiumBoostEnabled, setPremiumBoostEnabled] = useState(false)
     const [newMatch, setNewMatch] = useState(null)
     const [showFilters, setShowFilters] = useState(false)
     const [filterForm, setFilterForm] = useState({
@@ -50,6 +51,26 @@ function ViewCandidates() {
         setFilters({ skills: [], location: '' })
     }
 
+    const visibleCandidates = useMemo(() => {
+        const nextCandidates = [...candidates]
+
+        if (!premiumBoostEnabled) {
+            return nextCandidates
+        }
+
+        return nextCandidates.sort((a, b) => {
+            const premiumDelta = Number(Boolean(b.is_premium_active)) - Number(Boolean(a.is_premium_active))
+            if (premiumDelta !== 0) return premiumDelta
+
+            const bTime = Date.parse(b.swipedAt || 0)
+            const aTime = Date.parse(a.swipedAt || 0)
+            const hasBothTimes = Number.isFinite(aTime) && Number.isFinite(bTime)
+            if (hasBothTimes) return bTime - aTime
+
+            return 0
+        })
+    }, [candidates, premiumBoostEnabled])
+
     if (loading) {
         return (
             <div className="candidates-page">
@@ -87,7 +108,7 @@ function ViewCandidates() {
                 <div className="candidates-header">
                     <div className="header-left">
                         <h1>Candidates</h1>
-                        <p>{candidates.length} students interested in your offers</p>
+                        <p>{visibleCandidates.length} students interested in your offers</p>
                         {(filters.skills.length > 0 || filters.location) && (
                             <div className="active-filters">
                                 {filters.skills.map(skill => (
@@ -116,6 +137,15 @@ function ViewCandidates() {
                     </div>
 
                     <div className="header-actions">
+                        <button
+                            className={`btn btn-secondary btn-sm premium-sort-toggle ${premiumBoostEnabled ? 'active' : ''}`}
+                            onClick={() => setPremiumBoostEnabled((prev) => !prev)}
+                            aria-pressed={premiumBoostEnabled}
+                            title="Prioritize premium candidates without removing standard candidates"
+                        >
+                            <Sparkles size={16} />
+                            {premiumBoostEnabled ? 'Premium Boost On' : 'Premium Boost Off'}
+                        </button>
                         <button
                             className="btn btn-secondary btn-sm"
                             onClick={() => setShowFilters(!showFilters)}
@@ -176,9 +206,9 @@ function ViewCandidates() {
                     </div>
                 )}
 
-                {candidates.length > 0 ? (
+                {visibleCandidates.length > 0 ? (
                     <div className={`candidates-grid ${viewMode}`}>
-                        {candidates.map(candidate => (
+                        {visibleCandidates.map(candidate => (
                             <div key={candidate.id} className="candidate-card glass-card">
                                 <div className="candidate-header">
                                     <div className="candidate-avatar">
@@ -189,7 +219,12 @@ function ViewCandidates() {
                                             </span>
                                         )}
                                     </div>
-                                    <span className="interested-tag">Interested</span>
+                                    <div className="candidate-tags">
+                                        <span className="interested-tag">Interested</span>
+                                        {candidate.is_premium_active && (
+                                            <span className="premium-tag">Premium</span>
+                                        )}
+                                    </div>
                                 </div>
 
                                 <div className="candidate-info">

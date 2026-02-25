@@ -5,8 +5,10 @@ import { Analytics } from '@vercel/analytics/react'
 import Navbar from './components/Navbar'
 import ScrollToTop from './components/ScrollToTop'
 import AuthToast from './components/AuthToast'
+import PremiumUpsellModal from './components/PremiumUpsellModal'
 import { ProtectedRoute, PublicRoute, AdminRoute } from './components/RouteGuards'
 import { useAuth } from './context/AuthContext'
+import { useApplications } from './context/ApplicationContext'
 import './App.css'
 
 // Lazy load route-level pages for code splitting
@@ -16,6 +18,7 @@ const Contact = lazy(() => import('./pages/Contact'))
 const Footer = lazy(() => import('./components/Footer'))
 
 const Landing = lazy(() => import('./pages/Landing'))
+const Premium = lazy(() => import('./pages/Premium'))
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'))
 const ResetPassword = lazy(() => import('./pages/ResetPassword'))
 const AuthCallback = lazy(() => import('./pages/AuthCallback'))
@@ -102,6 +105,12 @@ function App() {
   const [toast, setToast] = useState(null)
   const location = useLocation()
   const navigate = useNavigate()
+  const { premiumUpsell, closePremiumUpsell } = useApplications()
+
+  const handleUpgrade = () => {
+    closePremiumUpsell()
+    navigate('/premium')
+  }
 
   // Detect auth events from URL hash (email verification, password reset, errors)
   useEffect(() => {
@@ -202,6 +211,13 @@ function App() {
         />
       )}
 
+      <PremiumUpsellModal
+        isOpen={premiumUpsell?.isOpen}
+        reason={premiumUpsell?.reason}
+        onClose={closePremiumUpsell}
+        onUpgrade={handleUpgrade}
+      />
+
       <div className={isLanding ? 'app-wrapper app-wrapper--landing' : 'app-wrapper'}>
         <Navbar isLanding={isLanding} />
         <SpeedInsights />
@@ -223,6 +239,7 @@ function App() {
               <Route path={RESET_PASSWORD_ROUTE} element={<ResetPassword />} />
               <Route path="login" element={<StudentLogin />} /> {/* Default login */}
               <Route path="signup" element={<StudentSignup />} /> {/* Default signup */}
+              <Route path="premium" element={<ProtectedRoute><Premium /></ProtectedRoute>} />
 
               {/* Legal */}
               <Route path="legal/terms" element={<TermsOfService />} />

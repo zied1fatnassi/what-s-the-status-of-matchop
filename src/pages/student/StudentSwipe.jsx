@@ -6,12 +6,29 @@ import OfferDetailModal from '../../components/OfferDetailModal'
 import ApplicationToast from '../../components/ApplicationToast'
 import MatchToast from '../../components/MatchToast'
 import { useAuth } from '../../context/AuthContext'
+import { useApplications } from '../../context/ApplicationContext'
 import { useJobOffers } from '../../hooks/useJobOffers'
 import { useMatchListener } from '../../hooks/useMatchListener'
+import { isLimitReachedCode } from '../../lib/swipeLimit'
 import './StudentSwipe.css'
 
 function StudentSwipe() {
-    const { offers: realOffers, loading, error, swipe, refresh } = useJobOffers()
+    const {
+        offers: realOffers,
+        loading,
+        error,
+        notice,
+        paywall,
+        mode,
+        setMode,
+        effectivePlan,
+        dailySwipeUsage,
+        isSwipeStackV2Enabled,
+        swipe,
+        refresh,
+        clearPaywall
+    } = useJobOffers()
+    const { openPremiumUpsell } = useApplications()
     const { newMatch, clearMatch } = useMatchListener()
     const [offers, setOffers] = useState([])
     const [currentIndex, setCurrentIndex] = useState(0)
@@ -26,31 +43,74 @@ function StudentSwipe() {
     const topCardRef = useRef(null)
 
     useEffect(() => {
-        if (realOffers.length > 0) {
-            setOffers(realOffers)
-        }
+        setOffers(realOffers || [])
+        setCurrentIndex(0)
     }, [realOffers])
 
-    const { user } = useAuth()
+    const { user, profile } = useAuth()
+
+    const isPremiumFromProfile = Boolean(
+        profile?.is_premium &&
+        (!profile?.premium_expires_at || new Date(profile.premium_expires_at) > new Date())
+    )
+    const canUsePremiumMode = effectivePlan === 'premium' || isPremiumFromProfile
 
     const currentOffer = offers[currentIndex]
     const hasMoreOffers = currentIndex < offers.length
 
+    const handleModeChange = (nextMode) => {
+        if (!isSwipeStackV2Enabled) return
+        if (nextMode === mode) return
+        if (nextMode === 'premium' && !canUsePremiumMode) {
+            openPremiumUpsell('personalized_mode')
+            return
+        }
+        clearPaywall()
+        setMode(nextMode)
+    }
+
+    useEffect(() => {
+        if (!paywall) return
+        openPremiumUpsell('personalized_mode')
+        clearPaywall()
+        if (mode === 'premium') {
+            setMode('standard')
+        }
+    }, [paywall, mode, setMode, clearPaywall, openPremiumUpsell])
+
     const handleSwipe = async (direction) => {
         if (!currentOffer) return
+        if (mode === 'standard' && !canUsePremiumMode && dailySwipeUsage?.reached) {
+            openPremiumUpsell('daily_swipe_limit', {
+                used: dailySwipeUsage?.used ?? null,
+                limit: dailySwipeUsage?.limit ?? null
+            })
+            return
+        }
 
-        // Optimistic UI update
         const offerToSwipe = currentOffer
+        const isExternal = offerToSwipe.isExternal === true && !!offerToSwipe.externalUrl
+
+        if (!isExternal) {
+            const swipeResult = await swipe(offerToSwipe.id, direction)
+            if (isLimitReachedCode(swipeResult?.code)) {
+                openPremiumUpsell('daily_swipe_limit', {
+                    used: swipeResult?.usage?.used ?? dailySwipeUsage?.used ?? null,
+                    limit: swipeResult?.usage?.limit ?? dailySwipeUsage?.limit ?? null
+                })
+                return
+            }
+
+            if (swipeResult?.error) {
+                return
+            }
+        }
+
         setSwipeHistory([...swipeHistory, { offer: offerToSwipe, direction }])
 
-        // Move to next card immediately for potential optimistic update
         const nextIndex = currentIndex + 1
         setCurrentIndex(nextIndex)
 
-        // Determine if this is a real MatchOp offer or an external scraped job
-        const isExternal = offerToSwipe.isExternal === true && !!offerToSwipe.externalUrl
-
-        // Show toast IMMEDIATELY before any async operations
         if (direction === 'left') {
             setToastIsExternal(false)
             setToastTitle('Not interested')
@@ -68,16 +128,9 @@ function StudentSwipe() {
             setShowToast(true)
         }
 
-        // Call Supabase swipe (internal offers only) - happens after toast shows
-        if (!isExternal) {
-            swipe(offerToSwipe.id, direction) // Fire and forget, don't await
-        }
-
-        // Check if it's a match (internal offers only — externals can never match)
         if ((direction === 'right' || direction === 'super') && !isExternal && offerToSwipe.hasMatched) {
             setMatchedOffer(offerToSwipe)
 
-            // Send email notification (fire and forget)
             import('../../lib/email').then(({ sendMatchEmail }) => {
                 sendMatchEmail(
                     user?.email,
@@ -87,7 +140,7 @@ function StudentSwipe() {
                 )
             })
 
-            setTimeout(() => setShowMatch(true), 500) // Delay match modal so toast appears first
+            setTimeout(() => setShowMatch(true), 500)
         }
     }
 
@@ -125,6 +178,35 @@ function StudentSwipe() {
     return (
         <div className="swipe-page">
             <div className="swipe-container">
+                {isSwipeStackV2Enabled && (
+                    <div className="stack-mode-panel">
+                        <div className="stack-mode-toggle" role="tablist" aria-label="Swipe stack mode">
+                            <button
+                                type="button"
+                                className={`stack-mode-btn ${mode === 'standard' ? 'active' : ''}`}
+                                onClick={() => handleModeChange('standard')}
+                                disabled={loading}
+                            >
+                                Standard
+                            </button>
+                            <button
+                                type="button"
+                                className={`stack-mode-btn ${mode === 'premium' ? 'active' : ''}`}
+                                onClick={() => handleModeChange('premium')}
+                                disabled={loading}
+                            >
+                                {canUsePremiumMode ? 'Personalized Plan' : 'Personalized Plan (Premium)'}
+                            </button>
+                        </div>
+
+                        {notice && (
+                            <div className="stack-mode-notice">
+                                {notice}
+                            </div>
+                        )}
+                    </div>
+                )}
+
                 {hasMoreOffers ? (
                     <>
                         <div className="cards-stack">
@@ -235,4 +317,3 @@ function StudentSwipe() {
 }
 
 export default StudentSwipe
-
