@@ -3,10 +3,17 @@ import { createRoot } from 'react-dom/client'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 
+const trackMock = vi.fn()
+
+vi.mock('../lib/analytics', () => ({
+    track: (...args) => trackMock(...args)
+}))
+
 const checkoutTranslations = {
     'checkout.actions.createRequest': 'Create payment request',
     'checkout.proofUpload.uploadAction': 'Upload proof',
-    'common.continue': 'Continue'
+    'common.continue': 'Continue',
+    'checkout.errors.cooldownActive': 'cooldown'
 }
 
 vi.mock('react-i18next', () => ({
@@ -93,6 +100,7 @@ describe('Checkout payment request flow', () => {
     let uploadMock = null
 
     beforeEach(() => {
+        trackMock.mockReset()
         container = document.createElement('div')
         document.body.appendChild(container)
         root = createRoot(container)
@@ -188,5 +196,40 @@ describe('Checkout payment request flow', () => {
         const uploadedPath = uploadMock.mock.calls[0][0]
         expect(uploadedPath).toMatch(/^1234567890abcdef\/payment-request-1\//)
         expect(container.textContent).toContain(uploadedPath)
+    })
+
+    it('tracks cooldown telemetry when create request is throttled', async () => {
+        supabase.functions.invoke.mockResolvedValueOnce({
+            data: null,
+            error: {
+                message: 'Too many requests',
+                context: {
+                    json: async () => ({
+                        code: 'COOLDOWN_ACTIVE',
+                        message: 'Wait before creating another request.',
+                        cooldown_minutes: 10
+                    })
+                }
+            }
+        })
+
+        await act(async () => {
+            root.render(<CheckoutHarness initialEntry="/checkout?plan=monthly&source=cooldown-test" />)
+        })
+
+        const createButton = Array.from(container.querySelectorAll('button'))
+            .find((button) => button.textContent?.includes('Create payment request'))
+
+        expect(createButton).toBeTruthy()
+
+        await act(async () => {
+            createButton.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+        })
+
+        expect(trackMock).toHaveBeenCalledWith('payment_request_cooldown_triggered', {
+            source: 'cooldown-test',
+            cooldown_minutes: 10
+        })
+        expect(container.textContent).toContain('Wait before creating another request.')
     })
 })
