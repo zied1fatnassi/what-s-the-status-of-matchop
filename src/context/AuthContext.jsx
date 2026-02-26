@@ -483,10 +483,13 @@ export function AuthProvider({ children }) {
                 fetchProfile(data.session.user.id)
             }
 
-            // Track login activity for engagement decay system
-            supabase.rpc('touch_activity').catch(err =>
-                debugLog('[Auth] Activity tracking failed:', err.message)
-            )
+            // Track login activity for engagement decay system without blocking sign-in.
+            ;(async () => {
+                const { error: activityError } = await supabase.rpc('touch_activity')
+                if (activityError) {
+                    debugLog('[Auth] Activity tracking failed:', activityError.message)
+                }
+            })()
 
             return { data, error: null }
         } catch (err) {
