@@ -47,6 +47,7 @@ function StudentSwipe() {
     const [toastIsExternal, setToastIsExternal] = useState(false)
     const [toastTitle, setToastTitle] = useState('Application was sent!')
     const [toastVariant, setToastVariant] = useState('application')
+    const [toastKey, setToastKey] = useState(0)
     const navigate = useNavigate()
     const topCardRef = useRef(null)
 
@@ -68,6 +69,28 @@ function StudentSwipe() {
 
     const currentOffer = offers[currentIndex]
     const hasMoreOffers = currentIndex < offers.length
+
+    const showSwipeToast = (direction, offer) => {
+        if (!offer) return
+
+        const isExternal = offer.isExternal === true && !!offer.externalUrl
+        if (direction === 'left') {
+            setToastIsExternal(false)
+            setToastTitle('Not interested')
+            setToastVariant('rejected')
+        } else if (direction === 'super') {
+            setToastIsExternal(isExternal)
+            setToastTitle('Added to favorites')
+            setToastVariant('favorites')
+        } else {
+            setToastIsExternal(isExternal)
+            setToastTitle('Application was sent!')
+            setToastVariant('application')
+        }
+
+        setToastKey((prev) => prev + 1)
+        setShowToast(true)
+    }
 
     const handleLockedGlobalCta = () => {
         if (isExpiredPremium) {
@@ -164,8 +187,15 @@ function StudentSwipe() {
         }
     }, [paywall, mode, setMode, clearPaywall, openPremiumUpsell, isExpiredPremium, navigate, showGlobalTab])
 
-    const handleSwipe = async (direction) => {
-        if (!currentOffer) return
+    const handleSwipeStart = (direction, offerToSwipe = currentOffer) => {
+        if (!offerToSwipe) return
+        if (mode === 'standard' && !canUsePremiumMode && dailySwipeUsage?.reached) return
+        showSwipeToast(direction, offerToSwipe)
+    }
+
+    const handleSwipe = async (direction, swipedOffer = currentOffer) => {
+        const offerToSwipe = swipedOffer || currentOffer
+        if (!offerToSwipe) return
         if (mode === 'standard' && !canUsePremiumMode && dailySwipeUsage?.reached) {
             openPremiumUpsell('daily_limit', {
                 used: dailySwipeUsage?.used ?? null,
@@ -174,12 +204,12 @@ function StudentSwipe() {
             return
         }
 
-        const offerToSwipe = currentOffer
         const isExternal = offerToSwipe.isExternal === true && !!offerToSwipe.externalUrl
 
         if (!isExternal) {
             const swipeResult = await swipe(offerToSwipe.id, direction)
             if (isLimitReachedCode(swipeResult?.code)) {
+                setShowToast(false)
                 openPremiumUpsell('daily_limit', {
                     used: swipeResult?.usage?.used ?? dailySwipeUsage?.used ?? null,
                     limit: swipeResult?.usage?.limit ?? dailySwipeUsage?.limit ?? null
@@ -188,31 +218,13 @@ function StudentSwipe() {
             }
 
             if (swipeResult?.error) {
+                setShowToast(false)
                 return
             }
         }
 
-        setSwipeHistory([...swipeHistory, { offer: offerToSwipe, direction }])
-
-        const nextIndex = currentIndex + 1
-        setCurrentIndex(nextIndex)
-
-        if (direction === 'left') {
-            setToastIsExternal(false)
-            setToastTitle('Not interested')
-            setToastVariant('rejected')
-            setShowToast(true)
-        } else if (direction === 'right' || direction === 'super') {
-            setToastIsExternal(isExternal)
-            if (direction === 'super') {
-                setToastTitle('Added to favorites')
-                setToastVariant('favorites')
-            } else {
-                setToastTitle('Application was sent!')
-                setToastVariant('application')
-            }
-            setShowToast(true)
-        }
+        setSwipeHistory((prev) => [...prev, { offer: offerToSwipe, direction }])
+        setCurrentIndex((prev) => prev + 1)
 
         if ((direction === 'right' || direction === 'super') && !isExternal && offerToSwipe.hasMatched) {
             setMatchedOffer(offerToSwipe)
@@ -361,6 +373,7 @@ function StudentSwipe() {
                                     key={offer.id}
                                     offer={offer}
                                     onSwipe={handleSwipe}
+                                    onSwipeStart={handleSwipeStart}
                                     onViewDetails={handleViewDetails}
                                     isTop={index === offers.slice(currentIndex, currentIndex + 2).length - 1}
                                     ref={index === offers.slice(currentIndex, currentIndex + 2).length - 1 ? topCardRef : null}
@@ -380,7 +393,10 @@ function StudentSwipe() {
                                 className="action-btn pass"
                                 onClick={() => {
                                     if (topCardRef.current) topCardRef.current.triggerSwipe('left')
-                                    else handleSwipe('left')
+                                    else {
+                                        handleSwipeStart('left', currentOffer)
+                                        handleSwipe('left', currentOffer)
+                                    }
                                 }}
                             >
                                 <X size={32} />
@@ -389,7 +405,10 @@ function StudentSwipe() {
                                 className="action-btn super-like"
                                 onClick={() => {
                                     if (topCardRef.current) topCardRef.current.triggerSwipe('super')
-                                    else handleSwipe('super')
+                                    else {
+                                        handleSwipeStart('super', currentOffer)
+                                        handleSwipe('super', currentOffer)
+                                    }
                                 }}
                             >
                                 <Star size={24} />
@@ -398,7 +417,10 @@ function StudentSwipe() {
                                 className="action-btn like"
                                 onClick={() => {
                                     if (topCardRef.current) topCardRef.current.triggerSwipe('right')
-                                    else handleSwipe('right')
+                                    else {
+                                        handleSwipeStart('right', currentOffer)
+                                        handleSwipe('right', currentOffer)
+                                    }
                                 }}
                             >
                                 <Heart size={32} />
@@ -427,6 +449,7 @@ function StudentSwipe() {
             {/* Application Toast */}
             {showToast && (
                 <ApplicationToast
+                    key={toastKey}
                     title={toastTitle}
                     variant={toastVariant}
                     isExternal={toastIsExternal}

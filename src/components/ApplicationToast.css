@@ -7,12 +7,17 @@
     align-items: center;
     gap: var(--space-3);
     padding: var(--space-4) var(--space-5);
-    background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);
+    background: linear-gradient(
+        135deg,
+        var(--accent-teal) 0%,
+        color-mix(in srgb, var(--accent-teal) 78%, black) 100%
+    );
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: var(--radius-xl);
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
     z-index: 2300;
     opacity: 0;
+    cursor: pointer;
     transition: bottom 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
                 opacity 0.35s ease-out,
                 transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -137,6 +142,14 @@
 
 .application-toast.external .toast-message strong {
     color: #c8e6c9;
+}
+
+.application-toast.favorites {
+    background: linear-gradient(
+        135deg,
+        var(--primary) 0%,
+        color-mix(in srgb, var(--primary) 78%, black) 100%
+    );
 }
 
 .application-toast.rejected {

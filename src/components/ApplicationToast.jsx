@@ -11,6 +11,7 @@ import './ApplicationToast.css'
 function ApplicationToast({ title = 'Application was sent!', isExternal = false, variant = 'application', onClose }) {
     const [isVisible, setIsVisible] = useState(false)
     const [isExiting, setIsExiting] = useState(false)
+    const dismissToast = () => onClose?.()
 
     useEffect(() => {
         // Show immediately without delay
@@ -26,7 +27,19 @@ function ApplicationToast({ title = 'Application was sent!', isExternal = false,
     const icon = variant === 'rejected' ? <X size={20} /> : variant === 'favorites' ? <Star size={20} /> : (isExternal ? <ExternalLink size={20} /> : <Send size={20} />)
 
     return (
-        <div className={`application-toast ${isVisible ? 'visible' : ''} ${isExiting ? 'exiting' : ''} ${isExternal ? 'external' : ''} ${variant === 'favorites' ? 'favorites' : ''} ${variant === 'rejected' ? 'rejected' : ''}`}>
+        <div
+            className={`application-toast ${isVisible ? 'visible' : ''} ${isExiting ? 'exiting' : ''} ${isExternal ? 'external' : ''} ${variant === 'favorites' ? 'favorites' : ''} ${variant === 'rejected' ? 'rejected' : ''}`}
+            role="button"
+            tabIndex={0}
+            aria-label="Dismiss notification"
+            onClick={dismissToast}
+            onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault()
+                    dismissToast()
+                }
+            }}
+        >
             <div className="toast-icon">
                 {icon}
             </div>
