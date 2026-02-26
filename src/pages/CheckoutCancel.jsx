@@ -1,10 +1,12 @@
 import { useEffect } from 'react'
 import { CircleSlash2 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { track } from '../lib/analytics'
 import './Checkout.css'
 
 function CheckoutCancel() {
+    const { t } = useTranslation(undefined, { useSuspense: false })
     useEffect(() => {
         track('checkout_cancel_viewed')
     }, [])
@@ -13,13 +15,13 @@ function CheckoutCancel() {
         <section className="checkout-page">
             <div className="checkout-shell checkout-result glass-card">
                 <CircleSlash2 size={28} className="checkout-result-icon cancel" />
-                <h1>Checkout canceled</h1>
+                <h1>{t('checkoutCancel.title')}</h1>
                 <p className="checkout-subtitle">
-                    No changes were made. You can return to Premium any time.
+                    {t('checkoutCancel.subtitle')}
                 </p>
                 <div className="checkout-actions">
                     <Link to="/premium" className="btn btn-primary">
-                        Back to Premium
+                        {t('checkoutCancel.backToPremium')}
                     </Link>
                 </div>
             </div>

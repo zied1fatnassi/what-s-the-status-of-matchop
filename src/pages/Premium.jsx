@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
     BadgeCheck,
     ChevronDown,
@@ -18,30 +19,30 @@ import { getEntitlements } from '../lib/premiumEntitlements'
 import './Premium.css'
 
 const LAST_UPSELL_SOURCE_STORAGE_KEY = 'matchop_last_upsell_source'
-const UPSELL_HEADLINES = {
-    global_discovery: 'Unlock international opportunities',
-    daily_limit: 'Unlock unlimited swipes',
-    daily_swipe_limit: 'Unlock unlimited swipes',
-    personalized_mode: 'Unlock personalized matches',
-    expired: 'Renew your Premium access'
+const UPSELL_HEADLINE_KEYS = {
+    global_discovery: 'premium.headlines.global_discovery',
+    daily_limit: 'premium.headlines.daily_limit',
+    daily_swipe_limit: 'premium.headlines.daily_swipe_limit',
+    personalized_mode: 'premium.headlines.personalized_mode',
+    expired: 'premium.headlines.expired'
 }
 
 const FAQ_ITEMS = [
     {
-        question: 'When will checkout be available?',
-        answer: 'Checkout is in progress. Premium UI is ready and we will activate billing in a future release.'
+        questionKey: 'premium.faq.whenAvailable.question',
+        answerKey: 'premium.faq.whenAvailable.answer'
     },
     {
-        question: 'Will my current account and matches remain?',
-        answer: 'Yes. Your profile, swipes, and matches stay the same. Premium unlocks additional discovery features.'
+        questionKey: 'premium.faq.accountAndMatches.question',
+        answerKey: 'premium.faq.accountAndMatches.answer'
     },
     {
-        question: 'Can I switch plans later?',
-        answer: 'Yes. Monthly and yearly options are both planned, and switching will be available in account settings.'
+        questionKey: 'premium.faq.switchPlans.question',
+        answerKey: 'premium.faq.switchPlans.answer'
     },
     {
-        question: 'What does Premium include?',
-        answer: 'Premium is designed to unlock global opportunities, personalized matching, and unlimited swipe capacity.'
+        questionKey: 'premium.faq.whatIncludes.question',
+        answerKey: 'premium.faq.whatIncludes.answer'
     }
 ]
 
@@ -57,14 +58,12 @@ function getFeatureIcon(feature) {
 }
 
 function Premium() {
-    const isPremiumWaitlistMode = import.meta.env.VITE_PREMIUM_WAITLIST_MODE === 'true'
+    const { t } = useTranslation(undefined, { useSuspense: false })
     const [selectedPlan, setSelectedPlan] = useState(PLANS.yearly.id)
     const [openFaq, setOpenFaq] = useState(0)
-    const [waitlistEmail, setWaitlistEmail] = useState('')
     const [toast, setToast] = useState(null)
     const [source, setSource] = useState('direct')
     const [isRefreshingStatus, setIsRefreshingStatus] = useState(false)
-    const waitlistInputRef = useRef(null)
     const navigate = useNavigate()
     const [searchParams] = useSearchParams()
     const { profile, refreshProfile } = useAuth()
@@ -87,20 +86,10 @@ function Premium() {
         track('premium_viewed', { source: resolvedSource })
     }, [sourceFromQuery])
 
-    const headline = useMemo(
-        () => UPSELL_HEADLINES[source] || 'Premium upgrade',
-        [source]
-    )
-
-    const handleJoinWaitlist = (event) => {
-        event.preventDefault()
-        if (!waitlistEmail.trim()) return
-        setToast({
-            type: 'info',
-            message: 'Coming soon'
-        })
-        setWaitlistEmail('')
-    }
+    const headline = useMemo(() => {
+        const key = UPSELL_HEADLINE_KEYS[source] || 'premium.headlines.default'
+        return t(key)
+    }, [source, t])
 
     const handleRefreshStatus = async () => {
         if (typeof refreshProfile !== 'function') return
@@ -110,12 +99,12 @@ function Premium() {
             await refreshProfile()
             setToast({
                 type: 'success',
-                message: 'Status refreshed'
+                message: t('premium.toasts.statusRefreshed')
             })
         } catch {
             setToast({
                 type: 'error',
-                message: 'Unable to refresh status right now'
+                message: t('premium.toasts.refreshError')
             })
         } finally {
             setIsRefreshingStatus(false)
@@ -149,15 +138,15 @@ function Premium() {
             )}
 
             <div className="premium-shell glass-card">
-                <span className="premium-eyebrow">Premium</span>
+                <span className="premium-eyebrow">{t('premium.eyebrow')}</span>
                 <h1>{headline}</h1>
                 <p className="premium-subtitle">
-                    Payments are not enabled yet. Join the waitlist now and we will notify you when checkout goes live.
+                    {t('premium.subtitle')}
                 </p>
 
                 <div className="premium-status-row">
                     <span className={`premium-status ${statusClassName}`}>
-                        Status: {entitlements.premiumStatusLabel}
+                        {t('premium.statusLabel')}: {t(`premium.statusValues.${entitlements.premiumStatusLabel.toLowerCase()}`)}
                     </span>
                     <button
                         type="button"
@@ -166,36 +155,34 @@ function Premium() {
                         disabled={isRefreshingStatus}
                     >
                         <RefreshCw size={14} className={isRefreshingStatus ? 'is-spinning' : ''} />
-                        {isRefreshingStatus ? 'Refreshing...' : 'Refresh status'}
+                        {isRefreshingStatus ? t('premium.refreshing') : t('premium.refresh')}
                     </button>
                 </div>
 
-                {!isPremiumWaitlistMode && (
-                    <section className="premium-plan-section" aria-label="Plan selector">
-                        <h2 className="premium-section-title">Choose your plan</h2>
-                        <div className="premium-plan-grid">
-                            {PLAN_ORDER.map((plan) => (
-                                <button
-                                    key={plan.id}
-                                    type="button"
-                                    className={`premium-plan-card ${selectedPlan === plan.id ? 'active' : ''}`}
-                                    onClick={() => handlePlanSelect(plan.id)}
-                                    aria-pressed={selectedPlan === plan.id}
-                                >
-                                    {plan.badge && <span className="premium-plan-badge">{plan.badge}</span>}
-                                    <span className="premium-plan-name">{plan.label}</span>
-                                    <span className="premium-plan-price">{plan.price} {CURRENCY}<span>{plan.cadence}</span></span>
-                                    <span className="premium-plan-note">
-                                        {plan.id === PLANS.yearly.id ? 'Billed annually, save more' : 'Flexible monthly billing'}
-                                    </span>
-                                </button>
-                            ))}
-                        </div>
-                    </section>
-                )}
+                <section className="premium-plan-section" aria-label={t('premium.aria.planSelector')}>
+                    <h2 className="premium-section-title">{t('premium.planSectionTitle')}</h2>
+                    <div className="premium-plan-grid">
+                        {PLAN_ORDER.map((plan) => (
+                            <button
+                                key={plan.id}
+                                type="button"
+                                className={`premium-plan-card ${selectedPlan === plan.id ? 'active' : ''}`}
+                                onClick={() => handlePlanSelect(plan.id)}
+                                aria-pressed={selectedPlan === plan.id}
+                            >
+                                {plan.badge && <span className="premium-plan-badge">{plan.badge}</span>}
+                                <span className="premium-plan-name">{plan.label}</span>
+                                <span className="premium-plan-price">{plan.price} {CURRENCY}<span>{plan.cadence}</span></span>
+                                <span className="premium-plan-note">
+                                    {plan.id === PLANS.yearly.id ? t('premium.planNotes.yearly') : t('premium.planNotes.monthly')}
+                                </span>
+                            </button>
+                        ))}
+                    </div>
+                </section>
 
-                <section className="premium-benefits" aria-label="Premium benefits">
-                    <h2 className="premium-section-title">What you unlock</h2>
+                <section className="premium-benefits" aria-label={t('premium.aria.benefits')}>
+                    <h2 className="premium-section-title">{t('premium.benefitsTitle')}</h2>
                     <ul className="premium-feature-list">
                         {PREMIUM_FEATURES.map((feature) => {
                             const FeatureIcon = getFeatureIcon(feature)
@@ -209,63 +196,35 @@ function Premium() {
                     </ul>
                 </section>
 
-                <section className="premium-faq" aria-label="Frequently asked questions">
-                    <h2 className="premium-section-title">FAQ</h2>
+                <section className="premium-faq" aria-label={t('premium.aria.faq')}>
+                    <h2 className="premium-section-title">{t('premium.faqTitle')}</h2>
                     <div className="premium-faq-list">
                         {FAQ_ITEMS.map((item, index) => {
                             const isOpen = openFaq === index
                             return (
-                                <article key={item.question} className={`premium-faq-item ${isOpen ? 'open' : ''}`}>
+                                <article key={item.questionKey} className={`premium-faq-item ${isOpen ? 'open' : ''}`}>
                                     <button
                                         type="button"
                                         className="premium-faq-trigger"
                                         aria-expanded={isOpen}
                                         onClick={() => setOpenFaq(isOpen ? -1 : index)}
                                     >
-                                        <span>{item.question}</span>
+                                        <span>{t(item.questionKey)}</span>
                                         <ChevronDown size={18} />
                                     </button>
-                                    {isOpen && <p className="premium-faq-answer">{item.answer}</p>}
+                                    {isOpen && <p className="premium-faq-answer">{t(item.answerKey)}</p>}
                                 </article>
                             )
                         })}
                     </div>
                 </section>
 
-                <section className="premium-waitlist" aria-label="Premium waitlist">
-                    <h2 className="premium-section-title">Join waitlist</h2>
-                    <form className="premium-waitlist-form" onSubmit={handleJoinWaitlist}>
-                        <input
-                            ref={waitlistInputRef}
-                            type="email"
-                            value={waitlistEmail}
-                            onChange={(event) => setWaitlistEmail(event.target.value)}
-                            placeholder="you@example.com"
-                            required
-                            autoComplete="email"
-                        />
-                        <button type="submit" className="btn btn-primary">
-                            Join waitlist
-                        </button>
-                    </form>
-                </section>
-
                 <div className="premium-actions">
-                    {isPremiumWaitlistMode ? (
-                        <button
-                            type="button"
-                            className="btn btn-primary"
-                            onClick={() => waitlistInputRef.current?.focus()}
-                        >
-                            Join waitlist
-                        </button>
-                    ) : (
-                        <button type="button" className="btn btn-primary" onClick={handleCheckoutStart}>
-                            Upgrade
-                        </button>
-                    )}
+                    <button type="button" className="btn btn-primary" onClick={handleCheckoutStart}>
+                        {t('premium.upgradeAction')}
+                    </button>
                     <Link to="/student/swipe" className="btn btn-secondary">
-                        Back to swipe
+                        {t('premium.backToSwipe')}
                     </Link>
                 </div>
             </div>

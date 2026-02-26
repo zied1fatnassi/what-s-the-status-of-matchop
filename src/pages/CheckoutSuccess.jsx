@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { CheckCircle2, RefreshCw } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { track } from '../lib/analytics'
@@ -7,6 +8,7 @@ import AuthToast from '../components/AuthToast'
 import './Checkout.css'
 
 function CheckoutSuccess() {
+    const { t } = useTranslation(undefined, { useSuspense: false })
     const { refreshProfile } = useAuth()
     const [isRefreshing, setIsRefreshing] = useState(false)
     const [toast, setToast] = useState(null)
@@ -23,12 +25,12 @@ function CheckoutSuccess() {
             await refreshProfile()
             setToast({
                 type: 'success',
-                message: 'Status refreshed'
+                message: t('checkoutSuccess.toasts.statusRefreshed')
             })
         } catch {
             setToast({
                 type: 'error',
-                message: 'Unable to refresh status right now'
+                message: t('checkoutSuccess.toasts.refreshError')
             })
         } finally {
             setIsRefreshing(false)
@@ -47,9 +49,9 @@ function CheckoutSuccess() {
             )}
             <div className="checkout-shell checkout-result glass-card">
                 <CheckCircle2 size={28} className="checkout-result-icon success" />
-                <h1>Checkout success</h1>
+                <h1>{t('checkoutSuccess.title')}</h1>
                 <p className="checkout-subtitle">
-                    This is a preview success page. Billing activation is not connected yet.
+                    {t('checkoutSuccess.subtitle')}
                 </p>
                 <div className="checkout-actions">
                     <button
@@ -59,10 +61,10 @@ function CheckoutSuccess() {
                         disabled={isRefreshing}
                     >
                         <RefreshCw size={14} className={isRefreshing ? 'is-spinning' : ''} />
-                        {isRefreshing ? 'Refreshing...' : 'Refresh status'}
+                        {isRefreshing ? t('checkoutSuccess.refreshing') : t('checkoutSuccess.refresh')}
                     </button>
                     <Link to="/student/swipe" className="btn btn-primary">
-                        Back to Discovery
+                        {t('checkoutSuccess.backToDiscovery')}
                     </Link>
                 </div>
             </div>

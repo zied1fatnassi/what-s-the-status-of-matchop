@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { BadgeCheck, CircleAlert, Loader2, Phone, RefreshCw, UploadCloud } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { Link, useSearchParams } from 'react-router-dom'
 import AuthToast from '../components/AuthToast'
 import { CURRENCY, PLANS } from '../config/pricing'
 import { useAuth } from '../context/AuthContext'
 import { track } from '../lib/analytics'
-import { getProvider } from '../lib/payments'
+import { createD17ReferenceCode } from '../lib/payments/providers/d17'
 import { getEntitlements } from '../lib/premiumEntitlements'
 import { supabase } from '../lib/supabase'
 import './Checkout.css'
@@ -55,27 +56,27 @@ async function parseInvokeError(error) {
     }
 }
 
-function getStatusMeta(status) {
+function getStatusMeta(status, t) {
     if (status === 'approved') {
         return {
             className: 'status-approved',
-            label: 'Approved',
-            detail: 'Payment approved. Premium should be active after status refresh.'
+            label: t('checkout.status.approved.label'),
+            detail: t('checkout.status.approved.detail')
         }
     }
 
     if (status === 'rejected') {
         return {
             className: 'status-rejected',
-            label: 'Rejected',
-            detail: 'Payment rejected. Review admin note and submit a new request.'
+            label: t('checkout.status.rejected.label'),
+            detail: t('checkout.status.rejected.detail')
         }
     }
 
     return {
         className: 'status-pending',
-        label: 'Pending',
-        detail: 'Awaiting admin review. Upload proof if you have not uploaded it yet.'
+        label: t('checkout.status.pending.label'),
+        detail: t('checkout.status.pending.detail')
     }
 }
 
@@ -85,7 +86,7 @@ function isProofFileAccepted(file) {
 }
 
 function Checkout() {
-    const isPremiumWaitlistMode = import.meta.env.VITE_PREMIUM_WAITLIST_MODE === 'true'
+    const { t, i18n } = useTranslation(undefined, { useSuspense: false })
     const [searchParams] = useSearchParams()
     const { user, profile, refreshProfile } = useAuth()
     const [paymentRequest, setPaymentRequest] = useState(null)
@@ -99,15 +100,15 @@ function Checkout() {
 
     const source = searchParams.get('source') || 'direct'
     const plan = resolvePlan(searchParams.get('plan'))
-    const provider = useMemo(() => getProvider(), [])
     const entitlements = getEntitlements(profile)
-    const statusMeta = getStatusMeta(paymentRequest?.status)
+    const statusMeta = getStatusMeta(paymentRequest?.status, t)
     const canCreateRequest = !isLoadingRequest && paymentRequest?.status !== 'pending'
     const canUploadProof = paymentRequest?.status === 'pending'
+    const fallbackReference = useMemo(() => createD17ReferenceCode(user?.id, plan.id), [user?.id, plan.id])
 
     useEffect(() => {
-        track('checkout_provider_selected', { provider: provider.id })
-    }, [provider.id])
+        track('checkout_provider_selected', { provider: 'd17' })
+    }, [])
 
     const loadLatestRequest = useCallback(async () => {
         if (!user?.id) {
@@ -161,7 +162,7 @@ function Checkout() {
                 setPaymentRequest(normalizePaymentRequestRow(payload.payment_request))
                 setToast({
                     type: 'info',
-                    message: 'You already have a pending payment request. Upload proof or wait for review.'
+                    message: t('checkout.toasts.pendingExists')
                 })
             } else {
                 setErrorMessage(message)
@@ -190,7 +191,7 @@ function Checkout() {
         })
         setToast({
             type: 'success',
-            message: 'Payment request created. Continue by uploading proof.'
+            message: t('checkout.toasts.requestCreated')
         })
         setIsLoadingRequest(false)
     }
@@ -204,7 +205,7 @@ function Checkout() {
 
         if (!isProofFileAccepted(file)) {
             setSelectedFile(null)
-            setErrorMessage('Unsupported proof file type. Upload an image or PDF only.')
+            setErrorMessage(t('checkout.errors.unsupportedProofType'))
             if (fileInputRef.current) fileInputRef.current.value = ''
             return
         }
@@ -228,7 +229,7 @@ function Checkout() {
             .upload(objectPath, selectedFile, { upsert: false })
 
         if (uploadRes.error) {
-            setErrorMessage(uploadRes.error.message || 'Proof upload failed.')
+            setErrorMessage(uploadRes.error.message || t('checkout.errors.uploadFailed'))
             setIsUploadingProof(false)
             return
         }
@@ -242,7 +243,7 @@ function Checkout() {
             .maybeSingle()
 
         if (updateRes.error) {
-            setErrorMessage(updateRes.error.message || 'Proof path update failed.')
+            setErrorMessage(updateRes.error.message || t('checkout.errors.proofPathUpdateFailed'))
             setIsUploadingProof(false)
             return
         }
@@ -256,7 +257,7 @@ function Checkout() {
         })
         setToast({
             type: 'success',
-            message: 'Proof uploaded. Your request is pending review.'
+            message: t('checkout.toasts.proofUploaded')
         })
         setIsUploadingProof(false)
     }
@@ -280,31 +281,32 @@ function Checkout() {
             )}
 
             <div className="checkout-shell glass-card">
-                <span className="checkout-eyebrow">Checkout</span>
-                <h1>Pay with D17</h1>
+                <span className="checkout-eyebrow">{t('checkout.eyebrow')}</span>
+                <h1>{t('checkout.title')}</h1>
                 <p className="checkout-subtitle">
-                    Create your payment request, complete the transfer in D17, then upload your proof for admin review.
+                    {t('checkout.subtitle')}
                 </p>
 
-                <section className="checkout-summary" aria-label="Plan summary">
-                    <h2>Selected plan</h2>
+                <section className="checkout-summary" aria-label={t('checkout.aria.planSummary')}>
+                    <h2>{t('checkout.summary.title')}</h2>
                     <div className="checkout-plan-card">
                         <div className="checkout-plan-row">
                             <span className="checkout-plan-name">{plan.label}</span>
                             {plan.badge && <span className="checkout-plan-badge">{plan.badge}</span>}
                         </div>
                         <p className="checkout-plan-price">{plan.price} {CURRENCY}<span>{plan.cadence}</span></p>
-                        <p className="checkout-plan-source">Source: {source}</p>
-                        <p className="checkout-plan-source">Provider: {provider.label}</p>
+                        <p className="checkout-plan-source">
+                            {t('checkout.summary.source')}: {source}
+                        </p>
                     </div>
                 </section>
 
-                <section className="checkout-methods" aria-label="D17 payment instructions">
-                    <h2>D17 transfer details</h2>
+                <section className="checkout-methods" aria-label={t('checkout.aria.methods')}>
+                    <h2>{t('checkout.methods.title')}</h2>
                     <ul>
-                        <li><Phone size={16} /> Receiver phone: {paymentRequest?.d17_phone || '+21652460278'}</li>
-                        <li><BadgeCheck size={16} /> Amount: {plan.price} {CURRENCY}</li>
-                        <li><CircleAlert size={16} /> Reference: {paymentRequest?.reference || provider.startCheckout({ userId: user?.id, planId: plan.id }).referenceCode}</li>
+                        <li><Phone size={16} /> {t('checkout.methods.receiverPhone')}: {paymentRequest?.d17_phone || '+21652460278'}</li>
+                        <li><BadgeCheck size={16} /> {t('checkout.methods.amount')}: {plan.price} {CURRENCY}</li>
+                        <li><CircleAlert size={16} /> {t('checkout.methods.reference')}: {paymentRequest?.reference || fallbackReference}</li>
                     </ul>
                 </section>
 
@@ -313,9 +315,9 @@ function Checkout() {
                         type="button"
                         className="btn btn-primary"
                         onClick={handleCreatePaymentRequest}
-                        disabled={!canCreateRequest || isPremiumWaitlistMode || entitlements.premiumActive}
+                        disabled={!canCreateRequest || entitlements.premiumActive}
                     >
-                        {isLoadingRequest ? 'Creating...' : 'Create payment request'}
+                        {isLoadingRequest ? t('checkout.actions.creating') : t('checkout.actions.createRequest')}
                     </button>
                     <button
                         type="button"
@@ -324,13 +326,13 @@ function Checkout() {
                         disabled={isFetchingRequest}
                     >
                         <RefreshCw size={14} className={isFetchingRequest ? 'is-spinning' : ''} />
-                        Refresh status
+                        {t('checkout.actions.refreshStatus')}
                     </button>
                 </div>
 
                 {entitlements.premiumActive && (
                     <p className="checkout-inline-subtitle checkout-success-note">
-                        Premium is already active on your account.
+                        {t('checkout.notes.premiumActive')}
                     </p>
                 )}
 
@@ -341,9 +343,9 @@ function Checkout() {
                 )}
 
                 {paymentRequest && (
-                    <section className="checkout-request" aria-label="Current payment request">
+                    <section className="checkout-request" aria-label={t('checkout.aria.currentRequest')}>
                         <div className="checkout-request-header">
-                            <h2>Current request</h2>
+                            <h2>{t('checkout.request.title')}</h2>
                             <span className={`status-badge ${statusMeta.className}`}>
                                 {statusMeta.label}
                             </span>
@@ -351,27 +353,27 @@ function Checkout() {
                         <p className="checkout-inline-subtitle">{statusMeta.detail}</p>
                         <dl className="checkout-request-grid">
                             <div>
-                                <dt>Reference</dt>
+                                <dt>{t('checkout.request.fields.reference')}</dt>
                                 <dd>{paymentRequest.reference}</dd>
                             </div>
                             <div>
-                                <dt>Plan</dt>
+                                <dt>{t('checkout.request.fields.plan')}</dt>
                                 <dd>{paymentRequest.plan_id}</dd>
                             </div>
                             <div>
-                                <dt>Amount</dt>
+                                <dt>{t('checkout.request.fields.amount')}</dt>
                                 <dd>{paymentRequest.amount_tnd} {paymentRequest.currency}</dd>
                             </div>
                             <div>
-                                <dt>Created</dt>
-                                <dd>{paymentRequest.created_at ? new Date(paymentRequest.created_at).toLocaleString() : '-'}</dd>
+                                <dt>{t('checkout.request.fields.created')}</dt>
+                                <dd>{paymentRequest.created_at ? new Date(paymentRequest.created_at).toLocaleString(i18n.language) : '-'}</dd>
                             </div>
                             <div>
-                                <dt>Proof path</dt>
-                                <dd>{paymentRequest.proof_object_path || 'Not uploaded yet'}</dd>
+                                <dt>{t('checkout.request.fields.proofPath')}</dt>
+                                <dd>{paymentRequest.proof_object_path || t('checkout.request.notUploaded')}</dd>
                             </div>
                             <div>
-                                <dt>Admin note</dt>
+                                <dt>{t('checkout.request.fields.adminNote')}</dt>
                                 <dd>{paymentRequest.admin_note || '-'}</dd>
                             </div>
                         </dl>
@@ -379,7 +381,7 @@ function Checkout() {
                         {canUploadProof && (
                             <div className="checkout-proof-upload">
                                 <label htmlFor="proof-file">
-                                    Upload payment proof (image or PDF)
+                                    {t('checkout.proofUpload.label')}
                                 </label>
                                 <input
                                     ref={fileInputRef}
@@ -397,12 +399,12 @@ function Checkout() {
                                     {isUploadingProof ? (
                                         <>
                                             <Loader2 size={14} className="is-spinning" />
-                                            Uploading...
+                                            {t('checkout.proofUpload.uploading')}
                                         </>
                                     ) : (
                                         <>
                                             <UploadCloud size={14} />
-                                            Upload proof
+                                            {t('checkout.proofUpload.uploadAction')}
                                         </>
                                     )}
                                 </button>
@@ -412,21 +414,16 @@ function Checkout() {
                 )}
 
                 <div className="checkout-actions">
-                    {isPremiumWaitlistMode && (
-                        <Link to="/premium" className="btn btn-secondary">
-                            Join waitlist
-                        </Link>
-                    )}
                     {paymentRequest?.status === 'approved' && (
                         <Link to="/checkout/success" className="btn btn-primary">
-                            Continue
+                            {t('common.continue')}
                         </Link>
                     )}
                     <Link to="/payments" className="btn btn-secondary">
-                        View my payments
+                        {t('checkout.actions.viewPayments')}
                     </Link>
                     <Link to="/premium" className="btn btn-secondary">
-                        Back to Premium
+                        {t('checkout.actions.backToPremium')}
                     </Link>
                 </div>
             </div>

@@ -3,6 +3,19 @@ import { createRoot } from 'react-dom/client'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 
+const checkoutTranslations = {
+    'checkout.actions.createRequest': 'Create payment request',
+    'checkout.proofUpload.uploadAction': 'Upload proof',
+    'common.continue': 'Continue'
+}
+
+vi.mock('react-i18next', () => ({
+    useTranslation: () => ({
+        t: (key) => checkoutTranslations[key] || key,
+        i18n: { language: 'en' }
+    })
+}))
+
 vi.mock('../context/AuthContext', () => ({
     useAuth: () => ({
         user: {
