@@ -15,7 +15,9 @@
         "matches": "Matchs",
         "personalizedPlan": "Plan personnalise",
         "profile": "Profil",
+        "newCandidates": "Nouveaux candidats",
         "candidates": "Candidats",
+        "archived": "Archives",
         "postJob": "Publier",
         "logout": "Déconnexion"
     },
@@ -471,6 +473,77 @@
         "acceptCreateMatch": "Accepter - Creer un match",
         "noCandidates": "Pas encore de candidats",
         "noCandidatesDesc": "Les candidats interesses par vos offres apparaitront ici."
+    },
+    "companyWorkflow": {
+        "common": {
+            "unknownCandidate": "Candidat",
+            "unknownOffer": "Offre"
+        },
+        "newCandidates": {
+            "title": "Nouveaux candidats",
+            "subtitle": "Revoyez les nouveaux interets et decidez qui passe en match.",
+            "pendingCount": "{{count}} en attente",
+            "loading": "Chargement des nouveaux candidats...",
+            "loadError": "Impossible de charger les nouveaux candidats.",
+            "emptyTitle": "Aucun nouveau candidat pour le moment",
+            "emptyDescription": "Les etudiants interesses par vos offres apparaitront ici.",
+            "openOffers": "Voir les offres actives",
+            "actions": {
+                "refresh": "Actualiser",
+                "message": "Message",
+                "archive": "Archiver",
+                "reject": "Rejeter"
+            },
+            "meta": {
+                "forOffer": "Pour {{offer}}",
+                "expiresIn": "Expire dans {{time}}",
+                "matchScore": "{{score}}% de match"
+            }
+        },
+        "matches": {
+            "title": "Matchs",
+            "subtitle": "Matchs mutuels actifs prets pour la conversation.",
+            "loading": "Chargement des matchs...",
+            "loadError": "Impossible de charger les matchs.",
+            "emptyTitle": "Aucun match actif",
+            "emptyDescription": "Acceptez des nouveaux candidats pour ouvrir des conversations.",
+            "reviewCandidates": "Voir les nouveaux candidats",
+            "actions": {
+                "refresh": "Actualiser",
+                "message": "Message",
+                "archive": "Archiver",
+                "reject": "Rejeter"
+            },
+            "meta": {
+                "matchedOn": "Match le {{date}}",
+                "skills": "Competences"
+            }
+        },
+        "archived": {
+            "title": "Fermes / Archives",
+            "subtitle": "Candidats rejetes, expires et archives.",
+            "loading": "Chargement des elements archives...",
+            "loadError": "Impossible de charger les elements archives.",
+            "emptyTitle": "Aucun element archive",
+            "emptyDescription": "Les candidats archives et rejetes apparaitront ici.",
+            "filters": {
+                "all": "Tous",
+                "intro": "Candidats",
+                "match": "Matchs"
+            },
+            "labels": {
+                "intro": "Candidat",
+                "match": "Match",
+                "declined": "Rejete",
+                "expired": "Expire",
+                "archived": "Archive",
+                "closedOn": "Ferme le {{date}}",
+                "offer": "Offre"
+            },
+            "actions": {
+                "message": "Message"
+            }
+        }
     },
     "postJob": {
         "title": "Publier une Nouvelle Opportunité",

@@ -59,7 +59,7 @@ function CompanyLogin() {
                     setError('This account is registered as a student. Please use the student login.')
                     return
                 }
-                navigate('/company/candidates')
+                navigate('/company/intros')
             }
         } catch (err) {
             setError(getAuthErrorMessage(err))

@@ -15,7 +15,9 @@
         "matches": "Matches",
         "personalizedPlan": "Personalized Plan",
         "profile": "Profile",
+        "newCandidates": "New Candidates",
         "candidates": "Candidates",
+        "archived": "Archived",
         "postJob": "Post Job",
         "logout": "Logout"
     },
@@ -471,6 +473,77 @@
         "acceptCreateMatch": "Accept - Create Match",
         "noCandidates": "No candidates yet",
         "noCandidatesDesc": "Candidates who are interested in your offers will appear here."
+    },
+    "companyWorkflow": {
+        "common": {
+            "unknownCandidate": "Candidate",
+            "unknownOffer": "Offer"
+        },
+        "newCandidates": {
+            "title": "New Candidates",
+            "subtitle": "Review incoming interest and decide who moves to matches.",
+            "pendingCount": "{{count}} pending",
+            "loading": "Loading new candidates...",
+            "loadError": "Unable to load new candidates.",
+            "emptyTitle": "No new candidates right now",
+            "emptyDescription": "When students show interest in your offers, they will appear here.",
+            "openOffers": "Review active offers",
+            "actions": {
+                "refresh": "Refresh",
+                "message": "Message",
+                "archive": "Archive",
+                "reject": "Reject"
+            },
+            "meta": {
+                "forOffer": "For {{offer}}",
+                "expiresIn": "Expires in {{time}}",
+                "matchScore": "{{score}}% match"
+            }
+        },
+        "matches": {
+            "title": "Matches",
+            "subtitle": "Active mutual matches ready for conversation.",
+            "loading": "Loading matches...",
+            "loadError": "Unable to load matches.",
+            "emptyTitle": "No active matches yet",
+            "emptyDescription": "Accept new candidates to create matches and start chats.",
+            "reviewCandidates": "Review new candidates",
+            "actions": {
+                "refresh": "Refresh",
+                "message": "Message",
+                "archive": "Archive",
+                "reject": "Reject"
+            },
+            "meta": {
+                "matchedOn": "Matched on {{date}}",
+                "skills": "Skills"
+            }
+        },
+        "archived": {
+            "title": "Closed / Archived",
+            "subtitle": "Rejected, expired, and archived candidates.",
+            "loading": "Loading archived items...",
+            "loadError": "Unable to load archived items.",
+            "emptyTitle": "No archived items yet",
+            "emptyDescription": "Archived and rejected candidates will appear here.",
+            "filters": {
+                "all": "All",
+                "intro": "Candidates",
+                "match": "Matches"
+            },
+            "labels": {
+                "intro": "Candidate",
+                "match": "Match",
+                "declined": "Rejected",
+                "expired": "Expired",
+                "archived": "Archived",
+                "closedOn": "Closed on {{date}}",
+                "offer": "Offer"
+            },
+            "actions": {
+                "message": "Message"
+            }
+        }
     },
     "postJob": {
         "title": "Post a New Opportunity",
