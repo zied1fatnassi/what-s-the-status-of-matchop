@@ -5,6 +5,7 @@
         "retry": "Try again",
         "save": "Save",
         "cancel": "Cancel",
+        "close": "Close",
         "continue": "Continue",
         "back": "Back",
         "submit": "Submit"
@@ -618,11 +619,30 @@
         "aria": {
             "planSummary": "Plan summary",
             "methods": "D17 payment instructions",
-            "currentRequest": "Current payment request"
+            "currentRequest": "Current payment request",
+            "status": "Payment status",
+            "steps": "Checkout steps"
+        },
+        "statusBanner": {
+            "title": "Current status"
         },
         "summary": {
             "title": "Selected plan",
             "source": "Source"
+        },
+        "steps": {
+            "pay": {
+                "title": "Pay via D17",
+                "description": "Use the phone number, amount, and reference below when sending your transfer."
+            },
+            "upload": {
+                "title": "Upload proof",
+                "description": "Upload your payment proof so admins can verify your request."
+            },
+            "wait": {
+                "title": "Wait for approval",
+                "description": "After approval, refresh your status to confirm Premium activation."
+            }
         },
         "methods": {
             "title": "D17 transfer details",
@@ -654,6 +674,7 @@
         "notes": {
             "premiumActive": "Premium is already active on your account."
         },
+        "nextSteps": "Next step: keep this page open until your proof is uploaded, then check your status from My payments.",
         "request": {
             "title": "Current request",
             "notUploaded": "Not uploaded yet",
@@ -698,6 +719,64 @@
         "title": "Checkout canceled",
         "subtitle": "No changes were made. You can return to Premium any time.",
         "backToPremium": "Back to Premium"
+    },
+    "adminPayments": {
+        "title": "D17 Payments Review",
+        "subtitle": "Review payment requests and approve or reject submissions.",
+        "sectionTitle": "Payment requests",
+        "refresh": "Refresh",
+        "loading": "Loading requests...",
+        "empty": "No requests found.",
+        "searchPlaceholder": "Search by email, user ID, or reference",
+        "searchAria": "Search payment requests",
+        "filterAria": "Filter requests by status",
+        "filters": {
+            "all": "All statuses",
+            "pending": "Pending",
+            "approved": "Approved",
+            "rejected": "Rejected"
+        },
+        "counts": {
+            "all": "{{count}} requests",
+            "filtered": "{{count}} {{status}} requests"
+        },
+        "columns": {
+            "user": "User",
+            "plan": "Plan",
+            "amount": "Amount",
+            "status": "Status",
+            "created": "Created",
+            "actions": "Actions"
+        },
+        "actions": {
+            "viewProof": "View proof",
+            "approve": "Approve",
+            "reject": "Reject",
+            "showDetails": "Details",
+            "hideDetails": "Hide"
+        },
+        "fields": {
+            "reference": "Reference",
+            "userId": "User ID",
+            "d17Phone": "D17 phone",
+            "proofPath": "Proof path",
+            "reviewedAt": "Reviewed at",
+            "adminNote": "Admin note",
+            "addNote": "Admin note (optional)",
+            "notePlaceholder": "Add a note for this decision"
+        },
+        "proofModal": {
+            "title": "Proof preview",
+            "closeAria": "Close proof preview",
+            "iframeTitle": "Payment proof preview"
+        },
+        "toasts": {
+            "requestUpdated": "Request {{status}}."
+        },
+        "errors": {
+            "loadFailed": "Unable to load payment requests.",
+            "openProofFailed": "Unable to open proof."
+        }
     },
     "companyProfile": {
         "loading": "Loading company profile...",

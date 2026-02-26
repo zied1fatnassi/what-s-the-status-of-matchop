@@ -244,6 +244,17 @@
     background: #d32f2f;
 }
 
+.admin-btn-secondary {
+    background: var(--surface-soft);
+    color: var(--text-primary);
+    border: 1px solid var(--border-default);
+}
+
+.admin-btn-secondary:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
 .admin-btn-sm {
     padding: 0.35rem 0.75rem;
     font-size: 0.8rem;
@@ -290,9 +301,21 @@
     flex-wrap: wrap;
 }
 
+.admin-search-wrap {
+    flex: 1;
+    min-width: min(320px, 100%);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.admin-search-wrap svg {
+    color: var(--text-secondary);
+}
+
 .admin-search {
     flex: 1;
-    min-width: 250px;
+    min-width: 0;
     padding: 0.75rem 1rem;
     border: 1px solid var(--border-strong);
     border-radius: 8px;
@@ -323,6 +346,53 @@
 .admin-filter option {
     background: var(--surface-elevated);
     color: var(--text-primary);
+}
+
+.admin-table-compact th,
+.admin-table-compact td {
+    padding-top: 0.7rem;
+    padding-bottom: 0.7rem;
+}
+
+.admin-row-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    justify-content: flex-end;
+}
+
+.admin-details-row td {
+    background: var(--surface-muted);
+    border-top: none;
+}
+
+.admin-details-grid {
+    display: grid;
+    gap: 0.75rem;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.admin-details-grid dt {
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+}
+
+.admin-details-grid dd {
+    margin: 0.22rem 0 0;
+    color: var(--text-primary);
+    font-size: 0.86rem;
+    word-break: break-word;
+}
+
+.admin-details-note {
+    margin-top: 0.75rem;
+}
+
+.admin-details-note label {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-size: 0.78rem;
+    color: var(--text-secondary);
 }
 
 /* Pagination */
@@ -392,6 +462,26 @@
 .admin-modal h2 {
     color: var(--text-primary);
     margin-bottom: 1.5rem;
+}
+
+.admin-proof-modal {
+    max-width: min(980px, 100%);
+}
+
+.admin-proof-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.admin-proof-frame {
+    margin-top: 0.75rem;
+    width: 100%;
+    min-height: 65vh;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    background: var(--surface-soft);
 }
 
 .admin-modal-actions {

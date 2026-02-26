@@ -5,6 +5,7 @@
         "retry": "Réessayer",
         "save": "Enregistrer",
         "cancel": "Annuler",
+        "close": "Fermer",
         "continue": "Continuer",
         "back": "Retour",
         "submit": "Soumettre"
@@ -618,11 +619,30 @@
         "aria": {
             "planSummary": "Resume du plan",
             "methods": "Instructions de paiement D17",
-            "currentRequest": "Demande en cours"
+            "currentRequest": "Demande en cours",
+            "status": "Statut du paiement",
+            "steps": "Etapes du paiement"
+        },
+        "statusBanner": {
+            "title": "Statut actuel"
         },
         "summary": {
             "title": "Plan selectionne",
             "source": "Source"
+        },
+        "steps": {
+            "pay": {
+                "title": "Payer via D17",
+                "description": "Utilisez le numero, le montant et la reference ci-dessous pendant le transfert."
+            },
+            "upload": {
+                "title": "Televerser la preuve",
+                "description": "Televersez la preuve de paiement pour permettre la verification admin."
+            },
+            "wait": {
+                "title": "Attendre l'approbation",
+                "description": "Apres approbation, actualisez votre statut pour confirmer l'activation Premium."
+            }
         },
         "methods": {
             "title": "Details du transfert D17",
@@ -654,6 +674,7 @@
         "notes": {
             "premiumActive": "Premium est deja actif sur votre compte."
         },
+        "nextSteps": "Prochaine etape: gardez cette page ouverte jusqu'au televersement de la preuve, puis verifiez le statut depuis Mes paiements.",
         "request": {
             "title": "Demande actuelle",
             "notUploaded": "Pas encore televerse",
@@ -698,6 +719,64 @@
         "title": "Paiement annule",
         "subtitle": "Aucun changement n'a ete effectue. Vous pouvez revenir a Premium a tout moment.",
         "backToPremium": "Retour a Premium"
+    },
+    "adminPayments": {
+        "title": "Revision des paiements D17",
+        "subtitle": "Examinez les demandes de paiement et approuvez ou refusez les soumissions.",
+        "sectionTitle": "Demandes de paiement",
+        "refresh": "Actualiser",
+        "loading": "Chargement des demandes...",
+        "empty": "Aucune demande trouvee.",
+        "searchPlaceholder": "Rechercher par email, ID utilisateur ou reference",
+        "searchAria": "Rechercher des demandes de paiement",
+        "filterAria": "Filtrer les demandes par statut",
+        "filters": {
+            "all": "Tous les statuts",
+            "pending": "En attente",
+            "approved": "Approuve",
+            "rejected": "Refuse"
+        },
+        "counts": {
+            "all": "{{count}} demandes",
+            "filtered": "{{count}} demandes {{status}}"
+        },
+        "columns": {
+            "user": "Utilisateur",
+            "plan": "Plan",
+            "amount": "Montant",
+            "status": "Statut",
+            "created": "Cree le",
+            "actions": "Actions"
+        },
+        "actions": {
+            "viewProof": "Voir la preuve",
+            "approve": "Approuver",
+            "reject": "Refuser",
+            "showDetails": "Details",
+            "hideDetails": "Masquer"
+        },
+        "fields": {
+            "reference": "Reference",
+            "userId": "ID utilisateur",
+            "d17Phone": "Telephone D17",
+            "proofPath": "Chemin de preuve",
+            "reviewedAt": "Revise le",
+            "adminNote": "Note admin",
+            "addNote": "Note admin (optionnelle)",
+            "notePlaceholder": "Ajouter une note pour cette decision"
+        },
+        "proofModal": {
+            "title": "Apercu de la preuve",
+            "closeAria": "Fermer l'apercu de preuve",
+            "iframeTitle": "Apercu de la preuve de paiement"
+        },
+        "toasts": {
+            "requestUpdated": "Demande {{status}}."
+        },
+        "errors": {
+            "loadFailed": "Impossible de charger les demandes de paiement.",
+            "openProofFailed": "Impossible d'ouvrir la preuve."
+        }
     },
     "companyProfile": {
         "loading": "Chargement du profil entreprise...",

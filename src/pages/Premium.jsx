@@ -33,10 +33,6 @@ const FAQ_ITEMS = [
         answerKey: 'premium.faq.whenAvailable.answer'
     },
     {
-        questionKey: 'premium.faq.accountAndMatches.question',
-        answerKey: 'premium.faq.accountAndMatches.answer'
-    },
-    {
         questionKey: 'premium.faq.switchPlans.question',
         answerKey: 'premium.faq.switchPlans.answer'
     },
@@ -70,6 +66,7 @@ function Premium() {
     const entitlements = getEntitlements(profile)
     const statusClassName = `premium-status-${entitlements.premiumStatusLabel.toLowerCase()}`
     const sourceFromQuery = searchParams.get('source')
+    const visibleFeatures = useMemo(() => PREMIUM_FEATURES.slice(0, 4), [])
 
     useEffect(() => {
         let sourceFromStorage = null
@@ -184,7 +181,7 @@ function Premium() {
                 <section className="premium-benefits" aria-label={t('premium.aria.benefits')}>
                     <h2 className="premium-section-title">{t('premium.benefitsTitle')}</h2>
                     <ul className="premium-feature-list">
-                        {PREMIUM_FEATURES.map((feature) => {
+                        {visibleFeatures.map((feature) => {
                             const FeatureIcon = getFeatureIcon(feature)
                             return (
                                 <li key={feature}>

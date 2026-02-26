@@ -105,6 +105,7 @@ function Checkout() {
     const canCreateRequest = !isLoadingRequest && paymentRequest?.status !== 'pending'
     const canUploadProof = paymentRequest?.status === 'pending'
     const fallbackReference = useMemo(() => createD17ReferenceCode(user?.id, plan.id), [user?.id, plan.id])
+    const hasPendingRequest = paymentRequest?.status === 'pending'
 
     useEffect(() => {
         track('checkout_provider_selected', { provider: 'd17' })
@@ -287,6 +288,40 @@ function Checkout() {
                     {t('checkout.subtitle')}
                 </p>
 
+                <section className="checkout-status-banner" aria-label={t('checkout.aria.status')}>
+                    <div className="checkout-status-banner-header">
+                        <strong>{t('checkout.statusBanner.title')}</strong>
+                        <span className={`status-badge ${statusMeta.className}`}>
+                            {statusMeta.label}
+                        </span>
+                    </div>
+                    <p>{statusMeta.detail}</p>
+                </section>
+
+                <section className="checkout-steps" aria-label={t('checkout.aria.steps')}>
+                    <article className={`checkout-step ${paymentRequest ? 'done' : 'active'}`}>
+                        <span className="checkout-step-index">1</span>
+                        <div>
+                            <h3>{t('checkout.steps.pay.title')}</h3>
+                            <p>{t('checkout.steps.pay.description')}</p>
+                        </div>
+                    </article>
+                    <article className={`checkout-step ${paymentRequest?.proof_object_path ? 'done' : (hasPendingRequest ? 'active' : '')}`}>
+                        <span className="checkout-step-index">2</span>
+                        <div>
+                            <h3>{t('checkout.steps.upload.title')}</h3>
+                            <p>{t('checkout.steps.upload.description')}</p>
+                        </div>
+                    </article>
+                    <article className={`checkout-step ${paymentRequest?.status === 'approved' ? 'done' : ''}`}>
+                        <span className="checkout-step-index">3</span>
+                        <div>
+                            <h3>{t('checkout.steps.wait.title')}</h3>
+                            <p>{t('checkout.steps.wait.description')}</p>
+                        </div>
+                    </article>
+                </section>
+
                 <section className="checkout-summary" aria-label={t('checkout.aria.planSummary')}>
                     <h2>{t('checkout.summary.title')}</h2>
                     <div className="checkout-plan-card">
@@ -341,6 +376,10 @@ function Checkout() {
                         {errorMessage}
                     </p>
                 )}
+
+                <p className="checkout-inline-subtitle checkout-next-steps">
+                    {t('checkout.nextSteps')}
+                </p>
 
                 {paymentRequest && (
                     <section className="checkout-request" aria-label={t('checkout.aria.currentRequest')}>

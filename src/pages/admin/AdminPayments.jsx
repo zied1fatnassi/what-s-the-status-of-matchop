@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Eye, RefreshCw } from 'lucide-react'
+import { Fragment, useCallback, useEffect, useMemo, useState } from 'react'
+import { ChevronDown, ChevronUp, Eye, RefreshCw, Search, X } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import AuthToast from '../../components/AuthToast'
 import { supabase } from '../../lib/supabase'
 import './Admin.css'
@@ -51,13 +52,21 @@ function mapStatusClass(status) {
 }
 
 export default function AdminPayments() {
+    const { t, i18n } = useTranslation(undefined, { useSuspense: false })
     const [rows, setRows] = useState([])
     const [isLoading, setIsLoading] = useState(true)
     const [statusFilter, setStatusFilter] = useState('all')
+    const [searchTerm, setSearchTerm] = useState('')
+    const [expandedId, setExpandedId] = useState(null)
     const [actionError, setActionError] = useState('')
     const [toast, setToast] = useState(null)
     const [inFlightId, setInFlightId] = useState(null)
     const [noteById, setNoteById] = useState({})
+    const [proofPreview, setProofPreview] = useState({
+        open: false,
+        url: '',
+        reference: ''
+    })
 
     const loadPayments = useCallback(async () => {
         setIsLoading(true)
@@ -77,7 +86,7 @@ export default function AdminPayments() {
 
         if (requestsRes.error) {
             setRows([])
-            setActionError(requestsRes.error.message || 'Unable to load payment requests.')
+            setActionError(requestsRes.error.message || t('adminPayments.errors.loadFailed'))
             setIsLoading(false)
             return
         }
@@ -101,13 +110,32 @@ export default function AdminPayments() {
 
         setRows(normalizeRows(requestRows, emailByUserId))
         setIsLoading(false)
-    }, [statusFilter])
+    }, [statusFilter, t])
 
     useEffect(() => {
         loadPayments()
     }, [loadPayments])
 
-    const handleViewProof = async (objectPath) => {
+    const filteredRows = useMemo(() => {
+        const normalizedSearch = searchTerm.trim().toLowerCase()
+        if (!normalizedSearch) return rows
+
+        return rows.filter((row) => (
+            row.user_email?.toLowerCase().includes(normalizedSearch) ||
+            row.user_id?.toLowerCase().includes(normalizedSearch) ||
+            row.reference?.toLowerCase().includes(normalizedSearch)
+        ))
+    }, [rows, searchTerm])
+
+    const formatDateTime = useCallback((value) => {
+        if (!value) return '-'
+        return new Intl.DateTimeFormat(i18n.language || 'en', {
+            dateStyle: 'medium',
+            timeStyle: 'short'
+        }).format(new Date(value))
+    }, [i18n.language])
+
+    const handleViewProof = async (objectPath, reference) => {
         if (!objectPath) return
 
         const proofRes = await supabase
@@ -118,12 +146,16 @@ export default function AdminPayments() {
         if (proofRes.error || !proofRes.data?.signedUrl) {
             setToast({
                 type: 'error',
-                message: proofRes.error?.message || 'Unable to open proof.'
+                message: proofRes.error?.message || t('adminPayments.errors.openProofFailed')
             })
             return
         }
 
-        window.open(proofRes.data.signedUrl, '_blank', 'noopener,noreferrer')
+        setProofPreview({
+            open: true,
+            url: proofRes.data.signedUrl,
+            reference: reference || ''
+        })
     }
 
     const handleReview = async (paymentRequestId, action) => {
@@ -147,7 +179,7 @@ export default function AdminPayments() {
 
         setToast({
             type: 'success',
-            message: `Request ${data.status}.`
+            message: t('adminPayments.toasts.requestUpdated', { status: data.status })
         })
         setNoteById((prev) => ({
             ...prev,
@@ -158,9 +190,11 @@ export default function AdminPayments() {
     }
 
     const rowsCountLabel = useMemo(() => {
-        if (statusFilter === 'all') return `${rows.length} requests`
-        return `${rows.length} ${statusFilter} requests`
-    }, [rows.length, statusFilter])
+        if (statusFilter === 'all') {
+            return t('adminPayments.counts.all', { count: filteredRows.length })
+        }
+        return t('adminPayments.counts.filtered', { count: filteredRows.length, status: statusFilter })
+    }, [filteredRows.length, statusFilter, t])
 
     return (
         <div className="admin-container">
@@ -173,21 +207,62 @@ export default function AdminPayments() {
                 />
             )}
 
+            {proofPreview.open && (
+                <div className="admin-modal-overlay" role="dialog" aria-modal="true" aria-label={t('adminPayments.proofModal.title')}>
+                    <div className="admin-modal admin-proof-modal">
+                        <div className="admin-proof-modal-header">
+                            <h2>{t('adminPayments.proofModal.title')}</h2>
+                            <button
+                                type="button"
+                                className="admin-btn admin-btn-secondary admin-btn-sm"
+                                onClick={() => setProofPreview({ open: false, url: '', reference: '' })}
+                                aria-label={t('adminPayments.proofModal.closeAria')}
+                            >
+                                <X size={14} />
+                                {t('common.close')}
+                            </button>
+                        </div>
+                        {proofPreview.reference && (
+                            <p className="checkout-inline-subtitle">
+                                {t('adminPayments.fields.reference')}: {proofPreview.reference}
+                            </p>
+                        )}
+                        <iframe
+                            src={proofPreview.url}
+                            title={t('adminPayments.proofModal.iframeTitle')}
+                            className="admin-proof-frame"
+                        />
+                    </div>
+                </div>
+            )}
+
             <div className="admin-header">
-                <h1>D17 Payments Review</h1>
-                <p>Review pending premium payment requests and approve/reject submissions.</p>
+                <h1>{t('adminPayments.title')}</h1>
+                <p>{t('adminPayments.subtitle')}</p>
             </div>
 
             <div className="admin-toolbar">
+                <div className="admin-search-wrap">
+                    <Search size={16} />
+                    <input
+                        type="search"
+                        className="admin-search"
+                        value={searchTerm}
+                        placeholder={t('adminPayments.searchPlaceholder')}
+                        onChange={(event) => setSearchTerm(event.target.value)}
+                        aria-label={t('adminPayments.searchAria')}
+                    />
+                </div>
                 <select
                     className="admin-filter"
                     value={statusFilter}
                     onChange={(event) => setStatusFilter(event.target.value)}
+                    aria-label={t('adminPayments.filterAria')}
                 >
-                    <option value="all">All statuses</option>
-                    <option value="pending">Pending</option>
-                    <option value="approved">Approved</option>
-                    <option value="rejected">Rejected</option>
+                    <option value="all">{t('adminPayments.filters.all')}</option>
+                    <option value="pending">{t('adminPayments.filters.pending')}</option>
+                    <option value="approved">{t('adminPayments.filters.approved')}</option>
+                    <option value="rejected">{t('adminPayments.filters.rejected')}</option>
                 </select>
 
                 <button
@@ -197,100 +272,144 @@ export default function AdminPayments() {
                     disabled={isLoading}
                 >
                     <RefreshCw size={14} className={isLoading ? 'is-spinning' : ''} />
-                    Refresh
+                    {t('adminPayments.refresh')}
                 </button>
             </div>
 
             <div className="admin-section">
-                <h2>Payment Requests</h2>
+                <h2>{t('adminPayments.sectionTitle')}</h2>
                 <p className="no-activity">{rowsCountLabel}</p>
 
                 {actionError && <p className="admin-message error">{actionError}</p>}
 
                 {isLoading ? (
-                    <p className="no-activity">Loading requests...</p>
-                ) : rows.length === 0 ? (
-                    <p className="no-activity">No requests found.</p>
+                    <p className="no-activity">{t('adminPayments.loading')}</p>
+                ) : filteredRows.length === 0 ? (
+                    <p className="no-activity">{t('adminPayments.empty')}</p>
                 ) : (
                     <div className="admin-table-container">
-                        <table className="admin-table">
+                        <table className="admin-table admin-table-compact">
                             <thead>
                                 <tr>
-                                    <th>User</th>
-                                    <th>Plan</th>
-                                    <th>Amount</th>
-                                    <th>Reference</th>
-                                    <th>Status</th>
-                                    <th>Proof</th>
-                                    <th>Created</th>
-                                    <th>Review</th>
+                                    <th>{t('adminPayments.columns.user')}</th>
+                                    <th>{t('adminPayments.columns.plan')}</th>
+                                    <th>{t('adminPayments.columns.amount')}</th>
+                                    <th>{t('adminPayments.columns.status')}</th>
+                                    <th>{t('adminPayments.columns.created')}</th>
+                                    <th>{t('adminPayments.columns.actions')}</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {rows.map((row) => (
-                                    <tr key={row.id}>
-                                        <td data-label="User">{row.user_email}</td>
-                                        <td data-label="Plan">{row.plan_id}</td>
-                                        <td data-label="Amount">{row.amount_tnd} {row.currency}</td>
-                                        <td data-label="Reference">{row.reference}</td>
-                                        <td data-label="Status">
-                                            <span className={`status-badge ${mapStatusClass(row.status)}`}>
-                                                {row.status}
-                                            </span>
-                                        </td>
-                                        <td data-label="Proof">
-                                            {row.proof_object_path ? (
-                                                <button
-                                                    type="button"
-                                                    className="admin-btn admin-btn-primary admin-btn-sm"
-                                                    onClick={() => handleViewProof(row.proof_object_path)}
-                                                >
-                                                    <Eye size={14} />
-                                                    View
-                                                </button>
-                                            ) : (
-                                                '-'
+                                {filteredRows.map((row) => {
+                                    const isExpanded = expandedId === row.id
+                                    return (
+                                        <Fragment key={row.id}>
+                                            <tr>
+                                                <td data-label={t('adminPayments.columns.user')}>{row.user_email}</td>
+                                                <td data-label={t('adminPayments.columns.plan')}>{row.plan_id}</td>
+                                                <td data-label={t('adminPayments.columns.amount')}>{row.amount_tnd} {row.currency}</td>
+                                                <td data-label={t('adminPayments.columns.status')}>
+                                                    <span className={`status-badge ${mapStatusClass(row.status)}`}>
+                                                        {row.status}
+                                                    </span>
+                                                </td>
+                                                <td data-label={t('adminPayments.columns.created')}>
+                                                    {formatDateTime(row.created_at)}
+                                                </td>
+                                                <td data-label={t('adminPayments.columns.actions')}>
+                                                    <div className="admin-row-actions">
+                                                        {row.proof_object_path && (
+                                                            <button
+                                                                type="button"
+                                                                className="admin-btn admin-btn-primary admin-btn-sm"
+                                                                onClick={() => handleViewProof(row.proof_object_path, row.reference)}
+                                                            >
+                                                                <Eye size={14} />
+                                                                {t('adminPayments.actions.viewProof')}
+                                                            </button>
+                                                        )}
+                                                        {row.status === 'pending' && (
+                                                            <>
+                                                                <button
+                                                                    type="button"
+                                                                    className="admin-btn admin-btn-success admin-btn-sm"
+                                                                    onClick={() => handleReview(row.id, 'approve')}
+                                                                    disabled={inFlightId === row.id}
+                                                                >
+                                                                    {t('adminPayments.actions.approve')}
+                                                                </button>
+                                                                <button
+                                                                    type="button"
+                                                                    className="admin-btn admin-btn-danger admin-btn-sm"
+                                                                    onClick={() => handleReview(row.id, 'reject')}
+                                                                    disabled={inFlightId === row.id}
+                                                                >
+                                                                    {t('adminPayments.actions.reject')}
+                                                                </button>
+                                                            </>
+                                                        )}
+                                                        <button
+                                                            type="button"
+                                                            className="admin-btn admin-btn-secondary admin-btn-sm"
+                                                            onClick={() => setExpandedId(isExpanded ? null : row.id)}
+                                                        >
+                                                            {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                                                            {isExpanded ? t('adminPayments.actions.hideDetails') : t('adminPayments.actions.showDetails')}
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            {isExpanded && (
+                                                <tr className="admin-details-row">
+                                                    <td colSpan={6}>
+                                                        <div className="admin-details-grid">
+                                                            <div>
+                                                                <dt>{t('adminPayments.fields.reference')}</dt>
+                                                                <dd>{row.reference}</dd>
+                                                            </div>
+                                                            <div>
+                                                                <dt>{t('adminPayments.fields.userId')}</dt>
+                                                                <dd>{row.user_id}</dd>
+                                                            </div>
+                                                            <div>
+                                                                <dt>{t('adminPayments.fields.d17Phone')}</dt>
+                                                                <dd>{row.d17_phone}</dd>
+                                                            </div>
+                                                            <div>
+                                                                <dt>{t('adminPayments.fields.proofPath')}</dt>
+                                                                <dd>{row.proof_object_path || '-'}</dd>
+                                                            </div>
+                                                            <div>
+                                                                <dt>{t('adminPayments.fields.reviewedAt')}</dt>
+                                                                <dd>{formatDateTime(row.reviewed_at)}</dd>
+                                                            </div>
+                                                            <div>
+                                                                <dt>{t('adminPayments.fields.adminNote')}</dt>
+                                                                <dd>{row.admin_note || '-'}</dd>
+                                                            </div>
+                                                        </div>
+                                                        {row.status === 'pending' && (
+                                                            <div className="admin-details-note">
+                                                                <label htmlFor={`admin-note-${row.id}`}>{t('adminPayments.fields.addNote')}</label>
+                                                                <input
+                                                                    id={`admin-note-${row.id}`}
+                                                                    type="text"
+                                                                    className="admin-search"
+                                                                    value={noteById[row.id] || ''}
+                                                                    placeholder={t('adminPayments.fields.notePlaceholder')}
+                                                                    onChange={(event) => setNoteById((prev) => ({
+                                                                        ...prev,
+                                                                        [row.id]: event.target.value
+                                                                    }))}
+                                                                />
+                                                            </div>
+                                                        )}
+                                                    </td>
+                                                </tr>
                                             )}
-                                        </td>
-                                        <td data-label="Created">
-                                            {row.created_at ? new Date(row.created_at).toLocaleString() : '-'}
-                                        </td>
-                                        <td data-label="Review">
-                                            {row.status === 'pending' ? (
-                                                <div className="admin-actions-cell">
-                                                    <input
-                                                        type="text"
-                                                        className="admin-search"
-                                                        value={noteById[row.id] || ''}
-                                                        placeholder="Admin note (optional)"
-                                                        onChange={(event) => setNoteById((prev) => ({
-                                                            ...prev,
-                                                            [row.id]: event.target.value
-                                                        }))}
-                                                    />
-                                                    <button
-                                                        type="button"
-                                                        className="admin-btn admin-btn-success admin-btn-sm"
-                                                        onClick={() => handleReview(row.id, 'approve')}
-                                                        disabled={inFlightId === row.id}
-                                                    >
-                                                        Approve
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        className="admin-btn admin-btn-danger admin-btn-sm"
-                                                        onClick={() => handleReview(row.id, 'reject')}
-                                                        disabled={inFlightId === row.id}
-                                                    >
-                                                        Reject
-                                                    </button>
-                                                </div>
-                                            ) : (
-                                                <span>{row.admin_note || '-'}</span>
-                                            )}
-                                        </td>
-                                    </tr>
-                                ))}
+                                        </Fragment>
+                                    )
+                                })}
                             </tbody>
                         </table>
                     </div>
