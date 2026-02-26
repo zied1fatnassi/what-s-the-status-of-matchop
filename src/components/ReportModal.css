@@ -2,7 +2,7 @@
 .report-modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.7);
+    background: var(--overlay-bg);
     backdrop-filter: blur(6px);
     display: flex;
     align-items: flex-end;
@@ -70,9 +70,9 @@
 }
 
 .report-modal-close-btn:hover {
-    background: rgba(0, 0, 0, 0.05);
+    background: color-mix(in srgb, var(--surface-2) 92%, transparent);
     color: var(--accent-red);
-    border-color: rgba(220, 38, 38, 0.25);
+    border-color: color-mix(in srgb, var(--danger) 26%, var(--border));
 }
 
 .report-form-group {
@@ -105,12 +105,12 @@
 
 .reason-option:hover {
     border-color: var(--primary);
-    background: rgba(37, 99, 235, 0.05);
+    background: color-mix(in srgb, var(--primary) 8%, var(--surface-2));
 }
 
 .reason-option.selected {
     border-color: var(--primary);
-    background: rgba(37, 99, 235, 0.1);
+    background: color-mix(in srgb, var(--primary) 14%, var(--surface-2));
 }
 
 .reason-option input[type='radio'] {
@@ -154,7 +154,7 @@
 .report-form textarea:focus {
     outline: none;
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    box-shadow: 0 0 0 3px var(--primary-glow);
 }
 
 .char-count {
@@ -167,8 +167,8 @@
 
 .report-disclaimer {
     padding: var(--space-3);
-    background: rgba(220, 38, 38, 0.08);
-    border-left: 3px solid var(--accent-red);
+    background: color-mix(in srgb, var(--status-rejected-bg) 85%, var(--surface-2));
+    border-left: 3px solid var(--danger);
     border-radius: var(--radius-lg);
     margin-bottom: var(--space-4);
 }
@@ -197,8 +197,8 @@
 }
 
 .report-modal-dialog .btn-danger {
-    background: var(--accent-red);
-    color: white;
+    background: var(--danger);
+    color: var(--text-on-primary);
     border: none;
 }
 
@@ -217,7 +217,7 @@
 }
 
 .success-icon {
-    color: #10b981;
+    color: var(--success);
     margin-bottom: var(--space-4);
     animation: scaleIn 0.4s ease-out;
 }
@@ -243,8 +243,8 @@
     align-items: flex-start;
     gap: var(--space-3);
     padding: var(--space-3);
-    background: rgba(220, 38, 38, 0.08);
-    border: 1px solid rgba(220, 38, 38, 0.25);
+    background: color-mix(in srgb, var(--status-rejected-bg) 85%, var(--surface-2));
+    border: 1px solid var(--status-rejected-border);
     border-radius: var(--radius-lg);
     margin-bottom: var(--space-4);
 }

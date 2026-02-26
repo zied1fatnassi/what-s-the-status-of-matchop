@@ -180,7 +180,7 @@
 
 .navbar-link--primary {
     background: var(--primary);
-    border: 1px solid color-mix(in srgb, var(--primary) 80%, white);
+    border: 1px solid color-mix(in srgb, var(--primary) 80%, var(--surface));
     color: var(--text-on-primary);
     font-weight: 600;
 }
@@ -371,7 +371,7 @@
 }
 
 .logout-btn:hover {
-    background: rgba(251, 113, 133, 0.12);
+    background: color-mix(in srgb, var(--accent-rose) 16%, transparent);
 }
 
 @media (min-width: 1024px) {

@@ -10,7 +10,7 @@
     background:
         radial-gradient(circle at 20% 20%, color-mix(in srgb, var(--primary) 18%, transparent), transparent 45%),
         radial-gradient(circle at 80% 80%, color-mix(in srgb, var(--accent-teal) 15%, transparent), transparent 45%),
-        rgba(8, 10, 19, 0.55);
+        var(--overlay-bg);
     backdrop-filter: blur(14px) saturate(140%);
 }
 
@@ -18,14 +18,14 @@
     position: relative;
     width: min(100%, 520px);
     border-radius: var(--radius-xl);
-    border: 1px solid color-mix(in srgb, var(--glass-border, rgba(255, 255, 255, 0.2)) 75%, transparent);
+    border: 1px solid color-mix(in srgb, var(--glass-border) 75%, transparent);
     background:
         linear-gradient(
             145deg,
             color-mix(in srgb, var(--bento-card, rgba(20, 28, 45, 0.88)) 86%, transparent),
             color-mix(in srgb, var(--bento-card-hover, rgba(16, 24, 39, 0.94)) 95%, transparent)
         );
-    box-shadow: 0 24px 60px rgba(5, 8, 18, 0.5);
+    box-shadow: var(--shadow-xl);
     padding: var(--space-6);
     color: var(--text-primary);
 }
@@ -124,4 +124,3 @@
         grid-template-columns: 1fr 1fr;
     }
 }
-

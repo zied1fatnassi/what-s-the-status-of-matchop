@@ -125,6 +125,17 @@
   --status-rejected-fg: #b91c1c;
   --status-rejected-bg: rgba(239, 68, 68, 0.14);
   --status-rejected-border: rgba(220, 38, 38, 0.32);
+
+  /* Semantic Theme Contract */
+  --bg: var(--bg-main);
+  --surface: var(--surface-elevated);
+  --surface-2: var(--surface-soft);
+  --text: var(--text-primary);
+  --border: var(--border-default);
+  --shadow: var(--shadow-md);
+  --danger: #b91c1c;
+  --success: #15803d;
+  --warning: #b45309;
   
   /* Input Fields */
   --input-bg: #ffffff;
@@ -204,6 +215,17 @@
   --status-rejected-fg: #fca5a5;
   --status-rejected-bg: rgba(239, 68, 68, 0.2);
   --status-rejected-border: rgba(239, 68, 68, 0.45);
+
+  /* Semantic Theme Contract */
+  --bg: var(--bg-main);
+  --surface: var(--surface-elevated);
+  --surface-2: var(--surface-soft);
+  --text: var(--text-primary);
+  --border: var(--border-default);
+  --shadow: var(--shadow-md);
+  --danger: #b91c1c;
+  --success: #15803d;
+  --warning: #b45309;
   
   /* Input Fields */
   --input-bg: #26262d;

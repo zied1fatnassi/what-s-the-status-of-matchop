@@ -120,9 +120,9 @@
 }
 
 .checkout-plan-card {
-    border: 1px solid var(--bento-card-border-subtle);
+    border: 1px solid var(--border);
     border-radius: var(--radius-lg);
-    background: color-mix(in srgb, var(--bento-card) 92%, transparent);
+    background: var(--surface);
     padding: var(--space-4);
 }
 
@@ -177,9 +177,9 @@
     display: flex;
     align-items: center;
     gap: var(--space-2);
-    border: 1px solid var(--bento-card-border-subtle);
+    border: 1px solid var(--border);
     border-radius: var(--radius-md);
-    background: color-mix(in srgb, var(--bento-card) 90%, transparent);
+    background: var(--surface-2);
     padding: 0.55rem 0.7rem;
     color: var(--text-primary);
 }
@@ -190,8 +190,8 @@
 
 .checkout-reference-box {
     border-radius: var(--radius-md);
-    border: 1px solid var(--bento-card-border-subtle);
-    background: color-mix(in srgb, var(--bento-card) 92%, transparent);
+    border: 1px solid var(--border);
+    background: var(--surface);
     padding: 0.65rem 0.75rem;
     display: grid;
     gap: 0.22rem;
@@ -231,9 +231,9 @@
 
 .checkout-request {
     margin-top: var(--space-5);
-    border: 1px solid var(--bento-card-border-subtle);
+    border: 1px solid var(--border);
     border-radius: var(--radius-lg);
-    background: color-mix(in srgb, var(--bento-card) 92%, transparent);
+    background: var(--surface);
     padding: var(--space-4);
 }
 
@@ -257,7 +257,7 @@
 }
 
 .checkout-request-grid div {
-    border: 1px solid var(--bento-card-border-subtle);
+    border: 1px solid var(--border);
     border-radius: var(--radius-md);
     padding: 0.55rem 0.65rem;
 }
@@ -288,8 +288,8 @@
 
 .checkout-proof-upload input[type="file"] {
     width: 100%;
-    border: 1px solid var(--bento-card-border-subtle);
-    background: color-mix(in srgb, var(--bento-card) 94%, transparent);
+    border: 1px solid var(--border);
+    background: var(--surface-2);
     border-radius: var(--radius-md);
     padding: 0.6rem 0.65rem;
     color: var(--text-primary);
@@ -303,11 +303,11 @@
 }
 
 .checkout-error-note {
-    color: var(--accent-red);
+    color: var(--danger);
 }
 
 .checkout-success-note {
-    color: var(--accent-teal);
+    color: var(--success);
 }
 
 .status-badge {

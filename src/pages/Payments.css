@@ -50,9 +50,9 @@
 }
 
 .payments-card {
-    border: 1px solid var(--bento-card-border-subtle);
+    border: 1px solid var(--border);
     border-radius: var(--radius-lg);
-    background: color-mix(in srgb, var(--bento-card) 92%, transparent);
+    background: var(--surface);
     padding: var(--space-4);
 }
 
@@ -78,9 +78,10 @@
 }
 
 .payments-meta-item {
-    border: 1px solid var(--bento-card-border-subtle);
+    border: 1px solid var(--border);
     border-radius: var(--radius-md);
     padding: 0.5rem 0.6rem;
+    background: var(--surface-2);
 }
 
 .payments-meta-item dt {

@@ -9,7 +9,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(0, 0, 0, 0.8);
+    background: var(--overlay-bg);
     backdrop-filter: blur(10px);
     opacity: 0;
     transition: opacity 0.3s ease;
@@ -36,7 +36,11 @@
     position: relative;
     width: 100%;
     max-width: min(100%, 560px);
-    background: var(--card-gradient, linear-gradient(135deg, rgba(15, 12, 41, 0.95) 0%, rgba(48, 43, 99, 0.95) 100%));
+    background: linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--surface) 92%, var(--primary) 8%) 0%,
+        color-mix(in srgb, var(--surface-2) 92%, var(--accent-purple) 8%) 100%
+    );
     backdrop-filter: blur(20px);
     border: 1px solid var(--glass-border);
     border-radius: var(--radius-xl);
@@ -60,7 +64,7 @@
     position: absolute;
     top: var(--space-3);
     right: var(--space-3);
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--text-secondary);
     padding: var(--space-2);
     border-radius: var(--radius-full);
     transition: all var(--transition-base, 0.2s);
@@ -82,8 +86,8 @@
 }
 
 .match-modal .close-btn:hover {
-    color: white;
-    background: var(--glass-bg, rgba(255, 255, 255, 0.1));
+    color: var(--text-primary);
+    background: var(--surface-2);
 }
 
 .match-content {
@@ -131,7 +135,7 @@
 }
 
 .match-subtitle {
-    color: rgba(255, 255, 255, 0.85);
+    color: var(--text-secondary);
     font-size: var(--font-size-lg);
 }
 
@@ -194,8 +198,8 @@
 /* Interview Details Section */
 .interview-details {
     width: 100%;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
     border-radius: var(--radius-xl);
     padding: var(--space-5);
     text-align: left;
@@ -208,7 +212,7 @@
     gap: var(--space-2);
     font-size: var(--font-size-lg);
     font-weight: 600;
-    color: #64b5f6;
+    color: var(--primary);
     margin-bottom: var(--space-4);
 }
 
@@ -223,27 +227,27 @@
     display: flex;
     align-items: center;
     gap: var(--space-2);
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--text-primary);
     font-size: var(--font-size-sm);
 }
 
 .interview-item svg {
-    color: #42a5f5;
+    color: var(--primary);
     flex-shrink: 0;
 }
 
 .interview-item strong {
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--text-secondary);
 }
 
 .next-steps {
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid var(--border);
     padding-top: var(--space-4);
 }
 
 .next-steps h4 {
     font-size: var(--font-size-sm);
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--text-secondary);
     margin-bottom: var(--space-3);
     font-weight: 500;
 }
@@ -262,11 +266,11 @@
     align-items: flex-start;
     gap: var(--space-2);
     font-size: var(--font-size-sm);
-    color: rgba(255, 255, 255, 0.85);
+    color: var(--text-primary);
 }
 
 .next-steps li svg {
-    color: #4caf50;
+    color: var(--success);
     flex-shrink: 0;
     margin-top: 2px;
 }
