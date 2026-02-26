@@ -239,9 +239,6 @@ ON CONFLICT (id) DO UPDATE
 SET name = EXCLUDED.name,
     public = EXCLUDED.public,
     file_size_limit = EXCLUDED.file_size_limit;
-ON CONFLICT (id) DO UPDATE
-SET public = EXCLUDED.public,
-    file_size_limit = EXCLUDED.file_size_limit;
 
 DROP POLICY IF EXISTS "payment_proofs_insert_own" ON storage.objects;
 CREATE POLICY "payment_proofs_insert_own"
