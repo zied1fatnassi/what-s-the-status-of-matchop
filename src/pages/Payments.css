@@ -130,16 +130,21 @@
     align-items: center;
     justify-content: space-between;
     gap: var(--space-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    padding: 0.3rem 0.45rem;
 }
 
 .payments-chip {
     text-transform: capitalize;
     font-size: 0.72rem;
+    font-weight: 700;
 }
 
 .payments-muted {
     margin: 0;
-    color: var(--text-muted);
+    color: var(--text-secondary);
     font-size: 0.78rem;
 }
 

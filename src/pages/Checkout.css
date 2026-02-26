@@ -352,6 +352,24 @@
     background: color-mix(in srgb, var(--surface-muted) 85%, transparent);
 }
 
+.status-badge.status-created {
+    color: color-mix(in srgb, var(--primary) 76%, var(--text-primary));
+    border-color: color-mix(in srgb, var(--primary) 35%, var(--border-default));
+    background: color-mix(in srgb, var(--primary) 14%, var(--surface));
+}
+
+.status-badge.status-proof_uploaded {
+    color: color-mix(in srgb, var(--accent-teal) 78%, var(--text-primary));
+    border-color: color-mix(in srgb, var(--accent-teal) 40%, var(--border-default));
+    background: color-mix(in srgb, var(--accent-teal) 14%, var(--surface));
+}
+
+.status-badge.status-updated {
+    color: var(--text-secondary);
+    border-color: var(--border-default);
+    background: color-mix(in srgb, var(--surface-muted) 85%, transparent);
+}
+
 .checkout-result {
     text-align: center;
 }

@@ -745,18 +745,24 @@
             "rejected": {
                 "label": "Refuse",
                 "detail": "Paiement refuse. Consultez la note admin et soumettez une nouvelle demande."
+            },
+            "reverted": {
+                "label": "Annule",
+                "detail": "Cette approbation a ete annulee par un admin. Creez une nouvelle demande pour continuer."
             }
         },
         "notes": {
             "premiumActive": "Premium est deja actif sur votre compte.",
             "proofUploadedPending": "Preuve televersee avec succes. Vous serez notifie apres la revision admin.",
-            "rejectedNextStep": "Votre demande a ete refusee. Creez une nouvelle demande et televersez une preuve plus claire."
+            "rejectedNextStep": "Votre demande a ete refusee. Creez une nouvelle demande et televersez une preuve plus claire.",
+            "revertedNextStep": "Cette approbation a ete annulee. Creez une nouvelle demande et televersez la preuve a nouveau."
         },
         "nextSteps": "Prochaine etape: gardez cette page ouverte jusqu'au televersement de la preuve, puis verifiez le statut depuis Mes paiements.",
         "nextStepsPendingNoProof": "Prochaine etape: effectuez le transfert D17, puis televersez votre preuve de paiement.",
         "nextStepsPendingWithProof": "Prochaine etape: votre preuve est televersee. Actualisez le statut en attendant la revision admin.",
         "nextStepsApproved": "Prochaine etape: allez sur Premium et actualisez le statut de votre compte.",
         "nextStepsRejected": "Prochaine etape: creez une nouvelle demande de paiement et televersez une preuve valide.",
+        "nextStepsReverted": "Prochaine etape: creez une nouvelle demande puis soumettez la preuve pour revision admin.",
         "request": {
             "title": "Demande actuelle",
             "notUploaded": "Pas encore televerse",
@@ -842,6 +848,14 @@
             "undoApproval": "Annuler l'approbation",
             "showDetails": "Details",
             "hideDetails": "Masquer"
+        },
+        "auditActions": {
+            "created": "Cree",
+            "updated": "Mis a jour",
+            "approved": "Approuve",
+            "rejected": "Refuse",
+            "reverted": "Annule",
+            "proof_uploaded": "Preuve televersee"
         },
         "fields": {
             "reference": "Reference",

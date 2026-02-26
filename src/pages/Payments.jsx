@@ -4,6 +4,7 @@ import { Eye, RefreshCw } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import AuthToast from '../components/AuthToast'
 import { useAuth } from '../context/AuthContext'
+import { track } from '../lib/analytics'
 import { fetchPaymentRequestAudit } from '../lib/payments/admin'
 import { getEntitlements } from '../lib/premiumEntitlements'
 import { supabase } from '../lib/supabase'
@@ -78,6 +79,10 @@ function Payments() {
             ...prev,
             [paymentRequestId]: nextOpen
         }))
+
+        if (nextOpen) {
+            track('student_payment_history_opened', { paymentRequestId })
+        }
 
         if (!nextOpen || auditRowsById[paymentRequestId]) {
             return

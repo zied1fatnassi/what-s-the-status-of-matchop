@@ -282,6 +282,12 @@
     font-size: 0.8rem;
 }
 
+.admin-row-actions .admin-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.32rem;
+}
+
 /* Status Badges */
 .status-badge {
     display: inline-block;
@@ -313,6 +319,24 @@
     background: var(--status-rejected-bg);
     color: var(--status-rejected-fg);
     border: 1px solid var(--status-rejected-border);
+}
+
+.status-created {
+    background: color-mix(in srgb, var(--primary) 14%, var(--surface));
+    color: color-mix(in srgb, var(--primary) 75%, var(--text-primary));
+    border: 1px solid color-mix(in srgb, var(--primary) 35%, var(--border-default));
+}
+
+.status-proof {
+    background: color-mix(in srgb, var(--accent-teal) 14%, var(--surface));
+    color: color-mix(in srgb, var(--accent-teal) 78%, var(--text-primary));
+    border: 1px solid color-mix(in srgb, var(--accent-teal) 38%, var(--border-default));
+}
+
+.status-updated {
+    background: color-mix(in srgb, var(--surface-muted) 85%, transparent);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-default);
 }
 
 /* Search & Filters */

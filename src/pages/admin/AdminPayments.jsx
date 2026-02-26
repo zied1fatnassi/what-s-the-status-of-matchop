@@ -1,5 +1,5 @@
 import { Fragment, useCallback, useEffect, useMemo, useState } from 'react'
-import { ChevronDown, ChevronUp, Eye, RefreshCw, Search, X } from 'lucide-react'
+import { ChevronDown, ChevronUp, Eye, History, RefreshCw, Search, X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import AuthToast from '../../components/AuthToast'
 import { track } from '../../lib/analytics'
@@ -52,6 +52,16 @@ function mapStatusClass(status) {
     if (status === 'approved') return 'status-active'
     if (status === 'rejected') return 'status-suspended'
     if (status === 'reverted') return 'status-inactive'
+    return 'status-pending'
+}
+
+function mapAuditActionClass(action) {
+    if (action === 'approved') return 'status-active'
+    if (action === 'rejected') return 'status-suspended'
+    if (action === 'reverted') return 'status-inactive'
+    if (action === 'proof_uploaded') return 'status-proof'
+    if (action === 'created') return 'status-created'
+    if (action === 'updated') return 'status-updated'
     return 'status-pending'
 }
 
@@ -215,6 +225,7 @@ export default function AdminPayments() {
     }, [filteredRows.length, statusFilter, t])
 
     const handleOpenAudit = async (paymentRequestId) => {
+        track('admin_payment_audit_opened', { paymentRequestId })
         setAuditModal({
             open: true,
             paymentRequestId,
@@ -375,8 +386,8 @@ export default function AdminPayments() {
                                 {auditModal.rows.map((row) => (
                                     <article key={row.id} className="admin-audit-item">
                                         <div className="admin-audit-row">
-                                            <span className={`status-badge ${mapStatusClass(row.action)}`}>
-                                                {row.action}
+                                            <span className={`status-badge ${mapAuditActionClass(row.action)}`}>
+                                                {t(`adminPayments.auditActions.${row.action}`)}
                                             </span>
                                             <span className="admin-status-meta">{formatDateTime(row.created_at)}</span>
                                         </div>
@@ -497,6 +508,7 @@ export default function AdminPayments() {
                                                             className="admin-btn admin-btn-secondary admin-btn-sm"
                                                             onClick={() => handleOpenAudit(row.id)}
                                                         >
+                                                            <History size={14} />
                                                             {t('adminPayments.actions.viewAudit')}
                                                         </button>
                                                         {row.proof_object_path && (
@@ -540,7 +552,7 @@ export default function AdminPayments() {
                                                         {row.status === 'approved' && (
                                                             <button
                                                                 type="button"
-                                                                className="admin-btn admin-btn-secondary admin-btn-danger-outline admin-btn-sm"
+                                                                className="admin-btn admin-btn-danger admin-btn-sm"
                                                                 onClick={() => setReviewIntent({
                                                                     id: row.id,
                                                                     action: 'revert',

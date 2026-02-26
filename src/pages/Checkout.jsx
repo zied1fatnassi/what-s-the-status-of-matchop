@@ -73,6 +73,14 @@ function getStatusMeta(status, hasProof, t) {
         }
     }
 
+    if (status === 'reverted') {
+        return {
+            className: 'status-reverted',
+            label: t('checkout.status.reverted.label'),
+            detail: t('checkout.status.reverted.detail')
+        }
+    }
+
     return {
         className: 'status-pending',
         label: t('checkout.status.pending.label'),
@@ -108,7 +116,8 @@ function Checkout() {
     const isPending = requestStatus === 'pending'
     const isApproved = requestStatus === 'approved'
     const isRejected = requestStatus === 'rejected'
-    const canCreateRequest = Boolean(user?.id) && !isLoadingRequest && !entitlements.premiumActive && (!paymentRequest || isRejected)
+    const isReverted = requestStatus === 'reverted'
+    const canCreateRequest = Boolean(user?.id) && !isLoadingRequest && !entitlements.premiumActive && (!paymentRequest || isRejected || isReverted)
     const canUploadProof = isPending && !hasProof
     const hasUploadedProofPending = isPending && hasProof
     const statusMeta = getStatusMeta(requestStatus, hasProof, t)
@@ -125,8 +134,9 @@ function Checkout() {
         if (hasUploadedProofPending) return t('checkout.nextStepsPendingWithProof')
         if (canUploadProof) return t('checkout.nextStepsPendingNoProof')
         if (isRejected) return t('checkout.nextStepsRejected')
+        if (isReverted) return t('checkout.nextStepsReverted')
         return t('checkout.nextSteps')
-    }, [canUploadProof, hasUploadedProofPending, isApproved, isRejected, t])
+    }, [canUploadProof, hasUploadedProofPending, isApproved, isRejected, isReverted, t])
 
     useEffect(() => {
         track('checkout_provider_selected', { provider: 'd17' })
@@ -392,6 +402,12 @@ function Checkout() {
                     </p>
                 )}
 
+                {isReverted && (
+                    <p className="checkout-inline-subtitle checkout-error-note">
+                        {t('checkout.notes.revertedNextStep')}
+                    </p>
+                )}
+
                 {errorMessage && (
                     <p className="checkout-inline-subtitle checkout-error-note">
                         {errorMessage}
@@ -466,7 +482,7 @@ function Checkout() {
                         >
                             {isLoadingRequest
                                 ? t('checkout.actions.creating')
-                                : (isRejected ? t('checkout.actions.createRequestAgain') : t('checkout.actions.createRequest'))}
+                                : ((isRejected || isReverted) ? t('checkout.actions.createRequestAgain') : t('checkout.actions.createRequest'))}
                         </button>
                     )}
                     {primaryActionState === 'uploadProof' && (

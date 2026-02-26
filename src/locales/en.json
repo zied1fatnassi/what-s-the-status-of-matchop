@@ -745,18 +745,24 @@
             "rejected": {
                 "label": "Rejected",
                 "detail": "Payment rejected. Review admin note and submit a new request."
+            },
+            "reverted": {
+                "label": "Reverted",
+                "detail": "This approval was reverted by an admin. Create a new payment request to continue."
             }
         },
         "notes": {
             "premiumActive": "Premium is already active on your account.",
             "proofUploadedPending": "Proof uploaded successfully. We will notify you after admin review.",
-            "rejectedNextStep": "Your request was rejected. Create a new request and upload a clearer proof."
+            "rejectedNextStep": "Your request was rejected. Create a new request and upload a clearer proof.",
+            "revertedNextStep": "This approval was reverted. Create a new request and upload payment proof again."
         },
         "nextSteps": "Next step: keep this page open until your proof is uploaded, then check your status from My payments.",
         "nextStepsPendingNoProof": "Next step: complete your D17 transfer, then upload your payment proof.",
         "nextStepsPendingWithProof": "Next step: your proof is uploaded. Refresh status while waiting for admin approval.",
         "nextStepsApproved": "Next step: go to Premium and refresh your account status.",
         "nextStepsRejected": "Next step: create a new payment request and upload a valid proof.",
+        "nextStepsReverted": "Next step: create a new payment request and submit proof again for admin review.",
         "request": {
             "title": "Current request",
             "notUploaded": "Not uploaded yet",
@@ -842,6 +848,14 @@
             "undoApproval": "Undo approval",
             "showDetails": "Details",
             "hideDetails": "Hide"
+        },
+        "auditActions": {
+            "created": "Created",
+            "updated": "Updated",
+            "approved": "Approved",
+            "rejected": "Rejected",
+            "reverted": "Reverted",
+            "proof_uploaded": "Proof uploaded"
         },
         "fields": {
             "reference": "Reference",
