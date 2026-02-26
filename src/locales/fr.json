@@ -783,6 +783,7 @@
         "errors": {
             "loadRequests": "Impossible de charger les demandes de paiement pour le moment.",
             "unsupportedProofType": "Type de fichier non pris en charge. Televersez uniquement une image ou un PDF.",
+            "cooldownActive": "Vous avez cree une demande en attente recemment. Veuillez patienter avant d'en creer une autre.",
             "uploadFailed": "Echec du televersement de la preuve.",
             "proofPathUpdateFailed": "Echec de la mise a jour du chemin de preuve."
         }
@@ -817,7 +818,8 @@
             "all": "Tous les statuts",
             "pending": "En attente",
             "approved": "Approuve",
-            "rejected": "Refuse"
+            "rejected": "Refuse",
+            "reverted": "Annule"
         },
         "counts": {
             "all": "{{count}} demandes",
@@ -833,8 +835,11 @@
         },
         "actions": {
             "viewProof": "Voir la preuve",
+            "viewAudit": "Voir l'audit",
             "approve": "Approuver",
             "reject": "Refuser",
+            "revert": "Annuler",
+            "undoApproval": "Annuler l'approbation",
             "showDetails": "Details",
             "hideDetails": "Masquer"
         },
@@ -853,12 +858,55 @@
             "closeAria": "Fermer l'apercu de preuve",
             "iframeTitle": "Apercu de la preuve de paiement"
         },
+        "auditModal": {
+            "title": "Historique d'audit",
+            "closeAria": "Fermer l'historique d'audit",
+            "paymentRequestId": "Demande de paiement",
+            "loading": "Chargement de l'historique...",
+            "empty": "Aucune entree d'audit pour le moment.",
+            "actor": "Acteur"
+        },
+        "revertConfirm": {
+            "title": "Annuler l'approbation",
+            "body": "Etes-vous sur ? Cela retirera le Premium accorde par cette approbation."
+        },
         "toasts": {
             "requestUpdated": "Demande {{status}}."
         },
         "errors": {
             "loadFailed": "Impossible de charger les demandes de paiement.",
-            "openProofFailed": "Impossible d'ouvrir la preuve."
+            "openProofFailed": "Impossible d'ouvrir la preuve.",
+            "auditLoadFailed": "Impossible de charger l'historique d'audit."
+        }
+    },
+    "payments": {
+        "title": "Mes paiements",
+        "subtitle": "Suivez vos demandes D17 et leur statut.",
+        "premiumStatus": "Statut Premium",
+        "loading": "Chargement des demandes de paiement...",
+        "empty": "Aucune demande de paiement pour le moment.",
+        "planAmount": "Plan {{planId}} - {{amount}} {{currency}}",
+        "pendingHint": "En attente de revision admin. Televersez la preuve dans le checkout si necessaire.",
+        "labels": {
+            "submitted": "Soumis",
+            "d17": "D17",
+            "reviewed": "Revise"
+        },
+        "actions": {
+            "refresh": "Actualiser",
+            "openCheckout": "Ouvrir le checkout",
+            "viewProof": "Voir la preuve",
+            "viewHistory": "Voir l'historique",
+            "hideHistory": "Masquer l'historique"
+        },
+        "history": {
+            "loading": "Chargement de l'historique...",
+            "empty": "Aucun historique pour le moment."
+        },
+        "errors": {
+            "loadFailed": "Impossible de charger l'historique des paiements.",
+            "previewFailed": "Impossible d'afficher la preuve.",
+            "auditLoadFailed": "Impossible de charger la chronologie des paiements."
         }
     },
     "companyProfile": {

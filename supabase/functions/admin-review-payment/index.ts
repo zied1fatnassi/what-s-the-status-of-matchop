@@ -7,17 +7,21 @@ const CORS_HEADERS = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 }
 
-const PREMIUM_DAYS_BY_PLAN: Record<'monthly' | 'yearly', number> = {
-  monthly: 30,
-  yearly: 365,
-}
-
-type ReviewAction = 'approve' | 'reject'
+type ReviewAction = 'approve' | 'reject' | 'revert'
 
 type RequestBody = {
   paymentRequestId?: string
   action?: ReviewAction
   admin_note?: string
+}
+
+type AdminActionResponse = {
+  ok?: boolean
+  already_applied?: boolean
+  error_code?: string | null
+  message?: string | null
+  payment_request?: Record<string, unknown> | null
+  profile?: Record<string, unknown> | null
 }
 
 function jsonResponse(body: Record<string, unknown>, status = 200) {
@@ -87,6 +91,13 @@ function isUuid(value: string) {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value)
 }
 
+function mapRpcErrorToStatus(errorCode: string | null | undefined) {
+  if (errorCode === 'NOT_FOUND') return 404
+  if (errorCode === 'BAD_ACTION' || errorCode === 'BAD_DATA') return 400
+  if (errorCode === 'PROFILE_NOT_FOUND' || errorCode === 'CONFLICT') return 409
+  return 500
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: CORS_HEADERS })
@@ -150,102 +161,51 @@ serve(async (req) => {
       return jsonResponse({ code: 'BAD_REQUEST', message: 'paymentRequestId must be a valid UUID' }, 400)
     }
 
-    if (action !== 'approve' && action !== 'reject') {
-      return jsonResponse({ code: 'BAD_REQUEST', message: 'action must be "approve" or "reject"' }, 400)
+    if (action !== 'approve' && action !== 'reject' && action !== 'revert') {
+      return jsonResponse({ code: 'BAD_REQUEST', message: 'action must be "approve", "reject", or "revert"' }, 400)
     }
 
     const serviceClient = createClient(supabaseUrl, supabaseServiceRoleKey, {
       auth: { autoRefreshToken: false, persistSession: false },
     })
 
-    const existingRes = await serviceClient
-      .from('payment_requests')
-      .select('id, user_id, plan_id, status')
-      .eq('id', paymentRequestId)
-      .maybeSingle()
+    const rpcRes = await serviceClient.rpc('payment_requests_apply_admin_action', {
+      p_payment_request_id: paymentRequestId,
+      p_action: action,
+      p_admin_id: user.id,
+      p_note: adminNote,
+    })
 
-    if (existingRes.error) {
-      console.error('[admin-review-payment] failed to load request', existingRes.error)
-      return jsonResponse({ code: 'DB_ERROR', message: 'Failed to load payment request' }, 500)
+    if (rpcRes.error) {
+      console.error('[admin-review-payment] failed to apply admin action', rpcRes.error)
+      return jsonResponse({ code: 'DB_ERROR', message: 'Failed to review payment request' }, 500)
     }
 
-    if (!existingRes.data) {
-      return jsonResponse({ code: 'NOT_FOUND', message: 'Payment request not found' }, 404)
-    }
-
-    if (existingRes.data.status !== 'pending') {
+    const rpcData = (rpcRes.data ?? null) as AdminActionResponse | null
+    if (!rpcData || rpcData.ok !== true) {
+      const errorCode = rpcData?.error_code ?? 'INTERNAL_ERROR'
+      const message = rpcData?.message ?? 'Failed to review payment request'
       return jsonResponse(
-        {
-          code: 'ALREADY_REVIEWED',
-          message: `Payment request is already ${existingRes.data.status}.`,
-          status: existingRes.data.status,
-        },
-        409,
+        { code: errorCode, message },
+        mapRpcErrorToStatus(errorCode),
       )
     }
 
-    const nowIso = new Date().toISOString()
-    const reviewStatus = action === 'approve' ? 'approved' : 'rejected'
-
-    const reviewRes = await serviceClient
-      .from('payment_requests')
-      .update({
-        status: reviewStatus,
-        admin_note: adminNote,
-        reviewed_by: user.id,
-        reviewed_at: nowIso,
-      })
-      .eq('id', paymentRequestId)
-      .eq('status', 'pending')
-      .select('id, user_id, plan_id, status, admin_note, reviewed_by, reviewed_at')
-      .maybeSingle()
-
-    if (reviewRes.error) {
-      console.error('[admin-review-payment] failed to review request', reviewRes.error)
-      return jsonResponse({ code: 'DB_ERROR', message: 'Failed to update payment request status' }, 500)
-    }
-
-    if (!reviewRes.data) {
-      return jsonResponse({ code: 'ALREADY_REVIEWED', message: 'Payment request is no longer pending.' }, 409)
-    }
-
-    let premiumExpiresAt: string | null = null
-
-    if (action === 'approve') {
-      const planId = reviewRes.data.plan_id as 'monthly' | 'yearly'
-      const premiumDays = PREMIUM_DAYS_BY_PLAN[planId]
-      if (!premiumDays) {
-        return jsonResponse({ code: 'BAD_DATA', message: 'Payment request has invalid plan_id' }, 400)
-      }
-
-      premiumExpiresAt = new Date(Date.now() + premiumDays * 24 * 60 * 60 * 1000).toISOString()
-
-      const profileRes = await serviceClient
-        .from('profiles')
-        .update({
-          is_premium: true,
-          premium_expires_at: premiumExpiresAt,
-        })
-        .eq('id', reviewRes.data.user_id)
-        .select('id')
-        .maybeSingle()
-
-      if (profileRes.error || !profileRes.data) {
-        console.error('[admin-review-payment] failed to activate premium', profileRes.error)
-        return jsonResponse({ code: 'DB_ERROR', message: 'Failed to activate premium entitlement' }, 500)
-      }
-    }
+    const paymentRequest = rpcData.payment_request ?? null
+    const profile = rpcData.profile ?? null
 
     return jsonResponse({
       success: true,
-      paymentRequestId: reviewRes.data.id,
-      userId: reviewRes.data.user_id,
-      status: reviewRes.data.status,
-      planId: reviewRes.data.plan_id,
-      adminNote: reviewRes.data.admin_note,
-      reviewedBy: reviewRes.data.reviewed_by,
-      reviewedAt: reviewRes.data.reviewed_at,
-      premiumExpiresAt,
+      alreadyApplied: Boolean(rpcData.already_applied),
+      message: rpcData.message ?? null,
+      paymentRequestId: paymentRequest?.id ?? paymentRequestId,
+      userId: paymentRequest?.user_id ?? null,
+      status: paymentRequest?.status ?? null,
+      planId: paymentRequest?.plan_id ?? null,
+      adminNote: paymentRequest?.admin_note ?? null,
+      reviewedBy: paymentRequest?.reviewed_by ?? user.id,
+      reviewedAt: paymentRequest?.reviewed_at ?? null,
+      premiumExpiresAt: profile?.premium_expires_at ?? null,
     })
   } catch (error) {
     console.error('[admin-review-payment] unhandled error', error)

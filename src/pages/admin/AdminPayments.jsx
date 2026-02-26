@@ -2,6 +2,8 @@ import { Fragment, useCallback, useEffect, useMemo, useState } from 'react'
 import { ChevronDown, ChevronUp, Eye, RefreshCw, Search, X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import AuthToast from '../../components/AuthToast'
+import { track } from '../../lib/analytics'
+import { fetchPaymentRequestAudit, reviewPaymentRequest } from '../../lib/payments/admin'
 import { supabase } from '../../lib/supabase'
 import './Admin.css'
 
@@ -9,7 +11,8 @@ function normalizeRows(rows, emailByUserId) {
     const statusRank = {
         pending: 0,
         approved: 1,
-        rejected: 2
+        rejected: 2,
+        reverted: 3
     }
 
     return [...rows]
@@ -48,6 +51,7 @@ async function parseInvokeError(error) {
 function mapStatusClass(status) {
     if (status === 'approved') return 'status-active'
     if (status === 'rejected') return 'status-suspended'
+    if (status === 'reverted') return 'status-inactive'
     return 'status-pending'
 }
 
@@ -63,6 +67,13 @@ export default function AdminPayments() {
     const [inFlightId, setInFlightId] = useState(null)
     const [noteById, setNoteById] = useState({})
     const [reviewIntent, setReviewIntent] = useState(null)
+    const [auditModal, setAuditModal] = useState({
+        open: false,
+        paymentRequestId: '',
+        loading: false,
+        rows: [],
+        error: ''
+    })
     const [proofPreview, setProofPreview] = useState({
         open: false,
         url: '',
@@ -163,12 +174,11 @@ export default function AdminPayments() {
         setInFlightId(paymentRequestId)
         setActionError('')
 
-        const { data, error } = await supabase.functions.invoke('admin-review-payment', {
-            body: {
-                paymentRequestId,
-                action,
-                admin_note: noteById[paymentRequestId] || null
-            }
+        const note = noteById[paymentRequestId] || null
+        const { data, error } = await reviewPaymentRequest({
+            paymentRequestId,
+            action,
+            admin_note: note
         })
 
         if (error) {
@@ -182,6 +192,12 @@ export default function AdminPayments() {
             type: 'success',
             message: t('adminPayments.toasts.requestUpdated', { status: data.status })
         })
+        if (action === 'revert') {
+            track('admin_payment_reverted', {
+                paymentRequestId,
+                note
+            })
+        }
         setNoteById((prev) => ({
             ...prev,
             [paymentRequestId]: ''
@@ -198,8 +214,43 @@ export default function AdminPayments() {
         return t('adminPayments.counts.filtered', { count: filteredRows.length, status: statusFilter })
     }, [filteredRows.length, statusFilter, t])
 
+    const handleOpenAudit = async (paymentRequestId) => {
+        setAuditModal({
+            open: true,
+            paymentRequestId,
+            loading: true,
+            rows: [],
+            error: ''
+        })
+
+        const auditRes = await fetchPaymentRequestAudit(paymentRequestId)
+        if (auditRes.error) {
+            setAuditModal({
+                open: true,
+                paymentRequestId,
+                loading: false,
+                rows: [],
+                error: auditRes.error.message || t('adminPayments.errors.auditLoadFailed')
+            })
+            return
+        }
+
+        setAuditModal({
+            open: true,
+            paymentRequestId,
+            loading: false,
+            rows: Array.isArray(auditRes.data) ? auditRes.data : [],
+            error: ''
+        })
+    }
+
     const handleConfirmReview = async () => {
         if (!reviewIntent?.id || !reviewIntent?.action) return
+        if (reviewIntent.action === 'revert') {
+            track('admin_payment_revert_requested', {
+                paymentRequestId: reviewIntent.id
+            })
+        }
         const didSucceed = await handleReview(reviewIntent.id, reviewIntent.action)
         if (didSucceed) {
             setReviewIntent(null)
@@ -249,10 +300,18 @@ export default function AdminPayments() {
             {reviewIntent && (
                 <div className="admin-modal-overlay" role="dialog" aria-modal="true" aria-label={t(`adminPayments.actions.${reviewIntent.action}`)}>
                     <div className="admin-modal admin-review-modal">
-                        <h2>{t(`adminPayments.actions.${reviewIntent.action}`)}</h2>
+                        <h2>{reviewIntent.action === 'revert'
+                            ? t('adminPayments.revertConfirm.title')
+                            : t(`adminPayments.actions.${reviewIntent.action}`)}
+                        </h2>
                         <p className="checkout-inline-subtitle">
                             {t('adminPayments.fields.reference')}: {reviewIntent.reference || '-'}
                         </p>
+                        {reviewIntent.action === 'revert' && (
+                            <p className="checkout-inline-subtitle">
+                                {t('adminPayments.revertConfirm.body')}
+                            </p>
+                        )}
                         <div className="admin-modal-actions">
                             <button
                                 type="button"
@@ -270,9 +329,65 @@ export default function AdminPayments() {
                             >
                                 {inFlightId === reviewIntent.id
                                     ? t('common.continue')
-                                    : t(`adminPayments.actions.${reviewIntent.action}`)}
+                                    : (reviewIntent.action === 'revert'
+                                        ? t('adminPayments.actions.undoApproval')
+                                        : t(`adminPayments.actions.${reviewIntent.action}`))}
                             </button>
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {auditModal.open && (
+                <div className="admin-modal-overlay" role="dialog" aria-modal="true" aria-label={t('adminPayments.auditModal.title')}>
+                    <div className="admin-modal admin-audit-modal">
+                        <div className="admin-proof-modal-header">
+                            <h2>{t('adminPayments.auditModal.title')}</h2>
+                            <button
+                                type="button"
+                                className="admin-btn admin-btn-secondary admin-btn-sm"
+                                onClick={() => setAuditModal({
+                                    open: false,
+                                    paymentRequestId: '',
+                                    loading: false,
+                                    rows: [],
+                                    error: ''
+                                })}
+                                aria-label={t('adminPayments.auditModal.closeAria')}
+                            >
+                                <X size={14} />
+                                {t('common.close')}
+                            </button>
+                        </div>
+                        {auditModal.paymentRequestId && (
+                            <p className="checkout-inline-subtitle">
+                                {t('adminPayments.auditModal.paymentRequestId')}: {auditModal.paymentRequestId}
+                            </p>
+                        )}
+                        {auditModal.loading ? (
+                            <p className="checkout-inline-subtitle">{t('adminPayments.auditModal.loading')}</p>
+                        ) : auditModal.error ? (
+                            <p className="checkout-inline-subtitle checkout-error-note">{auditModal.error}</p>
+                        ) : auditModal.rows.length === 0 ? (
+                            <p className="checkout-inline-subtitle">{t('adminPayments.auditModal.empty')}</p>
+                        ) : (
+                            <div className="admin-audit-list">
+                                {auditModal.rows.map((row) => (
+                                    <article key={row.id} className="admin-audit-item">
+                                        <div className="admin-audit-row">
+                                            <span className={`status-badge ${mapStatusClass(row.action)}`}>
+                                                {row.action}
+                                            </span>
+                                            <span className="admin-status-meta">{formatDateTime(row.created_at)}</span>
+                                        </div>
+                                        <p className="admin-audit-meta">
+                                            {t('adminPayments.auditModal.actor')}: {row.actor || '-'}
+                                        </p>
+                                        {row.note && <p className="admin-audit-meta">{row.note}</p>}
+                                    </article>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </div>
             )}
@@ -305,6 +420,7 @@ export default function AdminPayments() {
                         <option value="pending">{t('adminPayments.filters.pending')}</option>
                         <option value="approved">{t('adminPayments.filters.approved')}</option>
                         <option value="rejected">{t('adminPayments.filters.rejected')}</option>
+                        <option value="reverted">{t('adminPayments.filters.reverted')}</option>
                     </select>
                 </div>
                 <div className="admin-toolbar-actions">
@@ -376,6 +492,13 @@ export default function AdminPayments() {
                                                 </td>
                                                 <td data-label={t('adminPayments.columns.actions')}>
                                                     <div className="admin-row-actions">
+                                                        <button
+                                                            type="button"
+                                                            className="admin-btn admin-btn-secondary admin-btn-sm"
+                                                            onClick={() => handleOpenAudit(row.id)}
+                                                        >
+                                                            {t('adminPayments.actions.viewAudit')}
+                                                        </button>
                                                         {row.proof_object_path && (
                                                             <button
                                                                 type="button"
@@ -413,6 +536,20 @@ export default function AdminPayments() {
                                                                     {t('adminPayments.actions.reject')}
                                                                 </button>
                                                             </>
+                                                        )}
+                                                        {row.status === 'approved' && (
+                                                            <button
+                                                                type="button"
+                                                                className="admin-btn admin-btn-secondary admin-btn-danger-outline admin-btn-sm"
+                                                                onClick={() => setReviewIntent({
+                                                                    id: row.id,
+                                                                    action: 'revert',
+                                                                    reference: row.reference
+                                                                })}
+                                                                disabled={inFlightId === row.id}
+                                                            >
+                                                                {t('adminPayments.actions.undoApproval')}
+                                                            </button>
                                                         )}
                                                         <button
                                                             type="button"

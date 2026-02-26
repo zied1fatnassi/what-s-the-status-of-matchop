@@ -12,6 +12,7 @@ const PRICING: Record<'monthly' | 'yearly', number> = {
   monthly: 19,
   yearly: 149,
 }
+const DEFAULT_COOLDOWN_MINUTES = 10
 
 type RequestBody = {
   plan_id?: string
@@ -90,6 +91,32 @@ serve(async (req) => {
         headers: { Authorization: `Bearer ${token}` },
       },
     })
+
+    const cooldownMinutesEnv = Number(Deno.env.get('PAYMENT_REQUEST_COOLDOWN_MINUTES') ?? DEFAULT_COOLDOWN_MINUTES)
+    const cooldownMinutes = Number.isFinite(cooldownMinutesEnv) && cooldownMinutesEnv > 0
+      ? Math.floor(cooldownMinutesEnv)
+      : DEFAULT_COOLDOWN_MINUTES
+
+    const cooldownRes = await userClient.rpc('payment_requests_recent_pending_count', {
+      p_user_id: user.id,
+      p_minutes: cooldownMinutes,
+    })
+
+    if (cooldownRes.error) {
+      console.error('[create-d17-payment-request] cooldown check failed', cooldownRes.error)
+      return jsonResponse({ code: 'DB_ERROR', message: 'Failed to validate payment cooldown' }, 500)
+    }
+
+    if ((cooldownRes.data ?? 0) > 0) {
+      return jsonResponse(
+        {
+          code: 'COOLDOWN_ACTIVE',
+          message: `You have an existing pending request created less than ${cooldownMinutes} minutes ago.`,
+          cooldown_minutes: cooldownMinutes,
+        },
+        429,
+      )
+    }
 
     const insertRes = await userClient
       .from('payment_requests')

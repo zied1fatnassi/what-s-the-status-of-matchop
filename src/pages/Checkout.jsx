@@ -186,6 +186,12 @@ function Checkout() {
                     type: 'info',
                     message: t('checkout.toasts.pendingExists')
                 })
+            } else if (payload?.code === 'COOLDOWN_ACTIVE') {
+                track('payment_request_cooldown_triggered', {
+                    source,
+                    cooldown_minutes: payload?.cooldown_minutes || 10
+                })
+                setErrorMessage(payload?.message || t('checkout.errors.cooldownActive'))
             } else {
                 setErrorMessage(message)
             }

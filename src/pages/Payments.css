@@ -114,6 +114,35 @@
     flex-wrap: wrap;
 }
 
+.payments-history {
+    margin-top: var(--space-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--surface-2);
+    padding: 0.55rem 0.6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.42rem;
+}
+
+.payments-history-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+}
+
+.payments-chip {
+    text-transform: capitalize;
+    font-size: 0.72rem;
+}
+
+.payments-muted {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.78rem;
+}
+
 .payments-empty {
     margin-top: var(--space-5);
     text-align: center;

@@ -783,6 +783,7 @@
         "errors": {
             "loadRequests": "Unable to load payment requests right now.",
             "unsupportedProofType": "Unsupported proof file type. Upload an image or PDF only.",
+            "cooldownActive": "You recently created a pending request. Please wait before creating another one.",
             "uploadFailed": "Proof upload failed.",
             "proofPathUpdateFailed": "Proof path update failed."
         }
@@ -817,7 +818,8 @@
             "all": "All statuses",
             "pending": "Pending",
             "approved": "Approved",
-            "rejected": "Rejected"
+            "rejected": "Rejected",
+            "reverted": "Reverted"
         },
         "counts": {
             "all": "{{count}} requests",
@@ -833,8 +835,11 @@
         },
         "actions": {
             "viewProof": "View proof",
+            "viewAudit": "View audit",
             "approve": "Approve",
             "reject": "Reject",
+            "revert": "Revert",
+            "undoApproval": "Undo approval",
             "showDetails": "Details",
             "hideDetails": "Hide"
         },
@@ -853,12 +858,55 @@
             "closeAria": "Close proof preview",
             "iframeTitle": "Payment proof preview"
         },
+        "auditModal": {
+            "title": "Audit history",
+            "closeAria": "Close audit history",
+            "paymentRequestId": "Payment request",
+            "loading": "Loading audit history...",
+            "empty": "No audit entries yet.",
+            "actor": "Actor"
+        },
+        "revertConfirm": {
+            "title": "Undo approval",
+            "body": "Are you sure? This will revoke premium granted by this approval."
+        },
         "toasts": {
             "requestUpdated": "Request {{status}}."
         },
         "errors": {
             "loadFailed": "Unable to load payment requests.",
-            "openProofFailed": "Unable to open proof."
+            "openProofFailed": "Unable to open proof.",
+            "auditLoadFailed": "Unable to load audit history."
+        }
+    },
+    "payments": {
+        "title": "My payments",
+        "subtitle": "Track your D17 payment requests and review status.",
+        "premiumStatus": "Premium status",
+        "loading": "Loading payment requests...",
+        "empty": "No payment requests yet.",
+        "planAmount": "{{planId}} plan - {{amount}} {{currency}}",
+        "pendingHint": "Pending admin review. Upload proof in checkout if needed.",
+        "labels": {
+            "submitted": "Submitted",
+            "d17": "D17",
+            "reviewed": "Reviewed"
+        },
+        "actions": {
+            "refresh": "Refresh",
+            "openCheckout": "Open checkout",
+            "viewProof": "View proof",
+            "viewHistory": "View history",
+            "hideHistory": "Hide history"
+        },
+        "history": {
+            "loading": "Loading history...",
+            "empty": "No history yet."
+        },
+        "errors": {
+            "loadFailed": "Unable to load payment history.",
+            "previewFailed": "Unable to preview proof.",
+            "auditLoadFailed": "Unable to load payment history timeline."
         }
     },
     "companyProfile": {
