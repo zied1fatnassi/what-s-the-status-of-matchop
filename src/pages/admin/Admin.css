@@ -1,4 +1,4 @@
-/* Admin Panel Styles */
+﻿/* Admin Panel Styles */
 .admin-container {
     max-width: 1400px;
     margin: 0 auto;
@@ -12,12 +12,12 @@
 
 .admin-header h1 {
     font-size: 2rem;
-    color: white;
+    color: var(--text-primary);
     margin-bottom: 0.5rem;
 }
 
 .admin-header p {
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--text-secondary);
 }
 
 .admin-loading {
@@ -25,7 +25,7 @@
     justify-content: center;
     align-items: center;
     min-height: 400px;
-    color: white;
+    color: var(--text-primary);
     font-size: 1.2rem;
 }
 
@@ -38,14 +38,14 @@
 }
 
 .stat-card {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--surface-soft);
     backdrop-filter: blur(10px);
     border-radius: 16px;
     padding: 1.5rem;
     display: flex;
     align-items: center;
     gap: 1rem;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-default);
     transition: transform 0.2s, box-shadow 0.2s;
 }
 
@@ -70,28 +70,28 @@
 
 .stat-content h3 {
     font-size: 2rem;
-    color: white;
+    color: var(--text-primary);
     margin: 0;
     font-weight: 700;
 }
 
 .stat-content p {
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--text-secondary);
     margin: 0;
     font-size: 0.9rem;
 }
 
 /* Sections */
 .admin-section {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--surface-muted);
     border-radius: 16px;
     padding: 1.5rem;
     margin-bottom: 2rem;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-default);
 }
 
 .admin-section h2 {
-    color: white;
+    color: var(--text-primary);
     margin-bottom: 1.5rem;
     font-size: 1.3rem;
 }
@@ -110,7 +110,7 @@
     gap: 0.5rem;
     padding: 1rem 1.5rem;
     background: rgba(33, 150, 243, 0.2);
-    color: white;
+    color: var(--text-primary);
     text-decoration: none;
     border-radius: 12px;
     border: 1px solid rgba(33, 150, 243, 0.3);
@@ -124,7 +124,7 @@
 }
 
 .quick-action-btn.warning {
-    background: rgba(255, 152, 0, 0.2);
+    background: var(--status-pending-bg);
     border-color: rgba(255, 152, 0, 0.3);
 }
 
@@ -144,9 +144,9 @@
     align-items: center;
     gap: 1rem;
     padding: 0.75rem 1rem;
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--surface-muted);
     border-radius: 8px;
-    color: white;
+    color: var(--text-primary);
     font-size: 0.9rem;
 }
 
@@ -155,16 +155,16 @@
 }
 
 .activity-user {
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--text-muted);
 }
 
 .activity-time {
-    color: rgba(255, 255, 255, 0.5);
+    color: var(--text-muted);
     font-size: 0.85rem;
 }
 
 .no-activity {
-    color: rgba(255, 255, 255, 0.5);
+    color: var(--text-muted);
     text-align: center;
     padding: 2rem;
 }
@@ -177,24 +177,24 @@
 .admin-table {
     width: 100%;
     border-collapse: collapse;
-    color: white;
+    color: var(--text-primary);
 }
 
 .admin-table th,
 .admin-table td {
     padding: 1rem;
     text-align: left;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid var(--border-default);
 }
 
 .admin-table th {
-    background: rgba(0, 0, 0, 0.2);
+    background: var(--surface-elevated);
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--text-primary);
 }
 
 .admin-table tr:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--surface-muted);
 }
 
 /* Action Buttons */
@@ -210,7 +210,7 @@
 
 .admin-btn-primary {
     background: #2196f3;
-    color: white;
+    color: var(--text-on-primary);
 }
 
 .admin-btn-primary:hover {
@@ -219,7 +219,7 @@
 
 .admin-btn-success {
     background: #4caf50;
-    color: white;
+    color: var(--text-on-primary);
 }
 
 .admin-btn-success:hover {
@@ -228,7 +228,7 @@
 
 .admin-btn-warning {
     background: #ff9800;
-    color: white;
+    color: var(--text-on-primary);
 }
 
 .admin-btn-warning:hover {
@@ -237,7 +237,7 @@
 
 .admin-btn-danger {
     background: #f44336;
-    color: white;
+    color: var(--text-on-primary);
 }
 
 .admin-btn-danger:hover {
@@ -259,9 +259,9 @@
 }
 
 .status-active {
-    background: rgba(76, 175, 80, 0.2);
-    color: #81c784;
-    border: 1px solid rgba(76, 175, 80, 0.3);
+    background: var(--status-approved-bg);
+    color: var(--status-approved-fg);
+    border: 1px solid var(--status-approved-border);
 }
 
 .status-inactive {
@@ -271,15 +271,15 @@
 }
 
 .status-pending {
-    background: rgba(255, 152, 0, 0.2);
-    color: #ffb74d;
-    border: 1px solid rgba(255, 152, 0, 0.3);
+    background: var(--status-pending-bg);
+    color: var(--status-pending-fg);
+    border: 1px solid var(--status-pending-border);
 }
 
 .status-suspended {
-    background: rgba(244, 67, 54, 0.2);
-    color: #e57373;
-    border: 1px solid rgba(244, 67, 54, 0.3);
+    background: var(--status-rejected-bg);
+    color: var(--status-rejected-fg);
+    border: 1px solid var(--status-rejected-border);
 }
 
 /* Search & Filters */
@@ -294,15 +294,15 @@
     flex: 1;
     min-width: 250px;
     padding: 0.75rem 1rem;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid var(--border-strong);
     border-radius: 8px;
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
+    background: var(--surface-soft);
+    color: var(--text-primary);
     font-size: 0.95rem;
 }
 
 .admin-search::placeholder {
-    color: rgba(255, 255, 255, 0.5);
+    color: var(--text-muted);
 }
 
 .admin-search:focus {
@@ -312,17 +312,17 @@
 
 .admin-filter {
     padding: 0.75rem 1rem;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid var(--border-strong);
     border-radius: 8px;
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
+    background: var(--surface-soft);
+    color: var(--text-primary);
     font-size: 0.95rem;
     cursor: pointer;
 }
 
 .admin-filter option {
-    background: #1a1a2e;
-    color: white;
+    background: var(--surface-elevated);
+    color: var(--text-primary);
 }
 
 /* Pagination */
@@ -336,16 +336,16 @@
 
 .admin-pagination button {
     padding: 0.5rem 1rem;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid var(--border-strong);
     border-radius: 8px;
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
+    background: var(--surface-soft);
+    color: var(--text-primary);
     cursor: pointer;
     transition: all 0.2s;
 }
 
 .admin-pagination button:hover:not(:disabled) {
-    background: rgba(255, 255, 255, 0.2);
+    background: color-mix(in srgb, var(--surface-elevated) 96%, transparent);
 }
 
 .admin-pagination button:disabled {
@@ -359,7 +359,7 @@
 }
 
 .admin-pagination span {
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--text-secondary);
     padding: 0 0.5rem;
 }
 
@@ -370,7 +370,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.7);
+    background: var(--overlay-bg);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -379,18 +379,18 @@
 }
 
 .admin-modal {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    background: var(--surface-elevated);
     border-radius: 16px;
     padding: 2rem;
     max-width: 600px;
     width: 100%;
     max-height: 90vh;
     overflow-y: auto;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-default);
 }
 
 .admin-modal h2 {
-    color: white;
+    color: var(--text-primary);
     margin-bottom: 1.5rem;
 }
 
@@ -408,7 +408,7 @@
 
 .admin-form-group label {
     display: block;
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--text-secondary);
     margin-bottom: 0.5rem;
     font-size: 0.9rem;
 }
@@ -418,10 +418,10 @@
 .admin-form-group textarea {
     width: 100%;
     padding: 0.75rem 1rem;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid var(--border-strong);
     border-radius: 8px;
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
+    background: var(--surface-soft);
+    color: var(--text-primary);
     font-size: 0.95rem;
 }
 
@@ -497,13 +497,13 @@
 
 .bar-label {
     min-width: 90px;
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--text-secondary);
 }
 
 .bar-container {
     flex: 1;
     height: 24px;
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--surface-soft);
     border-radius: 12px;
     overflow: hidden;
 }
@@ -529,7 +529,7 @@
 .bar-value {
     min-width: 44px;
     text-align: right;
-    color: white;
+    color: var(--text-primary);
     font-weight: 600;
 }
 
@@ -544,7 +544,7 @@
     align-items: center;
     gap: 1rem;
     padding: 0.75rem 1rem;
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--surface-muted);
     border-radius: 8px;
 }
 
@@ -556,11 +556,11 @@
 
 .analytics-list-item .name {
     flex: 1;
-    color: white;
+    color: var(--text-primary);
 }
 
 .analytics-list-item .value {
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--text-muted);
     font-size: 0.9rem;
 }
 
@@ -571,21 +571,21 @@
 }
 
 .admin-message.success {
-    background: rgba(76, 175, 80, 0.2);
-    border: 1px solid rgba(76, 175, 80, 0.3);
-    color: #81c784;
+    background: var(--status-approved-bg);
+    border: 1px solid var(--status-approved-border);
+    color: var(--status-approved-fg);
 }
 
 .admin-message.error {
-    background: rgba(244, 67, 54, 0.2);
-    border: 1px solid rgba(244, 67, 54, 0.3);
-    color: #e57373;
+    background: var(--status-rejected-bg);
+    border: 1px solid var(--status-rejected-border);
+    color: var(--status-rejected-fg);
 }
 
 .settings-toggle {
     margin-bottom: 1.25rem;
     padding: 1rem;
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--surface-muted);
     border-radius: 8px;
 }
 
@@ -599,7 +599,7 @@
     align-items: center;
     gap: 0.75rem;
     cursor: pointer;
-    color: white;
+    color: var(--text-primary);
 }
 
 .settings-toggle input[type="checkbox"] {
@@ -610,7 +610,7 @@
 
 .setting-description {
     margin: 0.5rem 0 0 1.75rem;
-    color: rgba(255, 255, 255, 0.5);
+    color: var(--text-muted);
     font-size: 0.85rem;
 }
 
@@ -707,8 +707,8 @@
     }
 
     .admin-table tr {
-        background: rgba(255, 255, 255, 0.04);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: var(--surface-muted);
+        border: 1px solid var(--border-default);
         border-radius: 12px;
         padding: 0.75rem;
         margin-bottom: 0.75rem;
@@ -726,7 +726,7 @@
 
     .admin-table td::before {
         content: attr(data-label);
-        color: rgba(255, 255, 255, 0.7);
+        color: var(--text-secondary);
         font-weight: 600;
         text-align: left;
     }
@@ -770,3 +770,4 @@
         width: 100%;
     }
 }
+

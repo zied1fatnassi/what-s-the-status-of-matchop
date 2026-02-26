@@ -311,21 +311,21 @@
 }
 
 .status-badge.status-pending {
-    color: #ffb74d;
-    border-color: rgba(255, 183, 77, 0.45);
-    background: rgba(255, 183, 77, 0.14);
+    color: var(--status-pending-fg);
+    border-color: var(--status-pending-border);
+    background: var(--status-pending-bg);
 }
 
 .status-badge.status-approved {
-    color: #81c784;
-    border-color: rgba(129, 199, 132, 0.45);
-    background: rgba(129, 199, 132, 0.14);
+    color: var(--status-approved-fg);
+    border-color: var(--status-approved-border);
+    background: var(--status-approved-bg);
 }
 
 .status-badge.status-rejected {
-    color: #ef9a9a;
-    border-color: rgba(239, 154, 154, 0.45);
-    background: rgba(239, 154, 154, 0.14);
+    color: var(--status-rejected-fg);
+    border-color: var(--status-rejected-border);
+    background: var(--status-rejected-bg);
 }
 
 .checkout-result {
