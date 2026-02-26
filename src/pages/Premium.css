@@ -11,7 +11,7 @@
 }
 
 .premium-shell {
-    width: min(100%, 880px);
+    width: min(100%, 820px);
     padding: var(--space-6);
     border-radius: var(--radius-xl);
 }
@@ -103,7 +103,7 @@
 .premium-benefits,
 .premium-faq,
 .premium-waitlist {
-    margin-top: var(--space-5);
+    margin-top: var(--space-4);
 }
 
 .premium-plan-grid {
@@ -119,7 +119,7 @@
     border-radius: var(--radius-lg);
     padding: var(--space-4);
     display: grid;
-    gap: 0.35rem;
+    gap: 0.25rem;
     text-align: left;
     color: var(--text-primary);
     cursor: pointer;
@@ -128,7 +128,7 @@
 
 .premium-plan-card:hover {
     border-color: color-mix(in srgb, var(--primary) 35%, var(--border));
-    transform: translateY(-2px);
+    transform: translateY(-1px);
 }
 
 .premium-plan-card.active {
@@ -189,7 +189,7 @@
     border: 1px solid var(--border);
     background: var(--surface-2);
     border-radius: var(--radius-md);
-    padding: 0.6rem 0.75rem;
+    padding: 0.55rem 0.7rem;
 }
 
 .premium-feature-list svg {
@@ -262,7 +262,7 @@
 }
 
 .premium-actions {
-    margin-top: var(--space-5);
+    margin-top: var(--space-4);
     display: flex;
     flex-direction: column;
     gap: var(--space-2);
@@ -274,10 +274,6 @@
     }
 
     .premium-plan-grid {
-        grid-template-columns: 1fr 1fr;
-    }
-
-    .premium-feature-list {
         grid-template-columns: 1fr 1fr;
     }
 

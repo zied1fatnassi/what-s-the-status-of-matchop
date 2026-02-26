@@ -56,7 +56,7 @@ function getFeatureIcon(feature) {
 function Premium() {
     const { t } = useTranslation(undefined, { useSuspense: false })
     const [selectedPlan, setSelectedPlan] = useState(PLANS.yearly.id)
-    const [openFaq, setOpenFaq] = useState(0)
+    const [openFaq, setOpenFaq] = useState(-1)
     const [toast, setToast] = useState(null)
     const [source, setSource] = useState('direct')
     const [isRefreshingStatus, setIsRefreshingStatus] = useState(false)
@@ -66,7 +66,7 @@ function Premium() {
     const entitlements = getEntitlements(profile)
     const statusClassName = `premium-status-${entitlements.premiumStatusLabel.toLowerCase()}`
     const sourceFromQuery = searchParams.get('source')
-    const visibleFeatures = useMemo(() => PREMIUM_FEATURES.slice(0, 4), [])
+    const visibleFeatures = useMemo(() => PREMIUM_FEATURES.slice(0, 3), [])
 
     useEffect(() => {
         let sourceFromStorage = null
@@ -156,6 +156,21 @@ function Premium() {
                     </button>
                 </div>
 
+                <section className="premium-benefits" aria-label={t('premium.aria.benefits')}>
+                    <h2 className="premium-section-title">{t('premium.benefitsTitle')}</h2>
+                    <ul className="premium-feature-list">
+                        {visibleFeatures.map((feature) => {
+                            const FeatureIcon = getFeatureIcon(feature)
+                            return (
+                                <li key={feature}>
+                                    <FeatureIcon size={18} />
+                                    {feature}
+                                </li>
+                            )
+                        })}
+                    </ul>
+                </section>
+
                 <section className="premium-plan-section" aria-label={t('premium.aria.planSelector')}>
                     <h2 className="premium-section-title">{t('premium.planSectionTitle')}</h2>
                     <div className="premium-plan-grid">
@@ -176,21 +191,6 @@ function Premium() {
                             </button>
                         ))}
                     </div>
-                </section>
-
-                <section className="premium-benefits" aria-label={t('premium.aria.benefits')}>
-                    <h2 className="premium-section-title">{t('premium.benefitsTitle')}</h2>
-                    <ul className="premium-feature-list">
-                        {visibleFeatures.map((feature) => {
-                            const FeatureIcon = getFeatureIcon(feature)
-                            return (
-                                <li key={feature}>
-                                    <FeatureIcon size={18} />
-                                    {feature}
-                                </li>
-                            )
-                        })}
-                    </ul>
                 </section>
 
                 <section className="premium-faq" aria-label={t('premium.aria.faq')}>

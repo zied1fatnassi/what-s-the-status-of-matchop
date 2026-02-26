@@ -108,12 +108,18 @@ function Checkout() {
     const isPending = requestStatus === 'pending'
     const isApproved = requestStatus === 'approved'
     const isRejected = requestStatus === 'rejected'
-    const canCreateRequest = !isLoadingRequest && !entitlements.premiumActive && (!paymentRequest || isRejected)
+    const canCreateRequest = Boolean(user?.id) && !isLoadingRequest && !entitlements.premiumActive && (!paymentRequest || isRejected)
     const canUploadProof = isPending && !hasProof
     const hasUploadedProofPending = isPending && hasProof
     const statusMeta = getStatusMeta(requestStatus, hasProof, t)
     const fallbackReference = useMemo(() => createD17ReferenceCode(user?.id, plan.id), [user?.id, plan.id])
     const hasPendingRequest = isPending
+    const primaryActionState = useMemo(() => {
+        if (isApproved || entitlements.premiumActive) return 'goPremium'
+        if (canUploadProof) return 'uploadProof'
+        if (hasUploadedProofPending) return 'refreshStatus'
+        return 'createRequest'
+    }, [isApproved, entitlements.premiumActive, canUploadProof, hasUploadedProofPending])
     const nextStepsMessage = useMemo(() => {
         if (isApproved) return t('checkout.nextStepsApproved')
         if (hasUploadedProofPending) return t('checkout.nextStepsPendingWithProof')
@@ -337,51 +343,29 @@ function Checkout() {
                     </article>
                 </section>
 
-                <section className="checkout-summary" aria-label={t('checkout.aria.planSummary')}>
-                    <h2>{t('checkout.summary.title')}</h2>
-                    <div className="checkout-plan-card">
-                        <div className="checkout-plan-row">
-                            <span className="checkout-plan-name">{plan.label}</span>
-                            {plan.badge && <span className="checkout-plan-badge">{plan.badge}</span>}
+                <div className="checkout-overview-grid">
+                    <section className="checkout-summary" aria-label={t('checkout.aria.planSummary')}>
+                        <h2>{t('checkout.summary.title')}</h2>
+                        <div className="checkout-plan-card">
+                            <div className="checkout-plan-row">
+                                <span className="checkout-plan-name">{plan.label}</span>
+                                {plan.badge && <span className="checkout-plan-badge">{plan.badge}</span>}
+                            </div>
+                            <p className="checkout-plan-price">{plan.price} {CURRENCY}<span>{plan.cadence}</span></p>
+                            <p className="checkout-plan-source">
+                                {t('checkout.summary.source')}: {source}
+                            </p>
                         </div>
-                        <p className="checkout-plan-price">{plan.price} {CURRENCY}<span>{plan.cadence}</span></p>
-                        <p className="checkout-plan-source">
-                            {t('checkout.summary.source')}: {source}
-                        </p>
-                    </div>
-                </section>
+                    </section>
 
-                <section className="checkout-methods" aria-label={t('checkout.aria.methods')}>
-                    <h2>{t('checkout.methods.title')}</h2>
-                    <ul>
-                        <li><Phone size={16} /> {t('checkout.methods.receiverPhone')}: {paymentRequest?.d17_phone || '+21652460278'}</li>
-                        <li><BadgeCheck size={16} /> {t('checkout.methods.amount')}: {plan.price} {CURRENCY}</li>
-                        <li><CircleAlert size={16} /> {t('checkout.methods.reference')}: {paymentRequest?.reference || fallbackReference}</li>
-                    </ul>
-                </section>
-
-                <div className="checkout-actions checkout-actions-inline">
-                    {!isApproved && !entitlements.premiumActive && (
-                        <button
-                            type="button"
-                            className="btn btn-primary"
-                            onClick={handleCreatePaymentRequest}
-                            disabled={!canCreateRequest}
-                        >
-                            {isLoadingRequest
-                                ? t('checkout.actions.creating')
-                                : (isRejected ? t('checkout.actions.createRequestAgain') : t('checkout.actions.createRequest'))}
-                        </button>
-                    )}
-                    <button
-                        type="button"
-                        className="btn btn-secondary"
-                        onClick={handleRefreshStatus}
-                        disabled={isFetchingRequest}
-                    >
-                        <RefreshCw size={14} className={isFetchingRequest ? 'is-spinning' : ''} />
-                        {t('checkout.actions.refreshStatus')}
-                    </button>
+                    <section className="checkout-methods" aria-label={t('checkout.aria.methods')}>
+                        <h2>{t('checkout.methods.title')}</h2>
+                        <ul>
+                            <li><Phone size={16} /> {t('checkout.methods.receiverPhone')}: {paymentRequest?.d17_phone || '+21652460278'}</li>
+                            <li><BadgeCheck size={16} /> {t('checkout.methods.amount')}: {plan.price} {CURRENCY}</li>
+                            <li><CircleAlert size={16} /> {t('checkout.methods.reference')}: {paymentRequest?.reference || fallbackReference}</li>
+                        </ul>
+                    </section>
                 </div>
 
                 {entitlements.premiumActive && (
@@ -461,34 +445,73 @@ function Checkout() {
                                     onChange={handleProofFileChange}
                                 />
                                 <p className="checkout-file-hint">{t('checkout.proofUpload.hint')}</p>
-                                <button
-                                    type="button"
-                                    className="btn btn-secondary"
-                                    onClick={handleUploadProof}
-                                    disabled={!selectedFile || isUploadingProof}
-                                >
-                                    {isUploadingProof ? (
-                                        <>
-                                            <Loader2 size={14} className="is-spinning" />
-                                            {t('checkout.proofUpload.uploading')}
-                                        </>
-                                    ) : (
-                                        <>
-                                            <UploadCloud size={14} />
-                                            {t('checkout.proofUpload.uploadAction')}
-                                        </>
-                                    )}
-                                </button>
                             </div>
                         )}
                     </section>
                 )}
 
-                <div className="checkout-actions">
-                    {isApproved && (
+                <div className="checkout-actions checkout-primary-action">
+                    {primaryActionState === 'createRequest' && (
+                        <button
+                            type="button"
+                            className="btn btn-primary"
+                            onClick={handleCreatePaymentRequest}
+                            disabled={!canCreateRequest}
+                        >
+                            {isLoadingRequest
+                                ? t('checkout.actions.creating')
+                                : (isRejected ? t('checkout.actions.createRequestAgain') : t('checkout.actions.createRequest'))}
+                        </button>
+                    )}
+                    {primaryActionState === 'uploadProof' && (
+                        <button
+                            type="button"
+                            className="btn btn-primary"
+                            onClick={handleUploadProof}
+                            disabled={!selectedFile || isUploadingProof}
+                        >
+                            {isUploadingProof ? (
+                                <>
+                                    <Loader2 size={14} className="is-spinning" />
+                                    {t('checkout.proofUpload.uploading')}
+                                </>
+                            ) : (
+                                <>
+                                    <UploadCloud size={14} />
+                                    {t('checkout.proofUpload.uploadAction')}
+                                </>
+                            )}
+                        </button>
+                    )}
+                    {primaryActionState === 'refreshStatus' && (
+                        <button
+                            type="button"
+                            className="btn btn-primary"
+                            onClick={handleRefreshStatus}
+                            disabled={isFetchingRequest}
+                        >
+                            <RefreshCw size={14} className={isFetchingRequest ? 'is-spinning' : ''} />
+                            {t('checkout.actions.refreshStatus')}
+                        </button>
+                    )}
+                    {primaryActionState === 'goPremium' && (
                         <Link to="/premium" className="btn btn-primary">
                             {t('checkout.actions.goToPremium')}
                         </Link>
+                    )}
+                </div>
+
+                <div className="checkout-actions checkout-secondary-actions">
+                    {primaryActionState !== 'refreshStatus' && (
+                        <button
+                            type="button"
+                            className="btn btn-secondary"
+                            onClick={handleRefreshStatus}
+                            disabled={isFetchingRequest}
+                        >
+                            <RefreshCw size={14} className={isFetchingRequest ? 'is-spinning' : ''} />
+                            {t('checkout.actions.refreshStatus')}
+                        </button>
                     )}
                     <Link to="/payments" className="btn btn-secondary">
                         {t('checkout.actions.viewPayments')}

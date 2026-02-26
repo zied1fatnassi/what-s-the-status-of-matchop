@@ -62,6 +62,7 @@ export default function AdminPayments() {
     const [toast, setToast] = useState(null)
     const [inFlightId, setInFlightId] = useState(null)
     const [noteById, setNoteById] = useState({})
+    const [reviewIntent, setReviewIntent] = useState(null)
     const [proofPreview, setProofPreview] = useState({
         open: false,
         url: '',
@@ -174,7 +175,7 @@ export default function AdminPayments() {
             const { message } = await parseInvokeError(error)
             setActionError(message)
             setInFlightId(null)
-            return
+            return false
         }
 
         setToast({
@@ -187,6 +188,7 @@ export default function AdminPayments() {
         }))
         setInFlightId(null)
         await loadPayments()
+        return true
     }
 
     const rowsCountLabel = useMemo(() => {
@@ -195,6 +197,14 @@ export default function AdminPayments() {
         }
         return t('adminPayments.counts.filtered', { count: filteredRows.length, status: statusFilter })
     }, [filteredRows.length, statusFilter, t])
+
+    const handleConfirmReview = async () => {
+        if (!reviewIntent?.id || !reviewIntent?.action) return
+        const didSucceed = await handleReview(reviewIntent.id, reviewIntent.action)
+        if (didSucceed) {
+            setReviewIntent(null)
+        }
+    }
 
     return (
         <div className="admin-container">
@@ -236,49 +246,83 @@ export default function AdminPayments() {
                 </div>
             )}
 
+            {reviewIntent && (
+                <div className="admin-modal-overlay" role="dialog" aria-modal="true" aria-label={t(`adminPayments.actions.${reviewIntent.action}`)}>
+                    <div className="admin-modal admin-review-modal">
+                        <h2>{t(`adminPayments.actions.${reviewIntent.action}`)}</h2>
+                        <p className="checkout-inline-subtitle">
+                            {t('adminPayments.fields.reference')}: {reviewIntent.reference || '-'}
+                        </p>
+                        <div className="admin-modal-actions">
+                            <button
+                                type="button"
+                                className="admin-btn admin-btn-secondary"
+                                onClick={() => setReviewIntent(null)}
+                                disabled={inFlightId === reviewIntent.id}
+                            >
+                                {t('common.cancel')}
+                            </button>
+                            <button
+                                type="button"
+                                className={`admin-btn ${reviewIntent.action === 'approve' ? 'admin-btn-success' : 'admin-btn-danger'}`}
+                                onClick={handleConfirmReview}
+                                disabled={inFlightId === reviewIntent.id}
+                            >
+                                {inFlightId === reviewIntent.id
+                                    ? t('common.continue')
+                                    : t(`adminPayments.actions.${reviewIntent.action}`)}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <div className="admin-header">
                 <h1>{t('adminPayments.title')}</h1>
                 <p>{t('adminPayments.subtitle')}</p>
             </div>
 
-            <div className="admin-toolbar">
-                <div className="admin-search-wrap">
-                    <Search size={16} />
-                    <input
-                        type="search"
-                        className="admin-search"
-                        value={searchTerm}
-                        placeholder={t('adminPayments.searchPlaceholder')}
-                        onChange={(event) => setSearchTerm(event.target.value)}
-                        aria-label={t('adminPayments.searchAria')}
-                    />
+            <div className="admin-toolbar admin-toolbar-compact">
+                <div className="admin-toolbar-main">
+                    <div className="admin-search-wrap">
+                        <Search size={16} />
+                        <input
+                            type="search"
+                            className="admin-search"
+                            value={searchTerm}
+                            placeholder={t('adminPayments.searchPlaceholder')}
+                            onChange={(event) => setSearchTerm(event.target.value)}
+                            aria-label={t('adminPayments.searchAria')}
+                        />
+                    </div>
+                    <select
+                        className="admin-filter"
+                        value={statusFilter}
+                        onChange={(event) => setStatusFilter(event.target.value)}
+                        aria-label={t('adminPayments.filterAria')}
+                    >
+                        <option value="all">{t('adminPayments.filters.all')}</option>
+                        <option value="pending">{t('adminPayments.filters.pending')}</option>
+                        <option value="approved">{t('adminPayments.filters.approved')}</option>
+                        <option value="rejected">{t('adminPayments.filters.rejected')}</option>
+                    </select>
                 </div>
-                <select
-                    className="admin-filter"
-                    value={statusFilter}
-                    onChange={(event) => setStatusFilter(event.target.value)}
-                    aria-label={t('adminPayments.filterAria')}
-                >
-                    <option value="all">{t('adminPayments.filters.all')}</option>
-                    <option value="pending">{t('adminPayments.filters.pending')}</option>
-                    <option value="approved">{t('adminPayments.filters.approved')}</option>
-                    <option value="rejected">{t('adminPayments.filters.rejected')}</option>
-                </select>
-
-                <button
-                    type="button"
-                    className="admin-btn admin-btn-primary"
-                    onClick={loadPayments}
-                    disabled={isLoading}
-                >
-                    <RefreshCw size={14} className={isLoading ? 'is-spinning' : ''} />
-                    {t('adminPayments.refresh')}
-                </button>
+                <div className="admin-toolbar-actions">
+                    <p className="admin-toolbar-count">{rowsCountLabel}</p>
+                    <button
+                        type="button"
+                        className="admin-btn admin-btn-primary"
+                        onClick={loadPayments}
+                        disabled={isLoading}
+                    >
+                        <RefreshCw size={14} className={isLoading ? 'is-spinning' : ''} />
+                        {t('adminPayments.refresh')}
+                    </button>
+                </div>
             </div>
 
             <div className="admin-section">
                 <h2>{t('adminPayments.sectionTitle')}</h2>
-                <p className="no-activity">{rowsCountLabel}</p>
 
                 {actionError && <p className="admin-message error">{actionError}</p>}
 
@@ -293,9 +337,7 @@ export default function AdminPayments() {
                                 <tr>
                                     <th>{t('adminPayments.columns.user')}</th>
                                     <th>{t('adminPayments.columns.plan')}</th>
-                                    <th>{t('adminPayments.columns.amount')}</th>
                                     <th>{t('adminPayments.columns.status')}</th>
-                                    <th>{t('adminPayments.columns.created')}</th>
                                     <th>{t('adminPayments.columns.actions')}</th>
                                 </tr>
                             </thead>
@@ -305,23 +347,39 @@ export default function AdminPayments() {
                                     return (
                                         <Fragment key={row.id}>
                                             <tr>
-                                                <td data-label={t('adminPayments.columns.user')}>{row.user_email}</td>
-                                                <td data-label={t('adminPayments.columns.plan')}>{row.plan_id}</td>
-                                                <td data-label={t('adminPayments.columns.amount')}>{row.amount_tnd} {row.currency}</td>
-                                                <td data-label={t('adminPayments.columns.status')}>
-                                                    <span className={`status-badge ${mapStatusClass(row.status)}`}>
-                                                        {row.status}
-                                                    </span>
+                                                <td data-label={t('adminPayments.columns.user')}>
+                                                    <div className="admin-user-cell">
+                                                        <strong>{row.user_email}</strong>
+                                                        <span>{t('adminPayments.fields.reference')}: {row.reference}</span>
+                                                    </div>
                                                 </td>
-                                                <td data-label={t('adminPayments.columns.created')}>
-                                                    {formatDateTime(row.created_at)}
+                                                <td data-label={t('adminPayments.columns.plan')}>
+                                                    <div className="admin-plan-cell">
+                                                        <strong>{row.plan_id}</strong>
+                                                        <span>{row.amount_tnd} {row.currency}</span>
+                                                        <span>
+                                                            {t('adminPayments.columns.created')}: {formatDateTime(row.created_at)}
+                                                        </span>
+                                                    </div>
+                                                </td>
+                                                <td data-label={t('adminPayments.columns.status')}>
+                                                    <div className="admin-status-cell">
+                                                        <span className={`status-badge ${mapStatusClass(row.status)}`}>
+                                                            {row.status}
+                                                        </span>
+                                                        {row.reviewed_at && (
+                                                            <span className="admin-status-meta">
+                                                                {formatDateTime(row.reviewed_at)}
+                                                            </span>
+                                                        )}
+                                                    </div>
                                                 </td>
                                                 <td data-label={t('adminPayments.columns.actions')}>
                                                     <div className="admin-row-actions">
                                                         {row.proof_object_path && (
                                                             <button
                                                                 type="button"
-                                                                className="admin-btn admin-btn-primary admin-btn-sm"
+                                                                className="admin-btn admin-btn-secondary admin-btn-sm"
                                                                 onClick={() => handleViewProof(row.proof_object_path, row.reference)}
                                                             >
                                                                 <Eye size={14} />
@@ -333,15 +391,23 @@ export default function AdminPayments() {
                                                                 <button
                                                                     type="button"
                                                                     className="admin-btn admin-btn-success admin-btn-sm"
-                                                                    onClick={() => handleReview(row.id, 'approve')}
+                                                                    onClick={() => setReviewIntent({
+                                                                        id: row.id,
+                                                                        action: 'approve',
+                                                                        reference: row.reference
+                                                                    })}
                                                                     disabled={inFlightId === row.id}
                                                                 >
                                                                     {t('adminPayments.actions.approve')}
                                                                 </button>
                                                                 <button
                                                                     type="button"
-                                                                    className="admin-btn admin-btn-danger admin-btn-sm"
-                                                                    onClick={() => handleReview(row.id, 'reject')}
+                                                                    className="admin-btn admin-btn-secondary admin-btn-danger-outline admin-btn-sm"
+                                                                    onClick={() => setReviewIntent({
+                                                                        id: row.id,
+                                                                        action: 'reject',
+                                                                        reference: row.reference
+                                                                    })}
                                                                     disabled={inFlightId === row.id}
                                                                 >
                                                                     {t('adminPayments.actions.reject')}
@@ -361,7 +427,7 @@ export default function AdminPayments() {
                                             </tr>
                                             {isExpanded && (
                                                 <tr className="admin-details-row">
-                                                    <td colSpan={6}>
+                                                    <td colSpan={4}>
                                                         <div className="admin-details-grid">
                                                             <div>
                                                                 <dt>{t('adminPayments.fields.reference')}</dt>

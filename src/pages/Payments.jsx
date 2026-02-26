@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Eye, RefreshCw } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import AuthToast from '../components/AuthToast'
 import { useAuth } from '../context/AuthContext'
 import { getEntitlements } from '../lib/premiumEntitlements'
@@ -9,6 +10,7 @@ import './Checkout.css'
 import './Payments.css'
 
 function Payments() {
+    const { t } = useTranslation(undefined, { useSuspense: false })
     const { user, profile } = useAuth()
     const entitlements = getEntitlements(profile)
     const [requests, setRequests] = useState([])
@@ -108,37 +110,33 @@ function Payments() {
                         {requests.map((request) => (
                             <article key={request.id} className="payments-card">
                                 <div className="payments-card-header">
-                                    <h2 className="payments-card-title">{request.plan_id} plan</h2>
+                                    <div className="payments-card-title-wrap">
+                                        <h2 className="payments-card-title">{request.reference}</h2>
+                                        <p className="payments-card-subtitle">
+                                            {request.plan_id} plan - {request.amount_tnd} {request.currency}
+                                        </p>
+                                    </div>
                                     <span className={`status-badge status-${request.status}`}>
                                         {request.status}
                                     </span>
                                 </div>
-                                <dl className="payments-meta">
-                                    <div className="payments-meta-item">
-                                        <dt>Reference</dt>
-                                        <dd>{request.reference}</dd>
-                                    </div>
-                                    <div className="payments-meta-item">
-                                        <dt>Amount</dt>
-                                        <dd>{request.amount_tnd} {request.currency}</dd>
-                                    </div>
-                                    <div className="payments-meta-item">
-                                        <dt>D17 phone</dt>
-                                        <dd>{request.d17_phone}</dd>
-                                    </div>
-                                    <div className="payments-meta-item">
-                                        <dt>Submitted</dt>
-                                        <dd>{request.created_at ? new Date(request.created_at).toLocaleString() : '-'}</dd>
-                                    </div>
-                                    <div className="payments-meta-item">
-                                        <dt>Reviewed</dt>
-                                        <dd>{request.reviewed_at ? new Date(request.reviewed_at).toLocaleString() : '-'}</dd>
-                                    </div>
-                                    <div className="payments-meta-item">
-                                        <dt>Admin note</dt>
-                                        <dd>{request.admin_note || '-'}</dd>
-                                    </div>
-                                </dl>
+                                <div className="payments-meta-row">
+                                    <span>Submitted: {request.created_at ? new Date(request.created_at).toLocaleString() : '-'}</span>
+                                    <span>D17: {request.d17_phone}</span>
+                                    {request.reviewed_at && (
+                                        <span>Reviewed: {new Date(request.reviewed_at).toLocaleString()}</span>
+                                    )}
+                                </div>
+
+                                {request.status === 'pending' && (
+                                    <p className="payments-pending-hint">
+                                        {t('checkout.status.pending.detailWithProof')}
+                                    </p>
+                                )}
+
+                                {request.admin_note && (
+                                    <p className="payments-admin-note">{request.admin_note}</p>
+                                )}
 
                                 <div className="payments-card-actions">
                                     <Link to={`/checkout?plan=${request.plan_id}&source=payments`} className="btn btn-secondary">
