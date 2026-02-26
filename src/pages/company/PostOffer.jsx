@@ -138,7 +138,7 @@ We are looking for a motivated candidate to join us as **${title}**${department 
 
             setShowSuccess(true)
             setTimeout(() => {
-                navigate('/company/candidates')
+                navigate('/company/intros')
             }, 2000)
         } catch (error) {
             console.error('Error posting offer:', error)

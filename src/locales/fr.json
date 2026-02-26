@@ -5,6 +5,7 @@
         "retry": "Réessayer",
         "save": "Enregistrer",
         "cancel": "Annuler",
+        "close": "Fermer",
         "continue": "Continuer",
         "back": "Retour",
         "submit": "Soumettre"
@@ -12,8 +13,11 @@
     "nav": {
         "discover": "Découvrir",
         "matches": "Matchs",
+        "personalizedPlan": "Plan personnalise",
         "profile": "Profil",
+        "newCandidates": "Nouveaux candidats",
         "candidates": "Candidats",
+        "archived": "Archives",
         "postJob": "Publier",
         "logout": "Déconnexion"
     },
@@ -383,209 +387,7 @@
         "termsAgree": "En vous inscrivant, vous acceptez nos",
         "termsOfService": "Conditions d'Utilisation",
         "and": "et",
-        "privacyPolicy": "Politique de Confidentialité",
-        "studentLogin": {
-            "title": "Bon retour !",
-            "subtitle": "Connectez-vous à votre compte étudiant",
-            "emailLabel": "Adresse e-mail",
-            "emailPlaceholder": "etudiant@universite.tn",
-            "passwordLabel": "Mot de passe",
-            "passwordPlaceholder": "Entrez votre mot de passe",
-            "forgotPassword": "Mot de passe oublié ?",
-            "submit": "Se connecter",
-            "submitting": "Connexion...",
-            "noAccount": "Vous n'avez pas de compte ?",
-            "signUp": "S'inscrire",
-            "errors": {
-                "emailRequired": "L'e-mail est requis.",
-                "invalidEmail": "Veuillez saisir une adresse e-mail valide.",
-                "passwordRequired": "Veuillez entrer votre mot de passe.",
-                "invalidCredentials": "E-mail ou mot de passe invalide. Veuillez réessayer.",
-                "userNotFound": "Aucun compte n'est associé à cette adresse e-mail.",
-                "emailNotConfirmed": "Veuillez vérifier votre e-mail avant de vous connecter.",
-                "tooManyAttempts": "Trop de tentatives. Veuillez patienter puis réessayer.",
-                "generic": "Connexion impossible. Veuillez réessayer."
-            }
-        },
-        "studentSignup": {
-            "title": "Rejoignez MatchOp",
-            "subtitle": "Commencez votre parcours de carrière aujourd'hui",
-            "nameLabel": "Nom complet",
-            "namePlaceholder": "ex: Ahmed Ben Ali",
-            "emailLabel": "Adresse e-mail",
-            "emailPlaceholder": "etudiant@universite.tn",
-            "passwordLabel": "Mot de passe",
-            "passwordPlaceholder": "Créez un mot de passe fort",
-            "passwordStrengthPlaceholder": "Solidité du mot de passe",
-            "universityLabel": "Université",
-            "universityPlaceholder": "Sélectionnez l'université",
-            "majorLabel": "Spécialité",
-            "majorPlaceholder": "ex: Info",
-            "graduationYearLabel": "Année d'obtention",
-            "graduationYearPlaceholder": "2026",
-            "submit": "Créer un compte",
-            "submitting": "Création du compte...",
-            "alreadyHaveAccount": "Vous avez déjà un compte ?",
-            "signIn": "Se connecter",
-            "verification": {
-                "title": "Vérifiez votre e-mail",
-                "sentPrefix": "Nous avons envoyé un lien de vérification à",
-                "sentSuffix": "Cliquez sur le lien pour activer votre compte.",
-                "spamHint": "Vérifiez votre dossier spam/indésirables, l'e-mail peut s'y trouver.",
-                "arrivalHint": "L'arrivée peut prendre jusqu'à 2 minutes.",
-                "preauthorizedHint": "Toujours rien ? L'e-mail Supabase par défaut fonctionne seulement pour les adresses pré-autorisées.",
-                "setupHintPrefix": "Exécutez",
-                "setupHintMiddle": "dans l'éditeur SQL Supabase, ou configurez un SMTP personnalisé. Voir",
-                "goToLogin": "Aller à la connexion",
-                "resendButton": "Renvoyer l'e-mail de vérification",
-                "resendSending": "Envoi...",
-                "resendIn": "Renvoyer dans {{seconds}}s",
-                "resendSuccess": "E-mail de vérification renvoyé.",
-                "resendError": "Échec de renvoi. Veuillez réessayer plus tard."
-            },
-            "errors": {
-                "nameRequired": "Le nom est requis.",
-                "nameMinLength": "Le nom doit contenir au moins 2 caractères.",
-                "nameMaxLength": "Le nom doit contenir moins de 100 caractères.",
-                "emailRequired": "L'e-mail est requis.",
-                "invalidEmail": "Veuillez saisir une adresse e-mail valide.",
-                "passwordRequired": "Le mot de passe est requis.",
-                "passwordMinLength": "Le mot de passe doit contenir au moins 8 caractères.",
-                "passwordUppercase": "Le mot de passe doit contenir au moins une lettre majuscule.",
-                "passwordLowercase": "Le mot de passe doit contenir au moins une lettre minuscule.",
-                "passwordNumber": "Le mot de passe doit contenir au moins un chiffre.",
-                "passwordSpecial": "Le mot de passe doit contenir au moins un caractère spécial.",
-                "completeAllFields": "Veuillez compléter tous les champs (Université, Spécialité, Année d'obtention).",
-                "invalidCredentials": "E-mail ou mot de passe invalide. Veuillez réessayer.",
-                "emailNotConfirmed": "Veuillez vérifier votre e-mail avant de vous connecter.",
-                "userAlreadyExists": "Un compte existe déjà avec cette adresse e-mail.",
-                "weakPassword": "Le mot de passe est trop faible. Veuillez en choisir un plus fort.",
-                "tooManyAttempts": "Trop de tentatives. Veuillez patienter puis réessayer.",
-                "signupDisabled": "L'inscription est actuellement désactivée. Veuillez contacter le support.",
-                "generic": "Impossible de créer le compte. Veuillez réessayer."
-            }
-        },
-        "companyLogin": {
-            "visualTitle": "Bon retour !",
-            "visualSubtitle": "Connectez-vous pour continuer a trouver les meilleurs talents",
-            "title": "Connexion entreprise",
-            "noAccount": "Vous n'avez pas de compte ?",
-            "signUp": "S'inscrire",
-            "emailLabel": "E-mail professionnel",
-            "emailPlaceholder": "rh@vermeg.tn",
-            "passwordLabel": "Mot de passe",
-            "passwordPlaceholder": "Entrez votre mot de passe",
-            "forgotPassword": "Mot de passe oublie ?",
-            "submit": "Se connecter",
-            "submitting": "Connexion...",
-            "errors": {
-                "emailRequired": "L'e-mail est requis.",
-                "invalidEmail": "Veuillez saisir une adresse e-mail valide.",
-                "passwordRequired": "Veuillez entrer votre mot de passe.",
-                "invalidCredentials": "E-mail ou mot de passe invalide. Veuillez reessayer.",
-                "userNotFound": "Aucun compte n'est associe a cette adresse e-mail.",
-                "emailNotConfirmed": "Veuillez verifier votre e-mail avant de vous connecter.",
-                "tooManyAttempts": "Trop de tentatives. Veuillez patienter puis reessayer.",
-                "studentAccountUseStudentLogin": "Ce compte est enregistre comme etudiant. Veuillez utiliser la connexion etudiant.",
-                "generic": "Connexion impossible. Veuillez reessayer."
-            }
-        },
-        "companySignup": {
-            "visualTitle": "Trouvez les meilleurs talents",
-            "visualSubtitle": "Connectez-vous avec des etudiants et jeunes diplomes motives prets a avoir un impact",
-            "features": {
-                "preQualifiedCandidates": "Candidats pre-qualifies",
-                "reducedTimeToHire": "Delai de recrutement reduit",
-                "directMessaging": "Messagerie directe"
-            },
-            "title": "Compte entreprise",
-            "alreadyRegistered": "Deja inscrit ?",
-            "signIn": "Se connecter",
-            "steps": {
-                "account": "Compte",
-                "company": "Entreprise"
-            },
-            "companyNameLabel": "Nom de l'entreprise",
-            "companyNamePlaceholder": "Sofrecom Tunisie, Vermeg",
-            "workEmailLabel": "E-mail professionnel",
-            "workEmailPlaceholder": "rh@sofrecom.tn",
-            "passwordLabel": "Mot de passe",
-            "passwordPlaceholder": "Creez un mot de passe fort",
-            "passwordStrengthHint": "Min. 8 caracteres avec majuscule, minuscule, chiffre et caractere special",
-            "passwordStrengthLabels": {
-                "weak": "Faible",
-                "fair": "Moyen",
-                "good": "Bon",
-                "strong": "Fort"
-            },
-            "websiteOptionalLabel": "Site web (optionnel)",
-            "websitePlaceholder": "https://sofrecom.tn",
-            "industryLabel": "Secteur",
-            "industryPlaceholder": "Selectionnez le secteur",
-            "industries": {
-                "technology": "Technologie",
-                "finance": "Finance",
-                "healthcare": "Sante",
-                "education": "Education",
-                "retail": "Commerce",
-                "manufacturing": "Industrie",
-                "consulting": "Conseil",
-                "other": "Autre"
-            },
-            "sizeLabel": "Taille de l'entreprise",
-            "sizePlaceholder": "Selectionnez la taille",
-            "companySizes": {
-                "size1to10": "1-10 employes",
-                "size11to50": "11-50 employes",
-                "size51to200": "51-200 employes",
-                "size201to500": "201-500 employes",
-                "size500plus": "500+ employes"
-            },
-            "buttons": {
-                "continue": "Continuer",
-                "createAccount": "Creer un compte",
-                "creatingAccount": "Creation du compte...",
-                "back": "Retour"
-            },
-            "verification": {
-                "visualTitle": "Verifiez votre e-mail",
-                "visualSubtitle": "Nous avons envoye un lien de verification dans votre boite de reception",
-                "title": "Verifiez votre e-mail",
-                "sentTo": "Nous avons envoye un e-mail de verification a :",
-                "spamHint": "Verifiez votre dossier spam/indesirables, l'e-mail peut s'y trouver.",
-                "arrivalHint": "L'arrivee peut prendre jusqu'a 2 minutes.",
-                "preauthorizedHint": "Toujours rien ? L'e-mail Supabase par defaut fonctionne seulement pour les adresses pre-autorisees.",
-                "setupHintPrefix": "Executez",
-                "setupHintMiddle": "dans l'editeur SQL Supabase, ou configurez un SMTP personnalise - voir",
-                "goToLogin": "Aller a la connexion",
-                "resendButton": "Renvoyer l'e-mail de verification",
-                "resendSending": "Envoi...",
-                "resendIn": "Renvoyer dans {{seconds}}s",
-                "resendSuccess": "E-mail de verification renvoye !",
-                "resendError": "Echec du renvoi. Veuillez reessayer plus tard."
-            },
-            "errors": {
-                "companyNameRequired": "Le nom de l'entreprise est requis.",
-                "companyNameMinLength": "Le nom de l'entreprise doit contenir au moins 2 caracteres.",
-                "companyNameMaxLength": "Le nom de l'entreprise doit contenir moins de 100 caracteres.",
-                "emailRequired": "L'e-mail est requis.",
-                "invalidEmail": "Veuillez saisir une adresse e-mail valide.",
-                "passwordRequired": "Le mot de passe est requis.",
-                "passwordMinLength": "Le mot de passe doit contenir au moins 8 caracteres.",
-                "passwordUppercase": "Le mot de passe doit contenir au moins une lettre majuscule.",
-                "passwordLowercase": "Le mot de passe doit contenir au moins une lettre minuscule.",
-                "passwordNumber": "Le mot de passe doit contenir au moins un chiffre.",
-                "passwordSpecial": "Le mot de passe doit contenir au moins un caractere special.",
-                "completeRequiredFields": "Veuillez completer tous les champs obligatoires.",
-                "invalidCredentials": "E-mail ou mot de passe invalide. Veuillez reessayer.",
-                "emailNotConfirmed": "Veuillez verifier votre e-mail avant de vous connecter.",
-                "userAlreadyExists": "Un compte existe deja avec cette adresse e-mail.",
-                "weakPassword": "Le mot de passe est trop faible. Veuillez en choisir un plus fort.",
-                "tooManyAttempts": "Trop de tentatives. Veuillez patienter puis reessayer.",
-                "signupDisabled": "L'inscription est actuellement desactivee. Veuillez contacter le support.",
-                "generic": "Impossible de creer le compte. Veuillez reessayer."
-            }
-        }
+        "privacyPolicy": "Politique de Confidentialité"
     },
     "profile": {
         "completeProfile": "Complétez Votre Profil",
@@ -672,6 +474,77 @@
         "noCandidates": "Pas encore de candidats",
         "noCandidatesDesc": "Les candidats interesses par vos offres apparaitront ici."
     },
+    "companyWorkflow": {
+        "common": {
+            "unknownCandidate": "Candidat",
+            "unknownOffer": "Offre"
+        },
+        "newCandidates": {
+            "title": "Nouveaux candidats",
+            "subtitle": "Revoyez les nouveaux interets et decidez qui passe en match.",
+            "pendingCount": "{{count}} en attente",
+            "loading": "Chargement des nouveaux candidats...",
+            "loadError": "Impossible de charger les nouveaux candidats.",
+            "emptyTitle": "Aucun nouveau candidat pour le moment",
+            "emptyDescription": "Les etudiants interesses par vos offres apparaitront ici.",
+            "openOffers": "Voir les offres actives",
+            "actions": {
+                "refresh": "Actualiser",
+                "message": "Message",
+                "archive": "Archiver",
+                "reject": "Rejeter"
+            },
+            "meta": {
+                "forOffer": "Pour {{offer}}",
+                "expiresIn": "Expire dans {{time}}",
+                "matchScore": "{{score}}% de match"
+            }
+        },
+        "matches": {
+            "title": "Matchs",
+            "subtitle": "Matchs mutuels actifs prets pour la conversation.",
+            "loading": "Chargement des matchs...",
+            "loadError": "Impossible de charger les matchs.",
+            "emptyTitle": "Aucun match actif",
+            "emptyDescription": "Acceptez des nouveaux candidats pour ouvrir des conversations.",
+            "reviewCandidates": "Voir les nouveaux candidats",
+            "actions": {
+                "refresh": "Actualiser",
+                "message": "Message",
+                "archive": "Archiver",
+                "reject": "Rejeter"
+            },
+            "meta": {
+                "matchedOn": "Match le {{date}}",
+                "skills": "Competences"
+            }
+        },
+        "archived": {
+            "title": "Fermes / Archives",
+            "subtitle": "Candidats rejetes, expires et archives.",
+            "loading": "Chargement des elements archives...",
+            "loadError": "Impossible de charger les elements archives.",
+            "emptyTitle": "Aucun element archive",
+            "emptyDescription": "Les candidats archives et rejetes apparaitront ici.",
+            "filters": {
+                "all": "Tous",
+                "intro": "Candidats",
+                "match": "Matchs"
+            },
+            "labels": {
+                "intro": "Candidat",
+                "match": "Match",
+                "declined": "Rejete",
+                "expired": "Expire",
+                "archived": "Archive",
+                "closedOn": "Ferme le {{date}}",
+                "offer": "Offre"
+            },
+            "actions": {
+                "message": "Message"
+            }
+        }
+    },
     "postJob": {
         "title": "Publier une Nouvelle Opportunité",
         "subtitle": "Créez une offre d'emploi attractive pour attirer les meilleurs talents",
@@ -718,6 +591,336 @@
             "failedGenerateDescription": "Echec de la generation de description",
             "aiUnavailableFallback": "Le service IA est indisponible. Un modele intelligent a ete insere ; modifiez-le selon vos besoins.",
             "failedPost": "Echec de publication de l'offre : {{message}}"
+        }
+    },
+    "premiumUpsell": {
+        "badge": "Premium",
+        "closeAria": "Fermer la fenetre de mise a niveau Premium",
+        "featuresAria": "Avantages du plan Premium",
+        "reasons": {
+            "global_discovery": {
+                "title": "Les opportunites globales sont Premium",
+                "subtitle": "Passez a Premium pour debloquer la decouverte internationale."
+            },
+            "personalized_mode": {
+                "title": "Le plan personnalise est Premium",
+                "subtitle": "Passez a Premium pour debloquer les recommandations personnalisees."
+            },
+            "daily_limit": {
+                "title": "Limite quotidienne de swipes atteinte",
+                "subtitle": "Passez a Premium pour des swipes illimites et plus de matchs."
+            },
+            "daily_swipe_limit": {
+                "title": "Limite quotidienne de swipes atteinte",
+                "subtitle": "Vous avez atteint la limite standard de swipes aujourd'hui."
+            },
+            "generic": {
+                "title": "Passez a Premium",
+                "subtitle": "Debloquez l'experience complete de swipe."
+            }
+        },
+        "features": {
+            "unlimitedSwipes": "Swipes illimites",
+            "globalReach": "Portee globale",
+            "personalizedStack": "Pile hyper personnalisee"
+        },
+        "actions": {
+            "upgrade": "Mettre a niveau",
+            "notNow": "Pas maintenant"
+        }
+    },
+    "premium": {
+        "eyebrow": "Premium",
+        "subtitle": "Payez avec D17, televersez votre preuve, puis activez Premium apres approbation.",
+        "statusLabel": "Statut",
+        "statusValues": {
+            "free": "Gratuit",
+            "premium": "Premium",
+            "expired": "Expire"
+        },
+        "refresh": "Actualiser le statut",
+        "refreshing": "Actualisation...",
+        "planSectionTitle": "Choisissez votre plan",
+        "planNotes": {
+            "monthly": "Facturation mensuelle flexible",
+            "yearly": "Facture annuellement, economisez plus"
+        },
+        "benefitsTitle": "Ce que vous debloquez",
+        "faqTitle": "FAQ",
+        "upgradeAction": "Mettre a niveau",
+        "backToSwipe": "Retour au swipe",
+        "headlines": {
+            "global_discovery": "Debloquez les opportunites internationales",
+            "daily_limit": "Debloquez les swipes illimites",
+            "daily_swipe_limit": "Debloquez les swipes illimites",
+            "personalized_mode": "Debloquez les matchs personnalises",
+            "expired": "Renouvelez votre acces Premium",
+            "default": "Mise a niveau Premium"
+        },
+        "faq": {
+            "whenAvailable": {
+                "question": "Comment fonctionne l'activation Premium ?",
+                "answer": "Apres creation de la demande D17 et televersement de la preuve, un admin valide puis active Premium."
+            },
+            "accountAndMatches": {
+                "question": "Mon compte et mes matchs seront-ils conserves ?",
+                "answer": "Oui. Votre profil, vos swipes et vos matchs restent inchanges. Premium ajoute des fonctions de decouverte."
+            },
+            "switchPlans": {
+                "question": "Puis-je changer de plan plus tard ?",
+                "answer": "Oui. Vous pouvez choisir mensuel ou annuel avant de creer une nouvelle demande de paiement."
+            },
+            "whatIncludes": {
+                "question": "Que comprend Premium ?",
+                "answer": "Premium debloque les opportunites globales, le matching personnalise et les swipes illimites."
+            }
+        },
+        "toasts": {
+            "statusRefreshed": "Statut actualise",
+            "refreshError": "Impossible d'actualiser le statut pour le moment"
+        },
+        "aria": {
+            "planSelector": "Selecteur de plan",
+            "benefits": "Avantages Premium",
+            "faq": "Questions frequentes"
+        }
+    },
+    "checkout": {
+        "eyebrow": "Paiement",
+        "title": "Payer avec D17",
+        "subtitle": "Creez votre demande de paiement, effectuez le transfert sur D17, puis televersez votre preuve pour revision admin.",
+        "aria": {
+            "planSummary": "Resume du plan",
+            "methods": "Instructions de paiement D17",
+            "currentRequest": "Demande en cours",
+            "status": "Statut du paiement",
+            "steps": "Etapes du paiement"
+        },
+        "statusBanner": {
+            "title": "Statut actuel"
+        },
+        "summary": {
+            "title": "Plan selectionne",
+            "source": "Source"
+        },
+        "steps": {
+            "pay": {
+                "title": "Payer via D17",
+                "description": "Utilisez le numero, le montant et la reference ci-dessous pendant le transfert."
+            },
+            "upload": {
+                "title": "Televerser la preuve",
+                "description": "Televersez la preuve de paiement pour permettre la verification admin."
+            },
+            "wait": {
+                "title": "Attendre l'approbation",
+                "description": "Apres approbation, actualisez votre statut pour confirmer l'activation Premium."
+            }
+        },
+        "methods": {
+            "title": "Details du transfert D17",
+            "receiverPhone": "Telephone receveur",
+            "amount": "Montant",
+            "reference": "Reference"
+        },
+        "actions": {
+            "createRequest": "Creer la demande de paiement",
+            "createRequestAgain": "Creer une nouvelle demande",
+            "creating": "Creation...",
+            "refreshStatus": "Actualiser le statut",
+            "goToPremium": "Aller a Premium",
+            "viewPayments": "Voir mes paiements",
+            "backToPremium": "Retour a Premium"
+        },
+        "status": {
+            "pending": {
+                "label": "En attente",
+                "detail": "En attente de revision admin. Televersez votre preuve si ce n'est pas encore fait.",
+                "detailWithProof": "Preuve televersee. Votre demande est dans la file de revision admin."
+            },
+            "approved": {
+                "label": "Approuve",
+                "detail": "Paiement approuve. Premium devrait etre actif apres actualisation du statut."
+            },
+            "rejected": {
+                "label": "Refuse",
+                "detail": "Paiement refuse. Consultez la note admin et soumettez une nouvelle demande."
+            },
+            "reverted": {
+                "label": "Annule",
+                "detail": "Cette approbation a ete annulee par un admin. Creez une nouvelle demande pour continuer."
+            }
+        },
+        "notes": {
+            "premiumActive": "Premium est deja actif sur votre compte.",
+            "proofUploadedPending": "Preuve televersee avec succes. Vous serez notifie apres la revision admin.",
+            "rejectedNextStep": "Votre demande a ete refusee. Creez une nouvelle demande et televersez une preuve plus claire.",
+            "revertedNextStep": "Cette approbation a ete annulee. Creez une nouvelle demande et televersez la preuve a nouveau."
+        },
+        "nextSteps": "Prochaine etape: gardez cette page ouverte jusqu'au televersement de la preuve, puis verifiez le statut depuis Mes paiements.",
+        "nextStepsPendingNoProof": "Prochaine etape: effectuez le transfert D17, puis televersez votre preuve de paiement.",
+        "nextStepsPendingWithProof": "Prochaine etape: votre preuve est televersee. Actualisez le statut en attendant la revision admin.",
+        "nextStepsApproved": "Prochaine etape: allez sur Premium et actualisez le statut de votre compte.",
+        "nextStepsRejected": "Prochaine etape: creez une nouvelle demande de paiement et televersez une preuve valide.",
+        "nextStepsReverted": "Prochaine etape: creez une nouvelle demande puis soumettez la preuve pour revision admin.",
+        "request": {
+            "title": "Demande actuelle",
+            "notUploaded": "Pas encore televerse",
+            "fields": {
+                "reference": "Reference",
+                "plan": "Plan",
+                "amount": "Montant",
+                "created": "Cree le",
+                "proofPath": "Chemin de la preuve",
+                "adminNote": "Note admin"
+            }
+        },
+        "proofUpload": {
+            "label": "Televerser la preuve de paiement (image ou PDF)",
+            "hint": "Formats pris en charge: image ou PDF. Taille recommandee: 10 Mo max.",
+            "uploadAction": "Televerser la preuve",
+            "uploading": "Televersement..."
+        },
+        "toasts": {
+            "pendingExists": "Vous avez deja une demande de paiement en attente. Televersez la preuve ou attendez la revision.",
+            "requestCreated": "Demande de paiement creee. Continuez en televersant la preuve.",
+            "proofUploaded": "Preuve televersee. Votre demande est en attente de revision."
+        },
+        "errors": {
+            "loadRequests": "Impossible de charger les demandes de paiement pour le moment.",
+            "unsupportedProofType": "Type de fichier non pris en charge. Televersez uniquement une image ou un PDF.",
+            "cooldownActive": "Vous avez cree une demande en attente recemment. Veuillez patienter avant d'en creer une autre.",
+            "uploadFailed": "Echec du televersement de la preuve.",
+            "proofPathUpdateFailed": "Echec de la mise a jour du chemin de preuve."
+        }
+    },
+    "checkoutSuccess": {
+        "title": "Paiement soumis",
+        "subtitle": "Votre demande est soumise. Actualisez votre statut apres approbation admin pour confirmer l'activation Premium.",
+        "refresh": "Actualiser le statut",
+        "refreshing": "Actualisation...",
+        "backToDiscovery": "Retour a la decouverte",
+        "toasts": {
+            "statusRefreshed": "Statut actualise",
+            "refreshError": "Impossible d'actualiser le statut pour le moment"
+        }
+    },
+    "checkoutCancel": {
+        "title": "Paiement annule",
+        "subtitle": "Aucun changement n'a ete effectue. Vous pouvez revenir a Premium a tout moment.",
+        "backToPremium": "Retour a Premium"
+    },
+    "adminPayments": {
+        "title": "Revision des paiements D17",
+        "subtitle": "Examinez les demandes de paiement et approuvez ou refusez les soumissions.",
+        "sectionTitle": "Demandes de paiement",
+        "refresh": "Actualiser",
+        "loading": "Chargement des demandes...",
+        "empty": "Aucune demande trouvee.",
+        "searchPlaceholder": "Rechercher par email, ID utilisateur ou reference",
+        "searchAria": "Rechercher des demandes de paiement",
+        "filterAria": "Filtrer les demandes par statut",
+        "filters": {
+            "all": "Tous les statuts",
+            "pending": "En attente",
+            "approved": "Approuve",
+            "rejected": "Refuse",
+            "reverted": "Annule"
+        },
+        "counts": {
+            "all": "{{count}} demandes",
+            "filtered": "{{count}} demandes {{status}}"
+        },
+        "columns": {
+            "user": "Utilisateur",
+            "plan": "Plan",
+            "amount": "Montant",
+            "status": "Statut",
+            "created": "Cree le",
+            "actions": "Actions"
+        },
+        "actions": {
+            "viewProof": "Voir la preuve",
+            "viewAudit": "Voir l'audit",
+            "approve": "Approuver",
+            "reject": "Refuser",
+            "revert": "Annuler",
+            "undoApproval": "Annuler l'approbation",
+            "showDetails": "Details",
+            "hideDetails": "Masquer"
+        },
+        "auditActions": {
+            "created": "Cree",
+            "updated": "Mis a jour",
+            "approved": "Approuve",
+            "rejected": "Refuse",
+            "reverted": "Annule",
+            "proof_uploaded": "Preuve televersee"
+        },
+        "fields": {
+            "reference": "Reference",
+            "userId": "ID utilisateur",
+            "d17Phone": "Telephone D17",
+            "proofPath": "Chemin de preuve",
+            "reviewedAt": "Revise le",
+            "adminNote": "Note admin",
+            "addNote": "Note admin (optionnelle)",
+            "notePlaceholder": "Ajouter une note pour cette decision"
+        },
+        "proofModal": {
+            "title": "Apercu de la preuve",
+            "closeAria": "Fermer l'apercu de preuve",
+            "iframeTitle": "Apercu de la preuve de paiement"
+        },
+        "auditModal": {
+            "title": "Historique d'audit",
+            "closeAria": "Fermer l'historique d'audit",
+            "paymentRequestId": "Demande de paiement",
+            "loading": "Chargement de l'historique...",
+            "empty": "Aucune entree d'audit pour le moment.",
+            "actor": "Acteur"
+        },
+        "revertConfirm": {
+            "title": "Annuler l'approbation",
+            "body": "Etes-vous sur ? Cela retirera le Premium accorde par cette approbation."
+        },
+        "toasts": {
+            "requestUpdated": "Demande {{status}}."
+        },
+        "errors": {
+            "loadFailed": "Impossible de charger les demandes de paiement.",
+            "openProofFailed": "Impossible d'ouvrir la preuve.",
+            "auditLoadFailed": "Impossible de charger l'historique d'audit."
+        }
+    },
+    "payments": {
+        "title": "Mes paiements",
+        "subtitle": "Suivez vos demandes D17 et leur statut.",
+        "premiumStatus": "Statut Premium",
+        "loading": "Chargement des demandes de paiement...",
+        "empty": "Aucune demande de paiement pour le moment.",
+        "planAmount": "Plan {{planId}} - {{amount}} {{currency}}",
+        "pendingHint": "En attente de revision admin. Televersez la preuve dans le checkout si necessaire.",
+        "labels": {
+            "submitted": "Soumis",
+            "d17": "D17",
+            "reviewed": "Revise"
+        },
+        "actions": {
+            "refresh": "Actualiser",
+            "openCheckout": "Ouvrir le checkout",
+            "viewProof": "Voir la preuve",
+            "viewHistory": "Voir l'historique",
+            "hideHistory": "Masquer l'historique"
+        },
+        "history": {
+            "loading": "Chargement de l'historique...",
+            "empty": "Aucun historique pour le moment."
+        },
+        "errors": {
+            "loadFailed": "Impossible de charger l'historique des paiements.",
+            "previewFailed": "Impossible d'afficher la preuve.",
+            "auditLoadFailed": "Impossible de charger la chronologie des paiements."
         }
     },
     "companyProfile": {
@@ -824,5 +1027,3 @@
         "bounty": "Prime"
     }
 }
-
-

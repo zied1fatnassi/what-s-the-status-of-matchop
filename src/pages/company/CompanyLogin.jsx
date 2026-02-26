@@ -84,7 +84,7 @@ function CompanyLogin() {
                     setError(t('auth.companyLogin.errors.studentAccountUseStudentLogin'))
                     return
                 }
-                navigate('/company/candidates')
+                navigate('/company/intros')
             }
         } catch (err) {
             setError(getLocalizedAuthError(err))

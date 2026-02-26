@@ -26,16 +26,16 @@
 }
 
 .navbar--landing {
-    background: rgba(255, 255, 255, 0.15);
+    background: color-mix(in srgb, var(--glass-base) 92%, transparent);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border-color: rgba(255, 255, 255, 0.2);
+    border-color: var(--glass-border);
     box-shadow: none;
 }
 
 [data-theme='dark'] .navbar--landing {
-    background: rgba(0, 0, 0, 0.2);
-    border-color: rgba(255, 255, 255, 0.08);
+    background: color-mix(in srgb, var(--glass-base) 90%, transparent);
+    border-color: var(--glass-border);
 }
 
 @media (min-width: 1024px) {
@@ -214,15 +214,15 @@
 
 .navbar-link--primary {
     background: var(--primary);
-    border: 1px solid color-mix(in srgb, var(--primary) 80%, white);
-    color: #fff;
+    border: 1px solid color-mix(in srgb, var(--primary) 80%, var(--surface));
+    color: var(--text-on-primary);
     font-weight: 600;
 }
 
 .navbar-link--primary:hover,
 .navbar-link--primary.active {
     background: var(--primary-hover);
-    color: #fff;
+    color: var(--text-on-primary);
 }
 
 @media (max-width: 1023px) {
@@ -412,7 +412,7 @@
 }
 
 .logout-btn:hover {
-    background: rgba(251, 113, 133, 0.12);
+    background: color-mix(in srgb, var(--accent-rose) 16%, transparent);
 }
 
 @media (min-width: 1024px) {

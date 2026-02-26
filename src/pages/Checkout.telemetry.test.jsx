@@ -3,6 +3,13 @@ import { createRoot } from 'react-dom/client'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 
+vi.mock('react-i18next', () => ({
+    useTranslation: () => ({
+        t: (key) => key,
+        i18n: { language: 'en' }
+    })
+}))
+
 const trackMock = vi.fn()
 
 vi.mock('../lib/analytics', () => ({

@@ -1,30 +1,31 @@
 import { useEffect, useMemo, useRef } from 'react'
 import { createPortal } from 'react-dom'
+import { useTranslation } from 'react-i18next'
 import { Crown, Infinity as InfinityIcon, Globe2, Sparkles, X } from 'lucide-react'
 import { lockOverlayScroll, unlockOverlayScroll } from '../lib/overlayLock'
 import { track } from '../lib/analytics'
 import './PremiumUpsellModal.css'
 
-const REASON_CONTENT = {
+const REASON_CONTENT_KEYS = {
     global_discovery: {
-        title: 'Global opportunities are Premium',
-        subtitle: 'Upgrade to unlock international discovery.'
+        titleKey: 'premiumUpsell.reasons.global_discovery.title',
+        subtitleKey: 'premiumUpsell.reasons.global_discovery.subtitle'
     },
     personalized_mode: {
-        title: 'Personalized Plan is Premium',
-        subtitle: 'Upgrade to unlock personalized recommendations.'
+        titleKey: 'premiumUpsell.reasons.personalized_mode.title',
+        subtitleKey: 'premiumUpsell.reasons.personalized_mode.subtitle'
     },
     daily_limit: {
-        title: 'Daily swipe limit reached',
-        subtitle: 'Upgrade for unlimited swipes and more matches.'
+        titleKey: 'premiumUpsell.reasons.daily_limit.title',
+        subtitleKey: 'premiumUpsell.reasons.daily_limit.subtitle'
     },
     daily_swipe_limit: {
-        title: 'Daily swipe limit reached',
-        subtitle: 'You have reached today\'s standard swipe limit.'
+        titleKey: 'premiumUpsell.reasons.daily_swipe_limit.title',
+        subtitleKey: 'premiumUpsell.reasons.daily_swipe_limit.subtitle'
     },
     generic: {
-        title: 'Upgrade to Premium',
-        subtitle: 'Unlock the full swipe experience.'
+        titleKey: 'premiumUpsell.reasons.generic.title',
+        subtitleKey: 'premiumUpsell.reasons.generic.subtitle'
     }
 }
 
@@ -43,11 +44,11 @@ function PremiumUpsellModal({
     onClose,
     onUpgrade
 }) {
-    const isPremiumWaitlistMode = import.meta.env.VITE_PREMIUM_WAITLIST_MODE === 'true'
+    const { t } = useTranslation(undefined, { useSuspense: false })
     const dialogRef = useRef(null)
     const upgradeButtonRef = useRef(null)
 
-    const copy = useMemo(() => REASON_CONTENT[reason] || REASON_CONTENT.generic, [reason])
+    const copy = useMemo(() => REASON_CONTENT_KEYS[reason] || REASON_CONTENT_KEYS.generic, [reason])
 
     useEffect(() => {
         if (!isOpen) return
@@ -113,35 +114,35 @@ function PremiumUpsellModal({
                     type="button"
                     className="premium-upsell-close"
                     onClick={onClose}
-                    aria-label="Close premium upgrade modal"
+                    aria-label={t('premiumUpsell.closeAria')}
                 >
                     <X size={18} />
                 </button>
 
                 <div className="premium-upsell-badge" aria-hidden="true">
                     <Crown size={18} />
-                    Premium
+                    {t('premiumUpsell.badge')}
                 </div>
 
                 <h2 id="premium-upsell-title" className="premium-upsell-title">
-                    {copy.title}
+                    {t(copy.titleKey)}
                 </h2>
                 <p id="premium-upsell-subtitle" className="premium-upsell-subtitle">
-                    {copy.subtitle}
+                    {t(copy.subtitleKey)}
                 </p>
 
-                <ul className="premium-upsell-features" aria-label="Premium plan highlights">
+                <ul className="premium-upsell-features" aria-label={t('premiumUpsell.featuresAria')}>
                     <li>
                         <InfinityIcon size={16} />
-                        Unlimited swipes
+                        {t('premiumUpsell.features.unlimitedSwipes')}
                     </li>
                     <li>
                         <Globe2 size={16} />
-                        Global reach
+                        {t('premiumUpsell.features.globalReach')}
                     </li>
                     <li>
                         <Sparkles size={16} />
-                        Hyper-personalized stack
+                        {t('premiumUpsell.features.personalizedStack')}
                     </li>
                 </ul>
 
@@ -152,14 +153,14 @@ function PremiumUpsellModal({
                         className="btn btn-primary"
                         onClick={onUpgrade}
                     >
-                        {isPremiumWaitlistMode ? 'Join waitlist' : 'Upgrade'}
+                        {t('premiumUpsell.actions.upgrade')}
                     </button>
                     <button
                         type="button"
                         className="btn btn-secondary"
                         onClick={onClose}
                     >
-                        Not now
+                        {t('premiumUpsell.actions.notNow')}
                     </button>
                 </div>
             </div>

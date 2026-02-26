@@ -155,6 +155,7 @@ function createMockRows(tableName, currentUser) {
             created_at: now
         }],
         payment_requests: [],
+        payment_requests_audit: [],
         app_settings: [{
             id: 1,
             settings: {
@@ -564,11 +565,16 @@ function createMockSupabase() {
                 }
 
                 if (name === 'admin-review-payment') {
+                    const action = payload?.body?.action
                     return {
                         data: {
                             success: true,
                             paymentRequestId: payload?.body?.paymentRequestId || 'payment-request-e2e',
-                            status: payload?.body?.action === 'reject' ? 'rejected' : 'approved'
+                            status: action === 'reject'
+                                ? 'rejected'
+                                : action === 'revert'
+                                    ? 'reverted'
+                                    : 'approved'
                         },
                         error: null
                     }

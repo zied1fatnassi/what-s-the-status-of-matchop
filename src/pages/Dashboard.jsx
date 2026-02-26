@@ -86,7 +86,7 @@ function Dashboard() {
     }
 
     if (isCompany || metadataType === 'company') {
-        return <Navigate to="/company/candidates" replace />
+        return <Navigate to="/company/intros" replace />
     }
 
     if (isStudent || metadataType === 'student') {

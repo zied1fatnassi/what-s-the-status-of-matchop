@@ -8,7 +8,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.7);
+    background: var(--overlay-bg);
     backdrop-filter: blur(8px);
     display: flex;
     align-items: flex-end; /* MOBILE: Slide from bottom */
@@ -27,7 +27,11 @@
 }
 
 .offer-modal {
-    background: linear-gradient(135deg, rgba(15, 12, 41, 0.98) 0%, rgba(48, 43, 99, 0.98) 100%);
+    background: linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--surface) 94%, var(--primary) 6%) 0%,
+        color-mix(in srgb, var(--surface-2) 94%, var(--accent-purple) 6%) 100%
+    );
     border: 1px solid var(--glass-border);
     /* MOBILE: Full-width, rounded top only */
     border-radius: var(--radius-xl) var(--radius-xl) 0 0;
@@ -57,7 +61,7 @@
     top: var(--space-3);
     right: var(--space-3);
     padding: var(--space-2);
-    color: rgba(255, 255, 255, 0.75);
+    color: var(--text-secondary);
     border-radius: 9999px;
     transition: all var(--transition-fast);
     z-index: 10;
@@ -79,8 +83,8 @@
 }
 
 .modal-close:hover {
-    color: white;
-    background: var(--glass-bg, rgba(255, 255, 255, 0.1));
+    color: var(--text-primary);
+    background: var(--surface-2);
 }
 
 /* Header - MOBILE FIRST */
@@ -108,7 +112,7 @@
     justify-content: center;
     font-size: 1.25rem;
     font-weight: 700;
-    color: white;
+    color: var(--text-on-primary);
     flex-shrink: 0;
 }
 
@@ -137,10 +141,6 @@
 .company-name {
     font-size: var(--font-size-lg);
     font-weight: 600;
-    color: white;
-}
-
-[data-theme='light'] .company-name {
     color: var(--text-primary);
 }
 
@@ -160,12 +160,8 @@
 .offer-title {
     font-size: var(--font-size-2xl);
     font-weight: 700;
-    color: white;
-    margin-bottom: var(--space-5);
-}
-
-[data-theme='light'] .offer-title {
     color: var(--text-primary);
+    margin-bottom: var(--space-5);
 }
 
 /* Quick Info - MOBILE FIRST: Single column on mobile */
@@ -174,14 +170,10 @@
     grid-template-columns: 1fr;
     gap: var(--space-2);
     padding: var(--space-3);
-    background: var(--glass-bg, rgba(255, 255, 255, 0.1));
+    background: var(--surface-2);
+    border: 1px solid var(--border);
     border-radius: var(--radius-lg);
     margin-bottom: var(--space-4);
-}
-
-[data-theme='light'] .offer-quick-info {
-    background: rgba(59, 130, 246, 0.08);
-    border: 1px solid rgba(59, 130, 246, 0.15);
 }
 
 @media (min-width: 480px) {
@@ -198,12 +190,8 @@
     display: flex;
     align-items: center;
     gap: var(--space-2);
-    color: rgba(255, 255, 255, 0.85);
-    font-size: var(--font-size-sm);
-}
-
-[data-theme='light'] .info-item {
     color: var(--text-secondary);
+    font-size: var(--font-size-sm);
 }
 
 .info-item svg {
@@ -248,22 +236,14 @@
 .offer-section h4 {
     font-size: var(--font-size-base);
     font-weight: 600;
-    color: var(--primary-light);
+    color: var(--primary);
     margin-bottom: var(--space-2);
 }
 
-[data-theme='light'] .offer-section h4 {
-    color: var(--primary);
-}
-
 .offer-section p {
-    color: rgba(255, 255, 255, 0.85);
+    color: var(--text-secondary);
     font-size: var(--font-size-sm);
     line-height: 1.7;
-}
-
-[data-theme='light'] .offer-section p {
-    color: var(--text-secondary);
 }
 
 /* Skills */
@@ -275,18 +255,12 @@
 
 .offer-skills .skill-tag {
     padding: var(--space-2) var(--space-3);
-    background: rgba(33, 150, 243, 0.15);
-    color: var(--primary-light);
+    background: color-mix(in srgb, var(--primary) 14%, var(--surface));
+    color: var(--primary);
     font-size: var(--font-size-sm);
     font-weight: 500;
     border-radius: 9999px;
-    border: 1px solid rgba(33, 150, 243, 0.3);
-}
-
-[data-theme='light'] .offer-skills .skill-tag {
-    background: rgba(59, 130, 246, 0.12);
-    color: var(--primary);
-    border-color: rgba(59, 130, 246, 0.25);
+    border: 1px solid color-mix(in srgb, var(--primary) 28%, var(--border));
 }
 
 .offer-modal-actions .btn {
@@ -315,8 +289,3 @@
     }
 }
 
-/* Light mode: switch to MatchOp light blue gradient for readability */
-[data-theme='light'] .offer-modal {
-    background: linear-gradient(135deg, #f0f7ff 0%, #dbeafe 35%, #bfdbfe 100%);
-    color: var(--text-primary);
-}

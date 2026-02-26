@@ -37,9 +37,84 @@
     color: var(--text-secondary);
 }
 
+.checkout-status-banner {
+    margin-top: var(--space-4);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
+    background: var(--surface-elevated);
+    padding: var(--space-3) var(--space-4);
+}
+
+.checkout-status-banner-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+}
+
+.checkout-status-banner p {
+    margin: var(--space-2) 0 0;
+    color: var(--text-secondary);
+    font-size: 0.88rem;
+}
+
+.checkout-steps {
+    margin-top: var(--space-4);
+    display: grid;
+    gap: var(--space-2);
+}
+
+.checkout-step {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-2);
+    align-items: flex-start;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    background: var(--surface-muted);
+    padding: 0.6rem 0.75rem;
+}
+
+.checkout-step.active {
+    border-color: color-mix(in srgb, var(--primary) 36%, var(--border-default));
+    background: color-mix(in srgb, var(--primary) 8%, var(--surface-elevated));
+}
+
+.checkout-step.done {
+    border-color: color-mix(in srgb, var(--status-approved-fg) 45%, var(--border-default));
+}
+
+.checkout-step-index {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: var(--radius-pill);
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-on-primary);
+    background: var(--primary);
+}
+
+.checkout-step h3 {
+    margin: 0;
+    font-size: 0.88rem;
+}
+
+.checkout-step p {
+    margin: 0.16rem 0 0;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
 .checkout-summary,
 .checkout-methods {
-    margin-top: var(--space-5);
+    margin-top: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    padding: var(--space-4);
 }
 
 .checkout-summary h2,
@@ -48,11 +123,14 @@
     font-size: 1rem;
 }
 
+.checkout-overview-grid {
+    margin-top: var(--space-5);
+    display: grid;
+    gap: var(--space-3);
+}
+
 .checkout-plan-card {
-    border: 1px solid var(--bento-card-border-subtle);
-    border-radius: var(--radius-lg);
-    background: color-mix(in srgb, var(--bento-card) 92%, transparent);
-    padding: var(--space-4);
+    padding: 0;
 }
 
 .checkout-plan-row {
@@ -106,10 +184,7 @@
     display: flex;
     align-items: center;
     gap: var(--space-2);
-    border: 1px solid var(--bento-card-border-subtle);
-    border-radius: var(--radius-md);
-    background: color-mix(in srgb, var(--bento-card) 90%, transparent);
-    padding: 0.55rem 0.7rem;
+    padding: 0.4rem 0;
     color: var(--text-primary);
 }
 
@@ -117,27 +192,10 @@
     color: var(--primary);
 }
 
-.checkout-manual {
-    margin-top: var(--space-5);
-    display: grid;
-    gap: var(--space-3);
-}
-
-.checkout-manual h2 {
-    margin: 0;
-    font-size: 1rem;
-}
-
-.checkout-manual-text {
-    margin: 0;
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-}
-
 .checkout-reference-box {
     border-radius: var(--radius-md);
-    border: 1px solid var(--bento-card-border-subtle);
-    background: color-mix(in srgb, var(--bento-card) 92%, transparent);
+    border: 1px solid var(--border);
+    background: var(--surface);
     padding: 0.65rem 0.75rem;
     display: grid;
     gap: 0.22rem;
@@ -155,63 +213,13 @@
     letter-spacing: 0.02em;
 }
 
-.checkout-manual-list {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    display: grid;
-    gap: var(--space-2);
-}
-
-.checkout-manual-list li {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    border: 1px solid var(--bento-card-border-subtle);
-    border-radius: var(--radius-md);
-    background: color-mix(in srgb, var(--bento-card) 90%, transparent);
-    padding: 0.55rem 0.7rem;
-    color: var(--text-primary);
-}
-
-.checkout-manual-list li svg {
-    color: var(--primary);
-}
-
-.checkout-manual-form {
-    display: grid;
-    gap: 0.45rem;
-}
-
-.checkout-manual-form label {
-    font-size: 0.78rem;
-    color: var(--text-secondary);
-}
-
-.checkout-manual-form select,
-.checkout-manual-form input,
-.checkout-manual-form textarea {
-    width: 100%;
-    border: 1px solid var(--bento-card-border-subtle);
-    background: color-mix(in srgb, var(--bento-card) 94%, transparent);
-    border-radius: var(--radius-md);
-    padding: 0.6rem 0.65rem;
-    color: var(--text-primary);
-    font: inherit;
-}
-
-.checkout-manual-form textarea {
-    resize: vertical;
-}
-
-.checkout-manual-confirmation {
-    margin: 0;
-    color: var(--accent-teal);
-    font-size: 0.84rem;
-}
-
 .checkout-inline-subtitle {
     margin-top: var(--space-1);
+}
+
+.checkout-next-steps {
+    color: var(--text-secondary);
+    font-size: 0.84rem;
 }
 
 .checkout-actions {
@@ -221,15 +229,19 @@
     gap: var(--space-2);
 }
 
-.checkout-actions-inline {
+.checkout-primary-action {
     margin-top: var(--space-4);
+}
+
+.checkout-secondary-actions {
+    margin-top: var(--space-2);
 }
 
 .checkout-request {
     margin-top: var(--space-5);
-    border: 1px solid var(--bento-card-border-subtle);
+    border: 1px solid var(--border);
     border-radius: var(--radius-lg);
-    background: color-mix(in srgb, var(--bento-card) 92%, transparent);
+    background: var(--surface);
     padding: var(--space-4);
 }
 
@@ -253,7 +265,7 @@
 }
 
 .checkout-request-grid div {
-    border: 1px solid var(--bento-card-border-subtle);
+    border: 1px solid var(--border);
     border-radius: var(--radius-md);
     padding: 0.55rem 0.65rem;
 }
@@ -284,20 +296,26 @@
 
 .checkout-proof-upload input[type="file"] {
     width: 100%;
-    border: 1px solid var(--bento-card-border-subtle);
-    background: color-mix(in srgb, var(--bento-card) 94%, transparent);
+    border: 1px solid var(--border);
+    background: var(--surface-2);
     border-radius: var(--radius-md);
     padding: 0.6rem 0.65rem;
     color: var(--text-primary);
     font: inherit;
 }
 
+.checkout-file-hint {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.78rem;
+}
+
 .checkout-error-note {
-    color: var(--accent-red);
+    color: var(--danger);
 }
 
 .checkout-success-note {
-    color: var(--accent-teal);
+    color: var(--success);
 }
 
 .status-badge {
@@ -311,21 +329,45 @@
 }
 
 .status-badge.status-pending {
-    color: #ffb74d;
-    border-color: rgba(255, 183, 77, 0.45);
-    background: rgba(255, 183, 77, 0.14);
+    color: var(--status-pending-fg);
+    border-color: var(--status-pending-border);
+    background: var(--status-pending-bg);
 }
 
 .status-badge.status-approved {
-    color: #81c784;
-    border-color: rgba(129, 199, 132, 0.45);
-    background: rgba(129, 199, 132, 0.14);
+    color: var(--status-approved-fg);
+    border-color: var(--status-approved-border);
+    background: var(--status-approved-bg);
 }
 
 .status-badge.status-rejected {
-    color: #ef9a9a;
-    border-color: rgba(239, 154, 154, 0.45);
-    background: rgba(239, 154, 154, 0.14);
+    color: var(--status-rejected-fg);
+    border-color: var(--status-rejected-border);
+    background: var(--status-rejected-bg);
+}
+
+.status-badge.status-reverted {
+    color: var(--text-secondary);
+    border-color: var(--border-default);
+    background: color-mix(in srgb, var(--surface-muted) 85%, transparent);
+}
+
+.status-badge.status-created {
+    color: color-mix(in srgb, var(--primary) 76%, var(--text-primary));
+    border-color: color-mix(in srgb, var(--primary) 35%, var(--border-default));
+    background: color-mix(in srgb, var(--primary) 14%, var(--surface));
+}
+
+.status-badge.status-proof_uploaded {
+    color: color-mix(in srgb, var(--accent-teal) 78%, var(--text-primary));
+    border-color: color-mix(in srgb, var(--accent-teal) 40%, var(--border-default));
+    background: color-mix(in srgb, var(--accent-teal) 14%, var(--surface));
+}
+
+.status-badge.status-updated {
+    color: var(--text-secondary);
+    border-color: var(--border-default);
+    background: color-mix(in srgb, var(--surface-muted) 85%, transparent);
 }
 
 .checkout-result {
@@ -358,8 +400,12 @@
         padding: var(--space-8);
     }
 
+    .checkout-overview-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
     .checkout-actions {
         flex-direction: row;
-        justify-content: center;
+        justify-content: flex-start;
     }
 }
