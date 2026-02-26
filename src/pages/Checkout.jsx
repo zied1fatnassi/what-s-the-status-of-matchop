@@ -56,7 +56,7 @@ async function parseInvokeError(error) {
     }
 }
 
-function getStatusMeta(status, t) {
+function getStatusMeta(status, hasProof, t) {
     if (status === 'approved') {
         return {
             className: 'status-approved',
@@ -76,7 +76,9 @@ function getStatusMeta(status, t) {
     return {
         className: 'status-pending',
         label: t('checkout.status.pending.label'),
-        detail: t('checkout.status.pending.detail')
+        detail: hasProof
+            ? t('checkout.status.pending.detailWithProof')
+            : t('checkout.status.pending.detail')
     }
 }
 
@@ -101,11 +103,24 @@ function Checkout() {
     const source = searchParams.get('source') || 'direct'
     const plan = resolvePlan(searchParams.get('plan'))
     const entitlements = getEntitlements(profile)
-    const statusMeta = getStatusMeta(paymentRequest?.status, t)
-    const canCreateRequest = !isLoadingRequest && paymentRequest?.status !== 'pending'
-    const canUploadProof = paymentRequest?.status === 'pending'
+    const requestStatus = paymentRequest?.status || null
+    const hasProof = Boolean(paymentRequest?.proof_object_path)
+    const isPending = requestStatus === 'pending'
+    const isApproved = requestStatus === 'approved'
+    const isRejected = requestStatus === 'rejected'
+    const canCreateRequest = !isLoadingRequest && !entitlements.premiumActive && (!paymentRequest || isRejected)
+    const canUploadProof = isPending && !hasProof
+    const hasUploadedProofPending = isPending && hasProof
+    const statusMeta = getStatusMeta(requestStatus, hasProof, t)
     const fallbackReference = useMemo(() => createD17ReferenceCode(user?.id, plan.id), [user?.id, plan.id])
-    const hasPendingRequest = paymentRequest?.status === 'pending'
+    const hasPendingRequest = isPending
+    const nextStepsMessage = useMemo(() => {
+        if (isApproved) return t('checkout.nextStepsApproved')
+        if (hasUploadedProofPending) return t('checkout.nextStepsPendingWithProof')
+        if (canUploadProof) return t('checkout.nextStepsPendingNoProof')
+        if (isRejected) return t('checkout.nextStepsRejected')
+        return t('checkout.nextSteps')
+    }, [canUploadProof, hasUploadedProofPending, isApproved, isRejected, t])
 
     useEffect(() => {
         track('checkout_provider_selected', { provider: 'd17' })
@@ -346,14 +361,18 @@ function Checkout() {
                 </section>
 
                 <div className="checkout-actions checkout-actions-inline">
-                    <button
-                        type="button"
-                        className="btn btn-primary"
-                        onClick={handleCreatePaymentRequest}
-                        disabled={!canCreateRequest || entitlements.premiumActive}
-                    >
-                        {isLoadingRequest ? t('checkout.actions.creating') : t('checkout.actions.createRequest')}
-                    </button>
+                    {!isApproved && !entitlements.premiumActive && (
+                        <button
+                            type="button"
+                            className="btn btn-primary"
+                            onClick={handleCreatePaymentRequest}
+                            disabled={!canCreateRequest}
+                        >
+                            {isLoadingRequest
+                                ? t('checkout.actions.creating')
+                                : (isRejected ? t('checkout.actions.createRequestAgain') : t('checkout.actions.createRequest'))}
+                        </button>
+                    )}
                     <button
                         type="button"
                         className="btn btn-secondary"
@@ -371,6 +390,18 @@ function Checkout() {
                     </p>
                 )}
 
+                {hasUploadedProofPending && (
+                    <p className="checkout-inline-subtitle checkout-success-note">
+                        {t('checkout.notes.proofUploadedPending')}
+                    </p>
+                )}
+
+                {isRejected && (
+                    <p className="checkout-inline-subtitle checkout-error-note">
+                        {t('checkout.notes.rejectedNextStep')}
+                    </p>
+                )}
+
                 {errorMessage && (
                     <p className="checkout-inline-subtitle checkout-error-note">
                         {errorMessage}
@@ -378,7 +409,7 @@ function Checkout() {
                 )}
 
                 <p className="checkout-inline-subtitle checkout-next-steps">
-                    {t('checkout.nextSteps')}
+                    {nextStepsMessage}
                 </p>
 
                 {paymentRequest && (
@@ -429,6 +460,7 @@ function Checkout() {
                                     accept="image/*,.pdf,application/pdf"
                                     onChange={handleProofFileChange}
                                 />
+                                <p className="checkout-file-hint">{t('checkout.proofUpload.hint')}</p>
                                 <button
                                     type="button"
                                     className="btn btn-secondary"
@@ -453,9 +485,9 @@ function Checkout() {
                 )}
 
                 <div className="checkout-actions">
-                    {paymentRequest?.status === 'approved' && (
-                        <Link to="/checkout/success" className="btn btn-primary">
-                            {t('common.continue')}
+                    {isApproved && (
+                        <Link to="/premium" className="btn btn-primary">
+                            {t('checkout.actions.goToPremium')}
                         </Link>
                     )}
                     <Link to="/payments" className="btn btn-secondary">

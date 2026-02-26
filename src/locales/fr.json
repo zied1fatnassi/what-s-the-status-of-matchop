@@ -725,15 +725,18 @@
         },
         "actions": {
             "createRequest": "Creer la demande de paiement",
+            "createRequestAgain": "Creer une nouvelle demande",
             "creating": "Creation...",
             "refreshStatus": "Actualiser le statut",
+            "goToPremium": "Aller a Premium",
             "viewPayments": "Voir mes paiements",
             "backToPremium": "Retour a Premium"
         },
         "status": {
             "pending": {
                 "label": "En attente",
-                "detail": "En attente de revision admin. Televersez votre preuve si ce n'est pas encore fait."
+                "detail": "En attente de revision admin. Televersez votre preuve si ce n'est pas encore fait.",
+                "detailWithProof": "Preuve televersee. Votre demande est dans la file de revision admin."
             },
             "approved": {
                 "label": "Approuve",
@@ -745,9 +748,15 @@
             }
         },
         "notes": {
-            "premiumActive": "Premium est deja actif sur votre compte."
+            "premiumActive": "Premium est deja actif sur votre compte.",
+            "proofUploadedPending": "Preuve televersee avec succes. Vous serez notifie apres la revision admin.",
+            "rejectedNextStep": "Votre demande a ete refusee. Creez une nouvelle demande et televersez une preuve plus claire."
         },
         "nextSteps": "Prochaine etape: gardez cette page ouverte jusqu'au televersement de la preuve, puis verifiez le statut depuis Mes paiements.",
+        "nextStepsPendingNoProof": "Prochaine etape: effectuez le transfert D17, puis televersez votre preuve de paiement.",
+        "nextStepsPendingWithProof": "Prochaine etape: votre preuve est televersee. Actualisez le statut en attendant la revision admin.",
+        "nextStepsApproved": "Prochaine etape: allez sur Premium et actualisez le statut de votre compte.",
+        "nextStepsRejected": "Prochaine etape: creez une nouvelle demande de paiement et televersez une preuve valide.",
         "request": {
             "title": "Demande actuelle",
             "notUploaded": "Pas encore televerse",
@@ -762,6 +771,7 @@
         },
         "proofUpload": {
             "label": "Televerser la preuve de paiement (image ou PDF)",
+            "hint": "Formats pris en charge: image ou PDF. Taille recommandee: 10 Mo max.",
             "uploadAction": "Televerser la preuve",
             "uploading": "Televersement..."
         },

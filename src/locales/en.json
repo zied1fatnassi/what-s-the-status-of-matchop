@@ -725,15 +725,18 @@
         },
         "actions": {
             "createRequest": "Create payment request",
+            "createRequestAgain": "Create new payment request",
             "creating": "Creating...",
             "refreshStatus": "Refresh status",
+            "goToPremium": "Go to Premium",
             "viewPayments": "View my payments",
             "backToPremium": "Back to Premium"
         },
         "status": {
             "pending": {
                 "label": "Pending",
-                "detail": "Awaiting admin review. Upload proof if you have not uploaded it yet."
+                "detail": "Awaiting admin review. Upload proof if you have not uploaded it yet.",
+                "detailWithProof": "Proof uploaded. Your request is in the admin review queue."
             },
             "approved": {
                 "label": "Approved",
@@ -745,9 +748,15 @@
             }
         },
         "notes": {
-            "premiumActive": "Premium is already active on your account."
+            "premiumActive": "Premium is already active on your account.",
+            "proofUploadedPending": "Proof uploaded successfully. We will notify you after admin review.",
+            "rejectedNextStep": "Your request was rejected. Create a new request and upload a clearer proof."
         },
         "nextSteps": "Next step: keep this page open until your proof is uploaded, then check your status from My payments.",
+        "nextStepsPendingNoProof": "Next step: complete your D17 transfer, then upload your payment proof.",
+        "nextStepsPendingWithProof": "Next step: your proof is uploaded. Refresh status while waiting for admin approval.",
+        "nextStepsApproved": "Next step: go to Premium and refresh your account status.",
+        "nextStepsRejected": "Next step: create a new payment request and upload a valid proof.",
         "request": {
             "title": "Current request",
             "notUploaded": "Not uploaded yet",
@@ -762,6 +771,7 @@
         },
         "proofUpload": {
             "label": "Upload payment proof (image or PDF)",
+            "hint": "Supported formats: image or PDF. Recommended max size: 10MB.",
             "uploadAction": "Upload proof",
             "uploading": "Uploading..."
         },
