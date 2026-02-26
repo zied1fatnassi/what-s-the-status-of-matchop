@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { Mail, Lock, ArrowRight, Building2, Loader2 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../context/AuthContext'
-import { validateEmail, getAuthErrorMessage } from '../../lib/validation'
+import { validateEmail } from '../../lib/validation'
 import PasswordInput from '../../components/forms/PasswordInput'
 import '../student/StudentSignup.css'
 
@@ -10,8 +11,17 @@ import '../student/StudentSignup.css'
  * Company Login Page
  * Secure authentication using Supabase Auth
  */
+const AUTH_ERROR_TRANSLATION_MAP = {
+    invalid_credentials: 'auth.companyLogin.errors.invalidCredentials',
+    invalid_login_credentials: 'auth.companyLogin.errors.invalidCredentials',
+    user_not_found: 'auth.companyLogin.errors.userNotFound',
+    email_not_confirmed: 'auth.companyLogin.errors.emailNotConfirmed',
+    over_request_rate_limit: 'auth.companyLogin.errors.tooManyAttempts',
+}
+
 function CompanyLogin() {
     const navigate = useNavigate()
+    const { t } = useTranslation()
     const { signIn, isLoading: authLoading } = useAuth()
     const [formData, setFormData] = useState({
         email: '',
@@ -25,20 +35,36 @@ function CompanyLogin() {
         setError('')
     }
 
+    const getLocalizedAuthError = (authError) => {
+        const errorCode = String(authError?.code || authError?.message || '').toLowerCase()
+        const matchedEntry = Object.entries(AUTH_ERROR_TRANSLATION_MAP).find(([code]) =>
+            errorCode.includes(code)
+        )
+
+        if (matchedEntry) {
+            return t(matchedEntry[1])
+        }
+
+        return t('auth.companyLogin.errors.generic')
+    }
+
     const handleSubmit = async (e) => {
         e.preventDefault()
         setError('')
 
-        // Validate email
-        const emailValidation = validateEmail(formData.email)
-        if (!emailValidation.valid) {
-            setError(emailValidation.error)
+        if (!formData.email.trim()) {
+            setError(t('auth.companyLogin.errors.emailRequired'))
             return
         }
 
-        // Check password is provided
+        const emailValidation = validateEmail(formData.email)
+        if (!emailValidation.valid) {
+            setError(t('auth.companyLogin.errors.invalidEmail'))
+            return
+        }
+
         if (!formData.password) {
-            setError('Please enter your password')
+            setError(t('auth.companyLogin.errors.passwordRequired'))
             return
         }
 
@@ -48,21 +74,20 @@ function CompanyLogin() {
             const { data, error: signInError } = await signIn(formData.email, formData.password)
 
             if (signInError) {
-                setError(getAuthErrorMessage(signInError))
+                setError(getLocalizedAuthError(signInError))
                 return
             }
 
             if (data?.user) {
-                // Check if user is a company
                 const userType = data.user.user_metadata?.type
                 if (userType === 'student') {
-                    setError('This account is registered as a student. Please use the student login.')
+                    setError(t('auth.companyLogin.errors.studentAccountUseStudentLogin'))
                     return
                 }
                 navigate('/company/candidates')
             }
         } catch (err) {
-            setError(getAuthErrorMessage(err))
+            setError(getLocalizedAuthError(err))
         } finally {
             setIsLoading(false)
         }
@@ -78,15 +103,18 @@ function CompanyLogin() {
                         <div className="visual-icon animate-float">
                             <Building2 size={64} />
                         </div>
-                        <h2>Welcome Back!</h2>
-                        <p>Sign in to continue finding top talent</p>
+                        <h2>{t('auth.companyLogin.visualTitle')}</h2>
+                        <p>{t('auth.companyLogin.visualSubtitle')}</p>
                     </div>
                 </div>
 
                 <div className="auth-form-container">
                     <div className="auth-header">
-                        <h1>Company Sign In</h1>
-                        <p>Don't have an account? <Link to="/company/signup">Sign up</Link></p>
+                        <h1>{t('auth.companyLogin.title')}</h1>
+                        <p>
+                            {t('auth.companyLogin.noAccount')}{' '}
+                            <Link to="/company/signup">{t('auth.companyLogin.signUp')}</Link>
+                        </p>
                     </div>
 
                     {error && (
@@ -98,14 +126,14 @@ function CompanyLogin() {
                     <form onSubmit={handleSubmit} className="auth-form">
                         <div className="form-step">
                             <div className="input-group">
-                                <label className="input-label">Work Email</label>
+                                <label className="input-label">{t('auth.companyLogin.emailLabel')}</label>
                                 <div className="input-with-icon">
                                     <Mail size={20} className="input-icon" />
                                     <input
                                         type="email"
                                         name="email"
                                         className="input"
-                                        placeholder="hr@vermeg.tn"
+                                        placeholder={t('auth.companyLogin.emailPlaceholder')}
                                         value={formData.email}
                                         onChange={handleChange}
                                         disabled={isLoading}
@@ -116,12 +144,12 @@ function CompanyLogin() {
                             </div>
 
                             <div className="input-group">
-                                <label className="input-label">Password</label>
+                                <label className="input-label">{t('auth.companyLogin.passwordLabel')}</label>
                                 <div className="input-with-icon">
                                     <Lock size={20} className="input-icon" />
                                     <PasswordInput
                                         name="password"
-                                        placeholder="Enter your password"
+                                        placeholder={t('auth.companyLogin.passwordPlaceholder')}
                                         value={formData.password}
                                         onChange={handleChange}
                                         disabled={isLoading}
@@ -133,7 +161,7 @@ function CompanyLogin() {
                             </div>
 
                             <div className="forgot-password">
-                                <Link to="/forgot-password">Forgot password?</Link>
+                                <Link to="/forgot-password">{t('auth.companyLogin.forgotPassword')}</Link>
                             </div>
                         </div>
 
@@ -145,11 +173,11 @@ function CompanyLogin() {
                             {isLoading ? (
                                 <>
                                     <Loader2 size={20} className="spinner" />
-                                    Signing In...
+                                    {t('auth.companyLogin.submitting')}
                                 </>
                             ) : (
                                 <>
-                                    Sign In
+                                    {t('auth.companyLogin.submit')}
                                     <ArrowRight size={20} />
                                 </>
                             )}

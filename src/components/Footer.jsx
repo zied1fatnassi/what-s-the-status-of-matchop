@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useTheme } from '../context/ThemeContext'
 import { Sun, Moon, Monitor } from 'lucide-react'
 import Logo from './Logo'
+import './Footer.css'
 
 const Footer = () => {
     const { t } = useTranslation()
@@ -33,8 +34,8 @@ const Footer = () => {
                     marginBottom: 'clamp(1rem, 4vw, 2rem)'
                 }}>
                     {/* Brand Section */}
-                    <div style={{ flex: '1 1 280px', minWidth: '220px', maxWidth: '460px' }}>
-                        <div style={{ marginBottom: '0.75rem' }}>
+                    <div className="footer-brand" style={{ flex: '1 1 280px', minWidth: '220px', maxWidth: '460px' }}>
+                        <div className="footer-brand-logo" style={{ marginBottom: '0.75rem' }}>
                             <Logo showText={true} />
                         </div>
                         <p style={{ color: 'var(--text-secondary)', fontSize: 'clamp(0.8rem, 2vw, 0.9rem)', lineHeight: '1.6', whiteSpace: 'pre-line' }}>
@@ -42,9 +43,9 @@ const Footer = () => {
                         </p>
                     </div>
 
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'clamp(1rem, 3vw, 1.75rem)', alignItems: 'flex-start' }}>
+                    <div className="footer-links-group" style={{ display: 'flex', flexWrap: 'wrap', gap: 'clamp(1rem, 3vw, 1.75rem)', alignItems: 'flex-start' }}>
                         {/* Quick Links */}
-                        <div style={{ minWidth: '150px' }}>
+                        <div className="footer-links-column footer-links-column--company" style={{ minWidth: '150px' }}>
                             <h4 style={{ fontSize: 'clamp(0.9rem, 2vw, 1rem)', fontWeight: '600', marginBottom: '0.75rem' }}>
                                 {t('footer.sections.company')}
                             </h4>
@@ -59,7 +60,7 @@ const Footer = () => {
                         </div>
 
                         {/* Legal */}
-                        <div style={{ minWidth: '170px' }}>
+                        <div className="footer-links-column footer-links-column--legal" style={{ minWidth: '170px' }}>
                             <h4 style={{ fontSize: 'clamp(0.9rem, 2vw, 1rem)', fontWeight: '600', marginBottom: '0.75rem' }}>
                                 {t('footer.sections.legal')}
                             </h4>
@@ -77,7 +78,7 @@ const Footer = () => {
                         </div>
 
                         {/* Theme Toggle */}
-                        <div style={{ minWidth: '170px' }}>
+                        <div className="footer-links-column footer-theme-column" style={{ minWidth: '170px' }}>
                             <h4 style={{ fontSize: 'clamp(0.9rem, 2vw, 1rem)', fontWeight: '600', marginBottom: '0.75rem' }}>
                                 {t('footer.sections.appearance')}
                             </h4>

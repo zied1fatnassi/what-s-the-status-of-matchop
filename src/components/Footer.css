@@ -1,0 +1,38 @@
+.footer-brand {
+    width: 100%;
+}
+
+@media (max-width: 767px) {
+    .footer-brand {
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    .footer-brand-logo {
+        display: flex;
+        justify-content: center;
+    }
+
+    .footer-brand-logo .matchop-logo {
+        justify-content: center;
+    }
+
+    .footer-links-group {
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        width: 100%;
+        gap: 1rem;
+    }
+
+    .footer-links-column {
+        min-width: 0 !important;
+    }
+
+    .footer-theme-column {
+        grid-column: 1 / -1;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+}

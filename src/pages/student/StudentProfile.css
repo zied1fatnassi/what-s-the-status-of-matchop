@@ -10,6 +10,11 @@
     background: var(--bento-bg);
 }
 
+/* Keep preview modal fixed to viewport center on mobile by avoiding transformed containing block */
+.profile-page.animate-fade-in-up {
+    transform: none !important;
+}
+
 @media (min-width: 768px) {
     .profile-page {
         padding-top: 0;

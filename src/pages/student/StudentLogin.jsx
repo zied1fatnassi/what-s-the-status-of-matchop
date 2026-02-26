@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { Mail, Lock, ArrowRight, GraduationCap, Loader2, AlertCircle } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../context/AuthContext'
-import { validateEmail, getAuthErrorMessage } from '../../lib/validation'
+import { validateEmail } from '../../lib/validation'
 import PasswordInput from '../../components/forms/PasswordInput'
 import './StudentSignup.css'
 import './StudentAuthLayout.css'
@@ -11,8 +12,17 @@ import './StudentAuthLayout.css'
  * Student Login Page
  * Secure authentication using Supabase Auth
  */
+const AUTH_ERROR_TRANSLATION_MAP = {
+    invalid_credentials: 'auth.studentLogin.errors.invalidCredentials',
+    invalid_login_credentials: 'auth.studentLogin.errors.invalidCredentials',
+    user_not_found: 'auth.studentLogin.errors.userNotFound',
+    email_not_confirmed: 'auth.studentLogin.errors.emailNotConfirmed',
+    over_request_rate_limit: 'auth.studentLogin.errors.tooManyAttempts',
+}
+
 function StudentLogin() {
     const navigate = useNavigate()
+    const { t } = useTranslation()
     const { signIn, isLoading: authLoading } = useAuth()
     const [formData, setFormData] = useState({
         email: '',
@@ -26,18 +36,36 @@ function StudentLogin() {
         setError('')
     }
 
+    const getLocalizedAuthError = (authError) => {
+        const errorCode = String(authError?.code || authError?.message || '').toLowerCase()
+        const matchedEntry = Object.entries(AUTH_ERROR_TRANSLATION_MAP).find(([code]) =>
+            errorCode.includes(code)
+        )
+
+        if (matchedEntry) {
+            return t(matchedEntry[1])
+        }
+
+        return t('auth.studentLogin.errors.generic')
+    }
+
     const handleSubmit = async (e) => {
         e.preventDefault()
         setError('')
 
+        if (!formData.email.trim()) {
+            setError(t('auth.studentLogin.errors.emailRequired'))
+            return
+        }
+
         const emailValidation = validateEmail(formData.email)
         if (!emailValidation.valid) {
-            setError(emailValidation.error)
+            setError(t('auth.studentLogin.errors.invalidEmail'))
             return
         }
 
         if (!formData.password) {
-            setError('Please enter your password')
+            setError(t('auth.studentLogin.errors.passwordRequired'))
             return
         }
 
@@ -47,7 +75,7 @@ function StudentLogin() {
             const { data, error: signInError } = await signIn(formData.email, formData.password)
 
             if (signInError) {
-                setError(getAuthErrorMessage(signInError))
+                setError(getLocalizedAuthError(signInError))
                 return
             }
 
@@ -55,7 +83,7 @@ function StudentLogin() {
                 navigate('/student/swipe', { replace: true })
             }
         } catch (err) {
-            setError(getAuthErrorMessage(err))
+            setError(getLocalizedAuthError(err))
         } finally {
             setIsLoading(false)
         }
@@ -70,8 +98,8 @@ function StudentLogin() {
                     <div className="student-auth-icon-wrapper">
                         <GraduationCap size={40} className="text-white" />
                     </div>
-                    <h1>Welcome Back!</h1>
-                    <p>Sign in to your student account</p>
+                    <h1>{t('auth.studentLogin.title')}</h1>
+                    <p>{t('auth.studentLogin.subtitle')}</p>
                 </div>
 
                 <div className="student-auth-form-wrapper">
@@ -84,14 +112,14 @@ function StudentLogin() {
 
                     <form onSubmit={handleSubmit} className="login-form">
                         <div className="student-auth-group">
-                            <label>Email Address</label>
+                            <label>{t('auth.studentLogin.emailLabel')}</label>
                             <div className="student-auth-input-wrapper">
                                 <Mail size={20} className="student-auth-input-icon" />
                                 <input
                                     type="email"
                                     name="email"
                                     className="input"
-                                    placeholder="student@university.tn"
+                                    placeholder={t('auth.studentLogin.emailPlaceholder')}
                                     value={formData.email}
                                     onChange={handleChange}
                                     disabled={isLoading}
@@ -102,12 +130,12 @@ function StudentLogin() {
                         </div>
 
                         <div className="student-auth-group">
-                            <label>Password</label>
+                            <label>{t('auth.studentLogin.passwordLabel')}</label>
                             <div className="student-auth-input-wrapper">
                                 <Lock size={20} className="student-auth-input-icon" />
                                 <PasswordInput
                                     name="password"
-                                    placeholder="Enter your password"
+                                    placeholder={t('auth.studentLogin.passwordPlaceholder')}
                                     value={formData.password}
                                     onChange={handleChange}
                                     disabled={isLoading}
@@ -117,7 +145,7 @@ function StudentLogin() {
                                 />
                             </div>
                             <div className="student-auth-forgot">
-                                <Link to="/forgot-password">Forgot password?</Link>
+                                <Link to="/forgot-password">{t('auth.studentLogin.forgotPassword')}</Link>
                             </div>
                         </div>
 
@@ -129,18 +157,23 @@ function StudentLogin() {
                             {isLoading ? (
                                 <>
                                     <Loader2 size={18} className="animate-spin mr-2" />
-                                    Signing In...
+                                    {t('auth.studentLogin.submitting')}
                                 </>
                             ) : (
                                 <>
-                                    Sign In
+                                    {t('auth.studentLogin.submit')}
                                     <ArrowRight size={20} />
                                 </>
                             )}
                         </button>
 
                         <div className="student-auth-footer">
-                            <p>Don't have an account? <Link to="/student/signup" className="text-primary font-bold">Sign up</Link></p>
+                            <p>
+                                {t('auth.studentLogin.noAccount')}{' '}
+                                <Link to="/student/signup" className="text-primary font-bold">
+                                    {t('auth.studentLogin.signUp')}
+                                </Link>
+                            </p>
                         </div>
                     </form>
                 </div>

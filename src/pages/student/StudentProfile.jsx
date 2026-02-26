@@ -28,6 +28,17 @@ import './StudentProfileEditor.css'
 // PROFILE PREVIEW MODAL
 // ============================================================================
 function ProfilePreviewModal({ isOpen, onClose, profile, experiences, education, languages, completion }) {
+    useEffect(() => {
+        if (!isOpen) return
+
+        // Ensure the viewport and common page containers are at top before showing full-screen preview.
+        window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+        document.documentElement.scrollTop = 0
+        document.body.scrollTop = 0
+        document.querySelector('.app-main')?.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+        document.querySelector('.profile-page')?.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+    }, [isOpen])
+
     if (!isOpen) return null
 
     return (
