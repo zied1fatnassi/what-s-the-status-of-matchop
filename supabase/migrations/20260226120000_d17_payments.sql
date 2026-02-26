@@ -234,7 +234,11 @@ USING (public.payment_requester_is_admin())
 WITH CHECK (public.payment_requester_is_admin());
 
 INSERT INTO storage.buckets (id, name, public, file_size_limit)
-VALUES ('payment_proofs', 'payment_proofs', FALSE, '20MiB')
+VALUES ('payment_proofs', 'payment_proofs', FALSE, 20971520)
+ON CONFLICT (id) DO UPDATE
+SET name = EXCLUDED.name,
+    public = EXCLUDED.public,
+    file_size_limit = EXCLUDED.file_size_limit;
 ON CONFLICT (id) DO UPDATE
 SET public = EXCLUDED.public,
     file_size_limit = EXCLUDED.file_size_limit;
