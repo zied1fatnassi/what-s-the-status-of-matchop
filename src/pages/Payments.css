@@ -1,0 +1,117 @@
+.payments-page {
+    min-height: calc(100dvh - 80px);
+    padding: var(--space-6) var(--space-4);
+    background:
+        radial-gradient(circle at 10% 0%, color-mix(in srgb, var(--primary) 12%, transparent), transparent 46%),
+        radial-gradient(circle at 92% 100%, color-mix(in srgb, var(--accent-teal) 10%, transparent), transparent 44%),
+        var(--bento-bg);
+}
+
+.payments-shell {
+    width: min(100%, 980px);
+    margin: 0 auto;
+    padding: var(--space-5);
+    border-radius: var(--radius-xl);
+}
+
+.payments-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+}
+
+.payments-header h1 {
+    margin: 0;
+}
+
+.payments-header p {
+    margin: 0.4rem 0 0;
+    color: var(--text-secondary);
+}
+
+.payments-status {
+    margin-top: var(--space-2);
+    font-size: 0.84rem;
+    color: var(--text-secondary);
+}
+
+.payments-error {
+    margin-top: var(--space-3);
+    color: var(--accent-red);
+    font-size: 0.88rem;
+}
+
+.payments-list {
+    margin-top: var(--space-5);
+    display: grid;
+    gap: var(--space-3);
+}
+
+.payments-card {
+    border: 1px solid var(--bento-card-border-subtle);
+    border-radius: var(--radius-lg);
+    background: color-mix(in srgb, var(--bento-card) 92%, transparent);
+    padding: var(--space-4);
+}
+
+.payments-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+}
+
+.payments-card-title {
+    margin: 0;
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.payments-meta {
+    margin-top: var(--space-3);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--space-2);
+}
+
+.payments-meta-item {
+    border: 1px solid var(--bento-card-border-subtle);
+    border-radius: var(--radius-md);
+    padding: 0.5rem 0.6rem;
+}
+
+.payments-meta-item dt {
+    margin: 0;
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+}
+
+.payments-meta-item dd {
+    margin: 0.18rem 0 0;
+    font-size: 0.84rem;
+    color: var(--text-primary);
+    word-break: break-word;
+}
+
+.payments-card-actions {
+    margin-top: var(--space-3);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+}
+
+.payments-empty {
+    margin-top: var(--space-5);
+    text-align: center;
+    color: var(--text-secondary);
+}
+
+@media (max-width: 640px) {
+    .payments-shell {
+        padding: var(--space-4);
+    }
+}

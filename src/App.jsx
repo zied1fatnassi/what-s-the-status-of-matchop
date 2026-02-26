@@ -19,6 +19,10 @@ const Footer = lazy(() => import('./components/Footer'))
 
 const Landing = lazy(() => import('./pages/Landing'))
 const Premium = lazy(() => import('./pages/Premium'))
+const Checkout = lazy(() => import('./pages/Checkout'))
+const CheckoutSuccess = lazy(() => import('./pages/CheckoutSuccess'))
+const CheckoutCancel = lazy(() => import('./pages/CheckoutCancel'))
+const Payments = lazy(() => import('./pages/Payments'))
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'))
 const ResetPassword = lazy(() => import('./pages/ResetPassword'))
 const AuthCallback = lazy(() => import('./pages/AuthCallback'))
@@ -36,8 +40,6 @@ const StudentProfile = lazy(() => import('./pages/student/StudentProfile'))
 const StudentSwipe = lazy(() => import('./pages/student/StudentSwipe'))
 const StudentMatches = lazy(() => import('./pages/student/StudentMatches'))
 const StudentChat = lazy(() => import('./pages/student/StudentChat'))
-const StudentGlobalJobs = lazy(() => import('./pages/student/GlobalJobs'))
-const GlobalOffers = lazy(() => import('./pages/student/GlobalOffers'))
 
 // Company pages
 const CompanySignup = lazy(() => import('./pages/company/CompanySignup'))
@@ -57,6 +59,7 @@ const AdminCompanies = lazy(() => import('./pages/admin/AdminCompanies'))
 const AdminReports = lazy(() => import('./pages/admin/AdminReports'))
 const AdminAnalytics = lazy(() => import('./pages/admin/AdminAnalytics'))
 const AdminSettings = lazy(() => import('./pages/admin/AdminSettings'))
+const AdminPayments = lazy(() => import('./pages/admin/AdminPayments'))
 
 const PATH_SEPARATOR = String.fromCharCode(47)
 const ROOT_ROUTE = PATH_SEPARATOR
@@ -240,6 +243,10 @@ function App() {
               <Route path="login" element={<StudentLogin />} /> {/* Default login */}
               <Route path="signup" element={<StudentSignup />} /> {/* Default signup */}
               <Route path="premium" element={<ProtectedRoute><Premium /></ProtectedRoute>} />
+              <Route path="checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
+              <Route path="checkout/success" element={<ProtectedRoute><CheckoutSuccess /></ProtectedRoute>} />
+              <Route path="checkout/cancel" element={<ProtectedRoute><CheckoutCancel /></ProtectedRoute>} />
+              <Route path="payments" element={<ProtectedRoute requiredType="student"><Payments /></ProtectedRoute>} />
 
               {/* Legal */}
               <Route path="legal/terms" element={<TermsOfService />} />
@@ -258,9 +265,8 @@ function App() {
               <Route path="student/swipe" element={<ProtectedRoute requiredType="student"><StudentSwipe /></ProtectedRoute>} />
               <Route path="student/matches" element={<ProtectedRoute requiredType="student"><StudentMatches /></ProtectedRoute>} />
               <Route path="student/chat/:matchId" element={<ProtectedRoute requiredType="student"><StudentChat /></ProtectedRoute>} />
-              <Route path="student/global-jobs" element={<ProtectedRoute requiredType="student"><StudentGlobalJobs /></ProtectedRoute>} />
-              <Route path="student/offers" element={<ProtectedRoute requiredType="student"><GlobalOffers /></ProtectedRoute>} />
-              <Route path="offers" element={<ProtectedRoute requiredType="student"><GlobalOffers /></ProtectedRoute>} />
+              <Route path="student/offers" element={<Navigate to="/student/swipe" replace />} />
+              <Route path="offers" element={<Navigate to="/student/swipe" replace />} />
 
               {/* Company */}
               <Route path="company/signup" element={<PublicRoute><CompanySignup /></PublicRoute>} />
@@ -282,6 +288,7 @@ function App() {
               <Route path="admin/reports" element={<AdminRoute><AdminReports /></AdminRoute>} />
               <Route path="admin/analytics" element={<AdminRoute><AdminAnalytics /></AdminRoute>} />
               <Route path="admin/settings" element={<AdminRoute><AdminSettings /></AdminRoute>} />
+              <Route path="admin/payments" element={<AdminRoute><AdminPayments /></AdminRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>

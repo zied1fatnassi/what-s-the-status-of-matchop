@@ -12,6 +12,7 @@
     "nav": {
         "discover": "Découvrir",
         "matches": "Matchs",
+        "personalizedPlan": "Plan personnalise",
         "profile": "Profil",
         "candidates": "Candidats",
         "postJob": "Publier",
@@ -622,5 +623,4 @@
         "bounty": "Prime"
     }
 }
-
 

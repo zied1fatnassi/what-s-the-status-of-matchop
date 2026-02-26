@@ -164,6 +164,9 @@ export default function AdminDashboard() {
                     <Link to="/admin/settings" className="quick-action-btn">
                         ⚙️ Settings
                     </Link>
+                    <Link to="/admin/payments" className="quick-action-btn">
+                        💳 Review Payments
+                    </Link>
                 </div>
             </div>
 

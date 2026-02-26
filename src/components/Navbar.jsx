@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Menu, X, User, Briefcase, Heart, Home, LogOut, Globe, ChevronDown, Moon, Sun } from 'lucide-react'
+import { Menu, X, User, Briefcase, Heart, Home, LogOut, Globe, ChevronDown, Moon, Sun, Crown, Receipt } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
+import { useApplications } from '../context/ApplicationContext'
 import { useTheme } from '../context/ThemeContext'
+import { getEntitlements } from '../lib/premiumEntitlements'
 import Logo from './Logo'
 import './Navbar.css'
 
@@ -15,26 +17,46 @@ import './Navbar.css'
  * - Auth state persistence
  */
 function Navbar({ isLanding = false }) {
+    const isPremiumEnabled = import.meta.env.VITE_PREMIUM_ENABLED !== 'false'
     const [isOpen, setIsOpen] = useState(false)
     const [langOpen, setLangOpen] = useState(false)
     const langSwitcherRef = useRef(null)
     const location = useLocation()
     const navigate = useNavigate()
     const { t, i18n } = useTranslation()
-    const { isLoggedIn, isStudent, isCompany, isLoading, signOut, user } = useAuth()
+    const { isLoggedIn, isStudent, isCompany, isLoading, signOut, user, profile } = useAuth()
+    const { openPremiumUpsell } = useApplications()
     const { theme, setTheme } = useTheme()
     const hasSession = isLoggedIn && !!user
+    const entitlements = getEntitlements(profile)
+    const hasActivePremium = entitlements.premiumActive
 
     const toggleTheme = () => {
         setTheme(theme === 'dark' ? 'light' : 'dark')
     }
 
+    const handleStudentPremiumNav = (event) => {
+        if (hasActivePremium) return
+        event.preventDefault()
+        openPremiumUpsell('personalized_mode')
+        setIsOpen(false)
+    }
+
     const studentLinks = [
         { to: '/student/matches', icon: <Heart size={18} />, label: t('nav.matches') },
         { to: '/student/swipe', icon: <Home size={18} />, label: t('nav.discover') },
-        { to: '/student/global-jobs', icon: <Globe size={18} />, label: 'Global Jobs' },
+        { to: '/payments', icon: <Receipt size={18} />, label: 'Payments' },
         { to: '/student/profile', icon: <User size={18} />, label: t('nav.profile') },
     ]
+
+    if (isPremiumEnabled) {
+        studentLinks.splice(2, 0, {
+            to: '/premium',
+            icon: <Crown size={18} />,
+            label: t('nav.personalizedPlan'),
+            onClick: handleStudentPremiumNav
+        })
+    }
 
     const companyLinks = [
         { to: '/company/candidates', icon: <User size={18} />, label: t('nav.candidates') },
@@ -129,7 +151,12 @@ function Navbar({ isLanding = false }) {
                             key={link.to}
                             to={link.to}
                             className={`navbar-link ${link.className || ''} ${location.pathname === link.to ? 'active' : ''}`}
-                            onClick={() => setIsOpen(false)}
+                            onClick={(event) => {
+                                link.onClick?.(event)
+                                if (!event.defaultPrevented) {
+                                    setIsOpen(false)
+                                }
+                            }}
                         >
                             {link.icon}
                             <span>{link.label}</span>

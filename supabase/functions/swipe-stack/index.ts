@@ -432,7 +432,11 @@ serve(async (req) => {
     const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')
     const supabaseServiceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
 
-    if (!supabaseUrl || !supabaseAnonKey || !supabaseServiceRoleKey) {
+    if (!supabaseServiceRoleKey?.trim()) {
+      return jsonResponse({ code: 'SERVER_MISCONFIG', message: 'Missing SUPABASE_SERVICE_ROLE_KEY' }, 500)
+    }
+
+    if (!supabaseUrl || !supabaseAnonKey) {
       return jsonResponse({ code: 'SERVER_MISCONFIG', message: 'Supabase env vars are missing' }, 500)
     }
 
@@ -482,6 +486,15 @@ serve(async (req) => {
       auth: { autoRefreshToken: false, persistSession: false },
     })
 
+    const serviceSanityRes = await adminClient
+      .from('profiles')
+      .select('id')
+      .limit(1)
+
+    if (serviceSanityRes.error) {
+      console.error(`[swipe-stack] service client sanity failed: ${serviceSanityRes.error.message}`)
+    }
+
     let studentProfileIds: string[] = []
     let defaultProfileId: string | null = null
 
@@ -518,26 +531,34 @@ serve(async (req) => {
       new Set([user.id, defaultProfileId, ...studentProfileIds].filter(Boolean) as string[]),
     )
 
+    const userId = user.id
     const profilesRes = await adminClient
       .from('profiles')
-      .select('id, is_premium, premium_expires_at, preferences')
-      .in('id', candidateProfileIds)
+      .select('id, email, is_premium, premium_expires_at, preferences')
+      .eq('id', userId)
+      .maybeSingle()
 
-    if (profilesRes.error || !profilesRes.data || profilesRes.data.length === 0) {
+    if (profilesRes.error) {
+      console.error(
+        `[swipe-stack] profiles lookup failed uid=${userId.slice(0, 8)} err=${profilesRes.error.message}`,
+      )
+      return jsonResponse(
+        { code: 'DB_ERROR', message: 'profiles lookup failed', details: profilesRes.error.message },
+        500,
+      )
+    }
+
+    if (!profilesRes.data) {
       return jsonResponse({ code: 'NO_PROFILE', message: 'No profile found for authenticated user' }, 409)
     }
 
-    const profiles = profilesRes.data as Array<{
+    const primaryProfile = profilesRes.data as {
       id: string
+      email?: string | null
       is_premium?: boolean | null
       premium_expires_at?: string | null
       preferences?: unknown
-    }>
-
-    const primaryProfile =
-      profiles.find((profile) => profile.id === defaultProfileId) ??
-      profiles.find((profile) => profile.id === user.id) ??
-      profiles[0]
+    }
 
     const preferences = parsePreferences(primaryProfile.preferences)
     const effectivePlan: Mode = isPremiumActive(primaryProfile) ? 'premium' : 'standard'

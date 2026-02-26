@@ -11,6 +11,7 @@ const DEFAULT_UPSELL_STATE = {
     reason: null,
     payload: null
 }
+const LAST_UPSELL_SOURCE_STORAGE_KEY = 'matchop_last_upsell_source'
 
 export function ApplicationProvider({ children }) {
     const [premiumUpsell, setPremiumUpsell] = useState(DEFAULT_UPSELL_STATE)
@@ -20,6 +21,12 @@ export function ApplicationProvider({ children }) {
     }, [])
 
     const openPremiumUpsell = useCallback((reason = 'generic', payload = null) => {
+        try {
+            localStorage.setItem(LAST_UPSELL_SOURCE_STORAGE_KEY, reason)
+        } catch {
+            // Ignore localStorage failures in restricted environments.
+        }
+
         setPremiumUpsell({
             isOpen: true,
             reason,

@@ -12,6 +12,7 @@
     "nav": {
         "discover": "Discover",
         "matches": "Matches",
+        "personalizedPlan": "Personalized Plan",
         "profile": "Profile",
         "candidates": "Candidates",
         "postJob": "Post Job",

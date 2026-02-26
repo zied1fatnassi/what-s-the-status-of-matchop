@@ -19,7 +19,7 @@ const studentRoutes = [
     '/dashboard',
     '/student/swipe',
     '/student/matches',
-    '/student/global-jobs',
+    '/premium',
     '/student/offers',
     '/student/profile',
     '/student/chat/test-match'

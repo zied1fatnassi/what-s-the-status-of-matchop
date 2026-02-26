@@ -154,6 +154,7 @@ function createMockRows(tableName, currentUser) {
             description: 'Example report',
             created_at: now
         }],
+        payment_requests: [],
         app_settings: [{
             id: 1,
             settings: {
@@ -482,6 +483,23 @@ function createMockSupabase() {
         removeChannel() {
             return null
         },
+        storage: {
+            from() {
+                return {
+                    async upload(path) {
+                        return { data: { path }, error: null }
+                    },
+                    async createSignedUrl(path) {
+                        return {
+                            data: {
+                                signedUrl: `https://example.com/mock-storage/${encodeURIComponent(path)}`
+                            },
+                            error: null
+                        }
+                    }
+                }
+            }
+        },
         functions: {
             async invoke(name, payload = {}) {
                 if (name === 'suggest-icebreakers') {
@@ -522,6 +540,35 @@ function createMockSupabase() {
                                 remaining: 19,
                                 reached: false
                             }
+                        },
+                        error: null
+                    }
+                }
+
+                if (name === 'create-d17-payment-request') {
+                    const planId = payload?.body?.plan_id === 'yearly' ? 'yearly' : 'monthly'
+                    return {
+                        data: {
+                            success: true,
+                            paymentRequestId: 'payment-request-e2e',
+                            plan_id: planId,
+                            reference: `MOP-${(currentUser?.id || 'guest').slice(0, 8)}-${planId}`,
+                            amount_tnd: planId === 'yearly' ? 149 : 19,
+                            currency: 'TND',
+                            d17_phone: '+21652460278',
+                            status: 'pending',
+                            created_at: new Date().toISOString()
+                        },
+                        error: null
+                    }
+                }
+
+                if (name === 'admin-review-payment') {
+                    return {
+                        data: {
+                            success: true,
+                            paymentRequestId: payload?.body?.paymentRequestId || 'payment-request-e2e',
+                            status: payload?.body?.action === 'reject' ? 'rejected' : 'approved'
                         },
                         error: null
                     }

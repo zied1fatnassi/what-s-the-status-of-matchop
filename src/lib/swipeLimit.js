@@ -1,3 +1,5 @@
+import { isPremiumActive } from './premiumEntitlements'
+
 export const DEFAULT_STANDARD_DAILY_SWIPE_LIMIT = 20
 
 export function resolveStandardDailySwipeLimit(rawValue, fallback = DEFAULT_STANDARD_DAILY_SWIPE_LIMIT) {
@@ -9,11 +11,7 @@ export function resolveStandardDailySwipeLimit(rawValue, fallback = DEFAULT_STAN
 }
 
 export function isPremiumProfileActive(profile, nowMs = Date.now()) {
-    if (!profile?.is_premium) return false
-    if (!profile?.premium_expires_at) return true
-
-    const expiresAtMs = Date.parse(profile.premium_expires_at)
-    return Number.isFinite(expiresAtMs) && expiresAtMs > nowMs
+    return isPremiumActive(profile, nowMs)
 }
 
 export function isLimitReachedCode(code) {
@@ -59,4 +57,3 @@ export function normalizeSwipeLimitUsage(rawStatus, fallbackLimit = DEFAULT_STAN
         code: String(status.code ?? (reached ? 'LIMIT_REACHED' : 'OK'))
     }
 }
-

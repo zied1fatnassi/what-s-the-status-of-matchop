@@ -2,12 +2,21 @@ import { useEffect, useMemo, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { Crown, Infinity as InfinityIcon, Globe2, Sparkles, X } from 'lucide-react'
 import { lockOverlayScroll, unlockOverlayScroll } from '../lib/overlayLock'
+import { track } from '../lib/analytics'
 import './PremiumUpsellModal.css'
 
 const REASON_CONTENT = {
+    global_discovery: {
+        title: 'Global opportunities are Premium',
+        subtitle: 'Upgrade to unlock international discovery.'
+    },
     personalized_mode: {
         title: 'Personalized Plan is Premium',
         subtitle: 'Upgrade to unlock personalized recommendations.'
+    },
+    daily_limit: {
+        title: 'Daily swipe limit reached',
+        subtitle: 'Upgrade for unlimited swipes and more matches.'
     },
     daily_swipe_limit: {
         title: 'Daily swipe limit reached',
@@ -34,10 +43,16 @@ function PremiumUpsellModal({
     onClose,
     onUpgrade
 }) {
+    const isPremiumWaitlistMode = import.meta.env.VITE_PREMIUM_WAITLIST_MODE === 'true'
     const dialogRef = useRef(null)
     const upgradeButtonRef = useRef(null)
 
     const copy = useMemo(() => REASON_CONTENT[reason] || REASON_CONTENT.generic, [reason])
+
+    useEffect(() => {
+        if (!isOpen) return
+        track('upsell_opened', { reason })
+    }, [isOpen, reason])
 
     useEffect(() => {
         if (!isOpen) return undefined
@@ -137,7 +152,7 @@ function PremiumUpsellModal({
                         className="btn btn-primary"
                         onClick={onUpgrade}
                     >
-                        Upgrade
+                        {isPremiumWaitlistMode ? 'Join waitlist' : 'Upgrade'}
                     </button>
                     <button
                         type="button"

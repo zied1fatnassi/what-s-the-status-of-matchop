@@ -1,14 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
-
-function isPremiumActive(profile) {
-    if (!profile?.is_premium) return false
-    if (!profile?.premium_expires_at) return true
-
-    const expiresAt = Date.parse(profile.premium_expires_at)
-    return Number.isFinite(expiresAt) && expiresAt > Date.now()
-}
+import { isPremiumActive } from '../lib/premiumEntitlements'
 
 async function fetchPremiumFlags(studentIds) {
     if (!Array.isArray(studentIds) || studentIds.length === 0) {
