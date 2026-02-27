@@ -360,6 +360,30 @@
     flex-wrap: wrap;
 }
 
+.admin-quick-filter-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.admin-chip {
+    border: 1px solid var(--border-default);
+    background: var(--surface-soft);
+    color: var(--text-secondary);
+    border-radius: 999px;
+    padding: 0.3rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.admin-chip.active {
+    border-color: color-mix(in srgb, var(--primary) 46%, var(--border-default));
+    background: color-mix(in srgb, var(--primary) 12%, var(--surface-soft));
+    color: var(--text-primary);
+}
+
 .admin-toolbar-actions {
     display: flex;
     align-items: center;
@@ -370,6 +394,12 @@
     margin: 0;
     color: var(--text-secondary);
     font-size: 0.86rem;
+}
+
+.admin-preview-note {
+    margin: -0.6rem 0 1rem;
+    color: var(--text-muted);
+    font-size: 0.8rem;
 }
 
 .admin-search-wrap {
@@ -1014,4 +1044,3 @@
         width: 100%;
     }
 }
-

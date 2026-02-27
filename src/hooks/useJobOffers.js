@@ -10,6 +10,7 @@ import {
     isLimitReachedCode,
     isPremiumProfileActive
 } from '../lib/swipeLimit'
+import { safeLogDebug, safeLogError, safeLogWarn } from '../lib/logger'
 
 const CACHE_TTL = 60000 // 60 seconds
 const EDGE_FUNCTION_TIMEOUT_MS = 8000
@@ -22,7 +23,7 @@ const STANDARD_DAILY_SWIPE_LIMIT = resolveStandardDailySwipeLimit(
 const isOffersDebugEnabled = import.meta.env.DEV && import.meta.env.VITE_DEBUG_OFFERS === 'true'
 const isSwipeStackV2Enabled = import.meta.env.VITE_SWIPE_STACK_V2 === 'true'
 const debugLog = (...args) => {
-    if (isOffersDebugEnabled) console.log(...args)
+    if (isOffersDebugEnabled) safeLogDebug('[useJobOffers]', args)
 }
 
 // Map<`${userId}:${mode}` -> { data, timestamp, nextCursor, effectivePlan }>
@@ -437,11 +438,11 @@ export function useJobOffers() {
                     }
                     return
                 } catch (fallbackError) {
-                    console.error('[useJobOffers] premium->standard fallback failed:', fallbackError)
+                    safeLogError('[useJobOffers] premium->standard fallback failed', { error: fallbackError })
                 }
             }
 
-            console.error('[useJobOffers] fetch error:', err)
+            safeLogError('[useJobOffers] fetch error', { error: err })
             if (isMounted.current) {
                 setError(err.message || 'Failed to load opportunities')
                 setLoading(false)
@@ -520,7 +521,7 @@ export function useJobOffers() {
                 })
 
             if (introError) {
-                console.warn('[useJobOffers] Intro creation warning:', introError.message)
+                safeLogWarn('[useJobOffers] intro creation warning', { error: introError })
             } else {
                 debugLog('[useJobOffers] Intro created:', introResult)
             }

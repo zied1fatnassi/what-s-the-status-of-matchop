@@ -1,5 +1,7 @@
+import { safeLogDebug } from './logger'
+
 export function track(event, payload = {}) {
-    console.info('[analytics]', event, payload)
+    safeLogDebug('[analytics]', { event, payload })
 }
 
 export default {

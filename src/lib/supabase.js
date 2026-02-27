@@ -6,8 +6,12 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 const isE2EMockMode = isE2EMockModeEnabled()
 const MOCK_MATCH_ID = 'test-match'
+const SUPABASE_CONFIG_ERROR_MESSAGE = 'Missing configuration: set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.'
 
-if (!isE2EMockMode && (!supabaseUrl || !supabaseAnonKey)) {
+export const requiredSupabaseEnvVars = ['VITE_SUPABASE_URL', 'VITE_SUPABASE_ANON_KEY']
+export const isSupabaseConfigMissing = !isE2EMockMode && (!supabaseUrl || !supabaseAnonKey)
+
+if (isSupabaseConfigMissing) {
     console.error('Missing Supabase environment variables')
     console.error('Please create a .env file with VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY')
 }
@@ -19,6 +23,159 @@ function createMockResponse(data = [], error = null) {
         count: Array.isArray(data) ? data.length : (data ? 1 : 0),
         status: error ? 400 : 200,
         statusText: error ? 'error' : 'ok'
+    }
+}
+
+function createMissingConfigError() {
+    const error = new Error(SUPABASE_CONFIG_ERROR_MESSAGE)
+    error.code = 'MISSING_SUPABASE_CONFIG'
+    return error
+}
+
+function createMissingConfigResponse(data = null) {
+    return {
+        data,
+        error: createMissingConfigError(),
+        count: Array.isArray(data) ? data.length : (data ? 1 : 0),
+        status: 503,
+        statusText: 'missing_config'
+    }
+}
+
+function createMissingConfigQueryBuilder() {
+    const builder = {}
+    const chainMethods = [
+        'select',
+        'throwOnError',
+        'abortSignal',
+        'contains',
+        'overlaps',
+        'or',
+        'not',
+        'is',
+        'textSearch',
+        'filter',
+        'eq',
+        'neq',
+        'gt',
+        'gte',
+        'lt',
+        'lte',
+        'ilike',
+        'like',
+        'match',
+        'in',
+        'order',
+        'limit',
+        'range',
+        'insert',
+        'update',
+        'upsert',
+        'delete'
+    ]
+
+    chainMethods.forEach((method) => {
+        builder[method] = () => builder
+    })
+
+    builder.single = async () => createMissingConfigResponse(null)
+    builder.maybeSingle = async () => createMissingConfigResponse(null)
+    builder.then = (resolve, reject) => Promise.resolve(createMissingConfigResponse([])).then(resolve, reject)
+    builder.catch = (reject) => Promise.resolve(createMissingConfigResponse([])).catch(reject)
+    builder.finally = (handler) => Promise.resolve(createMissingConfigResponse([])).finally(handler)
+
+    return builder
+}
+
+function createMissingConfigSupabase() {
+    const channelObject = {
+        on() {
+            return channelObject
+        },
+        subscribe(callback) {
+            callback?.('CHANNEL_ERROR')
+            return channelObject
+        },
+        unsubscribe() {
+            return channelObject
+        }
+    }
+
+    return {
+        auth: {
+            async getSession() {
+                return {
+                    data: { session: null },
+                    error: createMissingConfigError()
+                }
+            },
+            onAuthStateChange(callback) {
+                setTimeout(() => callback?.('INITIAL_SESSION', null), 0)
+                return {
+                    data: {
+                        subscription: {
+                            unsubscribe() {
+                                return undefined
+                            }
+                        }
+                    }
+                }
+            },
+            async getUser() {
+                return {
+                    data: { user: null },
+                    error: createMissingConfigError()
+                }
+            },
+            async signUp() {
+                return { data: null, error: createMissingConfigError() }
+            },
+            async signInWithPassword() {
+                return { data: null, error: createMissingConfigError() }
+            },
+            async signOut() {
+                return { error: createMissingConfigError() }
+            },
+            async resend() {
+                return { error: createMissingConfigError() }
+            },
+            async exchangeCodeForSession() {
+                return { data: null, error: createMissingConfigError() }
+            }
+        },
+        from() {
+            return createMissingConfigQueryBuilder()
+        },
+        rpc: async () => createMissingConfigResponse(null),
+        channel() {
+            return channelObject
+        },
+        removeChannel() {
+            return null
+        },
+        storage: {
+            from() {
+                return {
+                    async upload() {
+                        return createMissingConfigResponse(null)
+                    },
+                    async createSignedUrl() {
+                        return {
+                            data: null,
+                            error: createMissingConfigError()
+                        }
+                    }
+                }
+            }
+        },
+        functions: {
+            async invoke() {
+                return {
+                    data: null,
+                    error: createMissingConfigError()
+                }
+            }
+        }
     }
 }
 
@@ -663,6 +820,8 @@ function createMockSupabase() {
  */
 export const supabase = isE2EMockMode
     ? createMockSupabase()
+    : isSupabaseConfigMissing
+        ? createMissingConfigSupabase()
     : createClient(supabaseUrl || '', supabaseAnonKey || '', {
         auth: {
             autoRefreshToken: true,

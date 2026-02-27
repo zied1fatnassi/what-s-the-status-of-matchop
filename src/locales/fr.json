@@ -15,6 +15,7 @@
         "matches": "Matchs",
         "personalizedPlan": "Plan personnalise",
         "referrals": "Parrainage",
+        "notifications": "Notifications",
         "profile": "Profil",
         "newCandidates": "Candidats",
         "candidates": "Candidats",
@@ -551,6 +552,7 @@
         "archived": {
             "title": "Fermes / Archives",
             "subtitle": "Candidats rejetes, expires et archives.",
+            "previewNote": "Apercu : les raisons sont enregistrees uniquement sur cet appareil.",
             "loading": "Chargement des elements archives...",
             "loadError": "Impossible de charger les elements archives.",
             "emptyTitle": "Aucun element archive",
@@ -559,6 +561,19 @@
                 "all": "Tous",
                 "intro": "Candidats",
                 "match": "Matchs"
+            },
+            "reasonFilter": {
+                "label": "Filtrer par raison",
+                "ariaLabel": "Filtrer les matchs archives par raison d'echec",
+                "all": "Tous"
+            },
+            "reasonPrompt": "Pourquoi ca a echoue ?",
+            "failReasons": {
+                "notFit": "Pas un bon fit",
+                "noResponse": "Pas de reponse",
+                "wrongLocation": "Mauvaise localisation",
+                "skillGap": "Ecart de competences",
+                "other": "Autre"
             },
             "labels": {
                 "intro": "Candidat",
@@ -570,7 +585,8 @@
                 "offer": "Offre"
             },
             "actions": {
-                "message": "Message"
+                "message": "Message",
+                "reconsider": "Reconsiderer"
             }
         }
     },
@@ -932,6 +948,8 @@
         "title": "Revision des paiements D17",
         "subtitle": "Examinez les demandes de paiement et approuvez ou refusez les soumissions.",
         "sectionTitle": "Demandes de paiement",
+        "previewNote": "Apercu : les presets d'extension Premium sont simules sur cet appareil.",
+        "previewPlanValue": "{{plan}} jusqu'au {{until}} (Apercu)",
         "refresh": "Actualiser",
         "loading": "Chargement des demandes...",
         "empty": "Aucune demande trouvee.",
@@ -944,6 +962,16 @@
             "approved": "Approuve",
             "rejected": "Refuse",
             "reverted": "Annule"
+        },
+        "quickFilters": {
+            "ariaLabel": "Filtres rapides des paiements",
+            "needsProof": "Besoin de preuve",
+            "pendingOver24h": "En attente > 24h",
+            "repeatedAttempts": "Tentatives repetees"
+        },
+        "planPresets": {
+            "month": "1 mois",
+            "year": "1 an"
         },
         "counts": {
             "all": "{{count}} demandes",
@@ -959,8 +987,14 @@
         },
         "actions": {
             "viewProof": "Voir la preuve",
+            "downloadProof": "Telecharger la preuve",
             "viewAudit": "Voir l'audit",
+            "copyReference": "Copier la reference",
+            "copied": "Copie",
+            "exportCsv": "Exporter CSV",
             "approve": "Approuver",
+            "approveExtendMonth": "Approuver + etendre Premium (1 mois)",
+            "approveExtendYear": "Approuver + etendre Premium (1 an)",
             "reject": "Refuser",
             "revert": "Annuler",
             "undoApproval": "Annuler l'approbation",
@@ -982,6 +1016,7 @@
             "proofPath": "Chemin de preuve",
             "reviewedAt": "Revise le",
             "adminNote": "Note admin",
+            "previewPremium": "Override Premium",
             "addNote": "Note admin (optionnelle)",
             "notePlaceholder": "Ajouter une note pour cette decision"
         },
@@ -1003,12 +1038,30 @@
             "body": "Etes-vous sur ? Cela retirera le Premium accorde par cette approbation."
         },
         "toasts": {
-            "requestUpdated": "Demande {{status}}."
+            "requestUpdated": "Demande {{status}}.",
+            "referenceCopied": "Reference copiee.",
+            "csvExported": "CSV filtre exporte.",
+            "proofOpened": "Preuve ouverte dans un nouvel onglet.",
+            "previewPremiumExtended": "Approuve. Extension Premium appliquee pour {{plan}} jusqu'au {{until}} (Apercu)."
         },
         "errors": {
             "loadFailed": "Impossible de charger les demandes de paiement.",
             "openProofFailed": "Impossible d'ouvrir la preuve.",
+            "copyReferenceFailed": "Impossible de copier la reference.",
             "auditLoadFailed": "Impossible de charger l'historique d'audit."
+        }
+    },
+    "notifications": {
+        "title": "Notifications",
+        "subtitle": "Suivez vos dernieres mises a jour d'activite.",
+        "empty": "Aucune notification pour le moment.",
+        "filters": {
+            "ariaLabel": "Filtres des notifications",
+            "all": "Toutes",
+            "unread": "Non lues"
+        },
+        "actions": {
+            "markAllRead": "Tout marquer comme lu"
         }
     },
     "payments": {
@@ -1086,8 +1139,24 @@
             "copyLinkSuccess": "Lien d'invitation copie.",
             "copyFailed": "Impossible de copier pour le moment. Reessayez."
         },
+        "rewardUnlock": {
+            "claimAction": "Reclamer la recompense",
+            "claimedTitle": "Recompense reclamee",
+            "claimedSubtitle": "Apercu Premium debloque (Apercu).",
+            "claimedToast": "Recompense reclamee.",
+            "previewNote": "Apercu : la progression de parrainage est simulee jusqu'a la verification backend."
+        },
         "signupAttribution": "Code de parrainage detecte : {{ref}}",
         "signupApplied": "Le code de parrainage {{ref}} a ete applique a votre inscription.",
+        "signupFlow": {
+            "invitedTitle": "Un ami vous a invite 🎁",
+            "invitedSubtitle": "Terminez l'inscription pour debloquer votre avantage de parrainage (Apercu)",
+            "dismissAria": "Fermer la banniere d'invitation parrainage",
+            "followupTitle": "Invitez vos amis aussi",
+            "followupSubtitle": "Partagez votre lien d'invitation pour debloquer des avantages de parrainage (Apercu).",
+            "openReferrals": "Ouvrir Parrainage",
+            "copyInviteLink": "Copier le lien d'invitation"
+        },
         "cta": {
             "sectionAria": "Banniere de parrainage",
             "title": "Invitez et debloquez des recompenses",

@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from 'react'
-import { X, Heart, Star, RotateCcw, Loader, Lock } from 'lucide-react'
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react'
+import { X, Heart, Star, RotateCcw, Loader, Lock, SlidersHorizontal, Globe2, Sparkles } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import SwipeCard from '../../components/SwipeCard'
@@ -13,14 +13,59 @@ import { useJobOffers } from '../../hooks/useJobOffers'
 import { useMatchListener } from '../../hooks/useMatchListener'
 import { getEntitlements } from '../../lib/premiumEntitlements'
 import { isLimitReachedCode } from '../../lib/swipeLimit'
-import { useBilingualText } from '../../lib/useBilingualText'
+import { readStorageJSON, writeStorageJSON } from '../../lib/localStorageState'
 import './StudentSwipe.css'
 
 const DISCOVERY_SCOPE_STORAGE_KEY = 'matchop_discovery_scope'
 const LEGACY_DISCOVERY_MODE_STORAGE_KEY = 'matchop_discovery_mode'
+const STUDENT_SWIPE_PREFERENCES_KEY = 'matchop_student_swipe_preferences'
+
+const DEFAULT_SWIPE_PREFERENCES = {
+    locationMode: 'all',
+    opportunityType: 'all',
+    category: 'all',
+}
+
+const FOCUSABLE_SELECTOR = [
+    'button:not([disabled])',
+    '[href]',
+    'input:not([disabled])',
+    'select:not([disabled])',
+    'textarea:not([disabled])',
+    '[tabindex]:not([tabindex="-1"])'
+].join(', ')
+
+function normalizeSwipePreferences(value) {
+    if (!value || typeof value !== 'object') return DEFAULT_SWIPE_PREFERENCES
+    return {
+        locationMode: value.locationMode || 'all',
+        opportunityType: value.opportunityType || 'all',
+        category: value.category || 'all',
+    }
+}
+
+function applySwipePreferences(rawOffers, preferences) {
+    const offers = Array.isArray(rawOffers) ? rawOffers : []
+    const locationMode = preferences?.locationMode || 'all'
+    const opportunityType = preferences?.opportunityType || 'all'
+    const category = preferences?.category || 'all'
+
+    return offers.filter((offer) => {
+        const locationLabel = `${offer?.location || ''}`.toLowerCase()
+        const offerType = `${offer?.type || ''}`.toLowerCase()
+        const offerCategory = `${offer?.industry || offer?.department || 'general'}`.toLowerCase()
+
+        if (locationMode === 'remote' && !locationLabel.includes('remote')) return false
+        if (locationMode === 'onsite' && locationLabel.includes('remote')) return false
+
+        if (opportunityType !== 'all' && !offerType.includes(opportunityType)) return false
+        if (category !== 'all' && offerCategory !== category.toLowerCase()) return false
+
+        return true
+    })
+}
 
 function StudentSwipe() {
-    const tr = useBilingualText()
     const isPremiumEnabled = import.meta.env.VITE_PREMIUM_ENABLED !== 'false'
     const isPremiumWaitlistMode = import.meta.env.VITE_PREMIUM_WAITLIST_MODE === 'true'
     const {
@@ -48,16 +93,44 @@ function StudentSwipe() {
     const [selectedOffer, setSelectedOffer] = useState(null)
     const [showToast, setShowToast] = useState(false)
     const [toastIsExternal, setToastIsExternal] = useState(false)
-    const [toastTitle, setToastTitle] = useState('')
+    const [toastTitle, setToastTitle] = useState('Application was sent!')
     const [toastVariant, setToastVariant] = useState('application')
+    const [showPreferencesModal, setShowPreferencesModal] = useState(false)
+    const [swipePreferences, setSwipePreferences] = useState(() => normalizeSwipePreferences(
+        readStorageJSON(STUDENT_SWIPE_PREFERENCES_KEY, DEFAULT_SWIPE_PREFERENCES)
+    ))
     const { t } = useTranslation(undefined, { useSuspense: false })
     const navigate = useNavigate()
     const topCardRef = useRef(null)
+    const preloadedAssetUrlsRef = useRef(new Set())
+    const preferencesModalRef = useRef(null)
+    const preferencesTriggerRef = useRef(null)
+    const preferencesReturnFocusRef = useRef(null)
+
+    const closePreferencesModal = useCallback(() => {
+        setShowPreferencesModal(false)
+        queueMicrotask(() => {
+            const target = preferencesReturnFocusRef.current
+            if (target && typeof target.focus === 'function') {
+                target.focus()
+            }
+        })
+    }, [])
+
+    const openPreferencesModal = useCallback((event) => {
+        preferencesReturnFocusRef.current = event?.currentTarget || document.activeElement
+        setShowPreferencesModal(true)
+    }, [])
 
     useEffect(() => {
-        setOffers(realOffers || [])
+        const filteredOffers = applySwipePreferences(realOffers, swipePreferences)
+        setOffers(filteredOffers)
         setCurrentIndex(0)
-    }, [realOffers])
+    }, [realOffers, swipePreferences])
+
+    useEffect(() => {
+        writeStorageJSON(STUDENT_SWIPE_PREFERENCES_KEY, swipePreferences)
+    }, [swipePreferences])
 
     const { user, profile, isLoading: authLoading } = useAuth()
     const modeInitializedRef = useRef(false)
@@ -67,11 +140,34 @@ function StudentSwipe() {
     const showGlobalTab = isPremiumEnabled
     const activeScope = showGlobalTab && mode === 'premium' ? 'global' : 'local'
     const lockedGlobalCtaLabel = isExpiredPremium
-        ? (isPremiumWaitlistMode ? tr('Join waitlist', "Rejoindre la liste d'attente") : tr('Renew Premium', 'Renouveler Premium'))
-        : (isPremiumWaitlistMode ? tr('Join waitlist', "Rejoindre la liste d'attente") : tr('Upgrade to unlock Global', 'Passez premium pour debloquer Global'))
+        ? (isPremiumWaitlistMode ? 'Join waitlist' : 'Renew Premium')
+        : (isPremiumWaitlistMode ? 'Join waitlist' : 'Upgrade to unlock Global')
 
     const currentOffer = offers[currentIndex]
     const hasMoreOffers = currentIndex < offers.length
+    const isLocalEmptyState = !hasMoreOffers && activeScope === 'local'
+
+    const categoryOptions = useMemo(() => {
+        const categories = new Set(['all'])
+        ;(realOffers || []).forEach((offer) => {
+            const nextCategory = offer?.industry || offer?.department || 'General'
+            categories.add(nextCategory)
+        })
+        return Array.from(categories)
+    }, [realOffers])
+
+    useEffect(() => {
+        if (!hasMoreOffers) return
+        const queuedOffers = offers.slice(currentIndex + 1, currentIndex + 3)
+
+        queuedOffers.forEach((offer) => {
+            const assetUrl = offer?.companyLogo
+            if (!assetUrl || preloadedAssetUrlsRef.current.has(assetUrl)) return
+            const image = new Image()
+            image.src = assetUrl
+            preloadedAssetUrlsRef.current.add(assetUrl)
+        })
+    }, [currentIndex, offers, hasMoreOffers])
 
     const handleLockedGlobalCta = () => {
         if (isExpiredPremium) {
@@ -97,6 +193,13 @@ function StudentSwipe() {
         }
         clearPaywall()
         setMode(nextMode)
+    }
+
+    const updateSwipePreference = (key, value) => {
+        setSwipePreferences((prev) => ({
+            ...prev,
+            [key]: value
+        }))
     }
 
     useEffect(() => {
@@ -168,6 +271,46 @@ function StudentSwipe() {
         }
     }, [paywall, mode, setMode, clearPaywall, openPremiumUpsell, isExpiredPremium, navigate, showGlobalTab])
 
+    useEffect(() => {
+        if (!showPreferencesModal) return undefined
+        if (!preferencesReturnFocusRef.current) {
+            preferencesReturnFocusRef.current = document.activeElement
+        }
+
+        const handleKeyDown = (event) => {
+            if (event.key === 'Escape') {
+                event.preventDefault()
+                closePreferencesModal()
+                return
+            }
+
+            if (event.key !== 'Tab' || !preferencesModalRef.current) return
+            const focusableElements = Array.from(preferencesModalRef.current.querySelectorAll(FOCUSABLE_SELECTOR))
+            if (focusableElements.length === 0) return
+
+            const firstElement = focusableElements[0]
+            const lastElement = focusableElements[focusableElements.length - 1]
+
+            if (event.shiftKey && document.activeElement === firstElement) {
+                event.preventDefault()
+                lastElement.focus()
+            } else if (!event.shiftKey && document.activeElement === lastElement) {
+                event.preventDefault()
+                firstElement.focus()
+            }
+        }
+
+        document.addEventListener('keydown', handleKeyDown)
+        queueMicrotask(() => {
+            const firstField = preferencesModalRef.current?.querySelector('select')
+            firstField?.focus()
+        })
+
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown)
+        }
+    }, [showPreferencesModal, closePreferencesModal])
+
     const handleSwipe = async (direction) => {
         if (!currentOffer) return
         if (mode === 'standard' && !canUsePremiumMode && dailySwipeUsage?.reached) {
@@ -224,9 +367,9 @@ function StudentSwipe() {
             import('../../lib/email').then(({ sendMatchEmail }) => {
                 sendMatchEmail(
                     user?.email,
-                    user?.user_metadata?.name || tr('Student', 'Etudiant'),
+                    user?.user_metadata?.name || 'Student',
                     offerToSwipe.company,
-                    tr('Company', 'Entreprise')
+                    'Company'
                 )
             })
 
@@ -248,7 +391,7 @@ function StudentSwipe() {
         return (
             <div className="swipe-page loading">
                 <Loader className="animate-spin text-primary" size={48} />
-                <p>{tr('Finding the best jobs for you...', 'Recherche des meilleures offres pour vous...')}</p>
+                <p>Finding the best jobs for you...</p>
             </div>
         )
     }
@@ -257,9 +400,9 @@ function StudentSwipe() {
         return (
             <div className="swipe-page error">
                 <div className="glass-card">
-                    <h3 className="text-red-500">{tr('Oops! Something went wrong.', 'Oups ! Une erreur est survenue.')}</h3>
+                    <h3 className="text-red-500">Oops! Something went wrong.</h3>
                     <p>{error}</p>
-                    <button className="btn btn-primary mt-4" onClick={() => refresh()}>{tr('Try Again', 'Reessayer')}</button>
+                    <button className="btn btn-primary mt-4" onClick={() => refresh()}>Try Again</button>
                 </div>
             </div>
         )
@@ -273,7 +416,7 @@ function StudentSwipe() {
                         <div
                             className={`stack-mode-toggle ${showGlobalTab ? '' : 'stack-mode-toggle-single'}`.trim()}
                             role="tablist"
-                            aria-label={tr('Discovery scope', 'Portee de decouverte')}
+                            aria-label="Discovery scope"
                         >
                             <button
                                 type="button"
@@ -282,10 +425,10 @@ function StudentSwipe() {
                                 disabled={loading}
                             >
                                 <span className="stack-mode-option-label">
-                                    {tr('Local', 'Local')}
-                                    <span className="stack-mode-option-badge stack-mode-option-badge-free">{tr('Free', 'Gratuit')}</span>
+                                    Local
+                                    <span className="stack-mode-option-badge stack-mode-option-badge-free">Free</span>
                                 </span>
-                                <span className="stack-mode-option-description">{tr('Local / regional opportunities', 'Opportunites locales / regionales')}</span>
+                                <span className="stack-mode-option-description">Local / regional opportunities</span>
                             </button>
                             {showGlobalTab && (
                                 <button
@@ -297,7 +440,7 @@ function StudentSwipe() {
                                 >
                                     <span className="stack-mode-option-label">
                                         {!canUsePremiumMode && <Lock size={14} aria-hidden="true" />}
-                                        {tr('Global', 'Global')}
+                                        Global
                                         <span
                                             className={`stack-mode-option-badge ${
                                                 isExpiredPremium
@@ -305,10 +448,10 @@ function StudentSwipe() {
                                                     : 'stack-mode-option-badge-premium'
                                             }`}
                                         >
-                                            {isExpiredPremium ? tr('Expired', 'Expire') : tr('Premium', 'Premium')}
+                                            {isExpiredPremium ? 'Expired' : 'Premium'}
                                         </span>
                                     </span>
-                                    <span className="stack-mode-option-description">{tr('International opportunities (Premium)', 'Opportunites internationales (Premium)')}</span>
+                                    <span className="stack-mode-option-description">International opportunities (Premium)</span>
                                 </button>
                             )}
                         </div>
@@ -320,12 +463,12 @@ function StudentSwipe() {
                         )}
 
                         {showGlobalTab && !canUsePremiumMode && (
-                            <section className="global-teaser" aria-label={tr('Global opportunities teaser', 'Apercu opportunites globales')}>
-                                <h3 className="global-teaser-title">{tr('Preview: Global opportunities', 'Apercu : opportunites globales')}</h3>
+                            <section className="global-teaser" aria-label="Global opportunities teaser">
+                                <h3 className="global-teaser-title">Preview: Global opportunities</h3>
 
                                 {isExpiredPremium && (
                                     <p className="global-teaser-status">
-                                        {tr('Your Premium access is expired.', 'Votre acces Premium est expire.')}
+                                        Your Premium access is expired.
                                     </p>
                                 )}
 
@@ -340,9 +483,9 @@ function StudentSwipe() {
                                 </div>
 
                                 <ul className="global-teaser-features">
-                                    <li>{tr('Global reach', 'Portee mondiale')}</li>
-                                    <li>{tr('Faster matches', 'Matchs plus rapides')}</li>
-                                    <li>{tr('Unlimited swipes', 'Swipes illimites')}</li>
+                                    <li>Global reach</li>
+                                    <li>Faster matches</li>
+                                    <li>Unlimited swipes</li>
                                 </ul>
 
                                 <button
@@ -420,26 +563,165 @@ function StudentSwipe() {
                         </div>
                     </>
                 ) : (
-                    <div className="no-more-offers glass-card hover-lift" style={{ textAlign: 'center', padding: '3rem' }}>
-                        <div className="empty-icon text-6xl mb-4">🎯</div>
-                        <h2 className="text-2xl font-bold mb-2">{tr("You're all caught up!", 'Vous etes a jour !')}</h2>
-                        <p className="text-muted mb-6">{tr(
-                            "You've seen all available opportunities. Check back later for new matches.",
-                            'Vous avez vu toutes les opportunites disponibles. Revenez plus tard pour de nouvelles offres.'
-                        )}</p>
-                        <button
-                            className="btn btn-primary"
-                            onClick={() => {
-                                setCurrentIndex(0)
-                                setSwipeHistory([])
-                                refresh() // Explicitly call refresh
-                            }}
-                        >
-                            {tr('Refresh Jobs', 'Actualiser les offres')} <RotateCcw size={18} className="ml-2" />
-                        </button>
+                    <div className="no-more-offers glass-card hover-lift">
+                        {isLocalEmptyState ? (
+                            <>
+                                <div className="empty-icon">📍</div>
+                                <h2>No offers nearby.</h2>
+                                <p>Try updating your discovery preferences or switch to Global mode.</p>
+                                <div className="no-offers-actions">
+                                    <button
+                                        ref={preferencesTriggerRef}
+                                        type="button"
+                                        className="btn btn-secondary"
+                                        onClick={openPreferencesModal}
+                                    >
+                                        <SlidersHorizontal size={16} />
+                                        Adjust preferences
+                                    </button>
+                                    {showGlobalTab && canUsePremiumMode && (
+                                        <button
+                                            type="button"
+                                            className="btn btn-primary"
+                                            onClick={() => handleScopeChange('global')}
+                                        >
+                                            <Globe2 size={16} />
+                                            Switch to Global
+                                        </button>
+                                    )}
+                                </div>
+
+                                {showGlobalTab && !canUsePremiumMode && (
+                                    <section className="empty-global-lock" aria-label="Global premium lock">
+                                        <p className="empty-global-lock-title">Global is Premium</p>
+                                        <ul className="empty-global-lock-benefits">
+                                            <li>Access global opportunities</li>
+                                            <li>Reach more companies faster</li>
+                                            <li>Unlock unlimited discovery</li>
+                                        </ul>
+                                        <button
+                                            type="button"
+                                            className="btn btn-primary"
+                                            onClick={handleLockedGlobalCta}
+                                        >
+                                            <Sparkles size={16} />
+                                            Unlock Premium
+                                        </button>
+                                    </section>
+                                )}
+                            </>
+                        ) : (
+                            <>
+                                <div className="empty-icon">🎯</div>
+                                <h2>You're all caught up!</h2>
+                                <p>You've seen all available opportunities. Check back later for new matches.</p>
+                                <button
+                                    className="btn btn-primary"
+                                    onClick={() => {
+                                        setCurrentIndex(0)
+                                        setSwipeHistory([])
+                                        refresh()
+                                    }}
+                                >
+                                    Refresh Jobs <RotateCcw size={18} className="ml-2" />
+                                </button>
+                            </>
+                        )}
                     </div>
                 )}
             </div>
+
+            {showPreferencesModal && (
+                <div
+                    className="swipe-preferences-overlay"
+                    role="presentation"
+                    onClick={closePreferencesModal}
+                >
+                    <div
+                        ref={preferencesModalRef}
+                        className="swipe-preferences-modal"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="swipe-preferences-title"
+                        onClick={(event) => event.stopPropagation()}
+                    >
+                        <div className="swipe-preferences-modal-header">
+                            <h3 id="swipe-preferences-title">Adjust preferences</h3>
+                            <button
+                                type="button"
+                                className="btn btn-secondary btn-sm"
+                                onClick={closePreferencesModal}
+                                aria-label="Close preferences"
+                            >
+                                <X size={14} />
+                            </button>
+                        </div>
+                        <p className="swipe-preferences-modal-copy">
+                            Preview: preferences are saved on this device.
+                        </p>
+
+                        <label className="swipe-preferences-field">
+                            <span>Location mode</span>
+                            <select
+                                value={swipePreferences.locationMode}
+                                onChange={(event) => updateSwipePreference('locationMode', event.target.value)}
+                            >
+                                <option value="all">All</option>
+                                <option value="remote">Remote-first</option>
+                                <option value="onsite">Onsite / hybrid</option>
+                            </select>
+                        </label>
+
+                        <label className="swipe-preferences-field">
+                            <span>Opportunity type</span>
+                            <select
+                                value={swipePreferences.opportunityType}
+                                onChange={(event) => updateSwipePreference('opportunityType', event.target.value)}
+                            >
+                                <option value="all">All</option>
+                                <option value="internship">Internship</option>
+                                <option value="full-time">Full-time</option>
+                                <option value="part-time">Part-time</option>
+                                <option value="contract">Contract</option>
+                            </select>
+                        </label>
+
+                        <label className="swipe-preferences-field">
+                            <span>Category</span>
+                            <select
+                                value={swipePreferences.category}
+                                onChange={(event) => updateSwipePreference('category', event.target.value)}
+                            >
+                                {categoryOptions.map((option) => (
+                                    <option key={option} value={option}>
+                                        {option}
+                                    </option>
+                                ))}
+                            </select>
+                        </label>
+
+                        <div className="swipe-preferences-actions">
+                            <button
+                                type="button"
+                                className="btn btn-secondary"
+                                onClick={() => {
+                                    setSwipePreferences(DEFAULT_SWIPE_PREFERENCES)
+                                    closePreferencesModal()
+                                }}
+                            >
+                                Reset
+                            </button>
+                            <button
+                                type="button"
+                                className="btn btn-primary"
+                                onClick={closePreferencesModal}
+                            >
+                                Save
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Application Toast */}
             {showToast && (

@@ -14,7 +14,7 @@ function normalizeIntroItem(row) {
         candidateSkills: Array.isArray(student?.skills) ? student.skills : [],
         candidateLocation: student?.location || null,
         offerTitle: offer?.title || null,
-        closedAt: row.updated_at || row.created_at || null,
+        closedAt: row.reviewed_at || row.created_at || null,
         matchId: null,
         lastMessage: null
     }
@@ -32,10 +32,48 @@ function normalizeArchivedMatch(row) {
         candidateSkills: Array.isArray(student?.skills) ? student.skills : [],
         candidateLocation: null,
         offerTitle: offer?.title || null,
-        closedAt: row.updated_at || row.matched_at || null,
+        closedAt: row.updated_at || row.matched_at || row.created_at || null,
         matchId: row.id,
         lastMessage: row.last_message || null
     }
+}
+
+function isMissingColumnError(error, columnName) {
+    const rawMessage = String(error?.message || '').toLowerCase()
+    const rawDetails = String(error?.details || '').toLowerCase()
+    const code = String(error?.code || '').toLowerCase()
+    const needle = String(columnName || '').toLowerCase()
+
+    const message = `${rawMessage} ${rawDetails}`
+    return (
+        (code === '42703' || message.includes('does not exist') || message.includes('unknown column')) &&
+        message.includes(needle)
+    )
+}
+
+async function fetchArchivedMatches(companyId, includeUpdatedAt = true) {
+    const updatedAtSegment = includeUpdatedAt ? '\n                        updated_at,' : ''
+    return supabase
+        .from('matches')
+        .select(`
+                        id,
+                        status,
+                        matched_at,${updatedAtSegment}
+                        last_message,
+                        students:student_id (
+                            id,
+                            display_name,
+                            skills
+                        ),
+                        offers:offer_id (
+                            id,
+                            title
+                        )
+                    `)
+        .eq('company_id', companyId)
+        .eq('status', 'archived')
+        .order('matched_at', { ascending: false })
+        .limit(200)
 }
 
 export function useCompanyClosedItems() {
@@ -55,14 +93,14 @@ export function useCompanyClosedItems() {
         setError(null)
 
         try {
-            const [introRes, matchRes] = await Promise.all([
+            const [introRes, initialMatchRes] = await Promise.all([
                 supabase
                     .from('intros')
                     .select(`
                         id,
                         status,
                         created_at,
-                        updated_at,
+                        reviewed_at,
                         students:student_id (
                             id,
                             display_name,
@@ -78,29 +116,14 @@ export function useCompanyClosedItems() {
                     .in('status', ['declined', 'expired'])
                     .order('created_at', { ascending: false })
                     .limit(200),
-                supabase
-                    .from('matches')
-                    .select(`
-                        id,
-                        status,
-                        matched_at,
-                        updated_at,
-                        last_message,
-                        students:student_id (
-                            id,
-                            display_name,
-                            skills
-                        ),
-                        offers:offer_id (
-                            id,
-                            title
-                        )
-                    `)
-                    .eq('company_id', user.id)
-                    .eq('status', 'archived')
-                    .order('matched_at', { ascending: false })
-                    .limit(200)
+                fetchArchivedMatches(user.id, true)
             ])
+
+            let matchRes = initialMatchRes
+
+            if (matchRes.error && isMissingColumnError(matchRes.error, 'updated_at')) {
+                matchRes = await fetchArchivedMatches(user.id, false)
+            }
 
             if (introRes.error) throw introRes.error
             if (matchRes.error) throw matchRes.error

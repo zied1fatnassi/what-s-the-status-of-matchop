@@ -4,6 +4,7 @@ import { autoVerifyEmail } from '../lib/verification'
 import { clearAuthCookies, getOrCreateCSRFToken } from '../lib/cookieStorage'
 import { requestPasswordReset } from '../lib/passwordReset'
 import { isE2EMockModeEnabled, getE2EMockRole, getE2EMockUser } from '../lib/e2eMock'
+import { safeLogDebug, safeLogError } from '../lib/logger'
 
 /**
  * Auth Context for managing user authentication state with Supabase
@@ -13,7 +14,19 @@ const AuthContext = createContext(null)
 const isAuthDebugEnabled = import.meta.env.DEV && import.meta.env.VITE_DEBUG_AUTH === 'true'
 const isE2EMockMode = isE2EMockModeEnabled()
 const debugLog = (...args) => {
-    if (isAuthDebugEnabled) console.log(...args)
+    if (isAuthDebugEnabled) safeLogDebug('[Auth]', args)
+}
+
+function looksLikeSessionError(error) {
+    const message = String(error?.message || '').toLowerCase()
+    const code = String(error?.code || '').toLowerCase()
+    return (
+        message.includes('session') ||
+        message.includes('token') ||
+        message.includes('jwt') ||
+        code.includes('401') ||
+        code.includes('auth')
+    )
 }
 
 function createMockProfile(mockUser) {
@@ -74,6 +87,10 @@ export function AuthProvider({ children }) {
                 error: error?.message
             })
 
+            if (error) {
+                setAuthError(error)
+            }
+
             if (data?.session?.user) {
                 setUser(data.session.user)
                 fetchProfile(data.session.user.id)
@@ -82,7 +99,8 @@ export function AuthProvider({ children }) {
             clearTimeout(timeoutId)
             setIsLoading(false)
         }).catch(err => {
-            console.error('[Auth] getSession ERROR:', err)
+            safeLogError('[Auth] getSession failed', { error: err })
+            setAuthError(err)
             clearTimeout(timeoutId)
             setIsLoading(false)
         })
@@ -275,7 +293,10 @@ export function AuthProvider({ children }) {
             const { data, error } = await Promise.race([fetchPromise, timeoutPromise])
 
             if (error) {
-                console.error('[Auth] Error fetching profile:', error)
+                safeLogError('[Auth] profile fetch failed', { error })
+                if (looksLikeSessionError(error)) {
+                    setAuthError(error)
+                }
             }
 
             if (!error && data) {
@@ -284,7 +305,10 @@ export function AuthProvider({ children }) {
                 lastProfileFetchRef.current = { userId, timestamp: Date.now() }
             }
         } catch (err) {
-            console.error('[Auth] Critical error (timeout or crash) fetching profile:', err)
+            safeLogError('[Auth] profile fetch crashed', { error: err })
+            if (looksLikeSessionError(err)) {
+                setAuthError(err)
+            }
         }
         })()
 
@@ -392,7 +416,7 @@ export function AuthProvider({ children }) {
                     })
 
                     if (profileError && !profileError.message.includes('duplicate')) {
-                        console.error('Profile creation error:', profileError)
+                        safeLogError('[Auth] profile creation error', { error: profileError })
                     }
 
                     // Create user_profiles row (profile type link)
@@ -516,7 +540,7 @@ export function AuthProvider({ children }) {
         const { error } = await supabase.auth.signOut()
 
         if (error) {
-            console.error('[AuthContext] signOut error:', error)
+            safeLogError('[AuthContext] signOut failed', { error })
             setAuthError(error)
             throw error
         }
@@ -647,4 +671,3 @@ export function useAuth() {
 }
 
 export default AuthContext
-

@@ -99,6 +99,7 @@ function Checkout() {
     const { t, i18n } = useTranslation(undefined, { useSuspense: false })
     const [searchParams] = useSearchParams()
     const { user, profile, refreshProfile } = useAuth()
+    const userId = user?.id || null
     const [paymentRequest, setPaymentRequest] = useState(null)
     const [isLoadingRequest, setIsLoadingRequest] = useState(false)
     const [isFetchingRequest, setIsFetchingRequest] = useState(true)
@@ -121,7 +122,7 @@ function Checkout() {
     const canUploadProof = isPending && !hasProof
     const hasUploadedProofPending = isPending && hasProof
     const statusMeta = getStatusMeta(requestStatus, hasProof, t)
-    const fallbackReference = useMemo(() => createD17ReferenceCode(user?.id, plan.id), [user?.id, plan.id])
+    const fallbackReference = useMemo(() => createD17ReferenceCode(userId, plan.id), [userId, plan.id])
     const hasPendingRequest = isPending
     const primaryActionState = useMemo(() => {
         if (isApproved || entitlements.premiumActive) return 'goPremium'
@@ -143,7 +144,7 @@ function Checkout() {
     }, [])
 
     const loadLatestRequest = useCallback(async () => {
-        if (!user?.id) {
+        if (!userId) {
             setPaymentRequest(null)
             setIsFetchingRequest(false)
             return
@@ -155,7 +156,7 @@ function Checkout() {
         const requestRes = await supabase
             .from('payment_requests')
             .select('id, plan_id, amount_tnd, currency, d17_phone, reference, proof_object_path, status, admin_note, reviewed_at, created_at')
-            .eq('user_id', user.id)
+            .eq('user_id', userId)
             .order('created_at', { ascending: false })
             .limit(20)
 
@@ -170,7 +171,7 @@ function Checkout() {
         const latest = pending || rows[0] || null
         setPaymentRequest(normalizePaymentRequestRow(latest))
         setIsFetchingRequest(false)
-    }, [user?.id])
+    }, [userId])
 
     useEffect(() => {
         loadLatestRequest()

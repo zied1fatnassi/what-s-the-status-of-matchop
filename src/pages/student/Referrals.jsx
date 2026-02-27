@@ -4,18 +4,19 @@ import { useTranslation } from 'react-i18next'
 import AuthToast from '../../components/AuthToast'
 import { useAuth } from '../../context/AuthContext'
 import { track } from '../../lib/analytics'
+import { readStorageString, writeStorageString } from '../../lib/localStorageState'
+import { addNotification, NOTIFICATION_SCOPE_STUDENT } from '../../lib/notifications'
+import {
+    REFERRAL_PROGRESS_KEY,
+    buildReferralInviteLink,
+    resolveMyReferralCode,
+} from '../../lib/referrals'
 import './Referrals.css'
 
-const REFERRAL_CODE_KEY = 'matchop_referral_code'
-const REFERRAL_PROGRESS_KEY = 'matchop_referral_progress'
 const REFERRAL_GOAL = 3
+const REFERRAL_REWARD_CLAIMED_KEY = 'matchop_referral_reward_claimed'
 
 const clampInvites = (value) => Math.max(0, Math.min(REFERRAL_GOAL, value))
-
-function buildReferralCode(userId) {
-    if (!userId) return ''
-    return `MOP-${String(userId).slice(0, 8).toUpperCase()}`
-}
 
 function readStoredProgress() {
     try {
@@ -38,14 +39,15 @@ function Referrals() {
     const { user } = useAuth()
     const trackedViewed = useRef(false)
     const [toast, setToast] = useState(null)
-    const [referralCode, setReferralCode] = useState(() => localStorage.getItem(REFERRAL_CODE_KEY) || '')
+    const [referralCode, setReferralCode] = useState(() => resolveMyReferralCode(user?.id))
     const [progress, setProgress] = useState(() => readStoredProgress())
+    const [rewardClaimed, setRewardClaimed] = useState(() => (
+        readStorageString(REFERRAL_REWARD_CLAIMED_KEY, 'false') === 'true'
+    ))
 
     useEffect(() => {
-        if (!user?.id) return
-        const nextCode = buildReferralCode(user.id)
+        const nextCode = resolveMyReferralCode(user?.id)
         setReferralCode(nextCode)
-        localStorage.setItem(REFERRAL_CODE_KEY, nextCode)
     }, [user?.id])
 
     useEffect(() => {
@@ -55,8 +57,7 @@ function Referrals() {
     }, [referralCode])
 
     const inviteLink = useMemo(() => {
-        if (!referralCode) return ''
-        return `${window.location.origin}/student/signup?ref=${encodeURIComponent(referralCode)}`
+        return buildReferralInviteLink(referralCode)
     }, [referralCode])
 
     const whatsappHref = useMemo(() => {
@@ -99,7 +100,24 @@ function Referrals() {
             const invites = clampInvites(prev.invites + delta)
             const next = { invites, lastUpdated: new Date().toISOString() }
             localStorage.setItem(REFERRAL_PROGRESS_KEY, JSON.stringify(next))
+            if (delta > 0 && invites !== prev.invites) {
+                addNotification(NOTIFICATION_SCOPE_STUDENT, {
+                    title: 'Referral progress updated',
+                    body: `You are now at ${invites}/${REFERRAL_GOAL} referrals.`,
+                    read: false,
+                })
+            }
             return next
+        })
+    }
+
+    const handleClaimReward = () => {
+        if (progress.invites < REFERRAL_GOAL || rewardClaimed) return
+        writeStorageString(REFERRAL_REWARD_CLAIMED_KEY, 'true')
+        setRewardClaimed(true)
+        setToast({
+            type: 'success',
+            message: t('referrals.rewardUnlock.claimedToast')
         })
     }
 
@@ -217,9 +235,28 @@ function Referrals() {
                             ))}
                         </div>
                         <p className="referrals-progress-hint">{t('referrals.progress.hint')}</p>
+                        <p className="referrals-progress-hint">{t('referrals.rewardUnlock.previewNote')}</p>
                         <p className="referrals-progress-hint">
                             {t('referrals.progress.lastUpdated', { timestamp: formattedLastUpdated })}
                         </p>
+
+                        {progress.invites >= REFERRAL_GOAL && !rewardClaimed && (
+                            <button
+                                type="button"
+                                className="btn btn-primary"
+                                data-testid="claim-reward-button"
+                                onClick={handleClaimReward}
+                            >
+                                {t('referrals.rewardUnlock.claimAction')}
+                            </button>
+                        )}
+
+                        {rewardClaimed && (
+                            <div className="referrals-reward-claimed" data-testid="reward-claimed-state">
+                                <strong>{t('referrals.rewardUnlock.claimedTitle')}</strong>
+                                <p>{t('referrals.rewardUnlock.claimedSubtitle')}</p>
+                            </div>
+                        )}
 
                         {import.meta.env.DEV && (
                             <div className="referrals-debug">

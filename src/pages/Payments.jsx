@@ -14,6 +14,7 @@ import './Payments.css'
 function Payments() {
     const { t } = useTranslation(undefined, { useSuspense: false })
     const { user, profile } = useAuth()
+    const userId = user?.id || null
     const entitlements = getEntitlements(profile)
     const [requests, setRequests] = useState([])
     const [isLoading, setIsLoading] = useState(true)
@@ -24,7 +25,7 @@ function Payments() {
     const [auditRowsById, setAuditRowsById] = useState({})
 
     const loadRequests = useCallback(async () => {
-        if (!user?.id) {
+        if (!userId) {
             setRequests([])
             setIsLoading(false)
             return
@@ -36,7 +37,7 @@ function Payments() {
         const { data, error } = await supabase
             .from('payment_requests')
             .select('id, plan_id, amount_tnd, currency, d17_phone, reference, proof_object_path, status, admin_note, reviewed_at, created_at')
-            .eq('user_id', user.id)
+            .eq('user_id', userId)
             .order('created_at', { ascending: false })
 
         if (error) {
@@ -48,7 +49,7 @@ function Payments() {
 
         setRequests(Array.isArray(data) ? data : [])
         setIsLoading(false)
-    }, [t, user?.id])
+    }, [t, userId])
 
     useEffect(() => {
         loadRequests()

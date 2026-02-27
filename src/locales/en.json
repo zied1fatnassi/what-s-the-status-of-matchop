@@ -15,6 +15,7 @@
         "matches": "Matches",
         "personalizedPlan": "Personalized Plan",
         "referrals": "Referrals",
+        "notifications": "Notifications",
         "profile": "Profile",
         "newCandidates": "Candidates",
         "candidates": "Candidates",
@@ -753,6 +754,7 @@
         "archived": {
             "title": "Closed / Archived",
             "subtitle": "Rejected, expired, and archived candidates.",
+            "previewNote": "Preview: reasons are saved on this device only.",
             "loading": "Loading archived items...",
             "loadError": "Unable to load archived items.",
             "emptyTitle": "No archived items yet",
@@ -761,6 +763,19 @@
                 "all": "All",
                 "intro": "Candidates",
                 "match": "Matches"
+            },
+            "reasonFilter": {
+                "label": "Filter by reason",
+                "ariaLabel": "Filter archived matches by fail reason",
+                "all": "All"
+            },
+            "reasonPrompt": "Why it failed?",
+            "failReasons": {
+                "notFit": "Not a fit",
+                "noResponse": "No response",
+                "wrongLocation": "Wrong location",
+                "skillGap": "Skill gap",
+                "other": "Other"
             },
             "labels": {
                 "intro": "Candidate",
@@ -772,7 +787,8 @@
                 "offer": "Offer"
             },
             "actions": {
-                "message": "Message"
+                "message": "Message",
+                "reconsider": "Reconsider"
             }
         }
     },
@@ -1134,6 +1150,8 @@
         "title": "D17 Payments Review",
         "subtitle": "Review payment requests and approve or reject submissions.",
         "sectionTitle": "Payment requests",
+        "previewNote": "Preview: premium extension presets are simulated on this device.",
+        "previewPlanValue": "{{plan}} until {{until}} (Preview)",
         "refresh": "Refresh",
         "loading": "Loading requests...",
         "empty": "No requests found.",
@@ -1146,6 +1164,16 @@
             "approved": "Approved",
             "rejected": "Rejected",
             "reverted": "Reverted"
+        },
+        "quickFilters": {
+            "ariaLabel": "Quick payment filters",
+            "needsProof": "Needs proof",
+            "pendingOver24h": "Pending > 24h",
+            "repeatedAttempts": "Repeated attempts"
+        },
+        "planPresets": {
+            "month": "1 month",
+            "year": "1 year"
         },
         "counts": {
             "all": "{{count}} requests",
@@ -1161,8 +1189,14 @@
         },
         "actions": {
             "viewProof": "View proof",
+            "downloadProof": "Download proof",
             "viewAudit": "View audit",
+            "copyReference": "Copy reference",
+            "copied": "Copied",
+            "exportCsv": "Export CSV",
             "approve": "Approve",
+            "approveExtendMonth": "Approve + extend premium (1 month)",
+            "approveExtendYear": "Approve + extend premium (1 year)",
             "reject": "Reject",
             "revert": "Revert",
             "undoApproval": "Undo approval",
@@ -1184,6 +1218,7 @@
             "proofPath": "Proof path",
             "reviewedAt": "Reviewed at",
             "adminNote": "Admin note",
+            "previewPremium": "Premium override",
             "addNote": "Admin note (optional)",
             "notePlaceholder": "Add a note for this decision"
         },
@@ -1205,12 +1240,30 @@
             "body": "Are you sure? This will revoke premium granted by this approval."
         },
         "toasts": {
-            "requestUpdated": "Request {{status}}."
+            "requestUpdated": "Request {{status}}.",
+            "referenceCopied": "Reference copied.",
+            "csvExported": "Filtered CSV exported.",
+            "proofOpened": "Proof opened in a new tab.",
+            "previewPremiumExtended": "Approved. Premium extension applied for {{plan}} until {{until}} (Preview)."
         },
         "errors": {
             "loadFailed": "Unable to load payment requests.",
             "openProofFailed": "Unable to open proof.",
+            "copyReferenceFailed": "Unable to copy reference.",
             "auditLoadFailed": "Unable to load audit history."
+        }
+    },
+    "notifications": {
+        "title": "Notifications",
+        "subtitle": "Track your latest activity updates.",
+        "empty": "No notifications yet.",
+        "filters": {
+            "ariaLabel": "Notification filters",
+            "all": "All",
+            "unread": "Unread"
+        },
+        "actions": {
+            "markAllRead": "Mark all as read"
         }
     },
     "payments": {
@@ -1288,8 +1341,24 @@
             "copyLinkSuccess": "Invite link copied.",
             "copyFailed": "Unable to copy right now. Please try again."
         },
+        "rewardUnlock": {
+            "claimAction": "Claim reward",
+            "claimedTitle": "Reward claimed",
+            "claimedSubtitle": "Premium teaser unlocked (Preview).",
+            "claimedToast": "Reward claimed.",
+            "previewNote": "Preview: referral progress is simulated until backend verification."
+        },
         "signupAttribution": "Referral code detected: {{ref}}",
         "signupApplied": "Referral code {{ref}} was applied to your signup.",
+        "signupFlow": {
+            "invitedTitle": "You were invited by a friend 🎁",
+            "invitedSubtitle": "Complete signup to unlock your referral benefit (Preview)",
+            "dismissAria": "Dismiss referral invitation banner",
+            "followupTitle": "Invite your friends too",
+            "followupSubtitle": "Share your invite link to unlock referral benefits (Preview).",
+            "openReferrals": "Open Referrals",
+            "copyInviteLink": "Copy invite link"
+        },
         "cta": {
             "sectionAria": "Referral invite banner",
             "title": "Invite and unlock rewards",

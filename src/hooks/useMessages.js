@@ -2,6 +2,12 @@ import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
 import { detectSpam, sanitizeMessage, getSpamErrorMessage } from '../lib/spamDetection'
+import { safeLogError, safeLogWarn } from '../lib/logger'
+import {
+    addNotification,
+    NOTIFICATION_SCOPE_COMPANY,
+    NOTIFICATION_SCOPE_STUDENT,
+} from '../lib/notifications'
 
 /**
  * Hook for real-time chat messages
@@ -11,7 +17,10 @@ export function useMessages(matchId) {
     const [messages, setMessages] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
-    const { user } = useAuth()
+    const { user, isStudent, isCompany } = useAuth()
+    const notificationScope = isCompany
+        ? NOTIFICATION_SCOPE_COMPANY
+        : (isStudent ? NOTIFICATION_SCOPE_STUDENT : null)
 
     const fetchMessages = useCallback(async () => {
         if (!matchId) {
@@ -36,7 +45,7 @@ export function useMessages(matchId) {
                 .order('created_at', { ascending: true })
 
             if (fetchError) {
-                console.log('Messages table may not exist yet')
+                safeLogWarn('[useMessages] message fetch failed', { error: fetchError })
                 setMessages([])
                 return
             }
@@ -69,6 +78,13 @@ export function useMessages(matchId) {
                 },
                 (payload) => {
                     setMessages(prev => [...prev, payload.new])
+                    if (payload?.new?.sender_id !== user?.id && notificationScope) {
+                        addNotification(notificationScope, {
+                            title: 'New intro',
+                            body: 'You received a new message intro.',
+                            read: false,
+                        })
+                    }
                 }
             )
             .subscribe()
@@ -76,7 +92,7 @@ export function useMessages(matchId) {
         return () => {
             supabase.removeChannel(channel)
         }
-    }, [matchId, fetchMessages])
+    }, [matchId, fetchMessages, notificationScope, user?.id])
 
     const sendMessage = useCallback(async (content) => {
         if (!user?.id || !matchId || !content.trim()) {
@@ -88,7 +104,10 @@ export function useMessages(matchId) {
         const spamCheck = detectSpam(cleanContent)
 
         if (spamCheck.isSpam) {
-            console.warn('[Messages] Spam detected:', spamCheck.reason)
+            safeLogWarn('[useMessages] spam detected', {
+                reason: spamCheck.reason,
+                severity: spamCheck.severity,
+            })
             return {
                 error: getSpamErrorMessage(spamCheck.severity),
                 isSpam: true,
@@ -110,8 +129,16 @@ export function useMessages(matchId) {
                 .single()
 
             if (sendError) {
-                console.error('[useMessages] Failed to send:', sendError)
+                safeLogError('[useMessages] send failed', { error: sendError })
                 return { error: sendError.message || 'Failed to send message' }
+            }
+
+            if (notificationScope) {
+                addNotification(notificationScope, {
+                    title: 'New intro',
+                    body: 'Your intro message was sent.',
+                    read: false,
+                })
             }
 
             return { error: null, data }

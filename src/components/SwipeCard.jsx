@@ -1,5 +1,5 @@
 import { forwardRef, useImperativeHandle } from 'react'
-import { motion, useMotionValue, useTransform, useAnimation } from 'framer-motion'
+import { motion, useMotionValue, useTransform, useAnimation, useReducedMotion } from 'framer-motion'
 import { MapPin, Briefcase, DollarSign, Clock, Info, Sparkles, ExternalLink, Crown, EyeOff, Coins } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import VerificationBadge from './VerificationBadge'
@@ -23,6 +23,13 @@ const SwipeCard = forwardRef(function SwipeCard({ offer, onSwipe, onSwipeStart, 
     const passOpacity = useTransform(x, [0, -100], [0, 1])
 
     const controls = useAnimation() // Initialize animation controls
+    const shouldReduceMotion = useReducedMotion()
+    const swipeTransition = shouldReduceMotion
+        ? { duration: 0.01 }
+        : { duration: 0.26, ease: 'easeOut' }
+    const resetTransition = shouldReduceMotion
+        ? { duration: 0.01 }
+        : { type: 'spring', stiffness: 500, damping: 30 }
 
     // Expose triggerSwipe so parent buttons can play the same fly-off animation
     useImperativeHandle(ref, () => ({
@@ -34,7 +41,7 @@ const SwipeCard = forwardRef(function SwipeCard({ offer, onSwipe, onSwipeStart, 
             // Wait for animation to finish before notifying parent (otherwise the
             // parent unmounts this card immediately, killing the animation)
             controls
-                .start({ x: animX, opacity: 0, transition: { duration: 2 } })
+                .start({ x: animX, opacity: 0, transition: swipeTransition })
                 .then(() => onSwipe(direction, offer))
         }
     }))
@@ -46,16 +53,16 @@ const SwipeCard = forwardRef(function SwipeCard({ offer, onSwipe, onSwipeStart, 
         if (info.offset.x > threshold || velocity > 500) {
             onSwipeStart?.('right', offer)
             controls
-                .start({ x: 500, opacity: 0, transition: { duration: 2 } })
+                .start({ x: 500, opacity: 0, transition: swipeTransition })
                 .then(() => onSwipe('right', offer))
         } else if (info.offset.x < -threshold || velocity < -500) {
             onSwipeStart?.('left', offer)
             controls
-                .start({ x: -500, opacity: 0, transition: { duration: 2 } })
+                .start({ x: -500, opacity: 0, transition: swipeTransition })
                 .then(() => onSwipe('left', offer))
         } else {
             // Satisfying snap back
-            controls.start({ x: 0, transition: { type: 'spring', stiffness: 500, damping: 30 } })
+            controls.start({ x: 0, transition: resetTransition })
         }
     }
 
@@ -80,13 +87,13 @@ const SwipeCard = forwardRef(function SwipeCard({ offer, onSwipe, onSwipeStart, 
             animate={controls}
             drag="x"
             dragConstraints={{ left: 0, right: 0 }}
-            dragElastic={0.5} // Stiffer resistance (was 0.7)
+            dragElastic={shouldReduceMotion ? 0.2 : 0.5}
             onDragEnd={handleDragEnd}
             onClick={() => {
                 // Only trigger if not dragging
                 if (Math.abs(x.get()) < 5) onViewDetails?.(offer)
             }}
-            whileTap={{ cursor: 'grabbing' }}
+            whileTap={shouldReduceMotion ? undefined : { cursor: 'grabbing' }}
         >
             {/* Swipe Indicators */}
             <motion.div
@@ -121,6 +128,20 @@ function CardContent({ offer }) {
 
     return (
         <>
+            <div className="card-media-shell" aria-hidden="true">
+                {offer.companyLogo ? (
+                    <img
+                        src={offer.companyLogo}
+                        alt=""
+                        className="card-media-image"
+                        loading="lazy"
+                        decoding="async"
+                    />
+                ) : (
+                    <div className="card-media-fallback" />
+                )}
+            </div>
+
             {/* Match Score Badge */}
             {matchPercent && (
                 <div className="match-score-badge">

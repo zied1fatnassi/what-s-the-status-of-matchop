@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
 import { isPremiumActive } from '../lib/premiumEntitlements'
+import { safeLogError, safeLogWarn } from '../lib/logger'
 
 async function fetchPremiumFlags(studentIds) {
     if (!Array.isArray(studentIds) || studentIds.length === 0) {
@@ -14,7 +15,7 @@ async function fetchPremiumFlags(studentIds) {
         .in('id', studentIds)
 
     if (error) {
-        console.warn('[useCandidates] premium flags lookup failed:', error.message)
+        safeLogWarn('[useCandidates] premium flags lookup failed', { error })
         return new Map()
     }
 
@@ -149,7 +150,7 @@ export function useCandidates() {
 
             setCandidates(candidatesList)
         } catch (err) {
-            console.error('[useCandidates] Error:', err)
+            safeLogError('[useCandidates] fetch failed', { error: err })
             setError(err.message)
         } finally {
             setLoading(false)

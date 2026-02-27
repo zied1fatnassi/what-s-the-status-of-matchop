@@ -6,6 +6,25 @@
     background: linear-gradient(135deg, #0d47a1 0%, #1565c0 50%, #1976d2 100%);
 }
 
+.route-guard-loading-card {
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(8, 22, 52, 0.45);
+    backdrop-filter: blur(8px);
+    border-radius: 14px;
+    padding: 1rem 1.25rem;
+    display: grid;
+    justify-items: center;
+    gap: 0.55rem;
+    min-width: 168px;
+}
+
+.route-guard-loading-card p {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.86);
+    font-size: 0.82rem;
+    letter-spacing: 0.01em;
+}
+
 .route-guard-spinner {
     width: 48px;
     height: 48px;
@@ -25,3 +44,22 @@
     }
 }
 
+.route-guard-session-expired {
+    min-height: 100dvh;
+    display: grid;
+    place-content: center;
+    gap: 1rem;
+    text-align: center;
+    background: var(--background);
+    padding: 1.5rem;
+}
+
+.route-guard-session-expired h2 {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: 1.12rem;
+}
+
+.route-guard-session-expired .btn {
+    justify-self: center;
+}

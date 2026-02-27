@@ -1,10 +1,19 @@
 import { Fragment, useCallback, useEffect, useMemo, useState } from 'react'
-import { ChevronDown, ChevronUp, Eye, History, RefreshCw, Search, X } from 'lucide-react'
+import { ChevronDown, ChevronUp, Copy, Download, FileDown, History, RefreshCw, Search, X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import AuthToast from '../../components/AuthToast'
 import { track } from '../../lib/analytics'
 import { fetchPaymentRequestAudit, reviewPaymentRequest } from '../../lib/payments/admin'
 import { supabase } from '../../lib/supabase'
+import { readStorageJSON, writeStorageJSON } from '../../lib/localStorageState'
+import {
+    ADMIN_PREMIUM_OVERRIDES_KEY,
+    applyQuickFilters,
+    buildFilteredPaymentsCsv,
+    resolveProofUrl,
+    toPreviewPremiumUntil,
+} from './adminPaymentsUtils'
+import { addNotification, NOTIFICATION_SCOPE_STUDENT } from '../../lib/notifications'
 import './Admin.css'
 
 function normalizeRows(rows, emailByUserId) {
@@ -71,23 +80,28 @@ export default function AdminPayments() {
     const [isLoading, setIsLoading] = useState(true)
     const [statusFilter, setStatusFilter] = useState('all')
     const [searchTerm, setSearchTerm] = useState('')
+    const [quickFilters, setQuickFilters] = useState({
+        needsProof: false,
+        pendingOver24h: false,
+        repeatedAttempts: false,
+    })
     const [expandedId, setExpandedId] = useState(null)
     const [actionError, setActionError] = useState('')
     const [toast, setToast] = useState(null)
     const [inFlightId, setInFlightId] = useState(null)
+    const [copiedReferenceId, setCopiedReferenceId] = useState('')
     const [noteById, setNoteById] = useState({})
     const [reviewIntent, setReviewIntent] = useState(null)
+    const [premiumOverrides, setPremiumOverrides] = useState(() => readStorageJSON(
+        ADMIN_PREMIUM_OVERRIDES_KEY,
+        {}
+    ))
     const [auditModal, setAuditModal] = useState({
         open: false,
         paymentRequestId: '',
         loading: false,
         rows: [],
         error: ''
-    })
-    const [proofPreview, setProofPreview] = useState({
-        open: false,
-        url: '',
-        reference: ''
     })
 
     const loadPayments = useCallback(async () => {
@@ -140,14 +154,16 @@ export default function AdminPayments() {
 
     const filteredRows = useMemo(() => {
         const normalizedSearch = searchTerm.trim().toLowerCase()
-        if (!normalizedSearch) return rows
-
-        return rows.filter((row) => (
+        const searchedRows = !normalizedSearch
+            ? rows
+            : rows.filter((row) => (
             row.user_email?.toLowerCase().includes(normalizedSearch) ||
             row.user_id?.toLowerCase().includes(normalizedSearch) ||
             row.reference?.toLowerCase().includes(normalizedSearch)
         ))
-    }, [rows, searchTerm])
+
+        return applyQuickFilters(searchedRows, quickFilters)
+    }, [rows, searchTerm, quickFilters])
 
     const formatDateTime = useCallback((value) => {
         if (!value) return '-'
@@ -157,27 +173,76 @@ export default function AdminPayments() {
         }).format(new Date(value))
     }, [i18n.language])
 
-    const handleViewProof = async (objectPath, reference) => {
-        if (!objectPath) return
+    const toggleQuickFilter = (filterKey) => {
+        setQuickFilters((prev) => ({
+            ...prev,
+            [filterKey]: !prev[filterKey],
+        }))
+    }
 
+    const handleCopyReference = async (rowId, reference) => {
+        if (!reference) return
+        try {
+            if (!navigator?.clipboard?.writeText) {
+                throw new Error('Clipboard API unavailable')
+            }
+            await navigator.clipboard.writeText(reference)
+            setCopiedReferenceId(rowId)
+            setToast({
+                type: 'success',
+                message: t('adminPayments.toasts.referenceCopied')
+            })
+            setTimeout(() => setCopiedReferenceId(''), 1800)
+        } catch {
+            setToast({
+                type: 'error',
+                message: t('adminPayments.errors.copyReferenceFailed')
+            })
+        }
+    }
+
+    const getSignedProofUrl = useCallback(async (objectPath) => {
         const proofRes = await supabase
             .storage
             .from('payment_proofs')
             .createSignedUrl(objectPath, 300)
 
-        if (proofRes.error || !proofRes.data?.signedUrl) {
+        return {
+            signedUrl: proofRes.data?.signedUrl || '',
+            error: proofRes.error?.message || null
+        }
+    }, [])
+
+    const handleDownloadProof = async (proofObjectPath) => {
+        try {
+            const resolved = await resolveProofUrl(proofObjectPath, getSignedProofUrl)
+            if (!resolved.url) {
+                setToast({
+                    type: 'error',
+                    message: t('adminPayments.errors.openProofFailed')
+                })
+                return
+            }
+
+            const opened = window.open(resolved.url, '_blank', 'noopener,noreferrer')
+            if (!opened) {
+                setToast({
+                    type: 'error',
+                    message: t('adminPayments.errors.openProofFailed')
+                })
+                return
+            }
+
+            setToast({
+                type: 'success',
+                message: t('adminPayments.toasts.proofOpened')
+            })
+        } catch {
             setToast({
                 type: 'error',
-                message: proofRes.error?.message || t('adminPayments.errors.openProofFailed')
+                message: t('adminPayments.errors.openProofFailed')
             })
-            return
         }
-
-        setProofPreview({
-            open: true,
-            url: proofRes.data.signedUrl,
-            reference: reference || ''
-        })
     }
 
     const handleReview = async (paymentRequestId, action) => {
@@ -207,6 +272,12 @@ export default function AdminPayments() {
                 paymentRequestId,
                 note
             })
+        } else if (action === 'approve') {
+            addNotification(NOTIFICATION_SCOPE_STUDENT, {
+                title: 'Payment approved',
+                body: 'Your payment was approved by admin.',
+                read: false,
+            })
         }
         setNoteById((prev) => ({
             ...prev,
@@ -215,6 +286,56 @@ export default function AdminPayments() {
         setInFlightId(null)
         await loadPayments()
         return true
+    }
+
+    const storePremiumOverride = (userId, plan) => {
+        if (!userId) return ''
+        const until = toPreviewPremiumUntil(plan)
+        const next = {
+            ...premiumOverrides,
+            [userId]: {
+                until,
+                plan,
+            }
+        }
+        setPremiumOverrides(next)
+        writeStorageJSON(ADMIN_PREMIUM_OVERRIDES_KEY, next)
+        return until
+    }
+
+    const handleApproveWithPreset = async (row, plan) => {
+        if (!row?.id) return
+        const approved = await handleReview(row.id, 'approve')
+        if (!approved) return
+
+        const until = storePremiumOverride(row.user_id, plan)
+        if (!until) return
+
+        setToast({
+            type: 'success',
+            message: t('adminPayments.toasts.previewPremiumExtended', {
+                plan: t(`adminPayments.planPresets.${plan}`),
+                until: formatDateTime(until),
+            })
+        })
+    }
+
+    const handleExportCsv = () => {
+        const csvContent = buildFilteredPaymentsCsv(filteredRows)
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+        const exportUrl = URL.createObjectURL(blob)
+        const fileName = `matchop-admin-payments-${new Date().toISOString().slice(0, 10)}.csv`
+        const downloadAnchor = document.createElement('a')
+        downloadAnchor.href = exportUrl
+        downloadAnchor.download = fileName
+        document.body.appendChild(downloadAnchor)
+        downloadAnchor.click()
+        downloadAnchor.remove()
+        URL.revokeObjectURL(exportUrl)
+        setToast({
+            type: 'success',
+            message: t('adminPayments.toasts.csvExported')
+        })
     }
 
     const rowsCountLabel = useMemo(() => {
@@ -277,35 +398,6 @@ export default function AdminPayments() {
                     duration={3000}
                     onClose={() => setToast(null)}
                 />
-            )}
-
-            {proofPreview.open && (
-                <div className="admin-modal-overlay" role="dialog" aria-modal="true" aria-label={t('adminPayments.proofModal.title')}>
-                    <div className="admin-modal admin-proof-modal">
-                        <div className="admin-proof-modal-header">
-                            <h2>{t('adminPayments.proofModal.title')}</h2>
-                            <button
-                                type="button"
-                                className="admin-btn admin-btn-secondary admin-btn-sm"
-                                onClick={() => setProofPreview({ open: false, url: '', reference: '' })}
-                                aria-label={t('adminPayments.proofModal.closeAria')}
-                            >
-                                <X size={14} />
-                                {t('common.close')}
-                            </button>
-                        </div>
-                        {proofPreview.reference && (
-                            <p className="checkout-inline-subtitle">
-                                {t('adminPayments.fields.reference')}: {proofPreview.reference}
-                            </p>
-                        )}
-                        <iframe
-                            src={proofPreview.url}
-                            title={t('adminPayments.proofModal.iframeTitle')}
-                            className="admin-proof-frame"
-                        />
-                    </div>
-                </div>
             )}
 
             {reviewIntent && (
@@ -433,9 +525,41 @@ export default function AdminPayments() {
                         <option value="rejected">{t('adminPayments.filters.rejected')}</option>
                         <option value="reverted">{t('adminPayments.filters.reverted')}</option>
                     </select>
+                    <div className="admin-quick-filter-chips" role="group" aria-label={t('adminPayments.quickFilters.ariaLabel')}>
+                        <button
+                            type="button"
+                            className={`admin-chip ${quickFilters.needsProof ? 'active' : ''}`}
+                            onClick={() => toggleQuickFilter('needsProof')}
+                        >
+                            {t('adminPayments.quickFilters.needsProof')}
+                        </button>
+                        <button
+                            type="button"
+                            className={`admin-chip ${quickFilters.pendingOver24h ? 'active' : ''}`}
+                            onClick={() => toggleQuickFilter('pendingOver24h')}
+                        >
+                            {t('adminPayments.quickFilters.pendingOver24h')}
+                        </button>
+                        <button
+                            type="button"
+                            className={`admin-chip ${quickFilters.repeatedAttempts ? 'active' : ''}`}
+                            onClick={() => toggleQuickFilter('repeatedAttempts')}
+                        >
+                            {t('adminPayments.quickFilters.repeatedAttempts')}
+                        </button>
+                    </div>
                 </div>
                 <div className="admin-toolbar-actions">
                     <p className="admin-toolbar-count">{rowsCountLabel}</p>
+                    <button
+                        type="button"
+                        className="admin-btn admin-btn-secondary"
+                        onClick={handleExportCsv}
+                        disabled={filteredRows.length === 0}
+                    >
+                        <FileDown size={14} />
+                        {t('adminPayments.actions.exportCsv')}
+                    </button>
                     <button
                         type="button"
                         className="admin-btn admin-btn-primary"
@@ -447,6 +571,7 @@ export default function AdminPayments() {
                     </button>
                 </div>
             </div>
+            <p className="admin-preview-note">{t('adminPayments.previewNote')}</p>
 
             <div className="admin-section">
                 <h2>{t('adminPayments.sectionTitle')}</h2>
@@ -515,12 +640,22 @@ export default function AdminPayments() {
                                                             <button
                                                                 type="button"
                                                                 className="admin-btn admin-btn-secondary admin-btn-sm"
-                                                                onClick={() => handleViewProof(row.proof_object_path, row.reference)}
+                                                                onClick={() => handleDownloadProof(row.proof_object_path)}
                                                             >
-                                                                <Eye size={14} />
-                                                                {t('adminPayments.actions.viewProof')}
+                                                                <Download size={14} />
+                                                                {t('adminPayments.actions.downloadProof')}
                                                             </button>
                                                         )}
+                                                        <button
+                                                            type="button"
+                                                            className="admin-btn admin-btn-secondary admin-btn-sm"
+                                                            onClick={() => handleCopyReference(row.id, row.reference)}
+                                                        >
+                                                            <Copy size={14} />
+                                                            {copiedReferenceId === row.id
+                                                                ? t('adminPayments.actions.copied')
+                                                                : t('adminPayments.actions.copyReference')}
+                                                        </button>
                                                         {row.status === 'pending' && (
                                                             <>
                                                                 <button
@@ -546,6 +681,22 @@ export default function AdminPayments() {
                                                                     disabled={inFlightId === row.id}
                                                                 >
                                                                     {t('adminPayments.actions.reject')}
+                                                                </button>
+                                                                <button
+                                                                    type="button"
+                                                                    className="admin-btn admin-btn-secondary admin-btn-sm"
+                                                                    onClick={() => handleApproveWithPreset(row, 'month')}
+                                                                    disabled={inFlightId === row.id}
+                                                                >
+                                                                    {t('adminPayments.actions.approveExtendMonth')}
+                                                                </button>
+                                                                <button
+                                                                    type="button"
+                                                                    className="admin-btn admin-btn-secondary admin-btn-sm"
+                                                                    onClick={() => handleApproveWithPreset(row, 'year')}
+                                                                    disabled={inFlightId === row.id}
+                                                                >
+                                                                    {t('adminPayments.actions.approveExtendYear')}
                                                                 </button>
                                                             </>
                                                         )}
@@ -601,6 +752,17 @@ export default function AdminPayments() {
                                                             <div>
                                                                 <dt>{t('adminPayments.fields.adminNote')}</dt>
                                                                 <dd>{row.admin_note || '-'}</dd>
+                                                            </div>
+                                                            <div>
+                                                                <dt>{t('adminPayments.fields.previewPremium')}</dt>
+                                                                <dd>
+                                                                    {premiumOverrides[row.user_id]
+                                                                        ? t('adminPayments.previewPlanValue', {
+                                                                            plan: t(`adminPayments.planPresets.${premiumOverrides[row.user_id].plan}`),
+                                                                            until: formatDateTime(premiumOverrides[row.user_id].until),
+                                                                        })
+                                                                        : '-'}
+                                                                </dd>
                                                             </div>
                                                         </div>
                                                         {row.status === 'pending' && (

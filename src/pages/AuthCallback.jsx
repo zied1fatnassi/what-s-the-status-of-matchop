@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Loader2, CheckCircle, XCircle } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useBilingualText } from '../lib/useBilingualText'
+import { safeLogError } from '../lib/logger'
 
 const MIN_CHECK_MS = 500
 const REDIRECT_DELAY_MS = 900
@@ -198,7 +199,7 @@ function AuthCallback() {
                     'Aucune session de verification active trouvee. Si votre email est deja verifie, connectez-vous normalement.'
                 ))
             } catch (err) {
-                console.error('[AuthCallback] Unexpected error:', err)
+                safeLogError('[AuthCallback] Unexpected error', { error: err })
 
                 // Last-chance silent-success check before surfacing failure.
                 try {

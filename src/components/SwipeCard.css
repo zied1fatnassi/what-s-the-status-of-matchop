@@ -8,6 +8,7 @@
     /* MOBILE FIRST: Full width on mobile */
     width: 100%;
     max-width: 100%;
+    min-height: 500px;
 
     /* Theme-aware background */
     background: var(--glass-surface);
@@ -30,6 +31,37 @@
     .swipe-card {
         max-width: 400px;
         border-radius: var(--radius-3xl);
+        min-height: 520px;
+    }
+}
+
+.card-media-shell {
+    height: 136px;
+    background: linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--primary) 16%, var(--surface-muted)),
+        color-mix(in srgb, var(--accent-teal) 14%, var(--surface-soft))
+    );
+    border-bottom: 1px solid var(--glass-border);
+    overflow: hidden;
+}
+
+.card-media-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.card-media-fallback {
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.25), transparent 58%);
+}
+
+@media (min-width: 768px) {
+    .card-media-shell {
+        height: 156px;
     }
 }
 
@@ -469,5 +501,13 @@
         background: var(--glass-surface);
         color: var(--primary);
         border-color: var(--glass-border);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .swipe-card,
+    .skill-tag,
+    .swipe-indicator {
+        transition: none;
     }
 }

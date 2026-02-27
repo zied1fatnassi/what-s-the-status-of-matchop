@@ -1,5 +1,8 @@
 import React from 'react'
 import { AlertTriangle, RefreshCw } from 'lucide-react'
+import { safeLogError } from '../lib/logger'
+
+const isDev = import.meta.env.DEV
 
 /**
  * Error Boundary Component to catch React errors
@@ -16,7 +19,10 @@ class ErrorBoundary extends React.Component {
     }
 
     componentDidCatch(error, errorInfo) {
-        console.error('[ErrorBoundary] Caught error:', error, errorInfo)
+        safeLogError('[ErrorBoundary] Caught error', {
+            error,
+            componentStack: errorInfo?.componentStack || null
+        })
         this.setState({ error, errorInfo })
     }
 
@@ -51,7 +57,7 @@ class ErrorBoundary extends React.Component {
                         <p style={{ color: '#6b7280', marginBottom: '24px', lineHeight: '1.6' }}>
                             {this.props.fallbackMessage || 'The profile page encountered an error. Please try refreshing the page.'}
                         </p>
-                        {process.env.NODE_ENV === 'development' && this.state.error && (
+                        {isDev && this.state.error && (
                             <details style={{
                                 marginBottom: '24px',
                                 padding: '16px',
