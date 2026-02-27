@@ -284,7 +284,8 @@ function App() {
 
               <Route path="company/profile" element={<ProtectedRoute requiredType="company"><CompanyProfile /></ProtectedRoute>} />
               <Route path="company/post-offer" element={<ProtectedRoute requiredType="company"><PostOffer /></ProtectedRoute>} />
-              <Route path="company/candidates" element={<ProtectedRoute requiredType="company"><ViewCandidates /></ProtectedRoute>} />
+              <Route path="company/archived" element={<ProtectedRoute requiredType="company"><ViewCandidates /></ProtectedRoute>} />
+              <Route path="company/candidates" element={<Navigate to="/company/intros" replace />} />
               <Route path="company/intros" element={<ProtectedRoute requiredType="company"><CompanyIntros /></ProtectedRoute>} />
               <Route path="company/matches" element={<ProtectedRoute requiredType="company"><CompanyMatches /></ProtectedRoute>} />
               <Route path="company/chat/:matchId" element={<ProtectedRoute requiredType="company"><CompanyChat /></ProtectedRoute>} />

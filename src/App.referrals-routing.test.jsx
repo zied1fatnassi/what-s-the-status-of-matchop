@@ -56,6 +56,14 @@ vi.mock('./pages/student/Referrals', () => ({
     default: () => <div>Student referrals page</div>
 }))
 
+vi.mock('./pages/company/ViewCandidates', () => ({
+    default: () => <div>Company archived page</div>
+}))
+
+vi.mock('./pages/company/CompanyIntros', () => ({
+    default: () => <div>Company intros page</div>
+}))
+
 vi.mock('./pages/student/StudentSignup', async () => {
     const React = await vi.importActual('react')
     const router = await vi.importActual('react-router-dom')
@@ -93,5 +101,25 @@ describe('App referrals routing', () => {
         )
 
         expect(await screen.findByTestId('student-signup-route')).toHaveTextContent('/student/signup?ref=MOP-ABCDEF12')
+    })
+
+    it('renders archived candidates page at /company/archived', async () => {
+        render(
+            <MemoryRouter initialEntries={['/company/archived']}>
+                <App />
+            </MemoryRouter>
+        )
+
+        expect(await screen.findByText('Company archived page')).toBeInTheDocument()
+    })
+
+    it('redirects /company/candidates to /company/intros', async () => {
+        render(
+            <MemoryRouter initialEntries={['/company/candidates']}>
+                <App />
+            </MemoryRouter>
+        )
+
+        expect(await screen.findByText('Company intros page')).toBeInTheDocument()
     })
 })
