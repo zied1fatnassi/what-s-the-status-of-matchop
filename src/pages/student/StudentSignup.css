@@ -261,6 +261,26 @@
     color: var(--primary);
 }
 
+.student-signup-referral-note {
+    margin-bottom: var(--space-4);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--surface-2);
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    padding: 0.6rem 0.75rem;
+}
+
+.student-signup-referral-applied {
+    margin: 0;
+    border: 1px solid color-mix(in srgb, var(--accent-teal) 40%, var(--border));
+    border-radius: var(--radius-md);
+    background: color-mix(in srgb, var(--accent-teal) 10%, var(--surface-2));
+    color: var(--text-primary);
+    font-size: 0.83rem;
+    padding: 0.6rem 0.75rem;
+}
+
 /* Legacy media query - Now handled with mobile-first above */
 
 /* Auth Error */

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { X, Heart, Star, RotateCcw, Loader, Lock } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import SwipeCard from '../../components/SwipeCard'
 import MatchModal from '../../components/MatchModal'
 import OfferDetailModal from '../../components/OfferDetailModal'
@@ -47,7 +48,7 @@ function StudentSwipe() {
     const [toastIsExternal, setToastIsExternal] = useState(false)
     const [toastTitle, setToastTitle] = useState('Application was sent!')
     const [toastVariant, setToastVariant] = useState('application')
-    const [toastKey, setToastKey] = useState(0)
+    const { t } = useTranslation(undefined, { useSuspense: false })
     const navigate = useNavigate()
     const topCardRef = useRef(null)
 
@@ -69,28 +70,6 @@ function StudentSwipe() {
 
     const currentOffer = offers[currentIndex]
     const hasMoreOffers = currentIndex < offers.length
-
-    const showSwipeToast = (direction, offer) => {
-        if (!offer) return
-
-        const isExternal = offer.isExternal === true && !!offer.externalUrl
-        if (direction === 'left') {
-            setToastIsExternal(false)
-            setToastTitle('Not interested')
-            setToastVariant('rejected')
-        } else if (direction === 'super') {
-            setToastIsExternal(isExternal)
-            setToastTitle('Added to favorites')
-            setToastVariant('favorites')
-        } else {
-            setToastIsExternal(isExternal)
-            setToastTitle('Application was sent!')
-            setToastVariant('application')
-        }
-
-        setToastKey((prev) => prev + 1)
-        setShowToast(true)
-    }
 
     const handleLockedGlobalCta = () => {
         if (isExpiredPremium) {
@@ -187,15 +166,8 @@ function StudentSwipe() {
         }
     }, [paywall, mode, setMode, clearPaywall, openPremiumUpsell, isExpiredPremium, navigate, showGlobalTab])
 
-    const handleSwipeStart = (direction, offerToSwipe = currentOffer) => {
-        if (!offerToSwipe) return
-        if (mode === 'standard' && !canUsePremiumMode && dailySwipeUsage?.reached) return
-        showSwipeToast(direction, offerToSwipe)
-    }
-
-    const handleSwipe = async (direction, swipedOffer = currentOffer) => {
-        const offerToSwipe = swipedOffer || currentOffer
-        if (!offerToSwipe) return
+    const handleSwipe = async (direction) => {
+        if (!currentOffer) return
         if (mode === 'standard' && !canUsePremiumMode && dailySwipeUsage?.reached) {
             openPremiumUpsell('daily_limit', {
                 used: dailySwipeUsage?.used ?? null,
@@ -204,12 +176,12 @@ function StudentSwipe() {
             return
         }
 
+        const offerToSwipe = currentOffer
         const isExternal = offerToSwipe.isExternal === true && !!offerToSwipe.externalUrl
 
         if (!isExternal) {
             const swipeResult = await swipe(offerToSwipe.id, direction)
             if (isLimitReachedCode(swipeResult?.code)) {
-                setShowToast(false)
                 openPremiumUpsell('daily_limit', {
                     used: swipeResult?.usage?.used ?? dailySwipeUsage?.used ?? null,
                     limit: swipeResult?.usage?.limit ?? dailySwipeUsage?.limit ?? null
@@ -218,13 +190,31 @@ function StudentSwipe() {
             }
 
             if (swipeResult?.error) {
-                setShowToast(false)
                 return
             }
         }
 
-        setSwipeHistory((prev) => [...prev, { offer: offerToSwipe, direction }])
-        setCurrentIndex((prev) => prev + 1)
+        setSwipeHistory([...swipeHistory, { offer: offerToSwipe, direction }])
+
+        const nextIndex = currentIndex + 1
+        setCurrentIndex(nextIndex)
+
+        if (direction === 'left') {
+            setToastIsExternal(false)
+            setToastTitle('Not interested')
+            setToastVariant('rejected')
+            setShowToast(true)
+        } else if (direction === 'right' || direction === 'super') {
+            setToastIsExternal(isExternal)
+            if (direction === 'super') {
+                setToastTitle('Added to favorites')
+                setToastVariant('favorites')
+            } else {
+                setToastTitle('Application was sent!')
+                setToastVariant('application')
+            }
+            setShowToast(true)
+        }
 
         if ((direction === 'right' || direction === 'super') && !isExternal && offerToSwipe.hasMatched) {
             setMatchedOffer(offerToSwipe)
@@ -365,6 +355,16 @@ function StudentSwipe() {
                     </div>
                 )}
 
+                <section className="swipe-referral-cta" aria-label={t('referrals.cta.sectionAria')}>
+                    <div>
+                        <h3 className="swipe-referral-cta-title">{t('referrals.cta.title')}</h3>
+                        <p className="swipe-referral-cta-copy">{t('referrals.cta.body')}</p>
+                    </div>
+                    <Link to="/student/referrals" className="btn btn-secondary">
+                        {t('referrals.cta.action')}
+                    </Link>
+                </section>
+
                 {hasMoreOffers ? (
                     <>
                         <div className="cards-stack">
@@ -373,7 +373,6 @@ function StudentSwipe() {
                                     key={offer.id}
                                     offer={offer}
                                     onSwipe={handleSwipe}
-                                    onSwipeStart={handleSwipeStart}
                                     onViewDetails={handleViewDetails}
                                     isTop={index === offers.slice(currentIndex, currentIndex + 2).length - 1}
                                     ref={index === offers.slice(currentIndex, currentIndex + 2).length - 1 ? topCardRef : null}
@@ -393,10 +392,7 @@ function StudentSwipe() {
                                 className="action-btn pass"
                                 onClick={() => {
                                     if (topCardRef.current) topCardRef.current.triggerSwipe('left')
-                                    else {
-                                        handleSwipeStart('left', currentOffer)
-                                        handleSwipe('left', currentOffer)
-                                    }
+                                    else handleSwipe('left')
                                 }}
                             >
                                 <X size={32} />
@@ -405,10 +401,7 @@ function StudentSwipe() {
                                 className="action-btn super-like"
                                 onClick={() => {
                                     if (topCardRef.current) topCardRef.current.triggerSwipe('super')
-                                    else {
-                                        handleSwipeStart('super', currentOffer)
-                                        handleSwipe('super', currentOffer)
-                                    }
+                                    else handleSwipe('super')
                                 }}
                             >
                                 <Star size={24} />
@@ -417,10 +410,7 @@ function StudentSwipe() {
                                 className="action-btn like"
                                 onClick={() => {
                                     if (topCardRef.current) topCardRef.current.triggerSwipe('right')
-                                    else {
-                                        handleSwipeStart('right', currentOffer)
-                                        handleSwipe('right', currentOffer)
-                                    }
+                                    else handleSwipe('right')
                                 }}
                             >
                                 <Heart size={32} />
@@ -449,7 +439,6 @@ function StudentSwipe() {
             {/* Application Toast */}
             {showToast && (
                 <ApplicationToast
-                    key={toastKey}
                     title={toastTitle}
                     variant={toastVariant}
                     isExternal={toastIsExternal}

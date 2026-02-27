@@ -13,6 +13,8 @@
     "nav": {
         "discover": "Discover",
         "matches": "Matches",
+        "personalizedPlan": "Personalized Plan",
+        "referrals": "Referrals",
         "profile": "Profile",
         "newCandidates": "New Candidates",
         "candidates": "Candidates",
@@ -1122,6 +1124,60 @@
             "loadFailed": "Unable to load payment history.",
             "previewFailed": "Unable to preview proof.",
             "auditLoadFailed": "Unable to load payment history timeline."
+        }
+    },
+    "referrals": {
+        "title": "Refer friends",
+        "subtitle": "Share your referral code and invite link to unlock rewards.",
+        "labels": {
+            "referralCode": "Your referral code",
+            "inviteLink": "Your invite link",
+            "share": "Share with friends",
+            "loadingCode": "Generating referral code...",
+            "loadingLink": "Invite link will appear once your code is ready."
+        },
+        "actions": {
+            "copyCode": "Copy code",
+            "copyLink": "Copy link",
+            "shareWhatsApp": "Share on WhatsApp",
+            "shareEmail": "Share by Email",
+            "increaseInvite": "+ Invite",
+            "decreaseInvite": "- Invite"
+        },
+        "share": {
+            "whatsappTemplate": "Join me on MatchOp with code {{code}}. Sign up here: {{link}}",
+            "emailSubject": "Join me on MatchOp",
+            "emailBody": "Use my referral code {{code}} to join MatchOp.\n\nSign up here: {{link}}"
+        },
+        "rewards": {
+            "title": "Rewards",
+            "body": "Invite 3 friends and unlock 7 days Premium."
+        },
+        "progress": {
+            "current": "{{invites}}/{{goal}} invites",
+            "hint": "Demo progress is saved locally on this device.",
+            "demoBadge": "Demo mode",
+            "neverUpdated": "Not updated yet",
+            "lastUpdated": "Last updated: {{timestamp}}",
+            "stepsLabel": "Referral lifecycle steps",
+            "steps": {
+                "inviteSent": "Sent invite",
+                "signedUp": "Signed up",
+                "verified": "Verified"
+            }
+        },
+        "toast": {
+            "copyCodeSuccess": "Referral code copied.",
+            "copyLinkSuccess": "Invite link copied.",
+            "copyFailed": "Unable to copy right now. Please try again."
+        },
+        "signupAttribution": "Referral code detected: {{ref}}",
+        "signupApplied": "Referral code {{ref}} was applied to your signup.",
+        "cta": {
+            "sectionAria": "Referral invite banner",
+            "title": "Invite and unlock rewards",
+            "body": "Share your code with friends and track referral demo progress.",
+            "action": "Open referrals"
         }
     },
     "companyProfile": {

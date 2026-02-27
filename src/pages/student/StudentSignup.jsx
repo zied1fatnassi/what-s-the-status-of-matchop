@@ -1,31 +1,27 @@
-import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
+import { useNavigate, Link, useSearchParams } from 'react-router-dom'
 import { Mail, Lock, User, ArrowRight, GraduationCap, Loader2, AlertCircle, RefreshCw } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../context/AuthContext'
-import { validatePassword, validateEmail, TUNISIAN_UNIVERSITIES } from '../../lib/validation'
+import { track } from '../../lib/analytics'
+import { validatePassword, validateEmail, validateName, getAuthErrorMessage, TUNISIAN_UNIVERSITIES } from '../../lib/validation'
 import PasswordInput from '../../components/forms/PasswordInput'
 import './StudentSignup.css'
 import './StudentAuthLayout.css'
+
+const REFERRAL_ATTRIBUTION_KEY = 'matchop_referral_attribution'
+const REFERRAL_QUERY_PATTERN = /^MOP-[A-Z0-9]{8}$/
 
 /**
  * Student Signup Page
  * Secure registration using Supabase Auth with email verification
  */
-const AUTH_ERROR_TRANSLATION_MAP = {
-    invalid_credentials: 'auth.studentSignup.errors.invalidCredentials',
-    invalid_login_credentials: 'auth.studentSignup.errors.invalidCredentials',
-    email_not_confirmed: 'auth.studentSignup.errors.emailNotConfirmed',
-    user_already_exists: 'auth.studentSignup.errors.userAlreadyExists',
-    weak_password: 'auth.studentSignup.errors.weakPassword',
-    over_request_rate_limit: 'auth.studentSignup.errors.tooManyAttempts',
-    signup_disabled: 'auth.studentSignup.errors.signupDisabled',
-}
-
 function StudentSignup() {
     const navigate = useNavigate()
     const { t } = useTranslation()
+    const [searchParams] = useSearchParams()
     const { signUp, resendVerificationEmail } = useAuth()
+    const trackedRef = useRef(null)
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -34,38 +30,26 @@ function StudentSignup() {
         major: '',
         graduationYear: '',
     })
+    const [referralAttribution, setReferralAttribution] = useState(null)
     const [error, setError] = useState('')
     const [isLoading, setIsLoading] = useState(false)
     const [showEmailVerification, setShowEmailVerification] = useState(false)
+    const [referralAppliedNotice, setReferralAppliedNotice] = useState('')
     const [passwordStrength, setPasswordStrength] = useState({ strength: 0, errors: [] })
     const [resendStatus, setResendStatus] = useState('')
     const [resendCooldown, setResendCooldown] = useState(0)
 
-    const getLocalizedPasswordError = (passwordError) => {
-        if (!passwordError) return t('auth.studentSignup.passwordStrengthPlaceholder')
+    useEffect(() => {
+        const maybeRef = (searchParams.get('ref') || '').trim().toUpperCase()
+        if (!REFERRAL_QUERY_PATTERN.test(maybeRef)) return
+        if (trackedRef.current === maybeRef) return
 
-        const normalized = String(passwordError).toLowerCase()
-
-        if (normalized.includes('password is required')) return t('auth.studentSignup.errors.passwordRequired')
-        if (normalized.includes('at least 8 characters')) return t('auth.studentSignup.errors.passwordMinLength')
-        if (normalized.includes('uppercase letter')) return t('auth.studentSignup.errors.passwordUppercase')
-        if (normalized.includes('lowercase letter')) return t('auth.studentSignup.errors.passwordLowercase')
-        if (normalized.includes('at least one number')) return t('auth.studentSignup.errors.passwordNumber')
-        if (normalized.includes('special character')) return t('auth.studentSignup.errors.passwordSpecial')
-
-        return t('auth.studentSignup.passwordStrengthPlaceholder')
-    }
-
-    const getLocalizedAuthError = (authError) => {
-        const errorCode = String(authError?.code || authError?.message || '').toLowerCase()
-        const matchedEntry = Object.entries(AUTH_ERROR_TRANSLATION_MAP).find(([code]) =>
-            errorCode.includes(code)
-        )
-
-        if (matchedEntry) return t(matchedEntry[1])
-
-        return t('auth.studentSignup.errors.generic')
-    }
+        trackedRef.current = maybeRef
+        const captured = { ref: maybeRef, capturedAt: new Date().toISOString() }
+        setReferralAttribution(captured)
+        localStorage.setItem(REFERRAL_ATTRIBUTION_KEY, JSON.stringify(captured))
+        track('referral_signup_attributed', { ref: maybeRef })
+    }, [searchParams])
 
     const handleChange = (e) => {
         const { name, value } = e.target
@@ -82,41 +66,26 @@ function StudentSignup() {
         e.preventDefault()
         setError('')
 
-        const trimmedName = formData.name.trim()
-        if (!trimmedName) {
-            setError(t('auth.studentSignup.errors.nameRequired'))
-            return
-        }
-
-        if (trimmedName.length < 2) {
-            setError(t('auth.studentSignup.errors.nameMinLength'))
-            return
-        }
-
-        if (trimmedName.length > 100) {
-            setError(t('auth.studentSignup.errors.nameMaxLength'))
-            return
-        }
-
-        if (!formData.email.trim()) {
-            setError(t('auth.studentSignup.errors.emailRequired'))
+        const nameValidation = validateName(formData.name)
+        if (!nameValidation.valid) {
+            setError(nameValidation.error)
             return
         }
 
         const emailValidation = validateEmail(formData.email)
         if (!emailValidation.valid) {
-            setError(t('auth.studentSignup.errors.invalidEmail'))
+            setError(emailValidation.error)
             return
         }
 
         const passwordValidation = validatePassword(formData.password)
         if (!passwordValidation.valid) {
-            setError(getLocalizedPasswordError(passwordValidation.errors[0]))
+            setError(passwordValidation.errors[0])
             return
         }
 
-        if (!formData.university || !formData.major.trim() || !formData.graduationYear) {
-            setError(t('auth.studentSignup.errors.completeAllFields'))
+        if (!formData.university || !formData.major || !formData.graduationYear) {
+            setError('Please complete all fields (University, Major, Graduation Year)')
             return
         }
 
@@ -131,13 +100,18 @@ function StudentSignup() {
                     name: formData.name,
                     university: formData.university,
                     major: formData.major,
-                    graduationYear: formData.graduationYear
+                    graduationYear: formData.graduationYear,
+                    referralCode: referralAttribution?.ref || undefined
                 }
             )
 
             if (signUpError) {
-                setError(getLocalizedAuthError(signUpError))
+                setError(getAuthErrorMessage(signUpError))
                 return
+            }
+
+            if (referralAttribution?.ref) {
+                setReferralAppliedNotice(t('referrals.signupApplied', { ref: referralAttribution.ref }))
             }
 
             if (needsEmailVerification) {
@@ -146,7 +120,7 @@ function StudentSignup() {
                 navigate('/student/profile')
             }
         } catch (err) {
-            setError(getLocalizedAuthError(err))
+            setError(getAuthErrorMessage(err))
         } finally {
             setIsLoading(false)
         }
@@ -184,25 +158,28 @@ function StudentSignup() {
                     <div className="student-auth-verify-icon">
                         <Mail size={64} />
                     </div>
-                    <h2>{t('auth.studentSignup.verification.title')}</h2>
+                    <h2>Check Your Email</h2>
                     <p className="student-auth-verify-copy">
-                        {t('auth.studentSignup.verification.sentPrefix')} <strong>{formData.email}</strong>.{' '}
-                        {t('auth.studentSignup.verification.sentSuffix')}
+                        We've sent a verification link to <strong>{formData.email}</strong>.
+                        Click the link to activate your account.
                     </p>
+                    {referralAppliedNotice && (
+                        <p className="student-signup-referral-applied">
+                            {referralAppliedNotice}
+                        </p>
+                    )}
                     <div className="student-auth-verify-hints">
-                        <p>{t('auth.studentSignup.verification.spamHint')}</p>
-                        <p>{t('auth.studentSignup.verification.arrivalHint')}</p>
+                        <p>Check your spam/junk folder, the email may land there.</p>
+                        <p>It can take up to 2 minutes to arrive.</p>
                         <p>
-                            {t('auth.studentSignup.verification.preauthorizedHint')}{' '}
-                            {t('auth.studentSignup.verification.setupHintPrefix')}{' '}
-                            <code>database/auto_confirm_emails.sql</code>{' '}
-                            {t('auth.studentSignup.verification.setupHintMiddle')}{' '}
-                            <code>docs/EMAIL_SETUP.md</code>.
+                            Still nothing? Supabase default email only works for pre-authorized addresses.
+                            Run <code>database/auto_confirm_emails.sql</code> in Supabase SQL Editor,
+                            or configure Custom SMTP. See <code>docs/EMAIL_SETUP.md</code>.
                         </p>
                     </div>
                     <div className="student-auth-verify-actions">
                         <Link to="/student/login" className="btn btn-primary student-auth-submit">
-                            {t('auth.studentSignup.verification.goToLogin')}
+                            Go to Login
                         </Link>
                         <button
                             onClick={handleResendEmail}
@@ -210,18 +187,18 @@ function StudentSignup() {
                             disabled={resendCooldown > 0 || resendStatus === 'sending'}
                         >
                             {resendStatus === 'sending' ? (
-                                <><Loader2 size={16} className="spinner" /> {t('auth.studentSignup.verification.resendSending')}</>
+                                <><Loader2 size={16} className="spinner" /> Sending...</>
                             ) : resendCooldown > 0 ? (
-                                <>{t('auth.studentSignup.verification.resendIn', { seconds: resendCooldown })}</>
+                                <>Resend in {resendCooldown}s</>
                             ) : (
-                                <><RefreshCw size={16} /> {t('auth.studentSignup.verification.resendButton')}</>
+                                <><RefreshCw size={16} /> Resend Verification Email</>
                             )}
                         </button>
                         {resendStatus === 'sent' && (
-                            <p className="student-auth-feedback success">{t('auth.studentSignup.verification.resendSuccess')}</p>
+                            <p className="student-auth-feedback success">Verification email resent.</p>
                         )}
                         {resendStatus === 'error' && (
-                            <p className="student-auth-feedback error">{t('auth.studentSignup.verification.resendError')}</p>
+                            <p className="student-auth-feedback error">Failed to resend. Please try again later.</p>
                         )}
                     </div>
                 </div>
@@ -236,11 +213,17 @@ function StudentSignup() {
                     <div className="student-auth-icon-wrapper">
                         <GraduationCap size={40} className="text-white" />
                     </div>
-                    <h1>{t('auth.studentSignup.title')}</h1>
-                    <p>{t('auth.studentSignup.subtitle')}</p>
+                    <h1>Join MatchOp</h1>
+                    <p>Start your career journey today</p>
                 </div>
 
                 <div className="student-auth-form-wrapper">
+                    {referralAttribution?.ref && (
+                        <div className="student-signup-referral-note">
+                            {t('referrals.signupAttribution', { ref: referralAttribution.ref })}
+                        </div>
+                    )}
+
                     {error && (
                         <div className="auth-error mb-4">
                             <AlertCircle size={18} />
@@ -250,7 +233,7 @@ function StudentSignup() {
 
                     <form onSubmit={handleSubmit} className="login-form">
                         <div className="student-auth-group">
-                            <label htmlFor="student-signup-name">{t('auth.studentSignup.nameLabel')}</label>
+                            <label htmlFor="student-signup-name">Full Name</label>
                             <div className="student-auth-input-wrapper">
                                 <User size={20} className="student-auth-input-icon" />
                                 <input
@@ -258,7 +241,7 @@ function StudentSignup() {
                                     type="text"
                                     name="name"
                                     className="input"
-                                    placeholder={t('auth.studentSignup.namePlaceholder')}
+                                    placeholder="e.g. Ahmed Ben Ali"
                                     value={formData.name}
                                     onChange={handleChange}
                                     disabled={isLoading}
@@ -269,7 +252,7 @@ function StudentSignup() {
                         </div>
 
                         <div className="student-auth-group">
-                            <label htmlFor="student-signup-email">{t('auth.studentSignup.emailLabel')}</label>
+                            <label htmlFor="student-signup-email">Email Address</label>
                             <div className="student-auth-input-wrapper">
                                 <Mail size={20} className="student-auth-input-icon" />
                                 <input
@@ -277,7 +260,7 @@ function StudentSignup() {
                                     type="email"
                                     name="email"
                                     className="input"
-                                    placeholder={t('auth.studentSignup.emailPlaceholder')}
+                                    placeholder="student@university.tn"
                                     value={formData.email}
                                     onChange={handleChange}
                                     disabled={isLoading}
@@ -288,13 +271,13 @@ function StudentSignup() {
                         </div>
 
                         <div className="student-auth-group">
-                            <label htmlFor="student-signup-password">{t('auth.studentSignup.passwordLabel')}</label>
+                            <label htmlFor="student-signup-password">Password</label>
                             <div className="student-auth-input-wrapper">
                                 <Lock size={20} className="student-auth-input-icon" />
                                 <PasswordInput
                                     id="student-signup-password"
                                     name="password"
-                                    placeholder={t('auth.studentSignup.passwordPlaceholder')}
+                                    placeholder="Create a strong password"
                                     value={formData.password}
                                     onChange={handleChange}
                                     disabled={isLoading}
@@ -318,14 +301,14 @@ function StudentSignup() {
                                         />
                                     </div>
                                     <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
-                                        {getLocalizedPasswordError(passwordStrength.errors[0])}
+                                        {passwordStrength.errors[0] || 'Password strength'}
                                     </p>
                                 </div>
                             )}
                         </div>
 
                         <div className="student-auth-group">
-                            <label htmlFor="student-signup-university">{t('auth.studentSignup.universityLabel')}</label>
+                            <label htmlFor="student-signup-university">University</label>
                             <div className="student-auth-input-wrapper">
                                 <GraduationCap size={20} className="student-auth-input-icon" />
                                 <select
@@ -337,7 +320,7 @@ function StudentSignup() {
                                     disabled={isLoading}
                                     required
                                 >
-                                    <option value="">{t('auth.studentSignup.universityPlaceholder')}</option>
+                                    <option value="">Select University</option>
                                     {TUNISIAN_UNIVERSITIES.map((uni) => (
                                         <option key={uni} value={uni}>{uni}</option>
                                     ))}
@@ -348,26 +331,26 @@ function StudentSignup() {
                         <div className="student-auth-group">
                             <div className="student-auth-split-fields">
                                 <div>
-                                    <label htmlFor="student-signup-major">{t('auth.studentSignup.majorLabel')}</label>
+                                    <label htmlFor="student-signup-major">Major</label>
                                     <input
                                         id="student-signup-major"
                                         type="text"
                                         name="major"
                                         className="input"
-                                        placeholder={t('auth.studentSignup.majorPlaceholder')}
+                                        placeholder="e.g. CS"
                                         value={formData.major}
                                         onChange={handleChange}
                                         required
                                     />
                                 </div>
                                 <div>
-                                    <label htmlFor="student-signup-graduation-year">{t('auth.studentSignup.graduationYearLabel')}</label>
+                                    <label htmlFor="student-signup-graduation-year">Graduation Year</label>
                                     <input
                                         id="student-signup-graduation-year"
                                         type="number"
                                         name="graduationYear"
                                         className="input"
-                                        placeholder={t('auth.studentSignup.graduationYearPlaceholder')}
+                                        placeholder="2026"
                                         value={formData.graduationYear}
                                         onChange={handleChange}
                                         required
@@ -386,26 +369,20 @@ function StudentSignup() {
                             {isLoading ? (
                                 <>
                                     <Loader2 size={18} className="animate-spin mr-2" />
-                                    {t('auth.studentSignup.submitting')}
+                                    Creating Account...
                                 </>
                             ) : (
                                 <>
-                                    {t('auth.studentSignup.submit')}
+                                    Create Account
                                     <ArrowRight size={20} />
                                 </>
                             )}
                         </button>
 
                         <div className="student-auth-footer">
-                            <p>
-                                {t('auth.studentSignup.alreadyHaveAccount')}{' '}
-                                <Link to="/student/login" className="text-primary font-bold">{t('auth.studentSignup.signIn')}</Link>
-                            </p>
+                            <p>Already have an account? <Link to="/student/login" className="text-primary font-bold">Sign in</Link></p>
                             <p className="mt-2 text-sm text-muted">
-                                {t('auth.termsAgree')}{' '}
-                                <Link to="/legal/terms" className="text-primary underline">{t('auth.termsOfService')}</Link>{' '}
-                                {t('auth.and')}{' '}
-                                <Link to="/legal/privacy" className="text-primary underline">{t('auth.privacyPolicy')}</Link>.
+                                By signing up, you agree to our <Link to="/legal/terms" className="text-primary underline">Terms</Link> and <Link to="/legal/privacy" className="text-primary underline">Privacy Policy</Link>.
                             </p>
                         </div>
                     </form>
