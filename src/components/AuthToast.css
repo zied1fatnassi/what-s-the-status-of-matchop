@@ -52,6 +52,7 @@
 
 .auth-toast-success .auth-toast-icon {
     color: #10b981;
+    transform: translateY(1px);
 }
 
 .auth-toast-error {
@@ -76,11 +77,17 @@
     flex-shrink: 0;
 }
 
+.auth-toast-content {
+    display: flex;
+    align-items: center;
+}
+
 .auth-toast-content p {
     margin: 0;
     font-size: var(--font-size-base);
+    line-height: 1.25;
     font-weight: 500;
-    color: white;
+    color: var(--text-primary);
 }
 
 .auth-toast-close {
@@ -90,15 +97,24 @@
     justify-content: center;
     width: 28px;
     height: 28px;
+    border: none;
+    background: transparent;
     border-radius: var(--radius-full);
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--text-secondary);
     transition: all var(--transition-fast);
     margin-left: var(--space-2);
+    cursor: pointer;
+    appearance: none;
 }
 
 .auth-toast-close:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
+    background: color-mix(in srgb, var(--primary) 12%, transparent);
+    color: var(--text-primary);
+}
+
+.auth-toast-close:focus-visible {
+    outline: 2px solid color-mix(in srgb, var(--primary) 45%, transparent);
+    outline-offset: 1px;
 }
 
 @media (min-width: 768px) {

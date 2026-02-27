@@ -47,6 +47,7 @@ const CompanySignup = lazy(() => import('./pages/company/CompanySignup'))
 const CompanyLogin = lazy(() => import('./pages/company/CompanyLogin'))
 const CompanyProfile = lazy(() => import('./pages/company/CompanyProfile'))
 const PostOffer = lazy(() => import('./pages/company/PostOffer'))
+const CompanyOffers = lazy(() => import('./pages/company/CompanyOffers'))
 const ViewCandidates = lazy(() => import('./pages/company/ViewCandidates'))
 const CompanyIntros = lazy(() => import('./pages/company/CompanyIntros'))
 const CompanyMatches = lazy(() => import('./pages/company/CompanyMatches'))
@@ -276,6 +277,7 @@ function App() {
               <Route path="company/login" element={<PublicRoute><CompanyLogin /></PublicRoute>} />
 
               <Route path="company/profile" element={<ProtectedRoute requiredType="company"><CompanyProfile /></ProtectedRoute>} />
+              <Route path="company/offers" element={<ProtectedRoute requiredType="company"><CompanyOffers /></ProtectedRoute>} />
               <Route path="company/post-offer" element={<ProtectedRoute requiredType="company"><PostOffer /></ProtectedRoute>} />
               <Route path="company/candidates" element={<ProtectedRoute requiredType="company"><ViewCandidates /></ProtectedRoute>} />
               <Route path="company/intros" element={<ProtectedRoute requiredType="company"><CompanyIntros /></ProtectedRoute>} />
