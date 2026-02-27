@@ -82,10 +82,16 @@ function CompanyMatches() {
                         <h1>{t('companyWorkflow.matches.title')}</h1>
                         <p>{t('companyWorkflow.matches.subtitle')}</p>
                     </div>
-                    <button className="btn btn-secondary btn-sm" onClick={refresh}>
-                        <RefreshCw size={16} />
-                        {t('companyWorkflow.matches.actions.refresh')}
-                    </button>
+                    <div className="company-matches-header-actions">
+                        <Link to="/company/archived" className="btn btn-secondary btn-sm">
+                            <Archive size={16} />
+                            {t('nav.archived')}
+                        </Link>
+                        <button className="btn btn-secondary btn-sm" onClick={refresh}>
+                            <RefreshCw size={16} />
+                            {t('companyWorkflow.matches.actions.refresh')}
+                        </button>
+                    </div>
                 </div>
 
                 {activeMatches.length === 0 ? (

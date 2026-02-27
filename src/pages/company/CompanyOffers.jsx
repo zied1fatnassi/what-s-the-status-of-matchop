@@ -215,7 +215,7 @@ function CompanyOffers() {
                             <RefreshCw size={16} />
                             {t('companyOffers.actions.refresh')}
                         </button>
-                        <Link to="/company/candidates" className="btn btn-secondary">
+                        <Link to="/company/archived" className="btn btn-secondary">
                             <FolderArchive size={16} />
                             {t('nav.archived')}
                         </Link>

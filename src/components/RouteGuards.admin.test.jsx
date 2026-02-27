@@ -24,7 +24,7 @@ function AdminRouteHarness() {
                     )}
                 />
                 <Route path="/student/swipe" element={<div>Student Swipe Page</div>} />
-                <Route path="/company/candidates" element={<div>Company Candidates Page</div>} />
+                <Route path="/company/intros" element={<div>Company Candidates Page</div>} />
                 <Route path="/student/login" element={<div>Student Login Page</div>} />
             </Routes>
         </MemoryRouter>

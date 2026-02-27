@@ -5,7 +5,7 @@ function CompanyChat() {
         <ConversationHubPage
             role="company"
             baseRoute="/company/chat"
-            backTo="/company/candidates"
+            backTo="/company/matches"
         />
     )
 }

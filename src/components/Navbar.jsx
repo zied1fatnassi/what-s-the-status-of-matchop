@@ -73,7 +73,9 @@ function Navbar({ isLanding = false }) {
         { to: '/company/signup', icon: <Briefcase size={18} />, label: t('landing.ctaCompany'), className: 'navbar-link--primary' },
     ]
     const mobileLinks = hasSession ? links : guestMobileLinks
-    const logoTarget = hasSession ? '/discovery' : '/'
+    const logoTarget = hasSession
+        ? (isCompany ? '/company/intros' : isStudent ? '/student/swipe' : '/discovery')
+        : '/'
 
     const languages = [
         { code: 'en', label: 'EN', fullLabel: 'English' },
