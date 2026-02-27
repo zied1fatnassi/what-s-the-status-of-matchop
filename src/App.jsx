@@ -306,6 +306,7 @@ function App() {
               <Route path="company/intros" element={<ProtectedRoute requiredType="company"><CompanyIntros /></ProtectedRoute>} />
               <Route path="company/matches" element={<ProtectedRoute requiredType="company"><CompanyMatches /></ProtectedRoute>} />
               <Route path="company/archived" element={<ProtectedRoute requiredType="company"><ViewCandidates /></ProtectedRoute>} />
+              <Route path="company/chat" element={<ProtectedRoute requiredType="company"><Navigate to="/company/matches" replace /></ProtectedRoute>} />
               <Route path="company/chat/:matchId" element={<ProtectedRoute requiredType="company"><CompanyChat /></ProtectedRoute>} />
               <Route path="company/notifications" element={<ProtectedRoute requiredType="company"><NotificationCenter scope="company" /></ProtectedRoute>} />
 
