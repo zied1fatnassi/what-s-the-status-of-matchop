@@ -250,12 +250,31 @@ function ResetPassword() {
 
                     <form onSubmit={handleSubmit} className="auth-form">
                         <div className="form-step">
+                            <input
+                                type="email"
+                                name="username"
+                                value={resetEmail || ''}
+                                autoComplete="username"
+                                readOnly
+                                tabIndex={-1}
+                                aria-hidden="true"
+                                style={{
+                                    position: 'absolute',
+                                    width: '1px',
+                                    height: '1px',
+                                    opacity: 0,
+                                    pointerEvents: 'none'
+                                }}
+                            />
+
                             <div className="input-group">
-                                <label className="input-label">{tr('New Password', 'Nouveau mot de passe')}</label>
+                                <label className="input-label" htmlFor="reset-password-new">{tr('New Password', 'Nouveau mot de passe')}</label>
                                 <div className="input-with-icon">
                                     <Lock size={20} className="input-icon" />
                                     <input
+                                        id="reset-password-new"
                                         type={showPassword ? 'text' : 'password'}
+                                        name="newPassword"
                                         className="input"
                                         placeholder={tr('Enter new password', 'Entrez un nouveau mot de passe')}
                                         value={password}
@@ -297,11 +316,13 @@ function ResetPassword() {
                             </div>
 
                             <div className="input-group">
-                                <label className="input-label">{tr('Confirm Password', 'Confirmer le mot de passe')}</label>
+                                <label className="input-label" htmlFor="reset-password-confirm">{tr('Confirm Password', 'Confirmer le mot de passe')}</label>
                                 <div className="input-with-icon">
                                     <Lock size={20} className="input-icon" />
                                     <input
+                                        id="reset-password-confirm"
                                         type={showPassword ? 'text' : 'password'}
+                                        name="confirmPassword"
                                         className="input"
                                         placeholder={tr('Confirm new password', 'Confirmez le nouveau mot de passe')}
                                         value={confirmPassword}

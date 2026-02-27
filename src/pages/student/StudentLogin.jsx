@@ -112,10 +112,11 @@ function StudentLogin() {
 
                     <form onSubmit={handleSubmit} className="login-form">
                         <div className="student-auth-group">
-                            <label>{t('auth.studentLogin.emailLabel')}</label>
+                            <label htmlFor="student-login-email">{t('auth.studentLogin.emailLabel')}</label>
                             <div className="student-auth-input-wrapper">
                                 <Mail size={20} className="student-auth-input-icon" />
                                 <input
+                                    id="student-login-email"
                                     type="email"
                                     name="email"
                                     className="input"
@@ -124,16 +125,17 @@ function StudentLogin() {
                                     onChange={handleChange}
                                     disabled={isLoading}
                                     required
-                                    autoComplete="email"
+                                    autoComplete="username"
                                 />
                             </div>
                         </div>
 
                         <div className="student-auth-group">
-                            <label>{t('auth.studentLogin.passwordLabel')}</label>
+                            <label htmlFor="student-login-password">{t('auth.studentLogin.passwordLabel')}</label>
                             <div className="student-auth-input-wrapper">
                                 <Lock size={20} className="student-auth-input-icon" />
                                 <PasswordInput
+                                    id="student-login-password"
                                     name="password"
                                     placeholder={t('auth.studentLogin.passwordPlaceholder')}
                                     value={formData.password}

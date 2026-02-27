@@ -351,10 +351,11 @@ function CompanySignup() {
                         {step === 1 && (
                             <div className="form-step animate-fade-in">
                                 <div className="input-group">
-                                    <label className="input-label">{t('auth.companySignup.companyNameLabel')}</label>
+                                    <label className="input-label" htmlFor="company-signup-company-name">{t('auth.companySignup.companyNameLabel')}</label>
                                     <div className="input-with-icon">
                                         <Building2 size={20} className="input-icon" />
                                         <input
+                                            id="company-signup-company-name"
                                             type="text"
                                             name="companyName"
                                             className="input"
@@ -369,10 +370,11 @@ function CompanySignup() {
                                 </div>
 
                                 <div className="input-group">
-                                    <label className="input-label">{t('auth.companySignup.workEmailLabel')}</label>
+                                    <label className="input-label" htmlFor="company-signup-email">{t('auth.companySignup.workEmailLabel')}</label>
                                     <div className="input-with-icon">
                                         <Mail size={20} className="input-icon" />
                                         <input
+                                            id="company-signup-email"
                                             type="email"
                                             name="email"
                                             className="input"
@@ -387,10 +389,11 @@ function CompanySignup() {
                                 </div>
 
                                 <div className="input-group">
-                                    <label className="input-label">{t('auth.companySignup.passwordLabel')}</label>
+                                    <label className="input-label" htmlFor="company-signup-password">{t('auth.companySignup.passwordLabel')}</label>
                                     <div className="input-with-icon">
                                         <Lock size={20} className="input-icon" />
                                         <PasswordInput
+                                            id="company-signup-password"
                                             name="password"
                                             placeholder={t('auth.companySignup.passwordPlaceholder')}
                                             value={formData.password}
@@ -429,10 +432,11 @@ function CompanySignup() {
                         {step === 2 && (
                             <div className="form-step animate-fade-in">
                                 <div className="input-group">
-                                    <label className="input-label">{t('auth.companySignup.websiteOptionalLabel')}</label>
+                                    <label className="input-label" htmlFor="company-signup-website">{t('auth.companySignup.websiteOptionalLabel')}</label>
                                     <div className="input-with-icon">
                                         <Globe size={20} className="input-icon" />
                                         <input
+                                            id="company-signup-website"
                                             type="url"
                                             name="website"
                                             className="input"
@@ -445,8 +449,9 @@ function CompanySignup() {
                                 </div>
 
                                 <div className="input-group">
-                                    <label className="input-label">{t('auth.companySignup.industryLabel')}</label>
+                                    <label className="input-label" htmlFor="company-signup-industry">{t('auth.companySignup.industryLabel')}</label>
                                     <select
+                                        id="company-signup-industry"
                                         name="industry"
                                         className="input"
                                         value={formData.industry}
@@ -464,8 +469,9 @@ function CompanySignup() {
                                 </div>
 
                                 <div className="input-group">
-                                    <label className="input-label">{t('auth.companySignup.sizeLabel')}</label>
+                                    <label className="input-label" htmlFor="company-signup-size">{t('auth.companySignup.sizeLabel')}</label>
                                     <select
+                                        id="company-signup-size"
                                         name="size"
                                         className="input"
                                         value={formData.size}

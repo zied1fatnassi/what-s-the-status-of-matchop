@@ -172,11 +172,13 @@ function ForgotPassword() {
                     <form onSubmit={handleSubmit} className="auth-form">
                         <div className="form-step">
                             <div className="input-group">
-                                <label className="input-label">{tr('Email Address', 'Adresse email')}</label>
+                                <label className="input-label" htmlFor="forgot-password-email">{tr('Email Address', 'Adresse email')}</label>
                                 <div className="input-with-icon">
                                     <Mail size={20} className="input-icon" />
                                     <input
+                                        id="forgot-password-email"
                                         type="email"
+                                        name="email"
                                         className="input"
                                         placeholder={tr('you@example.com', 'vous@exemple.com')}
                                         value={email}

@@ -112,20 +112,20 @@ const Contact = () => {
                                 </div>
                             )}
                             <div style={{ marginBottom: '1.5rem' }}>
-                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>{t('contactPage.form.nameLabel')}</label>
-                                <input type="text" className="input" placeholder={t('contactPage.form.namePlaceholder')} value={name} onChange={(e) => setName(e.target.value)} />
+                                <label htmlFor="contact-name" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>{t('contactPage.form.nameLabel')}</label>
+                                <input id="contact-name" name="name" type="text" className="input" placeholder={t('contactPage.form.namePlaceholder')} value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" />
                             </div>
                             <div style={{ marginBottom: '1.5rem' }}>
-                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>{t('contactPage.form.emailLabel')}</label>
-                                <input type="email" className="input" placeholder={t('contactPage.form.emailPlaceholder')} value={email} onChange={(e) => setEmail(e.target.value)} />
+                                <label htmlFor="contact-email" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>{t('contactPage.form.emailLabel')}</label>
+                                <input id="contact-email" name="email" type="email" className="input" placeholder={t('contactPage.form.emailPlaceholder')} value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" />
                             </div>
                             <div style={{ marginBottom: '1.5rem' }}>
-                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>{t('contactPage.form.subjectLabel')}</label>
-                                <input type="text" className="input" placeholder={t('contactPage.form.subjectPlaceholder')} value={subject} onChange={(e) => setSubject(e.target.value)} />
+                                <label htmlFor="contact-subject" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>{t('contactPage.form.subjectLabel')}</label>
+                                <input id="contact-subject" name="subject" type="text" className="input" placeholder={t('contactPage.form.subjectPlaceholder')} value={subject} onChange={(e) => setSubject(e.target.value)} autoComplete="off" />
                             </div>
                             <div style={{ marginBottom: '2rem' }}>
-                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>{t('contactPage.form.messageLabel')}</label>
-                                <textarea className="input" rows="5" placeholder={t('contactPage.form.messagePlaceholder')} value={message} onChange={(e) => setMessage(e.target.value)}></textarea>
+                                <label htmlFor="contact-message" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>{t('contactPage.form.messageLabel')}</label>
+                                <textarea id="contact-message" name="message" className="input" rows="5" placeholder={t('contactPage.form.messagePlaceholder')} value={message} onChange={(e) => setMessage(e.target.value)} autoComplete="off"></textarea>
                             </div>
                             <button className="btn btn-primary" style={{ width: '100%' }} type="submit" disabled={isSending}>
                                 {isSending ? t('contactPage.form.sending') : t('contactPage.form.sendMessage')} {!isSending && <Send size={18} />}

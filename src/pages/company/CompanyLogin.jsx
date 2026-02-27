@@ -126,10 +126,11 @@ function CompanyLogin() {
                     <form onSubmit={handleSubmit} className="auth-form">
                         <div className="form-step">
                             <div className="input-group">
-                                <label className="input-label">{t('auth.companyLogin.emailLabel')}</label>
+                                <label className="input-label" htmlFor="company-login-email">{t('auth.companyLogin.emailLabel')}</label>
                                 <div className="input-with-icon">
                                     <Mail size={20} className="input-icon" />
                                     <input
+                                        id="company-login-email"
                                         type="email"
                                         name="email"
                                         className="input"
@@ -138,16 +139,17 @@ function CompanyLogin() {
                                         onChange={handleChange}
                                         disabled={isLoading}
                                         required
-                                        autoComplete="email"
+                                        autoComplete="username"
                                     />
                                 </div>
                             </div>
 
                             <div className="input-group">
-                                <label className="input-label">{t('auth.companyLogin.passwordLabel')}</label>
+                                <label className="input-label" htmlFor="company-login-password">{t('auth.companyLogin.passwordLabel')}</label>
                                 <div className="input-with-icon">
                                     <Lock size={20} className="input-icon" />
                                     <PasswordInput
+                                        id="company-login-password"
                                         name="password"
                                         placeholder={t('auth.companyLogin.passwordPlaceholder')}
                                         value={formData.password}
