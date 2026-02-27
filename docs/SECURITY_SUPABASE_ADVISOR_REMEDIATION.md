@@ -28,6 +28,38 @@ PostGIS is currently used by live schema/application logic (for example: `locati
 
 In some managed projects, extension ownership is not the migration role. In that case, extension relocation can fail safely and requires Supabase support intervention.
 
+## 2026-02-27 exposure hardening pass (migration 004)
+
+Migration applied:
+
+- `supabase/migrations/20260227220400_004_harden_postgis_public_exposure.sql`
+
+SQL diagnostics captured during apply:
+
+- `PRECHECK spatial_ref_sys grants: <none>`
+- `PRECHECK spatial_ref_sys RLS state: rowsecurity=f, force_rls=f`
+- `PRECHECK app.settings.schemas: <NULL>`
+- `PRECHECK anon/auth privileged memberships: <none>`
+- `POSTCHECK spatial_ref_sys grants: <none>`
+
+Observed behavior during migration:
+
+- `REVOKE` commands on PostGIS metadata relations emitted `no privileges could be revoked` warnings.
+- This indicates the migration role cannot revoke the effective access path currently allowing anon reads.
+
+HTTP probe evidence:
+
+- Before migration 004:
+  - `GET /rest/v1/spatial_ref_sys?select=srid&limit=1` (anon): `200`, body `[{\"srid\":2000}]`
+- After migration 004:
+  - `GET /rest/v1/spatial_ref_sys?select=srid&limit=1` (anon): `200`, body `[{\"srid\":2000}]`
+  - `GET /rest/v1/geography_columns?...` (anon): `200`, body `[]`
+
+Conclusion:
+
+- Exposure for `public.spatial_ref_sys` remains because extension-owned access could not be changed by the current role.
+- Full remediation of advisor items A/B still requires privileged intervention on managed extension objects (owner-level change or provider support).
+
 ## Manual required step (Auth warning)
 
 Enable leaked password protection in Supabase Dashboard:
