@@ -72,6 +72,17 @@ const FORGOT_PASSWORD_ROUTE = `forgot-${PASSWORD_TOKEN}`
 const RESET_PASSWORD_ROUTE = `reset-${PASSWORD_TOKEN}`
 const toAppPath = (route) => `${PATH_SEPARATOR}${route}`
 
+function shouldRenderVercelTelemetry() {
+  if (typeof window === 'undefined') return false
+
+  const host = window.location.hostname.toLowerCase()
+  const isLocalHost = host === 'localhost' || host === '127.0.0.1' || host === '0.0.0.0'
+  const isVercelHost = host.endsWith('.vercel.app') || host.endsWith('.vercel.sh') || host.endsWith('.vercel-dns.com')
+  const forceEnable = import.meta.env.VITE_ENABLE_VERCEL_ANALYTICS === 'true'
+
+  return !isLocalHost && (isVercelHost || forceEnable)
+}
+
 // Minimal loading fallback for route transitions
 const RouteLoadingFallback = () => (
   <div className="route-loading-fallback">
@@ -117,6 +128,7 @@ function App() {
   const location = useLocation()
   const navigate = useNavigate()
   const { premiumUpsell, closePremiumUpsell } = useApplications()
+  const showVercelTelemetry = shouldRenderVercelTelemetry()
 
   const handleUpgrade = () => {
     closePremiumUpsell()
@@ -231,8 +243,12 @@ function App() {
 
       <div className={isLanding ? 'app-wrapper app-wrapper--landing' : 'app-wrapper'}>
         <Navbar isLanding={isLanding} />
-        <SpeedInsights />
-        <Analytics />
+        {showVercelTelemetry && (
+          <>
+            <SpeedInsights />
+            <Analytics />
+          </>
+        )}
 
         <main className={isLanding ? 'app-main app-main--landing' : 'app-main'}>
           <Suspense fallback={<RouteLoadingFallback />}>
