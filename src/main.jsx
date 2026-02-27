@@ -8,6 +8,9 @@ import './lib/i18n' // Initialize i18n before App
 import './index.css'
 import './accessibility-contrast.css'
 import App from './App.jsx'
+import ErrorBoundary from './components/ErrorBoundary'
+import MissingConfigurationScreen from './components/MissingConfigurationScreen'
+import { isSupabaseConfigMissing } from './lib/supabase'
 import { initWebVitalsDebug } from './lib/webVitalsDebug'
 
 /**
@@ -23,16 +26,28 @@ import { initWebVitalsDebug } from './lib/webVitalsDebug'
  */
 initWebVitalsDebug()
 
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <BrowserRouter>
-      <AuthProvider>
-        <ApplicationProvider>
-          <ThemeProvider>
-            <App />
-          </ThemeProvider>
-        </ApplicationProvider>
-      </AuthProvider>
-    </BrowserRouter>
-  </StrictMode>,
-)
+const root = createRoot(document.getElementById('root'))
+
+if (isSupabaseConfigMissing) {
+  root.render(
+    <StrictMode>
+      <MissingConfigurationScreen />
+    </StrictMode>,
+  )
+} else {
+  root.render(
+    <StrictMode>
+      <BrowserRouter>
+        <AuthProvider>
+          <ApplicationProvider>
+            <ThemeProvider>
+              <ErrorBoundary fallbackMessage="The app encountered an unexpected error. Please reload.">
+                <App />
+              </ErrorBoundary>
+            </ThemeProvider>
+          </ApplicationProvider>
+        </AuthProvider>
+      </BrowserRouter>
+    </StrictMode>,
+  )
+}

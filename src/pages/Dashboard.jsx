@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { safeLogError } from '../lib/logger'
 import './Dashboard.css'
 
 const DashboardLoading = () => (
@@ -68,7 +69,7 @@ function Dashboard() {
             await signOut()
             window.location.assign('/')
         } catch (error) {
-            console.error('[Dashboard] Failed to sign out from unknown-role fallback:', error)
+            safeLogError('[Dashboard] Failed to sign out from unknown-role fallback', { error })
             setIsSigningOut(false)
         }
     }
