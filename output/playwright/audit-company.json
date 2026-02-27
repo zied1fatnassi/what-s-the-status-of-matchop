@@ -1,0 +1,688 @@
+{
+  "mode": "company",
+  "baseUrl": "http://127.0.0.1:4174",
+  "role": "company",
+  "generatedAt": "2026-02-27T19:32:46.380Z",
+  "routeResults": [
+    {
+      "route": "/company/login",
+      "startedAt": "2026-02-27T19:32:36.361Z",
+      "responseStatus": 200,
+      "finalUrl": "http://127.0.0.1:4174/company/intros",
+      "expectedUrlContains": "/company/intros",
+      "expectedUrlMatched": true,
+      "navError": null,
+      "missingConfigScreen": false,
+      "console": [],
+      "pageErrors": [],
+      "requests": [
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/company/login?e2eRole=company",
+          "endpoint": "http://127.0.0.1:4174/company/login",
+          "resourceType": "document"
+        },
+        {
+          "method": "GET",
+          "url": "https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=optional",
+          "endpoint": "https://fonts.googleapis.com/css2",
+          "resourceType": "stylesheet"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/js/index-C6g3LgO-.js",
+          "endpoint": "http://127.0.0.1:4174/assets/js/index-C6g3LgO-.js",
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/js/vendor-react-Cgg2GOmP.js",
+          "endpoint": "http://127.0.0.1:4174/assets/js/vendor-react-Cgg2GOmP.js",
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/js/vendor-router-BveKe_LN.js",
+          "endpoint": "http://127.0.0.1:4174/assets/js/vendor-router-BveKe_LN.js",
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/js/vendor-i18n-DXKOsRpL.js",
+          "endpoint": "http://127.0.0.1:4174/assets/js/vendor-i18n-DXKOsRpL.js",
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/js/vendor-icons-Di1E9Vpf.js",
+          "endpoint": "http://127.0.0.1:4174/assets/js/vendor-icons-Di1E9Vpf.js",
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/css/index-7DWAQpCa.css",
+          "endpoint": "http://127.0.0.1:4174/assets/css/index-7DWAQpCa.css",
+          "resourceType": "stylesheet"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/js/Footer-BqUYoBFW.js",
+          "endpoint": "http://127.0.0.1:4174/assets/js/Footer-BqUYoBFW.js",
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/css/Footer-Bv99MBbH.css",
+          "endpoint": "http://127.0.0.1:4174/assets/css/Footer-Bv99MBbH.css",
+          "resourceType": "stylesheet"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/js/CompanyIntros-DIimBpoP.js",
+          "endpoint": "http://127.0.0.1:4174/assets/js/CompanyIntros-DIimBpoP.js",
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/css/CompanyIntros-wWsiXydo.css",
+          "endpoint": "http://127.0.0.1:4174/assets/css/CompanyIntros-wWsiXydo.css",
+          "resourceType": "stylesheet"
+        },
+        {
+          "method": "GET",
+          "url": "https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2",
+          "endpoint": "https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2",
+          "resourceType": "font"
+        },
+        {
+          "method": "GET",
+          "url": "https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2",
+          "endpoint": "https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2",
+          "resourceType": "font"
+        },
+        {
+          "method": "GET",
+          "url": "https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2",
+          "endpoint": "https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2",
+          "resourceType": "font"
+        }
+      ],
+      "requestFailures": [],
+      "responseFailures": [],
+      "action": {
+        "name": null,
+        "ok": true,
+        "details": []
+      },
+      "screenshotPath": "C:\\MATCHOP\\output\\playwright\\logged_in_company_mock_company__login.png",
+      "notFoundScreen": false,
+      "finishedAt": "2026-02-27T19:32:38.166Z"
+    },
+    {
+      "route": "/company/intros",
+      "startedAt": "2026-02-27T19:32:38.209Z",
+      "responseStatus": 200,
+      "finalUrl": "http://127.0.0.1:4174/company/intros?e2eRole=company",
+      "expectedUrlContains": null,
+      "expectedUrlMatched": null,
+      "navError": null,
+      "missingConfigScreen": false,
+      "console": [],
+      "pageErrors": [],
+      "requests": [
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/company/intros?e2eRole=company",
+          "endpoint": "http://127.0.0.1:4174/company/intros",
+          "resourceType": "document"
+        },
+        {
+          "method": "GET",
+          "url": "https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=optional",
+          "endpoint": "https://fonts.googleapis.com/css2",
+          "resourceType": "stylesheet"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/js/index-C6g3LgO-.js",
+          "endpoint": "http://127.0.0.1:4174/assets/js/index-C6g3LgO-.js",
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/js/vendor-react-Cgg2GOmP.js",
+          "endpoint": "http://127.0.0.1:4174/assets/js/vendor-react-Cgg2GOmP.js",
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/js/vendor-router-BveKe_LN.js",
+          "endpoint": "http://127.0.0.1:4174/assets/js/vendor-router-BveKe_LN.js",
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/js/vendor-i18n-DXKOsRpL.js",
+          "endpoint": "http://127.0.0.1:4174/assets/js/vendor-i18n-DXKOsRpL.js",
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/js/vendor-icons-Di1E9Vpf.js",
+          "endpoint": "http://127.0.0.1:4174/assets/js/vendor-icons-Di1E9Vpf.js",
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/css/index-7DWAQpCa.css",
+          "endpoint": "http://127.0.0.1:4174/assets/css/index-7DWAQpCa.css",
+          "resourceType": "stylesheet"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/js/Footer-BqUYoBFW.js",
+          "endpoint": "http://127.0.0.1:4174/assets/js/Footer-BqUYoBFW.js",
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/css/Footer-Bv99MBbH.css",
+          "endpoint": "http://127.0.0.1:4174/assets/css/Footer-Bv99MBbH.css",
+          "resourceType": "stylesheet"
+        },
+        {
+          "method": "GET",
+          "url": "https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2",
+          "endpoint": "https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2",
+          "resourceType": "font"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/js/CompanyIntros-DIimBpoP.js",
+          "endpoint": "http://127.0.0.1:4174/assets/js/CompanyIntros-DIimBpoP.js",
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/css/CompanyIntros-wWsiXydo.css",
+          "endpoint": "http://127.0.0.1:4174/assets/css/CompanyIntros-wWsiXydo.css",
+          "resourceType": "stylesheet"
+        }
+      ],
+      "requestFailures": [],
+      "responseFailures": [],
+      "action": {
+        "name": null,
+        "ok": true,
+        "details": []
+      },
+      "screenshotPath": "C:\\MATCHOP\\output\\playwright\\logged_in_company_mock_company__intros.png",
+      "notFoundScreen": false,
+      "finishedAt": "2026-02-27T19:32:39.740Z"
+    },
+    {
+      "route": "/company/matches",
+      "startedAt": "2026-02-27T19:32:39.779Z",
+      "responseStatus": 200,
+      "finalUrl": "http://127.0.0.1:4174/company/matches?e2eRole=company",
+      "expectedUrlContains": null,
+      "expectedUrlMatched": null,
+      "navError": null,
+      "missingConfigScreen": false,
+      "console": [],
+      "pageErrors": [],
+      "requests": [
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/company/matches?e2eRole=company",
+          "endpoint": "http://127.0.0.1:4174/company/matches",
+          "resourceType": "document"
+        },
+        {
+          "method": "GET",
+          "url": "https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=optional",
+          "endpoint": "https://fonts.googleapis.com/css2",
+          "resourceType": "stylesheet"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/js/index-C6g3LgO-.js",
+          "endpoint": "http://127.0.0.1:4174/assets/js/index-C6g3LgO-.js",
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/js/vendor-react-Cgg2GOmP.js",
+          "endpoint": "http://127.0.0.1:4174/assets/js/vendor-react-Cgg2GOmP.js",
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/js/vendor-router-BveKe_LN.js",
+          "endpoint": "http://127.0.0.1:4174/assets/js/vendor-router-BveKe_LN.js",
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/js/vendor-i18n-DXKOsRpL.js",
+          "endpoint": "http://127.0.0.1:4174/assets/js/vendor-i18n-DXKOsRpL.js",
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/js/vendor-icons-Di1E9Vpf.js",
+          "endpoint": "http://127.0.0.1:4174/assets/js/vendor-icons-Di1E9Vpf.js",
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/css/index-7DWAQpCa.css",
+          "endpoint": "http://127.0.0.1:4174/assets/css/index-7DWAQpCa.css",
+          "resourceType": "stylesheet"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/js/Footer-BqUYoBFW.js",
+          "endpoint": "http://127.0.0.1:4174/assets/js/Footer-BqUYoBFW.js",
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/css/Footer-Bv99MBbH.css",
+          "endpoint": "http://127.0.0.1:4174/assets/css/Footer-Bv99MBbH.css",
+          "resourceType": "stylesheet"
+        },
+        {
+          "method": "GET",
+          "url": "https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2",
+          "endpoint": "https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2",
+          "resourceType": "font"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/js/CompanyMatches-BjBuThNA.js",
+          "endpoint": "http://127.0.0.1:4174/assets/js/CompanyMatches-BjBuThNA.js",
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/js/useMatches-a1BcAOkm.js",
+          "endpoint": "http://127.0.0.1:4174/assets/js/useMatches-a1BcAOkm.js",
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/js/companyMatchIntelligence-BIABdidJ.js",
+          "endpoint": "http://127.0.0.1:4174/assets/js/companyMatchIntelligence-BIABdidJ.js",
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/css/CompanyMatches-CrO68FCn.css",
+          "endpoint": "http://127.0.0.1:4174/assets/css/CompanyMatches-CrO68FCn.css",
+          "resourceType": "stylesheet"
+        }
+      ],
+      "requestFailures": [],
+      "responseFailures": [],
+      "action": {
+        "name": null,
+        "ok": true,
+        "details": []
+      },
+      "screenshotPath": "C:\\MATCHOP\\output\\playwright\\logged_in_company_mock_company__matches.png",
+      "notFoundScreen": false,
+      "finishedAt": "2026-02-27T19:32:41.305Z"
+    },
+    {
+      "route": "/company/archived",
+      "startedAt": "2026-02-27T19:32:41.346Z",
+      "responseStatus": 200,
+      "finalUrl": "http://127.0.0.1:4174/company/archived?e2eRole=company",
+      "expectedUrlContains": null,
+      "expectedUrlMatched": null,
+      "navError": null,
+      "missingConfigScreen": false,
+      "console": [],
+      "pageErrors": [],
+      "requests": [
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/company/archived?e2eRole=company",
+          "endpoint": "http://127.0.0.1:4174/company/archived",
+          "resourceType": "document"
+        },
+        {
+          "method": "GET",
+          "url": "https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=optional",
+          "endpoint": "https://fonts.googleapis.com/css2",
+          "resourceType": "stylesheet"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/js/index-C6g3LgO-.js",
+          "endpoint": "http://127.0.0.1:4174/assets/js/index-C6g3LgO-.js",
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/js/vendor-react-Cgg2GOmP.js",
+          "endpoint": "http://127.0.0.1:4174/assets/js/vendor-react-Cgg2GOmP.js",
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/js/vendor-router-BveKe_LN.js",
+          "endpoint": "http://127.0.0.1:4174/assets/js/vendor-router-BveKe_LN.js",
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/js/vendor-i18n-DXKOsRpL.js",
+          "endpoint": "http://127.0.0.1:4174/assets/js/vendor-i18n-DXKOsRpL.js",
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/js/vendor-icons-Di1E9Vpf.js",
+          "endpoint": "http://127.0.0.1:4174/assets/js/vendor-icons-Di1E9Vpf.js",
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/css/index-7DWAQpCa.css",
+          "endpoint": "http://127.0.0.1:4174/assets/css/index-7DWAQpCa.css",
+          "resourceType": "stylesheet"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/js/Footer-BqUYoBFW.js",
+          "endpoint": "http://127.0.0.1:4174/assets/js/Footer-BqUYoBFW.js",
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/css/Footer-Bv99MBbH.css",
+          "endpoint": "http://127.0.0.1:4174/assets/css/Footer-Bv99MBbH.css",
+          "resourceType": "stylesheet"
+        },
+        {
+          "method": "GET",
+          "url": "https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2",
+          "endpoint": "https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2",
+          "resourceType": "font"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/js/ViewCandidates-DXQvG1am.js",
+          "endpoint": "http://127.0.0.1:4174/assets/js/ViewCandidates-DXQvG1am.js",
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/js/companyMatchIntelligence-BIABdidJ.js",
+          "endpoint": "http://127.0.0.1:4174/assets/js/companyMatchIntelligence-BIABdidJ.js",
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/css/ViewCandidates-C3AFeew0.css",
+          "endpoint": "http://127.0.0.1:4174/assets/css/ViewCandidates-C3AFeew0.css",
+          "resourceType": "stylesheet"
+        }
+      ],
+      "requestFailures": [],
+      "responseFailures": [],
+      "action": {
+        "name": "companyArchivedCheck",
+        "ok": true,
+        "details": [
+          "archived_state_visible=true",
+          "archived_page_error_count=0"
+        ]
+      },
+      "screenshotPath": "C:\\MATCHOP\\output\\playwright\\logged_in_company_mock_company__archived.png",
+      "notFoundScreen": false,
+      "finishedAt": "2026-02-27T19:32:43.168Z"
+    },
+    {
+      "route": "/company/offers",
+      "startedAt": "2026-02-27T19:32:43.209Z",
+      "responseStatus": 200,
+      "finalUrl": "http://127.0.0.1:4174/company/offers?e2eRole=company",
+      "expectedUrlContains": null,
+      "expectedUrlMatched": null,
+      "navError": null,
+      "missingConfigScreen": false,
+      "console": [],
+      "pageErrors": [],
+      "requests": [
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/company/offers?e2eRole=company",
+          "endpoint": "http://127.0.0.1:4174/company/offers",
+          "resourceType": "document"
+        },
+        {
+          "method": "GET",
+          "url": "https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=optional",
+          "endpoint": "https://fonts.googleapis.com/css2",
+          "resourceType": "stylesheet"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/js/index-C6g3LgO-.js",
+          "endpoint": "http://127.0.0.1:4174/assets/js/index-C6g3LgO-.js",
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/js/vendor-react-Cgg2GOmP.js",
+          "endpoint": "http://127.0.0.1:4174/assets/js/vendor-react-Cgg2GOmP.js",
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/js/vendor-router-BveKe_LN.js",
+          "endpoint": "http://127.0.0.1:4174/assets/js/vendor-router-BveKe_LN.js",
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/js/vendor-i18n-DXKOsRpL.js",
+          "endpoint": "http://127.0.0.1:4174/assets/js/vendor-i18n-DXKOsRpL.js",
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/js/vendor-icons-Di1E9Vpf.js",
+          "endpoint": "http://127.0.0.1:4174/assets/js/vendor-icons-Di1E9Vpf.js",
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/css/index-7DWAQpCa.css",
+          "endpoint": "http://127.0.0.1:4174/assets/css/index-7DWAQpCa.css",
+          "resourceType": "stylesheet"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/js/Footer-BqUYoBFW.js",
+          "endpoint": "http://127.0.0.1:4174/assets/js/Footer-BqUYoBFW.js",
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/css/Footer-Bv99MBbH.css",
+          "endpoint": "http://127.0.0.1:4174/assets/css/Footer-Bv99MBbH.css",
+          "resourceType": "stylesheet"
+        },
+        {
+          "method": "GET",
+          "url": "https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2",
+          "endpoint": "https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2",
+          "resourceType": "font"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/js/CompanyOffers-CMZDbuHE.js",
+          "endpoint": "http://127.0.0.1:4174/assets/js/CompanyOffers-CMZDbuHE.js",
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/css/CompanyOffers-LrC9AO3k.css",
+          "endpoint": "http://127.0.0.1:4174/assets/css/CompanyOffers-LrC9AO3k.css",
+          "resourceType": "stylesheet"
+        }
+      ],
+      "requestFailures": [],
+      "responseFailures": [],
+      "action": {
+        "name": null,
+        "ok": true,
+        "details": []
+      },
+      "screenshotPath": "C:\\MATCHOP\\output\\playwright\\logged_in_company_mock_company__offers.png",
+      "notFoundScreen": false,
+      "finishedAt": "2026-02-27T19:32:44.815Z"
+    },
+    {
+      "route": "/company/chat",
+      "startedAt": "2026-02-27T19:32:44.857Z",
+      "responseStatus": 200,
+      "finalUrl": "http://127.0.0.1:4174/company/chat?e2eRole=company",
+      "expectedUrlContains": null,
+      "expectedUrlMatched": null,
+      "navError": null,
+      "missingConfigScreen": false,
+      "console": [],
+      "pageErrors": [],
+      "requests": [
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/company/chat?e2eRole=company",
+          "endpoint": "http://127.0.0.1:4174/company/chat",
+          "resourceType": "document"
+        },
+        {
+          "method": "GET",
+          "url": "https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=optional",
+          "endpoint": "https://fonts.googleapis.com/css2",
+          "resourceType": "stylesheet"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/js/index-C6g3LgO-.js",
+          "endpoint": "http://127.0.0.1:4174/assets/js/index-C6g3LgO-.js",
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/js/vendor-react-Cgg2GOmP.js",
+          "endpoint": "http://127.0.0.1:4174/assets/js/vendor-react-Cgg2GOmP.js",
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/js/vendor-router-BveKe_LN.js",
+          "endpoint": "http://127.0.0.1:4174/assets/js/vendor-router-BveKe_LN.js",
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/js/vendor-i18n-DXKOsRpL.js",
+          "endpoint": "http://127.0.0.1:4174/assets/js/vendor-i18n-DXKOsRpL.js",
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/js/vendor-icons-Di1E9Vpf.js",
+          "endpoint": "http://127.0.0.1:4174/assets/js/vendor-icons-Di1E9Vpf.js",
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/css/index-7DWAQpCa.css",
+          "endpoint": "http://127.0.0.1:4174/assets/css/index-7DWAQpCa.css",
+          "resourceType": "stylesheet"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/js/NotFound-DVImp7U6.js",
+          "endpoint": "http://127.0.0.1:4174/assets/js/NotFound-DVImp7U6.js",
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/js/Footer-BqUYoBFW.js",
+          "endpoint": "http://127.0.0.1:4174/assets/js/Footer-BqUYoBFW.js",
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/assets/css/Footer-Bv99MBbH.css",
+          "endpoint": "http://127.0.0.1:4174/assets/css/Footer-Bv99MBbH.css",
+          "resourceType": "stylesheet"
+        },
+        {
+          "method": "GET",
+          "url": "https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2",
+          "endpoint": "https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2",
+          "resourceType": "font"
+        }
+      ],
+      "requestFailures": [],
+      "responseFailures": [],
+      "action": {
+        "name": null,
+        "ok": true,
+        "details": []
+      },
+      "screenshotPath": "C:\\MATCHOP\\output\\playwright\\logged_in_company_mock_company__chat.png",
+      "notFoundScreen": true,
+      "finishedAt": "2026-02-27T19:32:46.334Z"
+    }
+  ],
+  "extraChecks": [],
+  "summary": {
+    "routeCount": 6,
+    "withConsoleIssues": 0,
+    "withNetworkIssues": 0,
+    "missingConfigScreens": [],
+    "consoleByRoute": {
+      "/company/login": {
+        "consoleCount": 0,
+        "pageErrorCount": 0,
+        "messages": []
+      },
+      "/company/intros": {
+        "consoleCount": 0,
+        "pageErrorCount": 0,
+        "messages": []
+      },
+      "/company/matches": {
+        "consoleCount": 0,
+        "pageErrorCount": 0,
+        "messages": []
+      },
+      "/company/archived": {
+        "consoleCount": 0,
+        "pageErrorCount": 0,
+        "messages": []
+      },
+      "/company/offers": {
+        "consoleCount": 0,
+        "pageErrorCount": 0,
+        "messages": []
+      },
+      "/company/chat": {
+        "consoleCount": 0,
+        "pageErrorCount": 0,
+        "messages": []
+      }
+    },
+    "networkByEndpoint": {},
+    "securitySignal": []
+  }
+}
