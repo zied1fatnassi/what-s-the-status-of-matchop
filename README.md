@@ -11,6 +11,7 @@ MatchOp is a Vite + React single-page application for student/company opportunit
 - Mobile visual tests: Playwright
 
 See `PROJECT_MAP.md` for a fuller architecture map.
+See `HANDOFF.md` for production handoff routes, env requirements, deploy notes, and QA-critical behaviors.
 
 ## Prerequisites
 
