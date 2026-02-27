@@ -60,7 +60,8 @@ describe('AdminRoute', () => {
             isAdmin: false,
             isStudent: true,
             isCompany: false,
-            user: { id: 'student-1' }
+            user: { id: 'student-1' },
+            authError: null
         }
 
         await act(async () => {
@@ -69,5 +70,61 @@ describe('AdminRoute', () => {
 
         expect(container.textContent).toContain('Student Swipe Page')
         expect(container.textContent).not.toContain('Admin Payments Page')
+    })
+
+    it('shows loading state first, then renders admin content when role resolves', async () => {
+        mockAuthState = {
+            isLoggedIn: true,
+            isLoading: true,
+            isAdmin: false,
+            isStudent: false,
+            isCompany: false,
+            user: { id: 'admin-1' },
+            authError: null
+        }
+
+        await act(async () => {
+            root.render(<AdminRouteHarness />)
+        })
+
+        expect(container.textContent).toContain('Checking access...')
+
+        mockAuthState = {
+            isLoggedIn: true,
+            isLoading: false,
+            isAdmin: true,
+            isStudent: false,
+            isCompany: false,
+            user: { id: 'admin-1', user_metadata: { type: 'admin' } },
+            authError: null
+        }
+
+        await act(async () => {
+            root.render(<AdminRouteHarness />)
+        })
+
+        expect(container.textContent).toContain('Admin Payments Page')
+    })
+
+    it('renders session-expired notice when auth token is invalid', async () => {
+        mockAuthState = {
+            isLoggedIn: false,
+            isLoading: false,
+            isAdmin: false,
+            isStudent: false,
+            isCompany: false,
+            user: null,
+            authError: { message: 'JWT expired' }
+        }
+
+        await act(async () => {
+            root.render(<AdminRouteHarness />)
+        })
+
+        expect(container.textContent).toContain('Session expired')
+        expect(container.textContent).toContain('Go to login')
+        expect(container.textContent).not.toContain('Admin Payments Page')
+        const loginLink = container.querySelector('a[href="/student/login"]')
+        expect(loginLink).toBeTruthy()
     })
 })

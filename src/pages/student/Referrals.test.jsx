@@ -29,6 +29,11 @@ vi.mock('react-i18next', () => ({
                 'referrals.rewards.body': 'Invite 3 friends and unlock 7 days Premium.',
                 'referrals.progress.current': '{{invites}}/{{goal}} invites',
                 'referrals.progress.hint': 'Demo progress is saved locally on this device.',
+                'referrals.rewardUnlock.claimAction': 'Claim reward',
+                'referrals.rewardUnlock.claimedTitle': 'Reward claimed',
+                'referrals.rewardUnlock.claimedSubtitle': 'Premium teaser unlocked (Preview).',
+                'referrals.rewardUnlock.claimedToast': 'Reward claimed.',
+                'referrals.rewardUnlock.previewNote': 'Preview: referral progress is simulated until backend verification.',
                 'referrals.toast.copyCodeSuccess': 'Referral code copied.',
                 'referrals.toast.copyLinkSuccess': 'Invite link copied.',
                 'referrals.toast.copyFailed': 'Unable to copy right now. Please try again.'
@@ -102,5 +107,41 @@ describe('Referrals', () => {
 
         expect(trackMock).toHaveBeenCalledWith('referral_copied', { type: 'code' })
         expect(trackMock).toHaveBeenCalledWith('referral_copied', { type: 'link' })
+    })
+
+    it('shows claim button at 3/3 progress and persists claimed state', async () => {
+        localStorage.setItem('matchop_referral_progress', JSON.stringify({
+            invites: 3,
+            lastUpdated: '2026-02-27T10:00:00.000Z'
+        }))
+
+        render(
+            <MemoryRouter>
+                <Referrals />
+            </MemoryRouter>
+        )
+
+        const claimButton = screen.getByTestId('claim-reward-button')
+        fireEvent.click(claimButton)
+
+        expect(localStorage.getItem('matchop_referral_reward_claimed')).toBe('true')
+        expect(screen.getByTestId('reward-claimed-state')).toBeInTheDocument()
+    })
+
+    it('keeps reward claimed state across reloads', () => {
+        localStorage.setItem('matchop_referral_progress', JSON.stringify({
+            invites: 3,
+            lastUpdated: '2026-02-27T10:00:00.000Z'
+        }))
+        localStorage.setItem('matchop_referral_reward_claimed', 'true')
+
+        render(
+            <MemoryRouter>
+                <Referrals />
+            </MemoryRouter>
+        )
+
+        expect(screen.getByTestId('reward-claimed-state')).toBeInTheDocument()
+        expect(screen.queryByTestId('claim-reward-button')).not.toBeInTheDocument()
     })
 })

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Navigate, useLocation } from 'react-router-dom'
+import { Link, Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import './RouteGuards.css'
 
@@ -10,9 +10,35 @@ const PROFILE_WAIT_TIMEOUT_MS = 5000
  */
 const AuthLoadingSpinner = () => (
     <div className="route-guard-loading">
-        <div className="route-guard-spinner" />
+        <div className="route-guard-loading-card">
+            <div className="route-guard-spinner" />
+            <p>Checking access...</p>
+        </div>
     </div>
 )
+
+function isSessionExpiredError(error) {
+    const message = String(error?.message || '').toLowerCase()
+    const code = String(error?.code || '').toLowerCase()
+    return (
+        message.includes('session') ||
+        message.includes('token') ||
+        message.includes('jwt') ||
+        code.includes('auth') ||
+        code.includes('401')
+    )
+}
+
+function SessionExpiredNotice({ loginPath }) {
+    return (
+        <div className="route-guard-session-expired" role="alert" aria-live="polite">
+            <h2>Session expired — please sign in again.</h2>
+            <Link to={loginPath} className="btn btn-primary">
+                Go to login
+            </Link>
+        </div>
+    )
+}
 
 /**
  * ProtectedRoute - Wraps routes that require authentication
@@ -23,9 +49,11 @@ const AuthLoadingSpinner = () => (
  * @param {string} requiredType - Optional: 'student' or 'company' to restrict by user type
  */
 export function ProtectedRoute({ children, requiredType = null }) {
-    const { isLoggedIn, isLoading, isStudent, isCompany, user, profile } = useAuth()
+    const { isLoggedIn, isLoading, isStudent, isCompany, user, profile, authError } = useAuth()
     const location = useLocation()
     const [profileWaitTimedOut, setProfileWaitTimedOut] = useState(false)
+    const isCompanyPath = location.pathname.startsWith('/company')
+    const loginPath = isCompanyPath ? '/company/login' : '/student/login'
 
     // If we're waiting for profile, stop blocking after a timeout so the page never spins forever
     useEffect(() => {
@@ -44,10 +72,12 @@ export function ProtectedRoute({ children, requiredType = null }) {
         return <AuthLoadingSpinner />
     }
 
+    if (isSessionExpiredError(authError)) {
+        return <SessionExpiredNotice loginPath={loginPath} />
+    }
+
     // Not logged in - redirect to appropriate login page
     if (!isLoggedIn || !user) {
-        const isCompanyPath = location.pathname.startsWith('/company')
-        const loginPath = isCompanyPath ? '/company/login' : '/student/login'
         return <Navigate to={loginPath} state={{ from: location }} replace />
     }
 
@@ -117,12 +147,25 @@ export function PublicRoute({ children }) {
  * @param {ReactNode} children - The admin component to render
  */
 export function AdminRoute({ children }) {
-    const { isLoggedIn, isLoading, isAdmin, isStudent, isCompany, user } = useAuth()
+    const { isLoggedIn, isLoading, isAdmin, isStudent, isCompany, user, authError } = useAuth()
     const location = useLocation()
+    const userTypeFromMetadata = user?.user_metadata?.type || null
+    const isRoleResolving = isLoading || (
+        isLoggedIn &&
+        !!user &&
+        !isAdmin &&
+        !isStudent &&
+        !isCompany &&
+        !userTypeFromMetadata
+    )
 
-    // While loading, show spinner
-    if (isLoading) {
+    // While loading or resolving role, show skeleton/loading state
+    if (isRoleResolving) {
         return <AuthLoadingSpinner />
+    }
+
+    if (isSessionExpiredError(authError)) {
+        return <SessionExpiredNotice loginPath="/student/login" />
     }
 
     // Not logged in - redirect to login
@@ -132,10 +175,10 @@ export function AdminRoute({ children }) {
 
     if (!isAdmin) {
         // Not an admin - redirect to appropriate dashboard
-        if (isStudent) {
+        if (isStudent || userTypeFromMetadata === 'student') {
             return <Navigate to="/student/swipe" replace />
         }
-        if (isCompany) {
+        if (isCompany || userTypeFromMetadata === 'company') {
             return <Navigate to="/company/intros" replace />
         }
         return <Navigate to="/" replace />

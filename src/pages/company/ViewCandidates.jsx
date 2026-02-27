@@ -3,17 +3,38 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Archive, Loader, AlertCircle, RefreshCw, MessageCircle, Clock3 } from 'lucide-react'
 import { useCompanyClosedItems } from '../../hooks/useCompanyClosedItems'
+import {
+    MATCH_FAIL_REASON_OPTIONS,
+    readMatchFailReasons,
+    readMatchStatusOverrides,
+    setMatchFailReason,
+    setMatchStatusOverride,
+    shouldShowArchivedItem,
+} from '../../lib/companyMatchIntelligence'
 import './ViewCandidates.css'
 
 function ViewCandidates() {
     const { t, i18n } = useTranslation()
     const { items, loading, error, refresh } = useCompanyClosedItems()
     const [typeFilter, setTypeFilter] = useState('all')
+    const [reasonFilter, setReasonFilter] = useState('all')
+    const [failReasons, setFailReasons] = useState(() => readMatchFailReasons())
+    const [statusOverrides, setStatusOverrides] = useState(() => readMatchStatusOverrides())
 
     const visibleItems = useMemo(() => {
-        if (typeFilter === 'all') return items
-        return items.filter((item) => item.type === typeFilter)
-    }, [items, typeFilter])
+        const byType = typeFilter === 'all'
+            ? items
+            : items.filter((item) => item.type === typeFilter)
+        return byType.filter((item) => shouldShowArchivedItem(item, reasonFilter, failReasons, statusOverrides))
+    }, [items, typeFilter, reasonFilter, failReasons, statusOverrides])
+
+    const reasonOptions = useMemo(
+        () => MATCH_FAIL_REASON_OPTIONS.map((option) => ({
+            ...option,
+            label: t(option.labelKey),
+        })),
+        [t]
+    )
 
     const formatDate = (value) => {
         if (!value) return '-'
@@ -30,6 +51,34 @@ function ViewCandidates() {
         if (status === 'declined') return t('companyWorkflow.archived.labels.declined')
         if (status === 'expired') return t('companyWorkflow.archived.labels.expired')
         return t('companyWorkflow.archived.labels.archived')
+    }
+
+    const getFailReasonLabel = (reasonKey) => {
+        const option = reasonOptions.find((entry) => entry.key === reasonKey)
+        return option?.label || t('companyWorkflow.archived.reasonFilter.all')
+    }
+
+    const handleReasonChange = (matchId, nextReason) => {
+        if (!matchId) return
+        setMatchFailReason(matchId, nextReason)
+        setFailReasons((prev) => {
+            const next = { ...prev }
+            if (!nextReason || nextReason === 'all') {
+                delete next[String(matchId)]
+            } else {
+                next[String(matchId)] = nextReason
+            }
+            return next
+        })
+    }
+
+    const handleReconsider = (matchId) => {
+        if (!matchId) return
+        setMatchStatusOverride(matchId, 'active')
+        setStatusOverrides((prev) => ({
+            ...prev,
+            [String(matchId)]: 'active',
+        }))
     }
 
     if (loading) {
@@ -92,12 +141,28 @@ function ViewCandidates() {
                                 </button>
                             ))}
                         </div>
+                        <label className="archived-reason-filter">
+                            <span>{t('companyWorkflow.archived.reasonFilter.label')}</span>
+                            <select
+                                value={reasonFilter}
+                                onChange={(event) => setReasonFilter(event.target.value)}
+                                aria-label={t('companyWorkflow.archived.reasonFilter.ariaLabel')}
+                            >
+                                <option value="all">{t('companyWorkflow.archived.reasonFilter.all')}</option>
+                                {reasonOptions.map((option) => (
+                                    <option key={option.key} value={option.key}>
+                                        {option.label}
+                                    </option>
+                                ))}
+                            </select>
+                        </label>
                         <button className="btn btn-secondary btn-sm" onClick={refresh}>
                             <RefreshCw size={16} />
                             {t('companyWorkflow.matches.actions.refresh')}
                         </button>
                     </div>
                 </div>
+                <p className="archived-preview-note">{t('companyWorkflow.archived.previewNote')}</p>
 
                 {visibleItems.length === 0 ? (
                     <div className="archived-empty glass-card">
@@ -149,6 +214,31 @@ function ViewCandidates() {
 
                                 {item.lastMessage && <p className="archived-last-message">{item.lastMessage}</p>}
 
+                                {item.type === 'match' && item.matchId && (
+                                    <div className="archived-reason-controls">
+                                        <label htmlFor={`fail-reason-${item.matchId}`}>
+                                            {t('companyWorkflow.archived.reasonPrompt')}
+                                        </label>
+                                        <select
+                                            id={`fail-reason-${item.matchId}`}
+                                            value={failReasons[String(item.matchId)] || 'all'}
+                                            onChange={(event) => handleReasonChange(item.matchId, event.target.value)}
+                                        >
+                                            <option value="all">{t('companyWorkflow.archived.reasonFilter.all')}</option>
+                                            {reasonOptions.map((option) => (
+                                                <option key={option.key} value={option.key}>
+                                                    {option.label}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        {failReasons[String(item.matchId)] && (
+                                            <span className="archived-fail-reason-pill">
+                                                {getFailReasonLabel(failReasons[String(item.matchId)])}
+                                            </span>
+                                        )}
+                                    </div>
+                                )}
+
                                 <div className="archived-actions">
                                     {item.matchId ? (
                                         <Link
@@ -163,6 +253,15 @@ function ViewCandidates() {
                                         <button type="button" className="btn btn-secondary btn-sm" disabled>
                                             <MessageCircle size={16} />
                                             {t('companyWorkflow.archived.actions.message')}
+                                        </button>
+                                    )}
+                                    {item.type === 'match' && item.matchId && (
+                                        <button
+                                            type="button"
+                                            className="btn btn-primary btn-sm"
+                                            onClick={() => handleReconsider(item.matchId)}
+                                        >
+                                            {t('companyWorkflow.archived.actions.reconsider')}
                                         </button>
                                     )}
                                 </div>

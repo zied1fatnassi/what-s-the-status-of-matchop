@@ -41,6 +41,7 @@ const StudentSwipe = lazy(() => import('./pages/student/StudentSwipe'))
 const StudentMatches = lazy(() => import('./pages/student/StudentMatches'))
 const StudentChat = lazy(() => import('./pages/student/StudentChat'))
 const Referrals = lazy(() => import('./pages/student/Referrals'))
+const NotificationCenter = lazy(() => import('./pages/shared/NotificationCenter'))
 
 // Company pages
 const CompanySignup = lazy(() => import('./pages/company/CompanySignup'))
@@ -96,6 +97,11 @@ function SmartLanding() {
   }
 
   return <Landing />
+}
+
+function SignupAliasRedirect() {
+  const location = useLocation()
+  return <Navigate to={`/student/signup${location.search}`} replace />
 }
 
 /**
@@ -242,7 +248,7 @@ function App() {
               <Route path={FORGOT_PASSWORD_ROUTE} element={<ForgotPassword />} />
               <Route path={RESET_PASSWORD_ROUTE} element={<ResetPassword />} />
               <Route path="login" element={<StudentLogin />} /> {/* Default login */}
-              <Route path="signup" element={<StudentSignup />} /> {/* Default signup */}
+              <Route path="signup" element={<SignupAliasRedirect />} /> {/* Legacy signup alias */}
               <Route path="premium" element={<ProtectedRoute><Premium /></ProtectedRoute>} />
               <Route path="checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
               <Route path="checkout/success" element={<ProtectedRoute><CheckoutSuccess /></ProtectedRoute>} />
@@ -268,6 +274,7 @@ function App() {
               <Route path="student/matches" element={<ProtectedRoute requiredType="student"><StudentMatches /></ProtectedRoute>} />
               <Route path="student/chat/:matchId" element={<ProtectedRoute requiredType="student"><StudentChat /></ProtectedRoute>} />
               <Route path="/student/referrals" element={<ProtectedRoute requiredType="student"><Referrals /></ProtectedRoute>} />
+              <Route path="student/notifications" element={<ProtectedRoute requiredType="student"><NotificationCenter scope="student" /></ProtectedRoute>} />
               <Route path="student/offers" element={<Navigate to="/student/swipe" replace />} />
               <Route path="offers" element={<Navigate to="/student/swipe" replace />} />
 
@@ -281,6 +288,7 @@ function App() {
               <Route path="company/intros" element={<ProtectedRoute requiredType="company"><CompanyIntros /></ProtectedRoute>} />
               <Route path="company/matches" element={<ProtectedRoute requiredType="company"><CompanyMatches /></ProtectedRoute>} />
               <Route path="company/chat/:matchId" element={<ProtectedRoute requiredType="company"><CompanyChat /></ProtectedRoute>} />
+              <Route path="company/notifications" element={<ProtectedRoute requiredType="company"><NotificationCenter scope="company" /></ProtectedRoute>} />
 
               {/* Admin Routes */}
               <Route path="admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />

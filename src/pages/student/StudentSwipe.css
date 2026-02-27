@@ -337,6 +337,119 @@
     }
 }
 
+.no-offers-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+}
+
+.no-offers-actions .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.empty-global-lock {
+    margin: 0 auto;
+    max-width: 320px;
+    border: 1px solid color-mix(in srgb, var(--primary) 32%, var(--border));
+    border-radius: var(--radius-lg);
+    background: color-mix(in srgb, var(--surface) 88%, var(--primary) 12%);
+    padding: var(--space-3);
+    display: grid;
+    gap: var(--space-2);
+}
+
+.empty-global-lock-title {
+    margin: 0;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.empty-global-lock-benefits {
+    margin: 0;
+    padding-left: 1.1rem;
+    text-align: left;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    display: grid;
+    gap: 0.2rem;
+}
+
+.swipe-preferences-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--overlay-bg);
+    z-index: 2200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-3);
+}
+
+.swipe-preferences-modal {
+    width: min(520px, 100%);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    box-shadow: var(--shadow-xl);
+    padding: var(--space-4);
+    display: grid;
+    gap: var(--space-3);
+}
+
+.swipe-preferences-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+}
+
+.swipe-preferences-modal-header h3 {
+    margin: 0;
+    color: var(--text-primary);
+}
+
+.swipe-preferences-modal-copy {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.84rem;
+}
+
+.swipe-preferences-field {
+    display: grid;
+    gap: 0.35rem;
+    text-align: left;
+    color: var(--text-secondary);
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+.swipe-preferences-field select {
+    min-height: 38px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    background: var(--surface-muted);
+    color: var(--text-primary);
+    padding: 0 0.65rem;
+}
+
+.swipe-preferences-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .action-btn,
+    .no-more-offers,
+    .swipe-preferences-modal {
+        transition: none;
+    }
+}
+
 .empty-icon {
     font-size: 48px;
     margin-bottom: var(--space-3);

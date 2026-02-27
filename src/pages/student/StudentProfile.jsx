@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { Link, useLocation } from 'react-router-dom'
 import {
     Camera, Plus, X, Save, MapPin, Briefcase, Loader2, Calendar, Trash2,
     AlertCircle, CheckCircle, User, Eye, GraduationCap, Award, FolderGit2,
@@ -21,6 +22,8 @@ import { TUNISIAN_COMPANIES } from '../../data/companies'
 import { ALL_SKILLS } from '../../data/skills'
 import ErrorToast from '../../components/ErrorToast'
 import ErrorBoundary from '../../components/ErrorBoundary'
+import { buildReferralInviteLink, resolveMyReferralCode } from '../../lib/referrals'
+import { addNotification, NOTIFICATION_SCOPE_STUDENT } from '../../lib/notifications'
 import './StudentProfile.css'
 import './StudentProfileEditor.css'
 
@@ -109,6 +112,7 @@ function StudentProfile() {
     void motion
 
     const { user } = useAuth()
+    const location = useLocation()
     const {
         profile, experiences, education, certifications, projects, languages, volunteer,
         loading, error, experiencesError, educationError, completion,
@@ -141,6 +145,7 @@ function StudentProfile() {
 
     const [saving, setSaving] = useState(false)
     const [showPreview, setShowPreview] = useState(false)
+    const [showReferralFollowup, setShowReferralFollowup] = useState(() => Boolean(location.state?.referralFollowUp))
     const [addingEducation, setAddingEducation] = useState(false)
     const [aiLoading, setAiLoading] = useState(false)
     const [aiError, setAiError] = useState('')
@@ -322,6 +327,30 @@ function StudentProfile() {
         else { showSuccess('Profile saved!'); setShowPreview(true) }
     }
 
+    const handleCopyInviteLink = async () => {
+        const code = resolveMyReferralCode(user?.id)
+        const link = buildReferralInviteLink(code)
+
+        try {
+            if (!navigator?.clipboard?.writeText) {
+                throw new Error('Clipboard API unavailable')
+            }
+            await navigator.clipboard.writeText(link)
+            showSuccess('Invite link copied.')
+        } catch {
+            showError('Unable to copy invite link right now.')
+        }
+    }
+
+    useEffect(() => {
+        if (!showPreview) return
+        addNotification(NOTIFICATION_SCOPE_STUDENT, {
+            title: 'Company viewed your profile',
+            body: 'Preview activity: a company viewed your profile.',
+            read: false,
+        })
+    }, [showPreview])
+
     // Experience handlers (Supabase connected)
     const handleAddExperience = async () => {
         if (!newExp.job_title || !newExp.company || !newExp.start_date) { showError('Fill required fields'); return }
@@ -393,6 +422,35 @@ function StudentProfile() {
                     <h1>My Profile</h1>
                     <div className="completion-indicator"><CheckCircle size={18} /><span>{completion}% Complete</span></div>
                 </header>
+
+                {showReferralFollowup && (
+                    <section className="profile-referral-followup" aria-label="Invite your friends too">
+                        <div>
+                            <h2>Invite your friends too</h2>
+                            <p>Share your invite link to unlock referral benefits (Preview).</p>
+                        </div>
+                        <div className="profile-referral-followup-actions">
+                            <Link to="/student/referrals" className="btn btn-secondary">
+                                Open Referrals
+                            </Link>
+                            <button
+                                type="button"
+                                className="btn btn-secondary"
+                                onClick={handleCopyInviteLink}
+                            >
+                                Copy invite link
+                            </button>
+                            <button
+                                type="button"
+                                className="btn btn-secondary"
+                                onClick={() => setShowReferralFollowup(false)}
+                            >
+                                Dismiss
+                            </button>
+                        </div>
+                    </section>
+                )}
+
                 <div className="completion-bar-wrapper"><motion.div className="completion-bar-fill" initial={{ width: 0 }} animate={{ width: `${completion}%` }} /></div>
 
                 {/* ============ SECTION 1: Profile Header ============ */}
@@ -754,5 +812,3 @@ export default function StudentProfileWithErrorBoundary() {
         </ErrorBoundary>
     )
 }
-
-

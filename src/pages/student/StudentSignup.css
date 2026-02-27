@@ -261,14 +261,48 @@
     color: var(--primary);
 }
 
-.student-signup-referral-note {
+.student-signup-referral-card {
     margin-bottom: var(--space-4);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    background: var(--surface-2);
+    border: 1px solid color-mix(in srgb, var(--accent-amber) 45%, var(--border));
+    border-radius: var(--radius-lg);
+    background: color-mix(in srgb, var(--accent-amber) 10%, var(--surface-2));
+    color: var(--text-primary);
+    padding: 0.75rem;
+}
+
+.student-signup-referral-card-header {
+    display: flex;
+    gap: var(--space-3);
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.student-signup-referral-card h2 {
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+.student-signup-referral-card p {
+    margin: 0.35rem 0 0;
     color: var(--text-secondary);
-    font-size: 0.85rem;
-    padding: 0.6rem 0.75rem;
+    font-size: 0.82rem;
+}
+
+.student-signup-referral-dismiss {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-full);
+    background: var(--surface);
+    color: var(--text-secondary);
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.student-signup-referral-dismiss:hover {
+    color: var(--text-primary);
 }
 
 .student-signup-referral-applied {
@@ -279,6 +313,39 @@
     color: var(--text-primary);
     font-size: 0.83rem;
     padding: 0.6rem 0.75rem;
+}
+
+.student-signup-followup-card {
+    margin-top: var(--space-4);
+    border: 1px solid color-mix(in srgb, var(--accent-teal) 45%, var(--border));
+    border-radius: var(--radius-lg);
+    background: color-mix(in srgb, var(--accent-teal) 10%, var(--surface-2));
+    padding: var(--space-3);
+}
+
+.student-signup-followup-card h3 {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+}
+
+.student-signup-followup-card p {
+    margin: 0.35rem 0 0;
+    color: var(--text-secondary);
+    font-size: 0.82rem;
+}
+
+.student-signup-followup-actions {
+    display: flex;
+    gap: var(--space-2);
+    margin-top: var(--space-3);
+    flex-wrap: wrap;
+}
+
+.student-signup-followup-actions .btn {
+    flex: 1;
+    min-width: 150px;
+    justify-content: center;
 }
 
 /* Legacy media query - Now handled with mobile-first above */

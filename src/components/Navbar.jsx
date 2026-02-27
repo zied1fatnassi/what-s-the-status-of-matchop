@@ -1,11 +1,20 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Menu, X, User, Briefcase, Heart, Home, LogOut, Globe, ChevronDown, Moon, Sun, Crown, Receipt, Users, FolderArchive, Gift } from 'lucide-react'
+import { Menu, X, User, Briefcase, Heart, Home, LogOut, Globe, ChevronDown, Moon, Sun, Crown, Receipt, Users, FolderArchive, Gift, Bell } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useApplications } from '../context/ApplicationContext'
 import { useTheme } from '../context/ThemeContext'
 import { getEntitlements } from '../lib/premiumEntitlements'
+import {
+    NOTIFICATION_SCOPE_COMPANY,
+    NOTIFICATION_SCOPE_STUDENT,
+    NOTIFICATIONS_UPDATED_EVENT,
+    getNotificationStorageKey,
+    getUnreadNotificationCount,
+    migrateLegacyNotifications,
+} from '../lib/notifications'
+import { safeLogError } from '../lib/logger'
 import Logo from './Logo'
 import './Navbar.css'
 
@@ -20,6 +29,7 @@ function Navbar({ isLanding = false }) {
     const isPremiumEnabled = import.meta.env.VITE_PREMIUM_ENABLED !== 'false'
     const [isOpen, setIsOpen] = useState(false)
     const [langOpen, setLangOpen] = useState(false)
+    const [unreadNotifications, setUnreadNotifications] = useState(0)
     const langSwitcherRef = useRef(null)
     const location = useLocation()
     const navigate = useNavigate()
@@ -28,6 +38,9 @@ function Navbar({ isLanding = false }) {
     const { openPremiumUpsell } = useApplications()
     const { theme, setTheme } = useTheme()
     const hasSession = isLoggedIn && !!user
+    const notificationScope = isStudent
+        ? NOTIFICATION_SCOPE_STUDENT
+        : (isCompany ? NOTIFICATION_SCOPE_COMPANY : null)
     const entitlements = getEntitlements(profile)
     const hasActivePremium = entitlements.premiumActive
 
@@ -47,6 +60,7 @@ function Navbar({ isLanding = false }) {
         { to: '/student/swipe', icon: <Home size={18} />, label: t('nav.discover') },
         { to: '/payments', icon: <Receipt size={18} />, label: 'Payments' },
         { to: '/student/referrals', icon: <Gift size={18} />, label: t('nav.referrals') },
+        { to: '/student/notifications', icon: <Bell size={18} />, label: t('nav.notifications'), badge: unreadNotifications },
         { to: '/student/profile', icon: <User size={18} />, label: t('nav.profile') },
     ]
 
@@ -64,6 +78,7 @@ function Navbar({ isLanding = false }) {
         { to: '/company/matches', icon: <Heart size={18} />, label: t('nav.matches') },
         { to: '/company/candidates', icon: <FolderArchive size={18} />, label: t('nav.archived') },
         { to: '/company/post-offer', icon: <Briefcase size={18} />, label: t('nav.postJob') },
+        { to: '/company/notifications', icon: <Bell size={18} />, label: t('nav.notifications'), badge: unreadNotifications },
         { to: '/company/profile', icon: <User size={18} />, label: t('nav.profile') },
     ]
 
@@ -93,7 +108,7 @@ function Navbar({ isLanding = false }) {
             navigate('/')
             setIsOpen(false)
         } catch (err) {
-            console.error('[Navbar] Logout failed:', err)
+            safeLogError('[Navbar] logout failed', { error: err })
         }
     }
 
@@ -126,6 +141,38 @@ function Navbar({ isLanding = false }) {
         document.addEventListener('mousedown', handleOutsideClick)
         return () => document.removeEventListener('mousedown', handleOutsideClick)
     }, [langOpen])
+
+    useEffect(() => {
+        if (!hasSession || !notificationScope) {
+            setUnreadNotifications(0)
+            return undefined
+        }
+
+        migrateLegacyNotifications()
+        const scopeStorageKey = getNotificationStorageKey(notificationScope)
+        const refreshUnreadCount = () => {
+            setUnreadNotifications(getUnreadNotificationCount(notificationScope))
+        }
+        const handleStorage = (event) => {
+            if (!event.key || event.key === scopeStorageKey) {
+                refreshUnreadCount()
+            }
+        }
+        const handleScopedUpdate = (event) => {
+            const eventScope = event?.detail?.scope
+            if (!eventScope || eventScope === notificationScope) {
+                refreshUnreadCount()
+            }
+        }
+
+        refreshUnreadCount()
+        window.addEventListener('storage', handleStorage)
+        window.addEventListener(NOTIFICATIONS_UPDATED_EVENT, handleScopedUpdate)
+        return () => {
+            window.removeEventListener('storage', handleStorage)
+            window.removeEventListener(NOTIFICATIONS_UPDATED_EVENT, handleScopedUpdate)
+        }
+    }, [hasSession, notificationScope])
 
     useEffect(() => {
         document.body.classList.toggle('navbar-menu-open', isOpen)
@@ -162,6 +209,11 @@ function Navbar({ isLanding = false }) {
                         >
                             {link.icon}
                             <span>{link.label}</span>
+                            {Number.isFinite(link.badge) && link.badge > 0 && (
+                                <span className="navbar-notification-badge" aria-label={`${link.badge} unread notifications`}>
+                                    {link.badge > 99 ? '99+' : link.badge}
+                                </span>
+                            )}
                         </Link>
                     ))}
 

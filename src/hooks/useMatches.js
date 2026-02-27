@@ -2,6 +2,12 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
 import { isPremiumActive } from '../lib/premiumEntitlements'
+import {
+    applyMatchStatusOverrides,
+    readMatchStatusOverrides,
+    setMatchStatusOverride,
+} from '../lib/companyMatchIntelligence'
+import { safeLogError, safeLogWarn } from '../lib/logger'
 
 async function fetchPremiumFlags(studentIds) {
     if (!Array.isArray(studentIds) || studentIds.length === 0) {
@@ -14,7 +20,7 @@ async function fetchPremiumFlags(studentIds) {
         .in('id', studentIds)
 
     if (error) {
-        console.warn('[useMatches] premium flags lookup failed:', error.message)
+        safeLogWarn('[useMatches] premium flags lookup failed', { error })
         return new Map()
     }
 
@@ -64,17 +70,8 @@ export function useMatches() {
     const abortRef = useRef(null)
 
     const fetchMatches = useCallback(async (forceRefresh = false) => {
-        console.log('[useMatches] fetchMatches called:', {
-            userId: user?.id,
-            hasProfile: !!profile,
-            isStudent,
-            isCompany,
-            forceRefresh
-        })
-
         // No user or profile - stop loading
         if (!user || !profile) {
-            console.log('[useMatches] No user or profile, setting loading=false')
             if (isMounted.current) {
                 setLoading(false)
                 setMatches([])
@@ -96,7 +93,6 @@ export function useMatches() {
 
         // Return cached data immediately (stale-while-revalidate)
         if (cacheValid && !forceRefresh) {
-            console.log('[useMatches] Using cached data, setting loading=false')
             if (isMounted.current) {
                 setMatches(cache.data)
                 setLoading(false)
@@ -110,9 +106,6 @@ export function useMatches() {
         }
 
         try {
-            // Build query based on user type
-            console.log('[useMatches] Building query for:', role, 'id:', user.id)
-
             let query = supabase
                 .from('matches')
                 .select(`
@@ -136,20 +129,13 @@ export function useMatches() {
                 query = query.eq('company_id', user.id)
             }
 
-            console.log('[useMatches] Executing matches query...')
             const { data, error: fetchError } = await query
 
             // If aborted, bail silently
             if (controller.signal.aborted) return
 
-            console.log('[useMatches] Matches query result:', {
-                data: data,
-                error: fetchError,
-                count: data?.length
-            })
-
             if (fetchError) {
-                console.error('[useMatches] Matches query ERROR:', fetchError.code, fetchError.message)
+                safeLogError('[useMatches] matches query failed', { error: fetchError })
                 if (isMounted.current) {
                     setError(`Failed to load matches: ${fetchError.message} (code: ${fetchError.code})`)
                     setMatches([])
@@ -180,10 +166,13 @@ export function useMatches() {
                 }))
             }
 
+            if (normalizedMatches.length > 0) {
+                const statusOverrides = readMatchStatusOverrides()
+                normalizedMatches = applyMatchStatusOverrides(normalizedMatches, statusOverrides)
+            }
+
             // Update user-scoped cache
             setCacheEntry(user.id, role, normalizedMatches)
-
-            console.log('[useMatches] Success, found', normalizedMatches.length || 0, 'matches, setting loading=false')
 
             if (isMounted.current) {
                 setMatches(normalizedMatches)
@@ -192,7 +181,7 @@ export function useMatches() {
             }
         } catch (err) {
             if (err.name === 'AbortError') return // expected, ignore
-            console.error('[useMatches] Unexpected exception:', err)
+            safeLogError('[useMatches] unexpected exception', { error: err })
             if (isMounted.current) {
                 setError(err.message || 'Failed to load matches')
                 setMatches([])
@@ -206,16 +195,13 @@ export function useMatches() {
     }, [fetchMatches])
 
     const archiveMatch = useCallback(async (matchId) => {
-        console.log('[useMatches] archiveMatch called:', matchId)
-
         const { error } = await supabase
             .from('matches')
             .update({ status: 'archived' })
             .eq('id', matchId)
 
-        console.log('[useMatches] archiveMatch result:', { error })
-
         if (!error) {
+            setMatchStatusOverride(matchId, 'archived')
             setMatches(prev => prev.filter(m => m.id !== matchId))
             // Invalidate user-scoped cache
             invalidateCache(user?.id, isStudent ? 'student' : 'company')

@@ -1,16 +1,30 @@
-import { useEffect, useRef, useState } from 'react'
-import { useNavigate, Link, useSearchParams } from 'react-router-dom'
-import { Mail, Lock, User, ArrowRight, GraduationCap, Loader2, AlertCircle, RefreshCw } from 'lucide-react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { useNavigate, Link, useLocation, useSearchParams } from 'react-router-dom'
+import { Mail, Lock, User, ArrowRight, GraduationCap, Loader2, AlertCircle, RefreshCw, X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../context/AuthContext'
 import { track } from '../../lib/analytics'
 import { validatePassword, validateEmail, validateName, getAuthErrorMessage, TUNISIAN_UNIVERSITIES } from '../../lib/validation'
 import PasswordInput from '../../components/forms/PasswordInput'
+import AuthToast from '../../components/AuthToast'
+import {
+    INBOUND_REFERRAL_CODE_KEY,
+    INBOUND_REFERRAL_SEEN_AT_KEY,
+    buildReferralInviteLink,
+    isValidReferralCode,
+    normalizeReferralCode,
+    resolveMyReferralCode,
+} from '../../lib/referrals'
+import {
+    readStorageString,
+    removeStorageKeys,
+    writeStorageString,
+} from '../../lib/localStorageState'
 import './StudentSignup.css'
 import './StudentAuthLayout.css'
 
-const REFERRAL_ATTRIBUTION_KEY = 'matchop_referral_attribution'
-const REFERRAL_QUERY_PATTERN = /^MOP-[A-Z0-9]{8}$/
+const REFERRAL_BANNER_TTL_MS = 24 * 60 * 60 * 1000
+const STUDENT_SIGNUP_PATH = '/student/signup'
 
 /**
  * Student Signup Page
@@ -18,10 +32,11 @@ const REFERRAL_QUERY_PATTERN = /^MOP-[A-Z0-9]{8}$/
  */
 function StudentSignup() {
     const navigate = useNavigate()
+    const location = useLocation()
     const { t } = useTranslation()
     const [searchParams] = useSearchParams()
     const { signUp, resendVerificationEmail } = useAuth()
-    const trackedRef = useRef(null)
+    const trackedReferralRef = useRef(null)
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -30,7 +45,10 @@ function StudentSignup() {
         major: '',
         graduationYear: '',
     })
-    const [referralAttribution, setReferralAttribution] = useState(null)
+    const [referralCode, setReferralCode] = useState(() => readStorageString(INBOUND_REFERRAL_CODE_KEY, ''))
+    const [showReferralBanner, setShowReferralBanner] = useState(false)
+    const [showInviteFollowup, setShowInviteFollowup] = useState(false)
+    const [toast, setToast] = useState(null)
     const [error, setError] = useState('')
     const [isLoading, setIsLoading] = useState(false)
     const [showEmailVerification, setShowEmailVerification] = useState(false)
@@ -39,17 +57,46 @@ function StudentSignup() {
     const [resendStatus, setResendStatus] = useState('')
     const [resendCooldown, setResendCooldown] = useState(0)
 
-    useEffect(() => {
-        const maybeRef = (searchParams.get('ref') || '').trim().toUpperCase()
-        if (!REFERRAL_QUERY_PATTERN.test(maybeRef)) return
-        if (trackedRef.current === maybeRef) return
+    const inviteLink = useMemo(() => {
+        const myCode = resolveMyReferralCode(null)
+        return buildReferralInviteLink(myCode)
+    }, [])
 
-        trackedRef.current = maybeRef
-        const captured = { ref: maybeRef, capturedAt: new Date().toISOString() }
-        setReferralAttribution(captured)
-        localStorage.setItem(REFERRAL_ATTRIBUTION_KEY, JSON.stringify(captured))
-        track('referral_signup_attributed', { ref: maybeRef })
-    }, [searchParams])
+    useEffect(() => {
+        if (location.pathname !== STUDENT_SIGNUP_PATH) {
+            setShowReferralBanner(false)
+            return
+        }
+
+        const queryRef = normalizeReferralCode(searchParams.get('ref'))
+        if (!isValidReferralCode(queryRef)) return
+
+        const storedInboundCode = normalizeReferralCode(readStorageString(INBOUND_REFERRAL_CODE_KEY, ''))
+        const seenAtRaw = readStorageString(INBOUND_REFERRAL_SEEN_AT_KEY, '')
+        const seenAtMs = Date.parse(seenAtRaw || '')
+        const isSeenTimestampValid = Number.isFinite(seenAtMs)
+        const isExpired = isSeenTimestampValid && (Date.now() - seenAtMs) > REFERRAL_BANNER_TTL_MS
+        const isSameCode = storedInboundCode === queryRef
+
+        if (!isSameCode || !isSeenTimestampValid) {
+            writeStorageString(INBOUND_REFERRAL_CODE_KEY, queryRef)
+            writeStorageString(INBOUND_REFERRAL_SEEN_AT_KEY, new Date().toISOString())
+            setReferralCode(queryRef)
+            setShowReferralBanner(true)
+        } else {
+            setReferralCode(storedInboundCode || queryRef)
+            setShowReferralBanner(false)
+        }
+
+        if (isSameCode && isExpired) {
+            setShowReferralBanner(false)
+        }
+
+        if (trackedReferralRef.current !== queryRef) {
+            trackedReferralRef.current = queryRef
+            track('referral_signup_attributed', { ref: queryRef })
+        }
+    }, [location.pathname, searchParams])
 
     const handleChange = (e) => {
         const { name, value } = e.target
@@ -101,7 +148,7 @@ function StudentSignup() {
                     university: formData.university,
                     major: formData.major,
                     graduationYear: formData.graduationYear,
-                    referralCode: referralAttribution?.ref || undefined
+                    referralCode: referralCode || undefined
                 }
             )
 
@@ -110,19 +157,44 @@ function StudentSignup() {
                 return
             }
 
-            if (referralAttribution?.ref) {
-                setReferralAppliedNotice(t('referrals.signupApplied', { ref: referralAttribution.ref }))
+            if (referralCode) {
+                setReferralAppliedNotice(t('referrals.signupApplied', { ref: referralCode }))
             }
+
+            removeStorageKeys([INBOUND_REFERRAL_CODE_KEY, INBOUND_REFERRAL_SEEN_AT_KEY])
+            setShowReferralBanner(false)
+            setReferralCode('')
+            setShowInviteFollowup(true)
 
             if (needsEmailVerification) {
                 setShowEmailVerification(true)
             } else if (data?.user) {
-                navigate('/student/profile')
+                navigate('/student/profile', {
+                    state: {
+                        referralFollowUp: true
+                    }
+                })
             }
         } catch (err) {
             setError(getAuthErrorMessage(err))
         } finally {
             setIsLoading(false)
+        }
+    }
+
+    const handleDismissReferralBanner = () => {
+        setShowReferralBanner(false)
+    }
+
+    const handleCopyInviteLink = async () => {
+        try {
+            if (!navigator?.clipboard?.writeText) {
+                throw new Error('Clipboard API unavailable')
+            }
+            await navigator.clipboard.writeText(inviteLink)
+            setToast({ type: 'success', message: t('referrals.toast.copyLinkSuccess') })
+        } catch {
+            setToast({ type: 'error', message: t('referrals.toast.copyFailed') })
         }
     }
 
@@ -154,6 +226,14 @@ function StudentSignup() {
     if (showEmailVerification) {
         return (
             <div className="student-auth-page page-shell">
+                {toast && (
+                    <AuthToast
+                        type={toast.type}
+                        message={toast.message}
+                        duration={2500}
+                        onClose={() => setToast(null)}
+                    />
+                )}
                 <div className="student-auth-verify-card glass-card">
                     <div className="student-auth-verify-icon">
                         <Mail size={64} />
@@ -201,6 +281,24 @@ function StudentSignup() {
                             <p className="student-auth-feedback error">Failed to resend. Please try again later.</p>
                         )}
                     </div>
+                    {showInviteFollowup && (
+                        <section className="student-signup-followup-card" aria-label="Invite your friends too">
+                            <h3>{t('referrals.signupFlow.followupTitle')}</h3>
+                            <p>{t('referrals.signupFlow.followupSubtitle')}</p>
+                            <div className="student-signup-followup-actions">
+                                <Link to="/student/referrals" className="btn btn-secondary">
+                                    {t('referrals.signupFlow.openReferrals')}
+                                </Link>
+                                <button
+                                    type="button"
+                                    className="btn btn-secondary"
+                                    onClick={handleCopyInviteLink}
+                                >
+                                    {t('referrals.signupFlow.copyInviteLink')}
+                                </button>
+                            </div>
+                        </section>
+                    )}
                 </div>
             </div>
         )
@@ -208,6 +306,14 @@ function StudentSignup() {
 
     return (
         <div className="student-auth-page page-shell">
+            {toast && (
+                <AuthToast
+                    type={toast.type}
+                    message={toast.message}
+                    duration={2500}
+                    onClose={() => setToast(null)}
+                />
+            )}
             <div className="student-auth-container student-auth-container--signup glass-card hover-lift">
                 <div className="student-auth-header">
                     <div className="student-auth-icon-wrapper">
@@ -218,10 +324,23 @@ function StudentSignup() {
                 </div>
 
                 <div className="student-auth-form-wrapper">
-                    {referralAttribution?.ref && (
-                        <div className="student-signup-referral-note">
-                            {t('referrals.signupAttribution', { ref: referralAttribution.ref })}
-                        </div>
+                    {showReferralBanner && referralCode && (
+                        <section className="student-signup-referral-card" aria-live="polite">
+                            <div className="student-signup-referral-card-header">
+                                <div>
+                                    <h2>{t('referrals.signupFlow.invitedTitle')}</h2>
+                                    <p>{t('referrals.signupFlow.invitedSubtitle')}</p>
+                                </div>
+                                <button
+                                    type="button"
+                                    className="student-signup-referral-dismiss"
+                                    onClick={handleDismissReferralBanner}
+                                    aria-label={t('referrals.signupFlow.dismissAria')}
+                                >
+                                    <X size={16} />
+                                </button>
+                            </div>
+                        </section>
                     )}
 
                     {error && (
