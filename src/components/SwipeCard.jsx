@@ -3,6 +3,7 @@ import { motion, useMotionValue, useTransform, useAnimation } from 'framer-motio
 import { MapPin, Briefcase, DollarSign, Clock, Info, Sparkles, ExternalLink, Crown, EyeOff, Coins } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import VerificationBadge from './VerificationBadge'
+import { useBilingualText } from '../lib/useBilingualText'
 import './SwipeCard.css'
 
 /**
@@ -11,6 +12,7 @@ import './SwipeCard.css'
  */
 const SwipeCard = forwardRef(function SwipeCard({ offer, onSwipe, onSwipeStart, isTop, onViewDetails }, ref) {
     void motion
+    const tr = useBilingualText()
 
     const x = useMotionValue(0)
     const rotate = useTransform(x, [-200, 200], [-25, 25]) // Slightly reduced rotation for stability
@@ -91,19 +93,19 @@ const SwipeCard = forwardRef(function SwipeCard({ offer, onSwipe, onSwipeStart, 
                 className={`swipe-indicator like ${offer.isExternal ? 'apply' : ''}`}
                 style={{ opacity: likeOpacity }}
             >
-                {offer.isExternal ? 'APPLY' : 'LIKE'}
+                {offer.isExternal ? tr('APPLY', 'POSTULER') : tr('LIKE', "J'AIME")}
             </motion.div>
             <motion.div
                 className="swipe-indicator pass"
                 style={{ opacity: passOpacity }}
             >
-                PASS
+                {tr('PASS', 'PASSER')}
             </motion.div>
 
             {/* View Details Hint */}
             <div className="view-details-hint">
                 <Info size={14} />
-                <span>Tap for details</span>
+                <span>{tr('Tap for details', 'Touchez pour les details')}</span>
             </div>
 
             <CardContent offer={offer} />
@@ -114,6 +116,7 @@ const SwipeCard = forwardRef(function SwipeCard({ offer, onSwipe, onSwipeStart, 
 // Reusable card content component
 function CardContent({ offer }) {
     const { t } = useTranslation()
+    const tr = useBilingualText()
     const matchPercent = offer.matchScore ? Math.round(offer.matchScore * 100) : null
 
     return (
@@ -122,7 +125,7 @@ function CardContent({ offer }) {
             {matchPercent && (
                 <div className="match-score-badge">
                     <Sparkles size={14} />
-                    <span>{matchPercent}% Match</span>
+                    <span>{matchPercent}% {tr('Match', 'Compatibilite')}</span>
                 </div>
             )}
 
@@ -152,7 +155,7 @@ function CardContent({ offer }) {
             {offer.isExternal && (
                 <div className="external-source-badge">
                     <ExternalLink size={12} />
-                    <span>{offer.sourceWebsite || 'External'}</span>
+                    <span>{offer.sourceWebsite || tr('External', 'Externe')}</span>
                 </div>
             )}
 
@@ -174,19 +177,19 @@ function CardContent({ offer }) {
                             size="xs"
                         />
                     </h3>
-                    <span className="badge badge-primary">{offer.type || 'Full-time'}</span>
+                    <span className="badge badge-primary">{offer.type || tr('Full-time', 'Temps plein')}</span>
                 </div>
             </div>
 
             {/* Job Details */}
             <div className="card-body">
                 <h2 className="job-title">{offer.title}</h2>
-                <p className="job-description">{offer.description || 'No description available'}</p>
+                <p className="job-description">{offer.description || tr('No description available', 'Aucune description disponible')}</p>
 
                 <div className="job-details">
                     <div className="detail-item">
                         <MapPin size={16} />
-                        <span>{offer.location || 'Remote'}</span>
+                        <span>{offer.location || tr('Remote', 'A distance')}</span>
                     </div>
                     {offer.department && (
                         <div className="detail-item">
@@ -196,7 +199,7 @@ function CardContent({ offer }) {
                     )}
                     <div className="detail-item">
                         <DollarSign size={16} />
-                        <span>{offer.salary || 'Competitive'}</span>
+                        <span>{offer.salary || tr('Competitive', 'Competitif')}</span>
                     </div>
                     {offer.duration && (
                         <div className="detail-item">

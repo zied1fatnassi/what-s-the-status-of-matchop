@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { motion, useAnimationFrame, useMotionValue, useReducedMotion, useTransform } from 'framer-motion'
+import { useBilingualText } from '../lib/useBilingualText'
 
 const CANDIDATES = [
     { name: 'Karim Beguir', match: 97, image: '/karim beguir.jpg' },
@@ -87,6 +88,7 @@ function PipelineNode({
 }
 
 function CandidatePipelineLoop() {
+    const tr = useBilingualText()
     const progress = useMotionValue(0)
     const shouldReduceMotion = useReducedMotion()
     const [hoverCount, setHoverCount] = useState(0)
@@ -128,8 +130,8 @@ function CandidatePipelineLoop() {
                 ))}
 
                 <div className="pipeline-core">
-                    <span className="pipeline-core-label">Candidate Pipeline</span>
-                    <span className="pipeline-core-value">Live Profiles</span>
+                    <span className="pipeline-core-label">{tr('Candidate Pipeline', 'Pipeline candidats')}</span>
+                    <span className="pipeline-core-value">{tr('Live Profiles', 'Profils en direct')}</span>
                 </div>
             </div>
         </div>

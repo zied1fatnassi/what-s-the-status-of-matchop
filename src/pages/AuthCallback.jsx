@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Loader2, CheckCircle, XCircle } from 'lucide-react'
 import { supabase } from '../lib/supabase'
+import { useBilingualText } from '../lib/useBilingualText'
 
 const MIN_CHECK_MS = 500
 const REDIRECT_DELAY_MS = 900
@@ -18,7 +19,7 @@ function decodeDescription(value) {
     }
 }
 
-function normalizeFailureMessage(errorCode, description, exchangeMessage) {
+function normalizeFailureMessage(errorCode, description, exchangeMessage, tr) {
     const raw = `${errorCode || ''} ${description || ''} ${exchangeMessage || ''}`.toLowerCase()
 
     const looksExpiredOrUsed =
@@ -30,10 +31,16 @@ function normalizeFailureMessage(errorCode, description, exchangeMessage) {
         raw.includes('code verifier')
 
     if (looksExpiredOrUsed) {
-        return 'This link is invalid or already used. If your account is already verified, sign in normally.'
+        return tr(
+            'This link is invalid or already used. If your account is already verified, sign in normally.',
+            'Ce lien est invalide ou deja utilise. Si votre compte est deja verifie, connectez-vous normalement.'
+        )
     }
 
-    return description || exchangeMessage || 'Authentication failed. Please request a new link.'
+    return description || exchangeMessage || tr(
+        'Authentication failed. Please request a new link.',
+        "Echec de l'authentification. Veuillez demander un nouveau lien."
+    )
 }
 
 function clearAuthParamsFromUrl() {
@@ -74,6 +81,7 @@ function clearAuthParamsFromUrl() {
  */
 function AuthCallback() {
     const navigate = useNavigate()
+    const tr = useBilingualText()
     const [status, setStatus] = useState('checking') // 'checking' | 'success' | 'error'
     const [errorMessage, setErrorMessage] = useState('')
 
@@ -156,7 +164,7 @@ function AuthCallback() {
                             return
                         }
 
-                        await finishError(normalizeFailureMessage(errorCode, errorDescription, error.message))
+                        await finishError(normalizeFailureMessage(errorCode, errorDescription, error.message, tr))
                         return
                     }
                 }
@@ -172,7 +180,7 @@ function AuthCallback() {
                         return
                     }
 
-                    await finishError(normalizeFailureMessage(errorCode, errorDescription, ''))
+                    await finishError(normalizeFailureMessage(errorCode, errorDescription, '', tr))
                     return
                 }
 
@@ -185,7 +193,10 @@ function AuthCallback() {
                     return
                 }
 
-                await finishError('No active verification session was found. If your email is already verified, sign in normally.')
+                await finishError(tr(
+                    'No active verification session was found. If your email is already verified, sign in normally.',
+                    'Aucune session de verification active trouvee. Si votre email est deja verifie, connectez-vous normalement.'
+                ))
             } catch (err) {
                 console.error('[AuthCallback] Unexpected error:', err)
 
@@ -200,8 +211,10 @@ function AuthCallback() {
                     // ignore
                 }
 
-                const message = err instanceof Error ? err.message : 'An unexpected error occurred.'
-                await finishError(normalizeFailureMessage('', '', message))
+                const message = err instanceof Error
+                    ? err.message
+                    : tr('An unexpected error occurred.', 'Une erreur inattendue est survenue.')
+                await finishError(normalizeFailureMessage('', '', message, tr))
             }
         }
 
@@ -235,9 +248,12 @@ function AuthCallback() {
                 {status === 'checking' && (
                     <>
                         <Loader2 size={48} className="animate-spin" style={{ color: 'var(--primary)' }} />
-                        <h2 style={{ margin: 0 }}>Verifying your email...</h2>
+                        <h2 style={{ margin: 0 }}>{tr('Verifying your email...', 'Verification de votre email...')}</h2>
                         <p style={{ color: 'var(--text-secondary)', margin: 0 }}>
-                            Please wait while we confirm your account status.
+                            {tr(
+                                'Please wait while we confirm your account status.',
+                                'Veuillez patienter pendant la verification de votre compte.'
+                            )}
                         </p>
                     </>
                 )}
@@ -245,9 +261,12 @@ function AuthCallback() {
                 {status === 'success' && (
                     <>
                         <CheckCircle size={48} style={{ color: 'var(--success, #22c55e)' }} />
-                        <h2 style={{ margin: 0 }}>Email Verified!</h2>
+                        <h2 style={{ margin: 0 }}>{tr('Email Verified!', 'Email verifie !')}</h2>
                         <p style={{ color: 'var(--text-secondary)', margin: 0 }}>
-                            Your account is confirmed. Redirecting to your dashboard...
+                            {tr(
+                                'Your account is confirmed. Redirecting to your dashboard...',
+                                'Votre compte est confirme. Redirection vers votre tableau de bord...'
+                            )}
                         </p>
                     </>
                 )}
@@ -255,7 +274,7 @@ function AuthCallback() {
                 {status === 'error' && (
                     <>
                         <XCircle size={48} style={{ color: 'var(--error, #ef4444)' }} />
-                        <h2 style={{ margin: 0 }}>Verification Failed</h2>
+                        <h2 style={{ margin: 0 }}>{tr('Verification Failed', 'Echec de verification')}</h2>
                         <p style={{ color: 'var(--text-secondary)', margin: 0 }}>
                             {errorMessage}
                         </p>
@@ -264,13 +283,13 @@ function AuthCallback() {
                                 className="btn btn-primary"
                                 onClick={() => navigate('/login')}
                             >
-                                Go to Login
+                                {tr('Go to Login', 'Aller a la connexion')}
                             </button>
                             <button
                                 className="btn btn-secondary"
                                 onClick={() => navigate('/signup')}
                             >
-                                Sign Up Again
+                                {tr('Sign Up Again', "S'inscrire a nouveau")}
                             </button>
                         </div>
                     </>

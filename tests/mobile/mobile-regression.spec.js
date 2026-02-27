@@ -27,6 +27,7 @@ const studentRoutes = [
 
 const companyRoutes = [
     '/company/profile',
+    '/company/offers',
     '/company/post-offer',
     '/company/candidates',
     '/company/intros',
@@ -135,10 +136,14 @@ test('Modal opens/closes with overlay scroll lock', async ({ page }) => {
     await expect.poll(() => page.evaluate(() => document.body.classList.contains('overlay-open'))).toBe(false)
 })
 
-test('Student chat input remains visible near bottom safe area', async ({ page }) => {
+test('Student conversation composer remains visible near bottom safe area', async ({ page }) => {
     await gotoRoleRoute(page, '/student/chat/test-match', 'student')
 
-    const inputContainer = page.locator('.chat-input-container')
+    const threadButton = page.locator('.conversation-list__item').first()
+    await expect(threadButton).toBeVisible()
+    await threadButton.click()
+
+    const inputContainer = page.locator('.conversation-composer')
     await expect(inputContainer).toBeVisible()
 
     const [box, viewport] = await Promise.all([

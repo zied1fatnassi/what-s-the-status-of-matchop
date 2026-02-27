@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
 import { lockOverlayScroll, unlockOverlayScroll } from '../../lib/overlayLock'
+import { useBilingualText } from '../../lib/useBilingualText'
 import './Admin.css'
 
 export default function AdminUsers() {
+    const tr = useBilingualText()
     const [users, setUsers] = useState([])
     const [loading, setLoading] = useState(true)
     const [searchTerm, setSearchTerm] = useState('')
@@ -39,20 +41,23 @@ export default function AdminUsers() {
             }
 
             const { data, count, error } = await query
-
             if (error) throw error
 
-            // Client-side role filter using user_profiles
             let filtered = data || []
             if (roleFilter !== 'all') {
-                filtered = filtered.filter(u => {
+                filtered = filtered.filter((u) => {
                     const ups = u.user_profiles || []
-                    return ups.some(up => up.profile_type === roleFilter)
+                    return ups.some((up) => up.profile_type === roleFilter)
                 })
             }
 
+            if (statusFilter !== 'all') {
+                const wantSuspended = statusFilter === 'suspended'
+                filtered = filtered.filter((u) => Boolean(u.suspended) === wantSuspended)
+            }
+
             setUsers(filtered)
-            setTotalCount(roleFilter === 'all' ? (count || 0) : filtered.length)
+            setTotalCount(roleFilter === 'all' && statusFilter === 'all' ? (count || 0) : filtered.length)
         } catch (error) {
             console.error('Error fetching users:', error)
         } finally {
@@ -69,19 +74,16 @@ export default function AdminUsers() {
 
             if (error) throw error
 
-            // Log action
             await logAdminAction(`${suspended ? 'Suspended' : 'Activated'} user`, userId)
-
             fetchUsers()
         } catch (error) {
             console.error('Error updating user:', error)
-            alert('Failed to update user status')
+            alert(tr('Failed to update user status', "Echec de mise a jour du statut utilisateur"))
         }
     }
 
     async function updateUserRole(userId, newProfileType) {
         try {
-            // Find the user's default user_profile and update its profile_type
             const { data: ups, error: fetchErr } = await supabase
                 .from('user_profiles')
                 .select('id')
@@ -103,7 +105,7 @@ export default function AdminUsers() {
             setShowModal(false)
         } catch (error) {
             console.error('Error updating role:', error)
-            alert('Failed to update user role')
+            alert(tr('Failed to update user role', 'Echec de mise a jour du role utilisateur'))
         }
     }
 
@@ -119,32 +121,40 @@ export default function AdminUsers() {
     }
 
     const totalPages = Math.ceil(totalCount / pageSize)
+    const roleLabel = (role) => {
+        const map = {
+            student: tr('Student', 'Etudiant'),
+            company: tr('Company', 'Entreprise'),
+            admin: tr('Admin', 'Admin'),
+            unknown: tr('Unknown', 'Inconnu')
+        }
+        return map[role] || role
+    }
 
     function getUserDisplayName(user) {
         if (user.students?.full_name) return user.students.full_name
         if (user.companies?.company_name) return user.companies.company_name
-        return user.email?.split('@')[0] || 'Unknown'
+        return user.email?.split('@')[0] || tr('Unknown', 'Inconnu')
     }
 
     function getUserRole(user) {
         const ups = user.user_profiles || []
-        const defaultUp = ups.find(up => up.is_default) || ups[0]
+        const defaultUp = ups.find((up) => up.is_default) || ups[0]
         return defaultUp?.profile_type || 'unknown'
     }
 
     return (
         <div className="admin-container">
             <div className="admin-header">
-                <h1>👥 User Management</h1>
-                <p>Manage all users in the system</p>
+                <h1>{tr('User Management', 'Gestion des utilisateurs')}</h1>
+                <p>{tr('Manage all users in the system', 'Gerer tous les utilisateurs du systeme')}</p>
             </div>
 
-            {/* Toolbar */}
             <div className="admin-toolbar">
                 <input
                     type="text"
                     className="admin-search"
-                    placeholder="Search by email..."
+                    placeholder={tr('Search by email...', 'Rechercher par email...')}
                     value={searchTerm}
                     onChange={(e) => {
                         setSearchTerm(e.target.value)
@@ -160,10 +170,10 @@ export default function AdminUsers() {
                         setCurrentPage(1)
                     }}
                 >
-                    <option value="all">All Roles</option>
-                    <option value="student">Students</option>
-                    <option value="company">Companies</option>
-                    <option value="admin">Admins</option>
+                    <option value="all">{tr('All Roles', 'Tous les roles')}</option>
+                    <option value="student">{tr('Students', 'Etudiants')}</option>
+                    <option value="company">{tr('Companies', 'Entreprises')}</option>
+                    <option value="admin">{tr('Admins', 'Admins')}</option>
                 </select>
 
                 <select
@@ -174,47 +184,46 @@ export default function AdminUsers() {
                         setCurrentPage(1)
                     }}
                 >
-                    <option value="all">All Status</option>
-                    <option value="active">Active</option>
-                    <option value="suspended">Suspended</option>
+                    <option value="all">{tr('All Status', 'Tous les statuts')}</option>
+                    <option value="active">{tr('Active', 'Actif')}</option>
+                    <option value="suspended">{tr('Suspended', 'Suspendu')}</option>
                 </select>
             </div>
 
-            {/* Users Table */}
             <div className="admin-section">
                 {loading ? (
-                    <div className="admin-loading">Loading users...</div>
+                    <div className="admin-loading">{tr('Loading users...', 'Chargement des utilisateurs...')}</div>
                 ) : (
                     <>
                         <div className="admin-table-container">
                             <table className="admin-table">
                                 <thead>
                                     <tr>
-                                        <th>User</th>
-                                        <th>Email</th>
-                                        <th>Role</th>
-                                        <th>Status</th>
-                                        <th>Joined</th>
-                                        <th>Actions</th>
+                                        <th>{tr('User', 'Utilisateur')}</th>
+                                        <th>{tr('Email', 'Email')}</th>
+                                        <th>{tr('Role', 'Role')}</th>
+                                        <th>{tr('Status', 'Statut')}</th>
+                                        <th>{tr('Joined', 'Inscription')}</th>
+                                        <th>{tr('Actions', 'Actions')}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {users.map(user => (
+                                    {users.map((user) => (
                                         <tr key={user.id}>
-                                            <td data-label="User">{getUserDisplayName(user)}</td>
-                                            <td data-label="Email">{user.email}</td>
-                                            <td data-label="Role">
+                                            <td data-label={tr('User', 'Utilisateur')}>{getUserDisplayName(user)}</td>
+                                            <td data-label={tr('Email', 'Email')}>{user.email}</td>
+                                            <td data-label={tr('Role', 'Role')}>
                                                 <span className={`status-badge status-${getUserRole(user) === 'admin' ? 'active' : 'pending'}`}>
-                                                    {getUserRole(user)}
+                                                    {roleLabel(getUserRole(user))}
                                                 </span>
                                             </td>
-                                            <td data-label="Status">
+                                            <td data-label={tr('Status', 'Statut')}>
                                                 <span className={`status-badge ${user.suspended ? 'status-suspended' : 'status-active'}`}>
-                                                    {user.suspended ? 'Suspended' : 'Active'}
+                                                    {user.suspended ? tr('Suspended', 'Suspendu') : tr('Active', 'Actif')}
                                                 </span>
                                             </td>
-                                            <td data-label="Joined">{new Date(user.created_at).toLocaleDateString()}</td>
-                                            <td data-label="Actions" className="admin-actions-cell">
+                                            <td data-label={tr('Joined', 'Inscription')}>{new Date(user.created_at).toLocaleDateString()}</td>
+                                            <td data-label={tr('Actions', 'Actions')} className="admin-actions-cell">
                                                 <button
                                                     className="admin-btn admin-btn-primary admin-btn-sm"
                                                     onClick={() => {
@@ -222,21 +231,21 @@ export default function AdminUsers() {
                                                         setShowModal(true)
                                                     }}
                                                 >
-                                                    Edit
+                                                    {tr('Edit', 'Modifier')}
                                                 </button>
                                                 {user.suspended ? (
                                                     <button
                                                         className="admin-btn admin-btn-success admin-btn-sm"
                                                         onClick={() => updateUserStatus(user.id, false)}
                                                     >
-                                                        Activate
+                                                        {tr('Activate', 'Activer')}
                                                     </button>
                                                 ) : (
                                                     <button
                                                         className="admin-btn admin-btn-warning admin-btn-sm"
                                                         onClick={() => updateUserStatus(user.id, true)}
                                                     >
-                                                        Suspend
+                                                        {tr('Suspend', 'Suspendre')}
                                                     </button>
                                                 )}
                                             </td>
@@ -246,21 +255,20 @@ export default function AdminUsers() {
                             </table>
                         </div>
 
-                        {/* Pagination */}
                         {totalPages > 1 && (
                             <div className="admin-pagination">
                                 <button
                                     disabled={currentPage === 1}
-                                    onClick={() => setCurrentPage(p => p - 1)}
+                                    onClick={() => setCurrentPage((p) => p - 1)}
                                 >
-                                    Previous
+                                    {tr('Previous', 'Precedent')}
                                 </button>
-                                <span>Page {currentPage} of {totalPages}</span>
+                                <span>{tr(`Page ${currentPage} of ${totalPages}`, `Page ${currentPage} sur ${totalPages}`)}</span>
                                 <button
                                     disabled={currentPage === totalPages}
-                                    onClick={() => setCurrentPage(p => p + 1)}
+                                    onClick={() => setCurrentPage((p) => p + 1)}
                                 >
-                                    Next
+                                    {tr('Next', 'Suivant')}
                                 </button>
                             </div>
                         )}
@@ -268,26 +276,25 @@ export default function AdminUsers() {
                 )}
             </div>
 
-            {/* Edit User Modal */}
             {showModal && selectedUser && (
                 <div className="admin-modal-overlay" onClick={() => setShowModal(false)}>
-                    <div className="admin-modal" onClick={e => e.stopPropagation()}>
-                        <h2>Edit User</h2>
+                    <div className="admin-modal" onClick={(e) => e.stopPropagation()}>
+                        <h2>{tr('Edit User', "Modifier l'utilisateur")}</h2>
 
                         <div className="admin-form-group">
-                            <label>Email</label>
+                            <label>{tr('Email', 'Email')}</label>
                             <input type="text" value={selectedUser.email} disabled />
                         </div>
 
                         <div className="admin-form-group">
-                            <label>Role</label>
+                            <label>{tr('Role', 'Role')}</label>
                             <select
                                 value={selectedUser._editRole || getUserRole(selectedUser)}
                                 onChange={(e) => setSelectedUser({ ...selectedUser, _editRole: e.target.value })}
                             >
-                                <option value="student">Student</option>
-                                <option value="company">Company</option>
-                                <option value="admin">Admin</option>
+                                <option value="student">{tr('Student', 'Etudiant')}</option>
+                                <option value="company">{tr('Company', 'Entreprise')}</option>
+                                <option value="admin">{tr('Admin', 'Admin')}</option>
                             </select>
                         </div>
 
@@ -296,13 +303,13 @@ export default function AdminUsers() {
                                 className="admin-btn admin-btn-danger"
                                 onClick={() => setShowModal(false)}
                             >
-                                Cancel
+                                {tr('Cancel', 'Annuler')}
                             </button>
                             <button
                                 className="admin-btn admin-btn-success"
                                 onClick={() => updateUserRole(selectedUser.id, selectedUser._editRole || getUserRole(selectedUser))}
                             >
-                                Save Changes
+                                {tr('Save Changes', 'Enregistrer les modifications')}
                             </button>
                         </div>
                     </div>

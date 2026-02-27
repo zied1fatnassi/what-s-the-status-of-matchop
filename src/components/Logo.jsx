@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useBilingualText } from '../lib/useBilingualText'
 import './Logo.css'
 
 /**
@@ -6,6 +7,7 @@ import './Logo.css'
  * Features animated intro with shapes sliding in and diamond pulsing
  */
 function Logo({ size = 'default', showText = true, animated = false, className = '' }) {
+    const tr = useBilingualText()
     const logoRef = useRef(null)
     const [hasAnimated, setHasAnimated] = useState(false)
 
@@ -49,7 +51,7 @@ function Logo({ size = 'default', showText = true, animated = false, className =
                 <div className="logo-text">
                     <span className="brand-name">MatchOp</span>
                     {size !== 'small' && (
-                        <span className="tagline">Match the Opportunity</span>
+                        <span className="tagline">{tr('Match the Opportunity', "Reliez talent et opportunite")}</span>
                     )}
                 </div>
             )}

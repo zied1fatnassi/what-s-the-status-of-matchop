@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Lock, Eye, EyeOff, CheckCircle, Loader2, KeyRound } from 'lucide-react'
 import { validatePassword } from '../lib/validation'
 import { validateResetToken, executePasswordReset, getResetParamsFromURL } from '../lib/passwordReset'
+import { useBilingualText } from '../lib/useBilingualText'
 import '../pages/student/StudentSignup.css'
 
 const STUDENT_LOGIN_PATH = '/student/login'
@@ -22,6 +23,7 @@ const COMPANY_LOGIN_PATH = '/company/login'
  */
 function ResetPassword() {
     const navigate = useNavigate()
+    const tr = useBilingualText()
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
     const [showPassword, setShowPassword] = useState(false)
@@ -44,7 +46,10 @@ function ResetPassword() {
 
                 if (!token || !email) {
                     if (active) {
-                        setError('Invalid reset link. Please request a new password reset.')
+                        setError(tr(
+                            'Invalid reset link. Please request a new password reset.',
+                            'Lien de reinitialisation invalide. Veuillez demander un nouveau lien.'
+                        ))
                         setIsTokenValid(false)
                     }
                     return
@@ -61,13 +66,19 @@ function ResetPassword() {
                     if (result.valid) {
                         setIsTokenValid(true)
                     } else {
-                        setError(result.error || 'Your reset link is invalid or has expired. Please request a new one.')
+                        setError(result.error || tr(
+                            'Your reset link is invalid or has expired. Please request a new one.',
+                            'Votre lien de reinitialisation est invalide ou expire. Veuillez en demander un nouveau.'
+                        ))
                         setIsTokenValid(false)
                     }
                 }
             } catch {
                 if (active) {
-                    setError('Failed to validate reset link. Please try again or request a new one.')
+                    setError(tr(
+                        'Failed to validate reset link. Please try again or request a new one.',
+                        'Impossible de valider le lien. Veuillez reessayer ou demander un nouveau.'
+                    ))
                     setIsTokenValid(false)
                 }
             } finally {
@@ -86,7 +97,10 @@ function ResetPassword() {
         setError('')
 
         if (!isTokenValid || !resetToken || !resetEmail) {
-            setError('Your reset link is invalid or has expired. Please request a new one.')
+            setError(tr(
+                'Your reset link is invalid or has expired. Please request a new one.',
+                'Votre lien de reinitialisation est invalide ou expire. Veuillez en demander un nouveau.'
+            ))
             return
         }
 
@@ -98,7 +112,7 @@ function ResetPassword() {
         }
 
         if (password !== confirmPassword) {
-            setError('Passwords do not match')
+            setError(tr('Passwords do not match', 'Les mots de passe ne correspondent pas'))
             return
         }
 
@@ -111,13 +125,19 @@ function ResetPassword() {
             if (result.success) {
                 setIsSuccess(true)
             } else {
-                setError(result.error || 'Failed to reset password. Please try again.')
+                setError(result.error || tr(
+                    'Failed to reset password. Please try again.',
+                    'Echec de la reinitialisation du mot de passe. Veuillez reessayer.'
+                ))
             }
         } catch (err) {
             if (err.message?.includes('expired') || err.message?.includes('invalid')) {
-                setError('Your reset token has expired. Please request a new reset link.')
+                setError(tr(
+                    'Your reset token has expired. Please request a new reset link.',
+                    'Votre jeton de reinitialisation a expire. Veuillez demander un nouveau lien.'
+                ))
             } else {
-                setError(err.message || 'An error occurred. Please try again.')
+                setError(err.message || tr('An error occurred. Please try again.', 'Une erreur est survenue. Veuillez reessayer.'))
             }
         } finally {
             setIsLoading(false)
@@ -134,10 +154,10 @@ function ResetPassword() {
         if (/[0-9]/.test(password)) strength += 25
         if (/[^A-Za-z0-9]/.test(password)) strength += 25
 
-        if (strength <= 25) return { strength, label: 'Weak', color: '#ef4444' }
-        if (strength <= 50) return { strength, label: 'Fair', color: '#f59e0b' }
-        if (strength <= 75) return { strength, label: 'Good', color: '#3b82f6' }
-        return { strength, label: 'Strong', color: '#10b981' }
+        if (strength <= 25) return { strength, label: tr('Weak', 'Faible'), color: '#ef4444' }
+        if (strength <= 50) return { strength, label: tr('Fair', 'Moyen'), color: '#f59e0b' }
+        if (strength <= 75) return { strength, label: tr('Good', 'Bon'), color: '#3b82f6' }
+        return { strength, label: tr('Strong', 'Fort'), color: '#10b981' }
     }
 
     const passwordStrength = getPasswordStrength()
@@ -152,22 +172,25 @@ function ResetPassword() {
                             <div className="visual-icon">
                                 <CheckCircle size={64} />
                             </div>
-                            <h2>Password Updated!</h2>
-                            <p>Your password has been changed successfully</p>
+                            <h2>{tr('Password Updated!', 'Mot de passe mis a jour !')}</h2>
+                            <p>{tr('Your password has been changed successfully', 'Votre mot de passe a ete modifie avec succes')}</p>
                         </div>
                     </div>
 
                     <div className="auth-form-container">
                         <div className="auth-header">
-                            <h1>Success!</h1>
-                            <p>Your password has been updated</p>
+                            <h1>{tr('Success!', 'Succes !')}</h1>
+                            <p>{tr('Your password has been updated', 'Votre mot de passe a ete mis a jour')}</p>
                         </div>
 
                         <div className="verification-notice" style={{ marginTop: '2rem' }}>
                             <CheckCircle size={48} style={{ color: '#10b981', marginBottom: '1rem' }} />
-                            <h3>Password Changed Successfully</h3>
+                            <h3>{tr('Password Changed Successfully', 'Mot de passe modifie avec succes')}</h3>
                             <p>
-                                Your password is updated. Choose your sign-in portal below.
+                                {tr(
+                                    'Your password is updated. Choose your sign-in portal below.',
+                                    'Votre mot de passe est mis a jour. Choisissez votre portail de connexion.'
+                                )}
                             </p>
                         </div>
 
@@ -176,13 +199,13 @@ function ResetPassword() {
                                 onClick={() => navigate(STUDENT_LOGIN_PATH)}
                                 className="btn btn-primary btn-lg w-full"
                             >
-                                Go to Student Sign In
+                                {tr('Go to Student Sign In', "Aller a la connexion etudiant")}
                             </button>
                             <button
                                 onClick={() => navigate(COMPANY_LOGIN_PATH)}
                                 className="btn btn-secondary btn-lg w-full"
                             >
-                                Go to Company Sign In
+                                {tr('Go to Company Sign In', "Aller a la connexion entreprise")}
                             </button>
                         </div>
                     </div>
@@ -199,15 +222,15 @@ function ResetPassword() {
                         <div className="visual-icon">
                             <KeyRound size={64} />
                         </div>
-                        <h2>Set New Password</h2>
-                        <p>Choose a strong password for your account</p>
+                        <h2>{tr('Set New Password', 'Definir un nouveau mot de passe')}</h2>
+                        <p>{tr('Choose a strong password for your account', 'Choisissez un mot de passe fort pour votre compte')}</p>
                     </div>
                 </div>
 
                 <div className="auth-form-container">
                     <div className="auth-header">
-                        <h1>Reset Password</h1>
-                        <p>Enter your new password below</p>
+                        <h1>{tr('Reset Password', 'Reinitialiser le mot de passe')}</h1>
+                        <p>{tr('Enter your new password below', 'Entrez votre nouveau mot de passe ci-dessous')}</p>
                     </div>
 
                     {error && (
@@ -219,7 +242,7 @@ function ResetPassword() {
                                     className="btn btn-secondary"
                                     style={{ marginTop: '1rem', width: '100%' }}
                                 >
-                                    Request New Link
+                                    {tr('Request New Link', 'Demander un nouveau lien')}
                                 </button>
                             )}
                         </div>
@@ -228,13 +251,13 @@ function ResetPassword() {
                     <form onSubmit={handleSubmit} className="auth-form">
                         <div className="form-step">
                             <div className="input-group">
-                                <label className="input-label">New Password</label>
+                                <label className="input-label">{tr('New Password', 'Nouveau mot de passe')}</label>
                                 <div className="input-with-icon">
                                     <Lock size={20} className="input-icon" />
                                     <input
                                         type={showPassword ? 'text' : 'password'}
                                         className="input"
-                                        placeholder="Enter new password"
+                                        placeholder={tr('Enter new password', 'Entrez un nouveau mot de passe')}
                                         value={password}
                                         onChange={(e) => {
                                             setPassword(e.target.value)
@@ -274,13 +297,13 @@ function ResetPassword() {
                             </div>
 
                             <div className="input-group">
-                                <label className="input-label">Confirm Password</label>
+                                <label className="input-label">{tr('Confirm Password', 'Confirmer le mot de passe')}</label>
                                 <div className="input-with-icon">
                                     <Lock size={20} className="input-icon" />
                                     <input
                                         type={showPassword ? 'text' : 'password'}
                                         className="input"
-                                        placeholder="Confirm new password"
+                                        placeholder={tr('Confirm new password', 'Confirmez le nouveau mot de passe')}
                                         value={confirmPassword}
                                         onChange={(e) => {
                                             setConfirmPassword(e.target.value)
@@ -299,7 +322,9 @@ function ResetPassword() {
                                         marginTop: '0.5rem',
                                         color: password === confirmPassword ? '#10b981' : '#ef4444'
                                     }}>
-                                        {password === confirmPassword ? '✓ Passwords match' : '✗ Passwords do not match'}
+                                        {password === confirmPassword
+                                            ? tr('Passwords match', 'Les mots de passe correspondent')
+                                            : tr('Passwords do not match', 'Les mots de passe ne correspondent pas')}
                                     </p>
                                 )}
                             </div>
@@ -314,10 +339,12 @@ function ResetPassword() {
                             {isLoading ? (
                                 <>
                                     <Loader2 size={20} className="spinner" style={{ animation: 'spin 1s linear infinite' }} />
-                                    Updating...
+                                    {tr('Updating...', 'Mise a jour...')}
                                 </>
                             ) : (
-                                isCheckingToken ? 'Validating link...' : 'Update Password'
+                                isCheckingToken
+                                    ? tr('Validating link...', 'Validation du lien...')
+                                    : tr('Update Password', 'Mettre a jour le mot de passe')
                             )}
                         </button>
 
@@ -327,14 +354,14 @@ function ResetPassword() {
                                 onClick={() => navigate(STUDENT_LOGIN_PATH)}
                                 className="btn btn-secondary w-full"
                             >
-                                Go to Student Sign In
+                                {tr('Go to Student Sign In', "Aller a la connexion etudiant")}
                             </button>
                             <button
                                 type="button"
                                 onClick={() => navigate(COMPANY_LOGIN_PATH)}
                                 className="btn btn-secondary w-full"
                             >
-                                Go to Company Sign In
+                                {tr('Go to Company Sign In', "Aller a la connexion entreprise")}
                             </button>
                         </div>
                     </form>

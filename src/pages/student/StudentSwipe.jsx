@@ -13,12 +13,14 @@ import { useJobOffers } from '../../hooks/useJobOffers'
 import { useMatchListener } from '../../hooks/useMatchListener'
 import { getEntitlements } from '../../lib/premiumEntitlements'
 import { isLimitReachedCode } from '../../lib/swipeLimit'
+import { useBilingualText } from '../../lib/useBilingualText'
 import './StudentSwipe.css'
 
 const DISCOVERY_SCOPE_STORAGE_KEY = 'matchop_discovery_scope'
 const LEGACY_DISCOVERY_MODE_STORAGE_KEY = 'matchop_discovery_mode'
 
 function StudentSwipe() {
+    const tr = useBilingualText()
     const isPremiumEnabled = import.meta.env.VITE_PREMIUM_ENABLED !== 'false'
     const isPremiumWaitlistMode = import.meta.env.VITE_PREMIUM_WAITLIST_MODE === 'true'
     const {
@@ -46,7 +48,7 @@ function StudentSwipe() {
     const [selectedOffer, setSelectedOffer] = useState(null)
     const [showToast, setShowToast] = useState(false)
     const [toastIsExternal, setToastIsExternal] = useState(false)
-    const [toastTitle, setToastTitle] = useState('Application was sent!')
+    const [toastTitle, setToastTitle] = useState('')
     const [toastVariant, setToastVariant] = useState('application')
     const { t } = useTranslation(undefined, { useSuspense: false })
     const navigate = useNavigate()
@@ -65,8 +67,8 @@ function StudentSwipe() {
     const showGlobalTab = isPremiumEnabled
     const activeScope = showGlobalTab && mode === 'premium' ? 'global' : 'local'
     const lockedGlobalCtaLabel = isExpiredPremium
-        ? (isPremiumWaitlistMode ? 'Join waitlist' : 'Renew Premium')
-        : (isPremiumWaitlistMode ? 'Join waitlist' : 'Upgrade to unlock Global')
+        ? (isPremiumWaitlistMode ? tr('Join waitlist', "Rejoindre la liste d'attente") : tr('Renew Premium', 'Renouveler Premium'))
+        : (isPremiumWaitlistMode ? tr('Join waitlist', "Rejoindre la liste d'attente") : tr('Upgrade to unlock Global', 'Passez premium pour debloquer Global'))
 
     const currentOffer = offers[currentIndex]
     const hasMoreOffers = currentIndex < offers.length
@@ -222,9 +224,9 @@ function StudentSwipe() {
             import('../../lib/email').then(({ sendMatchEmail }) => {
                 sendMatchEmail(
                     user?.email,
-                    user?.user_metadata?.name || 'Student',
+                    user?.user_metadata?.name || tr('Student', 'Etudiant'),
                     offerToSwipe.company,
-                    'Company'
+                    tr('Company', 'Entreprise')
                 )
             })
 
@@ -246,7 +248,7 @@ function StudentSwipe() {
         return (
             <div className="swipe-page loading">
                 <Loader className="animate-spin text-primary" size={48} />
-                <p>Finding the best jobs for you...</p>
+                <p>{tr('Finding the best jobs for you...', 'Recherche des meilleures offres pour vous...')}</p>
             </div>
         )
     }
@@ -255,9 +257,9 @@ function StudentSwipe() {
         return (
             <div className="swipe-page error">
                 <div className="glass-card">
-                    <h3 className="text-red-500">Oops! Something went wrong.</h3>
+                    <h3 className="text-red-500">{tr('Oops! Something went wrong.', 'Oups ! Une erreur est survenue.')}</h3>
                     <p>{error}</p>
-                    <button className="btn btn-primary mt-4" onClick={() => refresh()}>Try Again</button>
+                    <button className="btn btn-primary mt-4" onClick={() => refresh()}>{tr('Try Again', 'Reessayer')}</button>
                 </div>
             </div>
         )
@@ -271,7 +273,7 @@ function StudentSwipe() {
                         <div
                             className={`stack-mode-toggle ${showGlobalTab ? '' : 'stack-mode-toggle-single'}`.trim()}
                             role="tablist"
-                            aria-label="Discovery scope"
+                            aria-label={tr('Discovery scope', 'Portee de decouverte')}
                         >
                             <button
                                 type="button"
@@ -280,10 +282,10 @@ function StudentSwipe() {
                                 disabled={loading}
                             >
                                 <span className="stack-mode-option-label">
-                                    Local
-                                    <span className="stack-mode-option-badge stack-mode-option-badge-free">Free</span>
+                                    {tr('Local', 'Local')}
+                                    <span className="stack-mode-option-badge stack-mode-option-badge-free">{tr('Free', 'Gratuit')}</span>
                                 </span>
-                                <span className="stack-mode-option-description">Local / regional opportunities</span>
+                                <span className="stack-mode-option-description">{tr('Local / regional opportunities', 'Opportunites locales / regionales')}</span>
                             </button>
                             {showGlobalTab && (
                                 <button
@@ -295,7 +297,7 @@ function StudentSwipe() {
                                 >
                                     <span className="stack-mode-option-label">
                                         {!canUsePremiumMode && <Lock size={14} aria-hidden="true" />}
-                                        Global
+                                        {tr('Global', 'Global')}
                                         <span
                                             className={`stack-mode-option-badge ${
                                                 isExpiredPremium
@@ -303,10 +305,10 @@ function StudentSwipe() {
                                                     : 'stack-mode-option-badge-premium'
                                             }`}
                                         >
-                                            {isExpiredPremium ? 'Expired' : 'Premium'}
+                                            {isExpiredPremium ? tr('Expired', 'Expire') : tr('Premium', 'Premium')}
                                         </span>
                                     </span>
-                                    <span className="stack-mode-option-description">International opportunities (Premium)</span>
+                                    <span className="stack-mode-option-description">{tr('International opportunities (Premium)', 'Opportunites internationales (Premium)')}</span>
                                 </button>
                             )}
                         </div>
@@ -318,12 +320,12 @@ function StudentSwipe() {
                         )}
 
                         {showGlobalTab && !canUsePremiumMode && (
-                            <section className="global-teaser" aria-label="Global opportunities teaser">
-                                <h3 className="global-teaser-title">Preview: Global opportunities</h3>
+                            <section className="global-teaser" aria-label={tr('Global opportunities teaser', 'Apercu opportunites globales')}>
+                                <h3 className="global-teaser-title">{tr('Preview: Global opportunities', 'Apercu : opportunites globales')}</h3>
 
                                 {isExpiredPremium && (
                                     <p className="global-teaser-status">
-                                        Your Premium access is expired.
+                                        {tr('Your Premium access is expired.', 'Votre acces Premium est expire.')}
                                     </p>
                                 )}
 
@@ -338,9 +340,9 @@ function StudentSwipe() {
                                 </div>
 
                                 <ul className="global-teaser-features">
-                                    <li>Global reach</li>
-                                    <li>Faster matches</li>
-                                    <li>Unlimited swipes</li>
+                                    <li>{tr('Global reach', 'Portee mondiale')}</li>
+                                    <li>{tr('Faster matches', 'Matchs plus rapides')}</li>
+                                    <li>{tr('Unlimited swipes', 'Swipes illimites')}</li>
                                 </ul>
 
                                 <button
@@ -420,8 +422,11 @@ function StudentSwipe() {
                 ) : (
                     <div className="no-more-offers glass-card hover-lift" style={{ textAlign: 'center', padding: '3rem' }}>
                         <div className="empty-icon text-6xl mb-4">🎯</div>
-                        <h2 className="text-2xl font-bold mb-2">You're all caught up!</h2>
-                        <p className="text-muted mb-6">You've seen all available opportunities. Check back later for new matches.</p>
+                        <h2 className="text-2xl font-bold mb-2">{tr("You're all caught up!", 'Vous etes a jour !')}</h2>
+                        <p className="text-muted mb-6">{tr(
+                            "You've seen all available opportunities. Check back later for new matches.",
+                            'Vous avez vu toutes les opportunites disponibles. Revenez plus tard pour de nouvelles offres.'
+                        )}</p>
                         <button
                             className="btn btn-primary"
                             onClick={() => {
@@ -430,7 +435,7 @@ function StudentSwipe() {
                                 refresh() // Explicitly call refresh
                             }}
                         >
-                            Refresh Jobs <RotateCcw size={18} className="ml-2" />
+                            {tr('Refresh Jobs', 'Actualiser les offres')} <RotateCcw size={18} className="ml-2" />
                         </button>
                     </div>
                 )}

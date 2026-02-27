@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
 import { lockOverlayScroll, unlockOverlayScroll } from '../../lib/overlayLock'
+import { useBilingualText } from '../../lib/useBilingualText'
 import './Admin.css'
 
 export default function AdminCompanies() {
+    const tr = useBilingualText()
     const [companies, setCompanies] = useState([])
     const [loading, setLoading] = useState(true)
     const [searchTerm, setSearchTerm] = useState('')
@@ -32,22 +34,18 @@ export default function AdminCompanies() {
                 .range((currentPage - 1) * pageSize, currentPage * pageSize - 1)
                 .order('created_at', { ascending: false })
 
-            if (searchTerm) {
-                query = query.ilike('company_name', `%${searchTerm}%`)
-            }
+            if (searchTerm) query = query.ilike('company_name', `%${searchTerm}%`)
 
             const { data, count, error } = await query
-
             if (error) throw error
 
-            // Fetch offer counts for each company
             const companiesWithCounts = await Promise.all(
                 (data || []).map(async (company) => {
                     const { count: offerCount } = await supabase
                         .from('offers')
                         .select('*', { count: 'exact', head: true })
                         .eq('company_id', company.id)
-                    
+
                     return { ...company, offerCount: offerCount || 0 }
                 })
             )
@@ -74,15 +72,17 @@ export default function AdminCompanies() {
             fetchCompanies()
         } catch (error) {
             console.error('Error updating company:', error)
-            alert('Failed to update company verification')
+            alert(tr('Failed to update company verification', "Echec de verification de l'entreprise"))
         }
     }
 
     async function deleteCompany(companyId) {
-        if (!confirm('Are you sure you want to delete this company? This will also delete all their offers.')) return
+        if (!confirm(tr(
+            'Are you sure you want to delete this company? This will also delete all their offers.',
+            'Voulez-vous vraiment supprimer cette entreprise ? Toutes ses offres seront aussi supprimees.'
+        ))) return
 
         try {
-            // Delete offers first
             await supabase
                 .from('offers')
                 .delete()
@@ -99,7 +99,7 @@ export default function AdminCompanies() {
             fetchCompanies()
         } catch (error) {
             console.error('Error deleting company:', error)
-            alert('Failed to delete company')
+            alert(tr('Failed to delete company', "Echec de suppression de l'entreprise"))
         }
     }
 
@@ -119,16 +119,15 @@ export default function AdminCompanies() {
     return (
         <div className="admin-container">
             <div className="admin-header">
-                <h1>🏢 Companies Management</h1>
-                <p>Manage all registered companies</p>
+                <h1>{tr('Companies Management', 'Gestion des entreprises')}</h1>
+                <p>{tr('Manage all registered companies', 'Gerer toutes les entreprises inscrites')}</p>
             </div>
 
-            {/* Toolbar */}
             <div className="admin-toolbar">
                 <input
                     type="text"
                     className="admin-search"
-                    placeholder="Search by company name..."
+                    placeholder={tr('Search by company name...', "Rechercher par nom d'entreprise...")}
                     value={searchTerm}
                     onChange={(e) => {
                         setSearchTerm(e.target.value)
@@ -137,48 +136,47 @@ export default function AdminCompanies() {
                 />
             </div>
 
-            {/* Companies Table */}
             <div className="admin-section">
                 {loading ? (
-                    <div className="admin-loading">Loading companies...</div>
+                    <div className="admin-loading">{tr('Loading companies...', 'Chargement des entreprises...')}</div>
                 ) : (
                     <>
                         <div className="admin-table-container">
                             <table className="admin-table">
                                 <thead>
                                     <tr>
-                                        <th>Company</th>
-                                        <th>Industry</th>
-                                        <th>Location</th>
-                                        <th>Offers</th>
-                                        <th>Verified</th>
-                                        <th>Joined</th>
-                                        <th>Actions</th>
+                                        <th>{tr('Company', 'Entreprise')}</th>
+                                        <th>{tr('Industry', 'Secteur')}</th>
+                                        <th>{tr('Location', 'Localisation')}</th>
+                                        <th>{tr('Offers', 'Offres')}</th>
+                                        <th>{tr('Verified', 'Verifie')}</th>
+                                        <th>{tr('Joined', 'Inscription')}</th>
+                                        <th>{tr('Actions', 'Actions')}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {companies.map(company => (
+                                    {companies.map((company) => (
                                         <tr key={company.id}>
-                                            <td data-label="Company" className="admin-company-cell">
+                                            <td data-label={tr('Company', 'Entreprise')} className="admin-company-cell">
                                                 {company.logo_url && (
                                                     <img
-                                                        src={company.logo_url} 
-                                                        alt="" 
+                                                        src={company.logo_url}
+                                                        alt=""
                                                         className="admin-company-logo"
                                                     />
                                                 )}
                                                 {company.company_name}
                                             </td>
-                                            <td data-label="Industry">{company.industry || 'N/A'}</td>
-                                            <td data-label="Location">{company.location || 'N/A'}</td>
-                                            <td data-label="Offers">{company.offerCount}</td>
-                                            <td data-label="Verified">
+                                            <td data-label={tr('Industry', 'Secteur')}>{company.industry || tr('N/A', 'N/A')}</td>
+                                            <td data-label={tr('Location', 'Localisation')}>{company.location || tr('N/A', 'N/A')}</td>
+                                            <td data-label={tr('Offers', 'Offres')}>{company.offerCount}</td>
+                                            <td data-label={tr('Verified', 'Verifie')}>
                                                 <span className={`status-badge ${company.verified ? 'status-active' : 'status-pending'}`}>
-                                                    {company.verified ? 'Verified' : 'Pending'}
+                                                    {company.verified ? tr('Verified', 'Verifie') : tr('Pending', 'En attente')}
                                                 </span>
                                             </td>
-                                            <td data-label="Joined">{new Date(company.created_at).toLocaleDateString()}</td>
-                                            <td data-label="Actions" className="admin-actions-cell">
+                                            <td data-label={tr('Joined', 'Inscription')}>{new Date(company.created_at).toLocaleDateString()}</td>
+                                            <td data-label={tr('Actions', 'Actions')} className="admin-actions-cell">
                                                 <button
                                                     className="admin-btn admin-btn-primary admin-btn-sm"
                                                     onClick={() => {
@@ -186,28 +184,28 @@ export default function AdminCompanies() {
                                                         setShowModal(true)
                                                     }}
                                                 >
-                                                    View
+                                                    {tr('View', 'Voir')}
                                                 </button>
                                                 {company.verified ? (
                                                     <button
                                                         className="admin-btn admin-btn-warning admin-btn-sm"
                                                         onClick={() => updateCompanyVerification(company.id, false)}
                                                     >
-                                                        Unverify
+                                                        {tr('Unverify', 'Retirer verification')}
                                                     </button>
                                                 ) : (
                                                     <button
                                                         className="admin-btn admin-btn-success admin-btn-sm"
                                                         onClick={() => updateCompanyVerification(company.id, true)}
                                                     >
-                                                        Verify
+                                                        {tr('Verify', 'Verifier')}
                                                     </button>
                                                 )}
                                                 <button
                                                     className="admin-btn admin-btn-danger admin-btn-sm"
                                                     onClick={() => deleteCompany(company.id)}
                                                 >
-                                                    Delete
+                                                    {tr('Delete', 'Supprimer')}
                                                 </button>
                                             </td>
                                         </tr>
@@ -220,16 +218,16 @@ export default function AdminCompanies() {
                             <div className="admin-pagination">
                                 <button
                                     disabled={currentPage === 1}
-                                    onClick={() => setCurrentPage(p => p - 1)}
+                                    onClick={() => setCurrentPage((p) => p - 1)}
                                 >
-                                    Previous
+                                    {tr('Previous', 'Precedent')}
                                 </button>
-                                <span>Page {currentPage} of {totalPages}</span>
+                                <span>{tr(`Page ${currentPage} of ${totalPages}`, `Page ${currentPage} sur ${totalPages}`)}</span>
                                 <button
                                     disabled={currentPage === totalPages}
-                                    onClick={() => setCurrentPage(p => p + 1)}
+                                    onClick={() => setCurrentPage((p) => p + 1)}
                                 >
-                                    Next
+                                    {tr('Next', 'Suivant')}
                                 </button>
                             </div>
                         )}
@@ -237,43 +235,42 @@ export default function AdminCompanies() {
                 )}
             </div>
 
-            {/* Company Detail Modal */}
             {showModal && selectedCompany && (
                 <div className="admin-modal-overlay" onClick={() => setShowModal(false)}>
-                    <div className="admin-modal" onClick={e => e.stopPropagation()}>
+                    <div className="admin-modal" onClick={(e) => e.stopPropagation()}>
                         <h2>{selectedCompany.company_name}</h2>
-                        
+
                         {selectedCompany.logo_url && (
                             <img
-                                src={selectedCompany.logo_url} 
+                                src={selectedCompany.logo_url}
                                 alt={selectedCompany.company_name}
                                 className="admin-company-logo admin-company-logo--modal"
                             />
                         )}
 
                         <div className="admin-form-group">
-                            <label>Industry</label>
-                            <input type="text" value={selectedCompany.industry || 'N/A'} disabled />
+                            <label>{tr('Industry', 'Secteur')}</label>
+                            <input type="text" value={selectedCompany.industry || tr('N/A', 'N/A')} disabled />
                         </div>
 
                         <div className="admin-form-group">
-                            <label>Location</label>
-                            <input type="text" value={selectedCompany.location || 'N/A'} disabled />
+                            <label>{tr('Location', 'Localisation')}</label>
+                            <input type="text" value={selectedCompany.location || tr('N/A', 'N/A')} disabled />
                         </div>
 
                         <div className="admin-form-group">
-                            <label>Description</label>
-                            <textarea value={selectedCompany.description || 'No description'} disabled rows={4} />
+                            <label>{tr('Description', 'Description')}</label>
+                            <textarea value={selectedCompany.description || tr('No description', 'Aucune description')} disabled rows={4} />
                         </div>
 
                         <div className="admin-form-group">
-                            <label>Website</label>
-                            <input type="text" value={selectedCompany.website || 'N/A'} disabled />
+                            <label>{tr('Website', 'Site web')}</label>
+                            <input type="text" value={selectedCompany.website || tr('N/A', 'N/A')} disabled />
                         </div>
 
                         <div className="admin-form-group">
-                            <label>Company Size</label>
-                            <input type="text" value={selectedCompany.company_size || 'N/A'} disabled />
+                            <label>{tr('Company Size', "Taille de l'entreprise")}</label>
+                            <input type="text" value={selectedCompany.company_size || tr('N/A', 'N/A')} disabled />
                         </div>
 
                         <div className="admin-modal-actions">
@@ -281,7 +278,7 @@ export default function AdminCompanies() {
                                 className="admin-btn admin-btn-primary"
                                 onClick={() => setShowModal(false)}
                             >
-                                Close
+                                {tr('Close', 'Fermer')}
                             </button>
                         </div>
                     </div>

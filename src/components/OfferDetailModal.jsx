@@ -2,12 +2,14 @@ import { useEffect, useState } from 'react'
 import { X, MapPin, DollarSign, Clock, Building2, Briefcase, Flag } from 'lucide-react'
 import ReportModal from './ReportModal'
 import { lockOverlayScroll, unlockOverlayScroll } from '../lib/overlayLock'
+import { useBilingualText } from '../lib/useBilingualText'
 import './OfferDetailModal.css'
 
 /**
  * Modal showing full job offer details when clicking on a swipe card
  */
 function OfferDetailModal({ offer, onClose }) {
+    const tr = useBilingualText()
     const [showReport, setShowReport] = useState(false)
 
     useEffect(() => {
@@ -67,7 +69,7 @@ function OfferDetailModal({ offer, onClose }) {
                     </div>
                     <div className="info-item">
                         <Building2 size={18} />
-                        <span>{offer.department || 'General'}</span>
+                        <span>{offer.department || tr('General', 'General')}</span>
                     </div>
                     <div className="info-item">
                         <DollarSign size={18} />
@@ -81,21 +83,21 @@ function OfferDetailModal({ offer, onClose }) {
 
                 {/* Description */}
                 <div className="offer-section">
-                    <h4>About the Role</h4>
+                    <h4>{tr('About the Role', 'A propos du poste')}</h4>
                     <p>{offer.description}</p>
                 </div>
 
                 {/* Requirements */}
                 {offer.requirements && (
                     <div className="offer-section">
-                        <h4>Requirements</h4>
+                        <h4>{tr('Requirements', 'Exigences')}</h4>
                         <p>{offer.requirements}</p>
                     </div>
                 )}
 
                 {/* Skills */}
                 <div className="offer-section">
-                    <h4>Required Skills</h4>
+                    <h4>{tr('Required Skills', 'Competences requises')}</h4>
                     <div className="offer-skills">
                         {offer.skills?.map((skill, i) => (
                             <span key={i} className="skill-tag">{skill}</span>
@@ -105,8 +107,11 @@ function OfferDetailModal({ offer, onClose }) {
 
                 {/* About Company */}
                 <div className="offer-section">
-                    <h4>About {offer.company}</h4>
-                    <p>{offer.companyDescription || 'A leading company in the industry, committed to innovation and growth.'}</p>
+                    <h4>{tr(`About ${offer.company}`, `A propos de ${offer.company}`)}</h4>
+                    <p>{offer.companyDescription || tr(
+                        'A leading company in the industry, committed to innovation and growth.',
+                        "Une entreprise leader dans son secteur, engagee pour l'innovation et la croissance."
+                    )}</p>
                 </div>
 
                 {/* Actions */}
@@ -114,14 +119,14 @@ function OfferDetailModal({ offer, onClose }) {
                     <button
                         className="btn btn-text report-btn"
                         onClick={() => setShowReport(true)}
-                        title="Report this job posting"
+                        title={tr('Report this job posting', 'Signaler cette offre')}
                     >
                         <Flag size={18} />
-                        Report
+                        {tr('Report', 'Signaler')}
                     </button>
                     <div className="action-buttons">
                         <button className="btn btn-secondary" onClick={onClose}>
-                            Close
+                            {tr('Close', 'Fermer')}
                         </button>
 
                         {offer.isExternal ? (
@@ -132,12 +137,12 @@ function OfferDetailModal({ offer, onClose }) {
                                 className="btn btn-primary"
                             >
                                 <Briefcase size={18} />
-                                Visit Website
+                                {tr('Visit Website', 'Visiter le site')}
                             </a>
                         ) : (
                             <button className="btn btn-primary">
                                 <Briefcase size={18} />
-                                Apply Now
+                                {tr('Apply Now', 'Postuler maintenant')}
                             </button>
                         )}
                     </div>

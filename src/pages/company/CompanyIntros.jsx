@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Users, Loader, AlertCircle, RefreshCw, MapPin, Clock3, MessageCircle, Archive, XCircle, Star } from 'lucide-react'
 import { useIntros } from '../../hooks/useIntros'
+import { supabase } from '../../lib/supabase'
 import './CompanyIntros.css'
 
 function CompanyIntros() {
@@ -10,6 +11,8 @@ function CompanyIntros() {
     const { t } = useTranslation()
     const { intros, loading, error, stats, acceptIntro, declineIntro, refresh } = useIntros('pending')
     const [processingIds, setProcessingIds] = useState(() => new Set())
+    const [actionError, setActionError] = useState('')
+    const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
     const pendingCount = useMemo(() => stats?.pending ?? intros.length, [stats?.pending, intros.length])
 
@@ -29,26 +32,95 @@ function CompanyIntros() {
         })
     }
 
-    const handleMessage = async (intro) => {
-        startProcessing(intro.id)
-        const { error: actionError } = await acceptIntro(intro.id)
-        stopProcessing(intro.id)
+    const findCreatedMatchId = async (intro) => {
+        if (!intro?.studentId) return null
 
-        if (!actionError) {
+        const authResult = await supabase.auth.getUser()
+        const companyId = authResult?.data?.user?.id
+        if (!companyId) return null
+
+        const retryDelays = [0, 150, 300, 600, 900]
+        for (const delayMs of retryDelays) {
+            if (delayMs > 0) {
+                await wait(delayMs)
+            }
+
+            let matchQuery = supabase
+                .from('matches')
+                .select('id')
+                .eq('company_id', companyId)
+                .eq('student_id', intro.studentId)
+                .order('matched_at', { ascending: false })
+                .order('created_at', { ascending: false })
+                .limit(1)
+
+            if (intro.offerId) {
+                matchQuery = matchQuery.eq('offer_id', intro.offerId)
+            }
+
+            const { data, error: matchError } = await matchQuery.maybeSingle()
+
+            if (!matchError && data?.id) {
+                return data.id
+            }
+        }
+
+        return null
+    }
+
+    const handleMessage = async (intro) => {
+        setActionError('')
+        startProcessing(intro.id)
+        try {
+            const { error: actionErrorMessage } = await acceptIntro(intro.id)
+            const matchId = await findCreatedMatchId(intro)
+
+            if (matchId) {
+                navigate(`/company/chat/${matchId}`)
+                return
+            }
+
+            if (actionErrorMessage) {
+                setActionError(actionErrorMessage)
+                return
+            }
+
             navigate('/company/matches')
+        } catch (err) {
+            setActionError(err?.message || t('common.error'))
+        } finally {
+            stopProcessing(intro.id)
         }
     }
 
     const handleArchive = async (intro) => {
+        setActionError('')
         startProcessing(intro.id)
-        await declineIntro(intro.id)
-        stopProcessing(intro.id)
+        try {
+            const result = await declineIntro(intro.id)
+            if (result?.error) {
+                setActionError(result.error)
+            }
+        } catch (err) {
+            setActionError(err?.message || t('common.error'))
+        } finally {
+            stopProcessing(intro.id)
+        }
     }
 
     const handleReject = async (intro) => {
+        setActionError('')
         startProcessing(intro.id)
-        await declineIntro(intro.id)
-        stopProcessing(intro.id)
+        try {
+            const result = await declineIntro(intro.id)
+            if (result?.error) {
+                setActionError(result.error)
+            }
+        } catch (err) {
+            setActionError(err?.message || t('common.error'))
+        } finally {
+            stopProcessing(intro.id)
+        }
     }
 
     if (loading) {
@@ -102,6 +174,13 @@ function CompanyIntros() {
                         </button>
                     </div>
                 </div>
+
+                {actionError && (
+                    <div className="intros-action-error glass-card" role="alert">
+                        <AlertCircle size={18} />
+                        <span>{actionError}</span>
+                    </div>
+                )}
 
                 {intros.length === 0 ? (
                     <div className="no-intros glass-card">

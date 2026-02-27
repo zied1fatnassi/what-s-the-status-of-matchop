@@ -2,9 +2,11 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Heart, MessageCircle, X, Calendar, Video, Mail, Clock, CheckCircle } from 'lucide-react'
 import { lockOverlayScroll, unlockOverlayScroll } from '../lib/overlayLock'
+import { useBilingualText } from '../lib/useBilingualText'
 import './MatchModal.css'
 
 function MatchModal({ match, onClose, userType }) {
+    const tr = useBilingualText()
     const [isVisible, setIsVisible] = useState(false)
     const [confettiPieces, setConfettiPieces] = useState([])
 
@@ -48,12 +50,12 @@ function MatchModal({ match, onClose, userType }) {
     const interviewDetails = {
         contactPerson: 'HR Team',
         contactEmail: match?.email || `hr@${match?.company?.toLowerCase().replace(/\s+/g, '')}.com`,
-        interviewType: 'Video Call',
-        responseTime: 'Within 5 business days',
+        interviewType: tr('Video Call', 'Appel video'),
+        responseTime: tr('Within 5 business days', 'Sous 5 jours ouvrables'),
         nextSteps: [
-            'Our HR team will review your profile',
-            'You will receive an email with interview details',
-            'Prepare your portfolio and questions'
+            tr('Our HR team will review your profile', 'Notre equipe RH examinera votre profil'),
+            tr('You will receive an email with interview details', 'Vous recevrez un email avec les details'),
+            tr('Prepare your portfolio and questions', 'Preparez votre portfolio et vos questions')
         ]
     }
 
@@ -83,17 +85,23 @@ function MatchModal({ match, onClose, userType }) {
                         <Heart className="heart heart-3" size={32} fill="#42a5f5" />
                     </div>
 
-                    <h1 className="match-title">It's a Match! 🎉</h1>
+                    <h1 className="match-title">{tr("It's a Match!", 'Match reussi !')}</h1>
                     <p className="match-subtitle">
                         {userType === 'student'
-                            ? `${match?.company} is interested in hiring you!`
-                            : `${match?.name} is interested in your offer!`
+                            ? tr(
+                                `${match?.company} is interested in hiring you!`,
+                                `${match?.company} est interessee par votre profil !`
+                            )
+                            : tr(
+                                `${match?.name} is interested in your offer!`,
+                                `${match?.name} est interesse(e) par votre offre !`
+                            )
                         }
                     </p>
 
                     <div className="match-profiles">
                         <div className="match-avatar">
-                            <div className="avatar-placeholder">You</div>
+                            <div className="avatar-placeholder">{tr('You', 'Vous')}</div>
                         </div>
                         <div className="match-heart-connector">
                             <Heart size={32} fill="#42a5f5" color="#42a5f5" />
@@ -110,26 +118,26 @@ function MatchModal({ match, onClose, userType }) {
                         <div className="interview-details">
                             <h3 className="interview-title">
                                 <Calendar size={18} />
-                                What's Next?
+                                {tr("What's Next?", 'Et ensuite ?')}
                             </h3>
 
                             <div className="interview-info">
                                 <div className="interview-item">
                                     <Video size={16} />
-                                    <span><strong>Interview Type:</strong> {interviewDetails.interviewType}</span>
+                                    <span><strong>{tr('Interview Type:', "Type d'entretien :")}</strong> {interviewDetails.interviewType}</span>
                                 </div>
                                 <div className="interview-item">
                                     <Clock size={16} />
-                                    <span><strong>Response:</strong> {interviewDetails.responseTime}</span>
+                                    <span><strong>{tr('Response:', 'Reponse :')}</strong> {interviewDetails.responseTime}</span>
                                 </div>
                                 <div className="interview-item">
                                     <Mail size={16} />
-                                    <span><strong>Contact:</strong> {interviewDetails.contactEmail}</span>
+                                    <span><strong>{tr('Contact:', 'Contact :')}</strong> {interviewDetails.contactEmail}</span>
                                 </div>
                             </div>
 
                             <div className="next-steps">
-                                <h4>Next Steps:</h4>
+                                <h4>{tr('Next Steps:', 'Prochaines etapes :')}</h4>
                                 <ul>
                                     {interviewDetails.nextSteps.map((step, idx) => (
                                         <li key={idx}>
@@ -145,10 +153,10 @@ function MatchModal({ match, onClose, userType }) {
                     <div className="match-actions">
                         <Link to={chatLink} className="btn btn-primary btn-lg" onClick={onClose}>
                             <MessageCircle size={20} />
-                            Send a Message
+                            {tr('Send a Message', 'Envoyer un message')}
                         </Link>
                         <button className="btn btn-secondary" onClick={onClose}>
-                            Keep Swiping
+                            {tr('Keep Swiping', 'Continuer a swiper')}
                         </button>
                     </div>
                 </div>
@@ -158,4 +166,3 @@ function MatchModal({ match, onClose, userType }) {
 }
 
 export default MatchModal
-

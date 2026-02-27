@@ -14,7 +14,11 @@ export function useMessages(matchId) {
     const { user } = useAuth()
 
     const fetchMessages = useCallback(async () => {
-        if (!matchId) return
+        if (!matchId) {
+            setMessages([])
+            setLoading(false)
+            return
+        }
 
         setLoading(true)
         setError(null)
@@ -74,7 +78,7 @@ export function useMessages(matchId) {
         }
     }, [matchId, fetchMessages])
 
-    const sendMessage = async (content) => {
+    const sendMessage = useCallback(async (content) => {
         if (!user?.id || !matchId || !content.trim()) {
             return { error: 'Invalid message' }
         }
@@ -114,9 +118,9 @@ export function useMessages(matchId) {
         } catch (err) {
             return { error: err.message }
         }
-    }
+    }, [matchId, user?.id])
 
-    const markAsRead = async () => {
+    const markAsRead = useCallback(async () => {
         if (!matchId || !user?.id) return
 
         await supabase
@@ -124,7 +128,7 @@ export function useMessages(matchId) {
             .update({ is_read: true })
             .eq('match_id', matchId)
             .neq('sender_id', user.id)
-    }
+    }, [matchId, user?.id])
 
     return {
         messages,

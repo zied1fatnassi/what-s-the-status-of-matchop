@@ -16,9 +16,10 @@
         "personalizedPlan": "Personalized Plan",
         "referrals": "Referrals",
         "profile": "Profile",
-        "newCandidates": "New Candidates",
+        "newCandidates": "Candidates",
         "candidates": "Candidates",
         "archived": "Archived",
+        "myOffers": "My Offers",
         "postJob": "Post Job",
         "logout": "Logout"
     },
@@ -656,6 +657,33 @@
         "typeMessage": "Type a message...",
         "today": "Today"
     },
+    "conversationHub": {
+        "title": "Conversations",
+        "subtitle": "Manage all candidate-company messages in one place.",
+        "searchLabel": "Search conversations",
+        "searchPlaceholder": "Search by person, offer, or message...",
+        "filterLabel": "Conversation filters",
+        "filters": {
+            "all": "All",
+            "active": "Active",
+            "archived": "Archived"
+        },
+        "loading": "Loading conversations...",
+        "loadingMessages": "Loading messages...",
+        "retry": "Retry",
+        "emptyResults": "No conversations match this filter.",
+        "emptyArchived": "No archived conversations yet.",
+        "pickConversation": "Select a conversation to start messaging.",
+        "threadNotFoundTitle": "Conversation unavailable",
+        "threadNotFound": "This conversation does not exist or is no longer available.",
+        "backToMatches": "Back to matches",
+        "backToInbox": "Back to inbox",
+        "typeMessage": "Type a message...",
+        "send": "Send",
+        "archived": "Archived",
+        "archivedNotice": "This match is archived. Messaging is read-only.",
+        "noMessagesYet": "No messages yet."
+    },
     "candidates": {
         "title": "Candidates",
         "subtitle": "{{count}} candidates interested in your offers",
@@ -683,12 +711,12 @@
             "unknownOffer": "Offer"
         },
         "newCandidates": {
-            "title": "New Candidates",
+            "title": "Candidates",
             "subtitle": "Review incoming interest and decide who moves to matches.",
             "pendingCount": "{{count}} pending",
-            "loading": "Loading new candidates...",
-            "loadError": "Unable to load new candidates.",
-            "emptyTitle": "No new candidates right now",
+            "loading": "Loading candidates...",
+            "loadError": "Unable to load candidates.",
+            "emptyTitle": "No candidates right now",
             "emptyDescription": "When students show interest in your offers, they will appear here.",
             "openOffers": "Review active offers",
             "actions": {
@@ -709,8 +737,8 @@
             "loading": "Loading matches...",
             "loadError": "Unable to load matches.",
             "emptyTitle": "No active matches yet",
-            "emptyDescription": "Accept new candidates to create matches and start chats.",
-            "reviewCandidates": "Review new candidates",
+            "emptyDescription": "Accept candidates to create matches and start chats.",
+            "reviewCandidates": "Review candidates",
             "actions": {
                 "refresh": "Refresh",
                 "message": "Message",
@@ -746,6 +774,95 @@
             "actions": {
                 "message": "Message"
             }
+        }
+    },
+    "companyOffers": {
+        "title": "My Offers",
+        "subtitle": "Manage your published opportunities and track funnel performance.",
+        "loading": "Loading offers...",
+        "filters": {
+            "searchLabel": "Search offers",
+            "searchPlaceholder": "Search by title...",
+            "statusLabel": "Status",
+            "statusAll": "All statuses",
+            "statusActive": "Active",
+            "statusClosed": "Closed"
+        },
+        "analytics": {
+            "lifetimeTitle": "Lifetime",
+            "last30Title": "Last 30 days",
+            "totalOffers": "Total offers",
+            "activeOffers": "Active offers",
+            "closedOffers": "Closed offers",
+            "rightSwipes": "Right swipes",
+            "pendingIntros": "Pending intros",
+            "acceptedIntros": "Accepted intros",
+            "matches": "Matches",
+            "matchRate": "Match rate",
+            "closeRate": "Close rate"
+        },
+        "charts": {
+            "trendTitle": "30-day trend",
+            "funnelTitle": "Offer funnel overview"
+        },
+        "table": {
+            "title": "Offer",
+            "status": "Status",
+            "location": "Location",
+            "created": "Created",
+            "rightSwipes": "Right swipes",
+            "matches": "Matches",
+            "matchRate": "Match rate",
+            "actions": "Actions"
+        },
+        "status": {
+            "active": "Active",
+            "closed": "Closed"
+        },
+        "actions": {
+            "refresh": "Refresh",
+            "postOffer": "Post New Offer",
+            "edit": "Edit",
+            "close": "Close",
+            "reopen": "Reopen",
+            "delete": "Delete",
+            "cancel": "Cancel",
+            "save": "Save changes",
+            "saving": "Saving...",
+            "deleting": "Deleting..."
+        },
+        "form": {
+            "title": "Title",
+            "description": "Description",
+            "skills": "Required skills",
+            "skillsPlaceholder": "React, Node.js, SQL",
+            "location": "Location",
+            "salary": "Salary range",
+            "status": "Status"
+        },
+        "validation": {
+            "titleRequired": "Offer title is required."
+        },
+        "modals": {
+            "editTitle": "Edit offer",
+            "deleteTitle": "Delete offer",
+            "deleteWarning": "You are about to permanently delete \"{{title}}\".",
+            "deleteImpact": "This action is irreversible and related records may also be removed depending on database constraints.",
+            "deleteConfirmLabel": "Type the offer title to confirm",
+            "deleteConfirmPlaceholder": "Enter exact offer title",
+            "deleteConfirmHint": "Deletion is enabled only when the typed title matches exactly."
+        },
+        "empty": {
+            "title": "No offers found",
+            "description": "Create your first offer to start attracting candidates."
+        },
+        "error": {
+            "loadFailed": "Failed to load offers"
+        },
+        "pagination": {
+            "previous": "Previous",
+            "next": "Next",
+            "pageOf": "Page {{page}} of {{totalPages}}"
         }
     },
     "postJob": {

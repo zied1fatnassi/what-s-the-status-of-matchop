@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { Mail, ArrowLeft, CheckCircle, Loader2, KeyRound } from 'lucide-react'
 import { validateEmail } from '../lib/validation'
 import { requestPasswordReset } from '../lib/passwordReset'
+import { useBilingualText } from '../lib/useBilingualText'
 import '../pages/student/StudentSignup.css'
 
 const STUDENT_LOGIN_PATH = '/student/login'
@@ -19,6 +20,7 @@ const COMPANY_LOGIN_PATH = '/company/login'
  * - User enumeration prevention (always returns success)
  */
 function ForgotPassword() {
+    const tr = useBilingualText()
     const [email, setEmail] = useState('')
     const [error, setError] = useState('')
     const [isLoading, setIsLoading] = useState(false)
@@ -49,9 +51,15 @@ function ForgotPassword() {
         } catch (err) {
             // Handle rate limiting (429)
             if (err.message?.includes('Too many') || err.message?.includes('rate limit')) {
-                setError('Too many reset attempts. Please wait 15 minutes before trying again.')
+                setError(tr(
+                    'Too many reset attempts. Please wait 15 minutes before trying again.',
+                    'Trop de tentatives de reinitialisation. Veuillez attendre 15 minutes.'
+                ))
             } else {
-                setError(err.message || 'Failed to send reset email. Please try again.')
+                setError(err.message || tr(
+                    'Failed to send reset email. Please try again.',
+                    "Echec de l'envoi de l'email de reinitialisation. Veuillez reessayer."
+                ))
             }
         } finally {
             setIsLoading(false)
@@ -68,26 +76,40 @@ function ForgotPassword() {
                             <div className="visual-icon">
                                 <CheckCircle size={64} />
                             </div>
-                            <h2>Check Your Email</h2>
-                            <p>We've sent you a password reset link</p>
+                            <h2>{tr('Check Your Email', 'Verifiez votre email')}</h2>
+                            <p>{tr(
+                                "We've sent you a password reset link",
+                                'Nous vous avons envoye un lien de reinitialisation.'
+                            )}</p>
                         </div>
                     </div>
 
                     <div className="auth-form-container">
                         <div className="auth-header">
-                            <h1>Email Sent!</h1>
-                            <p>Check your inbox for the password reset link</p>
+                            <h1>{tr('Email Sent!', 'Email envoye !')}</h1>
+                            <p>{tr(
+                                'Check your inbox for the password reset link',
+                                'Consultez votre boite mail pour le lien de reinitialisation.'
+                            )}</p>
                         </div>
 
                         <div className="verification-notice" style={{ marginTop: '2rem' }}>
                             <CheckCircle size={48} style={{ color: '#10b981', marginBottom: '1rem' }} />
-                            <h3>Password Reset Email Sent</h3>
+                            <h3>{tr('Password Reset Email Sent', 'Email de reinitialisation envoye')}</h3>
                             <p>
-                                We've sent a password reset link to <strong>{email}</strong>.
-                                Click the link in the email to reset your password.
+                                {tr(
+                                    "We've sent a password reset link to",
+                                    'Nous avons envoye un lien de reinitialisation a'
+                                )} <strong>{email}</strong>. {tr(
+                                    'Click the link in the email to reset your password.',
+                                    "Cliquez sur le lien dans l'email pour reinitialiser votre mot de passe."
+                                )}
                             </p>
                             <p style={{ marginTop: '1rem', opacity: 0.8 }}>
-                                Didn't receive the email? Check your spam folder or try again.
+                                {tr(
+                                    "Didn't receive the email? Check your spam folder or try again.",
+                                    "Vous n'avez pas recu l'email ? Verifiez les spams ou reessayez."
+                                )}
                             </p>
                         </div>
 
@@ -99,15 +121,15 @@ function ForgotPassword() {
                                 }}
                                 className="btn btn-secondary w-full"
                             >
-                                Try Different Email
+                                {tr('Try Different Email', 'Essayer un autre email')}
                             </button>
                             <Link to={STUDENT_LOGIN_PATH} className="btn btn-primary w-full">
                                 <ArrowLeft size={20} />
-                                Go to Student Sign In
+                                {tr('Go to Student Sign In', "Aller a la connexion etudiant")}
                             </Link>
                             <Link to={COMPANY_LOGIN_PATH} className="btn btn-secondary w-full">
                                 <ArrowLeft size={20} />
-                                Go to Company Sign In
+                                {tr('Go to Company Sign In', "Aller a la connexion entreprise")}
                             </Link>
                         </div>
                     </div>
@@ -124,15 +146,21 @@ function ForgotPassword() {
                         <div className="visual-icon">
                             <KeyRound size={64} />
                         </div>
-                        <h2>Forgot Password?</h2>
-                        <p>No worries, we'll help you reset it</p>
+                        <h2>{tr('Forgot Password?', 'Mot de passe oublie ?')}</h2>
+                        <p>{tr(
+                            "No worries, we'll help you reset it",
+                            'Pas de souci, nous allons vous aider a le reinitialiser.'
+                        )}</p>
                     </div>
                 </div>
 
                 <div className="auth-form-container">
                     <div className="auth-header">
-                        <h1>Reset Password</h1>
-                        <p>Enter your email to receive a reset link</p>
+                        <h1>{tr('Reset Password', 'Reinitialiser le mot de passe')}</h1>
+                        <p>{tr(
+                            'Enter your email to receive a reset link',
+                            'Entrez votre email pour recevoir un lien de reinitialisation.'
+                        )}</p>
                     </div>
 
                     {error && (
@@ -144,13 +172,13 @@ function ForgotPassword() {
                     <form onSubmit={handleSubmit} className="auth-form">
                         <div className="form-step">
                             <div className="input-group">
-                                <label className="input-label">Email Address</label>
+                                <label className="input-label">{tr('Email Address', 'Adresse email')}</label>
                                 <div className="input-with-icon">
                                     <Mail size={20} className="input-icon" />
                                     <input
                                         type="email"
                                         className="input"
-                                        placeholder="you@example.com"
+                                        placeholder={tr('you@example.com', 'vous@exemple.com')}
                                         value={email}
                                         onChange={(e) => {
                                             setEmail(e.target.value)
@@ -174,10 +202,10 @@ function ForgotPassword() {
                             {isLoading ? (
                                 <>
                                     <Loader2 size={20} className="spinner" />
-                                    Sending...
+                                    {tr('Sending...', 'Envoi...')}
                                 </>
                             ) : (
-                                'Send Reset Link'
+                                tr('Send Reset Link', 'Envoyer le lien de reinitialisation')
                             )}
                         </button>
 
@@ -187,14 +215,14 @@ function ForgotPassword() {
                                 className="btn btn-secondary w-full"
                             >
                                 <ArrowLeft size={20} />
-                                Go to Student Sign In
+                                {tr('Go to Student Sign In', "Aller a la connexion etudiant")}
                             </Link>
                             <Link
                                 to={COMPANY_LOGIN_PATH}
                                 className="btn btn-secondary w-full"
                             >
                                 <ArrowLeft size={20} />
-                                Go to Company Sign In
+                                {tr('Go to Company Sign In', "Aller a la connexion entreprise")}
                             </Link>
                         </div>
                     </form>

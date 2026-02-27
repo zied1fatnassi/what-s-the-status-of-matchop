@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Menu, X, User, Briefcase, Heart, Home, LogOut, Globe, ChevronDown, Moon, Sun, Crown, Receipt, Users, FolderArchive, Gift } from 'lucide-react'
+import { Menu, X, User, Briefcase, Heart, Home, LogOut, Globe, ChevronDown, Moon, Sun, Crown, Receipt, Users, Gift } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useApplications } from '../context/ApplicationContext'
 import { useTheme } from '../context/ThemeContext'
@@ -62,7 +62,6 @@ function Navbar({ isLanding = false }) {
     const companyLinks = [
         { to: '/company/intros', icon: <Users size={18} />, label: t('nav.newCandidates') },
         { to: '/company/matches', icon: <Heart size={18} />, label: t('nav.matches') },
-        { to: '/company/candidates', icon: <FolderArchive size={18} />, label: t('nav.archived') },
         { to: '/company/offers', icon: <Briefcase size={18} />, label: t('nav.myOffers') },
         { to: '/company/post-offer', icon: <Briefcase size={18} />, label: t('nav.postJob') },
         { to: '/company/profile', icon: <User size={18} />, label: t('nav.profile') },

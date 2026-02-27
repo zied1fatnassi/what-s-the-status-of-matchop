@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { X, Heart } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { lockOverlayScroll, unlockOverlayScroll } from '../lib/overlayLock'
+import { useBilingualText } from '../lib/useBilingualText'
 import './MatchToast.css'
 
 /**
@@ -9,6 +10,8 @@ import './MatchToast.css'
  * Shows when a mutual match is detected in real-time
  */
 function MatchToast({ match, onClose }) {
+    const tr = useBilingualText()
+
     useEffect(() => {
         const handleEsc = (event) => {
             if (event.key === 'Escape') {
@@ -41,7 +44,7 @@ function MatchToast({ match, onClose }) {
                     <Heart size={48} className="heart-pulse" />
                 </div>
 
-                <h2 className="toast-title">It's a Match! 🎉</h2>
+                <h2 className="toast-title">{tr("It's a Match!", 'Match reussi !')}</h2>
 
                 <div className="toast-company">
                     {match.companyLogo ? (
@@ -62,7 +65,10 @@ function MatchToast({ match, onClose }) {
                 </div>
 
                 <p className="toast-message">
-                    You both swiped right! Start chatting now.
+                    {tr(
+                        'You both swiped right! Start chatting now.',
+                        'Vous avez tous les deux swipe a droite ! Commencez la conversation.'
+                    )}
                 </p>
 
                 <div className="toast-actions">
@@ -70,13 +76,13 @@ function MatchToast({ match, onClose }) {
                         className="btn btn-secondary"
                         onClick={onClose}
                     >
-                        Keep Swiping
+                        {tr('Keep Swiping', 'Continuer a swiper')}
                     </button>
                     <Link
                         to={`/student/chat/${match.id}`}
                         className="btn btn-primary"
                     >
-                        Send Message
+                        {tr('Send Message', 'Envoyer un message')}
                     </Link>
                 </div>
             </div>

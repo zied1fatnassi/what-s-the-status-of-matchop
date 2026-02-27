@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { useBilingualText } from '../lib/useBilingualText'
 import './Dashboard.css'
 
 const DashboardLoading = () => (
@@ -9,7 +10,7 @@ const DashboardLoading = () => (
     </div>
 )
 
-const UnknownRoleFallback = ({ onSignOut, isSigningOut, email }) => (
+const UnknownRoleFallback = ({ onSignOut, isSigningOut, email, tr }) => (
     <div style={{
         minHeight: '100dvh',
         display: 'flex',
@@ -23,14 +24,16 @@ const UnknownRoleFallback = ({ onSignOut, isSigningOut, email }) => (
             padding: '2rem',
             textAlign: 'center'
         }}>
-            <h2 style={{ marginBottom: '0.75rem' }}>Account Type Unresolved</h2>
+            <h2 style={{ marginBottom: '0.75rem' }}>{tr('Account Type Unresolved', 'Type de compte non resolu')}</h2>
             <p style={{ margin: '0 0 1rem 0', color: 'var(--text-secondary)' }}>
-                Your session is active, but your account role could not be determined.
-                Please sign out and sign in again. If this persists, contact support.
+                {tr(
+                    'Your session is active, but your account role could not be determined. Please sign out and sign in again. If this persists, contact support.',
+                    "Votre session est active, mais le role du compte n'a pas pu etre determine. Veuillez vous deconnecter puis vous reconnecter. Si le probleme persiste, contactez le support."
+                )}
             </p>
             {email && (
                 <p style={{ margin: '0 0 1.5rem 0', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                    Signed in as: {email}
+                    {tr('Signed in as:', 'Connecte en tant que :')} {email}
                 </p>
             )}
 
@@ -41,10 +44,12 @@ const UnknownRoleFallback = ({ onSignOut, isSigningOut, email }) => (
                     onClick={onSignOut}
                     disabled={isSigningOut}
                 >
-                    {isSigningOut ? 'Signing Out...' : 'Sign Out'}
+                    {isSigningOut
+                        ? tr('Signing Out...', 'Deconnexion...')
+                        : tr('Sign Out', 'Se deconnecter')}
                 </button>
                 <a href="mailto:support@matchop.com" className="btn btn-secondary">
-                    Contact Support
+                    {tr('Contact Support', 'Contacter le support')}
                 </a>
             </div>
         </div>
@@ -58,6 +63,7 @@ const UnknownRoleFallback = ({ onSignOut, isSigningOut, email }) => (
  */
 function Dashboard() {
     const [isSigningOut, setIsSigningOut] = useState(false)
+    const tr = useBilingualText()
     const { isLoggedIn, isLoading, isStudent, isCompany, isAdmin, user, profile, signOut } = useAuth()
     const metadataType = user?.user_metadata?.type
 
@@ -86,7 +92,7 @@ function Dashboard() {
     }
 
     if (isCompany || metadataType === 'company') {
-        return <Navigate to="/company/intros" replace />
+        return <Navigate to="/company/candidates" replace />
     }
 
     if (isStudent || metadataType === 'student') {
@@ -103,6 +109,7 @@ function Dashboard() {
             onSignOut={handleSignOut}
             isSigningOut={isSigningOut}
             email={user?.email}
+            tr={tr}
         />
     )
 }

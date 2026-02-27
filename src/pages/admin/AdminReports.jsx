@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
 import { lockOverlayScroll, unlockOverlayScroll } from '../../lib/overlayLock'
+import { useBilingualText } from '../../lib/useBilingualText'
 import './Admin.css'
 
 export default function AdminReports() {
+    const tr = useBilingualText()
     const [reports, setReports] = useState([])
     const [loading, setLoading] = useState(true)
     const [statusFilter, setStatusFilter] = useState('pending')
@@ -33,15 +35,11 @@ export default function AdminReports() {
                 .range((currentPage - 1) * pageSize, currentPage * pageSize - 1)
                 .order('created_at', { ascending: false })
 
-            if (statusFilter !== 'all') {
-                query = query.eq('status', statusFilter)
-            }
+            if (statusFilter !== 'all') query = query.eq('status', statusFilter)
 
             const { data, count, error } = await query
-
             if (error) throw error
 
-            // Fetch reporter and reported user details
             const reportsWithDetails = await Promise.all(
                 (data || []).map(async (report) => {
                     const [reporterResult, reportedResult] = await Promise.all([
@@ -51,8 +49,8 @@ export default function AdminReports() {
 
                     return {
                         ...report,
-                        reporter_email: reporterResult.data?.email || 'Unknown',
-                        reported_email: reportedResult.data?.email || 'Unknown'
+                        reporter_email: reporterResult.data?.email || tr('Unknown', 'Inconnu'),
+                        reported_email: reportedResult.data?.email || tr('Unknown', 'Inconnu')
                     }
                 })
             )
@@ -70,8 +68,8 @@ export default function AdminReports() {
         try {
             const { error } = await supabase
                 .from('reports')
-                .update({ 
-                    status, 
+                .update({
+                    status,
                     resolution: resolutionNote,
                     resolved_at: new Date().toISOString()
                 })
@@ -85,23 +83,21 @@ export default function AdminReports() {
             setResolution('')
         } catch (error) {
             console.error('Error resolving report:', error)
-            alert('Failed to resolve report')
+            alert(tr('Failed to resolve report', 'Echec de resolution du signalement'))
         }
     }
 
     async function suspendReportedUser(reportId, userId) {
         try {
-            // Suspend the user
             await supabase
                 .from('profiles')
                 .update({ suspended: true })
                 .eq('id', userId)
 
-            // Update report
             await supabase
                 .from('reports')
-                .update({ 
-                    status: 'resolved', 
+                .update({
+                    status: 'resolved',
                     resolution: 'User suspended',
                     resolved_at: new Date().toISOString()
                 })
@@ -112,7 +108,7 @@ export default function AdminReports() {
             setShowModal(false)
         } catch (error) {
             console.error('Error suspending user:', error)
-            alert('Failed to suspend user')
+            alert(tr('Failed to suspend user', "Echec de suspension de l'utilisateur"))
         }
     }
 
@@ -128,15 +124,23 @@ export default function AdminReports() {
     }
 
     const totalPages = Math.ceil(totalCount / pageSize)
+    const statusLabel = (status) => {
+        const map = {
+            pending: tr('Pending', 'En attente'),
+            resolved: tr('Resolved', 'Resolu'),
+            dismissed: tr('Dismissed', 'Rejete')
+        }
+        return map[status] || status
+    }
 
     function getReasonLabel(reason) {
         const labels = {
-            'harassment': '🚫 Harassment',
-            'spam': '📧 Spam',
-            'fake_profile': '🎭 Fake Profile',
-            'inappropriate': '⚠️ Inappropriate Content',
-            'scam': '💰 Scam',
-            'other': '📝 Other'
+            harassment: tr('Harassment', 'Harcelement'),
+            spam: tr('Spam', 'Spam'),
+            fake_profile: tr('Fake Profile', 'Faux profil'),
+            inappropriate: tr('Inappropriate Content', 'Contenu inapproprie'),
+            scam: tr('Scam', 'Arnaque'),
+            other: tr('Other', 'Autre')
         }
         return labels[reason] || reason
     }
@@ -144,11 +148,10 @@ export default function AdminReports() {
     return (
         <div className="admin-container">
             <div className="admin-header">
-                <h1>🚨 Reports Management</h1>
-                <p>Review and manage user reports</p>
+                <h1>{tr('Reports Management', 'Gestion des signalements')}</h1>
+                <p>{tr('Review and manage user reports', 'Examiner et gerer les signalements utilisateurs')}</p>
             </div>
 
-            {/* Toolbar */}
             <div className="admin-toolbar">
                 <select
                     className="admin-filter"
@@ -158,46 +161,45 @@ export default function AdminReports() {
                         setCurrentPage(1)
                     }}
                 >
-                    <option value="pending">Pending</option>
-                    <option value="resolved">Resolved</option>
-                    <option value="dismissed">Dismissed</option>
-                    <option value="all">All Reports</option>
+                    <option value="pending">{tr('Pending', 'En attente')}</option>
+                    <option value="resolved">{tr('Resolved', 'Resolus')}</option>
+                    <option value="dismissed">{tr('Dismissed', 'Rejetes')}</option>
+                    <option value="all">{tr('All Reports', 'Tous les signalements')}</option>
                 </select>
             </div>
 
-            {/* Reports Table */}
             <div className="admin-section">
                 {loading ? (
-                    <div className="admin-loading">Loading reports...</div>
+                    <div className="admin-loading">{tr('Loading reports...', 'Chargement des signalements...')}</div>
                 ) : reports.length === 0 ? (
-                    <div className="no-activity">No reports found</div>
+                    <div className="no-activity">{tr('No reports found', 'Aucun signalement trouve')}</div>
                 ) : (
                     <>
                         <div className="admin-table-container">
                             <table className="admin-table">
                                 <thead>
                                     <tr>
-                                        <th>Reporter</th>
-                                        <th>Reported User</th>
-                                        <th>Reason</th>
-                                        <th>Status</th>
-                                        <th>Date</th>
-                                        <th>Actions</th>
+                                        <th>{tr('Reporter', 'Signaleur')}</th>
+                                        <th>{tr('Reported User', 'Utilisateur signale')}</th>
+                                        <th>{tr('Reason', 'Motif')}</th>
+                                        <th>{tr('Status', 'Statut')}</th>
+                                        <th>{tr('Date', 'Date')}</th>
+                                        <th>{tr('Actions', 'Actions')}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {reports.map(report => (
+                                    {reports.map((report) => (
                                         <tr key={report.id}>
-                                            <td data-label="Reporter">{report.reporter_email}</td>
-                                            <td data-label="Reported User">{report.reported_email}</td>
-                                            <td data-label="Reason">{getReasonLabel(report.reason)}</td>
-                                            <td data-label="Status">
+                                            <td data-label={tr('Reporter', 'Signaleur')}>{report.reporter_email}</td>
+                                            <td data-label={tr('Reported User', 'Utilisateur signale')}>{report.reported_email}</td>
+                                            <td data-label={tr('Reason', 'Motif')}>{getReasonLabel(report.reason)}</td>
+                                            <td data-label={tr('Status', 'Statut')}>
                                                 <span className={`status-badge status-${report.status}`}>
-                                                    {report.status}
+                                                    {statusLabel(report.status)}
                                                 </span>
                                             </td>
-                                            <td data-label="Date">{new Date(report.created_at).toLocaleDateString()}</td>
-                                            <td data-label="Actions" className="admin-actions-cell">
+                                            <td data-label={tr('Date', 'Date')}>{new Date(report.created_at).toLocaleDateString()}</td>
+                                            <td data-label={tr('Actions', 'Actions')} className="admin-actions-cell">
                                                 <button
                                                     className="admin-btn admin-btn-primary admin-btn-sm"
                                                     onClick={() => {
@@ -205,7 +207,7 @@ export default function AdminReports() {
                                                         setShowModal(true)
                                                     }}
                                                 >
-                                                    Review
+                                                    {tr('Review', 'Examiner')}
                                                 </button>
                                             </td>
                                         </tr>
@@ -218,16 +220,16 @@ export default function AdminReports() {
                             <div className="admin-pagination">
                                 <button
                                     disabled={currentPage === 1}
-                                    onClick={() => setCurrentPage(p => p - 1)}
+                                    onClick={() => setCurrentPage((p) => p - 1)}
                                 >
-                                    Previous
+                                    {tr('Previous', 'Precedent')}
                                 </button>
-                                <span>Page {currentPage} of {totalPages}</span>
+                                <span>{tr(`Page ${currentPage} of ${totalPages}`, `Page ${currentPage} sur ${totalPages}`)}</span>
                                 <button
                                     disabled={currentPage === totalPages}
-                                    onClick={() => setCurrentPage(p => p + 1)}
+                                    onClick={() => setCurrentPage((p) => p + 1)}
                                 >
-                                    Next
+                                    {tr('Next', 'Suivant')}
                                 </button>
                             </div>
                         )}
@@ -235,45 +237,44 @@ export default function AdminReports() {
                 )}
             </div>
 
-            {/* Report Detail Modal */}
             {showModal && selectedReport && (
                 <div className="admin-modal-overlay" onClick={() => setShowModal(false)}>
-                    <div className="admin-modal" onClick={e => e.stopPropagation()}>
-                        <h2>Review Report</h2>
-                        
+                    <div className="admin-modal" onClick={(e) => e.stopPropagation()}>
+                        <h2>{tr('Review Report', 'Examiner le signalement')}</h2>
+
                         <div className="admin-form-group">
-                            <label>Reporter</label>
+                            <label>{tr('Reporter', 'Signaleur')}</label>
                             <input type="text" value={selectedReport.reporter_email} disabled />
                         </div>
 
                         <div className="admin-form-group">
-                            <label>Reported User</label>
+                            <label>{tr('Reported User', 'Utilisateur signale')}</label>
                             <input type="text" value={selectedReport.reported_email} disabled />
                         </div>
 
                         <div className="admin-form-group">
-                            <label>Reason</label>
+                            <label>{tr('Reason', 'Motif')}</label>
                             <input type="text" value={getReasonLabel(selectedReport.reason)} disabled />
                         </div>
 
                         <div className="admin-form-group">
-                            <label>Description</label>
-                            <textarea value={selectedReport.description || 'No details provided'} disabled rows={4} />
+                            <label>{tr('Description', 'Description')}</label>
+                            <textarea value={selectedReport.description || tr('No details provided', 'Aucun detail fourni')} disabled rows={4} />
                         </div>
 
                         <div className="admin-form-group">
-                            <label>Submitted</label>
+                            <label>{tr('Submitted', 'Soumis le')}</label>
                             <input type="text" value={new Date(selectedReport.created_at).toLocaleString()} disabled />
                         </div>
 
                         {selectedReport.status === 'pending' && (
                             <>
                                 <div className="admin-form-group">
-                                    <label>Resolution Note</label>
-                                    <textarea 
+                                    <label>{tr('Resolution Note', 'Note de resolution')}</label>
+                                    <textarea
                                         value={resolution}
                                         onChange={(e) => setResolution(e.target.value)}
-                                        placeholder="Add a note about the resolution..."
+                                        placeholder={tr('Add a note about the resolution...', 'Ajoutez une note de resolution...')}
                                         rows={3}
                                     />
                                 </div>
@@ -283,19 +284,19 @@ export default function AdminReports() {
                                         className="admin-btn admin-btn-danger"
                                         onClick={() => suspendReportedUser(selectedReport.id, selectedReport.reported_id)}
                                     >
-                                        ⛔ Suspend User
+                                        {tr('Suspend User', "Suspendre l'utilisateur")}
                                     </button>
                                     <button
                                         className="admin-btn admin-btn-success"
                                         onClick={() => resolveReport(selectedReport.id, 'resolved', resolution)}
                                     >
-                                        ✅ Resolve
+                                        {tr('Resolve', 'Resoudre')}
                                     </button>
                                     <button
                                         className="admin-btn admin-btn-warning"
                                         onClick={() => resolveReport(selectedReport.id, 'dismissed', resolution)}
                                     >
-                                        ❌ Dismiss
+                                        {tr('Dismiss', 'Rejeter')}
                                     </button>
                                 </div>
                             </>
@@ -304,15 +305,15 @@ export default function AdminReports() {
                         {selectedReport.status !== 'pending' && (
                             <>
                                 <div className="admin-form-group">
-                                    <label>Resolution</label>
-                                    <textarea value={selectedReport.resolution || 'No resolution note'} disabled rows={2} />
+                                    <label>{tr('Resolution', 'Resolution')}</label>
+                                    <textarea value={selectedReport.resolution || tr('No resolution note', 'Aucune note de resolution')} disabled rows={2} />
                                 </div>
                                 <div className="admin-modal-actions">
                                     <button
                                         className="admin-btn admin-btn-primary"
                                         onClick={() => setShowModal(false)}
                                     >
-                                        Close
+                                        {tr('Close', 'Fermer')}
                                     </button>
                                 </div>
                             </>

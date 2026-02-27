@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
 import { lockOverlayScroll, unlockOverlayScroll } from '../../lib/overlayLock'
+import { useBilingualText } from '../../lib/useBilingualText'
 import './Admin.css'
 
 export default function AdminOffers() {
+    const tr = useBilingualText()
     const [offers, setOffers] = useState([])
     const [loading, setLoading] = useState(true)
     const [searchTerm, setSearchTerm] = useState('')
@@ -33,16 +35,10 @@ export default function AdminOffers() {
                 .range((currentPage - 1) * pageSize, currentPage * pageSize - 1)
                 .order('created_at', { ascending: false })
 
-            if (statusFilter !== 'all') {
-                query = query.eq('status', statusFilter)
-            }
-
-            if (searchTerm) {
-                query = query.ilike('title', `%${searchTerm}%`)
-            }
+            if (statusFilter !== 'all') query = query.eq('status', statusFilter)
+            if (searchTerm) query = query.ilike('title', `%${searchTerm}%`)
 
             const { data, count, error } = await query
-
             if (error) throw error
 
             setOffers(data || [])
@@ -62,17 +58,16 @@ export default function AdminOffers() {
                 .eq('id', offerId)
 
             if (error) throw error
-
             await logAdminAction(`Changed offer status to ${status}`, offerId)
             fetchOffers()
         } catch (error) {
             console.error('Error updating offer:', error)
-            alert('Failed to update offer status')
+            alert(tr('Failed to update offer status', "Echec de mise a jour du statut de l'offre"))
         }
     }
 
     async function deleteOffer(offerId) {
-        if (!confirm('Are you sure you want to delete this offer?')) return
+        if (!confirm(tr('Are you sure you want to delete this offer?', 'Voulez-vous vraiment supprimer cette offre ?'))) return
 
         try {
             const { error } = await supabase
@@ -81,12 +76,11 @@ export default function AdminOffers() {
                 .eq('id', offerId)
 
             if (error) throw error
-
             await logAdminAction('Deleted offer', offerId)
             fetchOffers()
         } catch (error) {
             console.error('Error deleting offer:', error)
-            alert('Failed to delete offer')
+            alert(tr('Failed to delete offer', "Echec de suppression de l'offre"))
         }
     }
 
@@ -102,20 +96,29 @@ export default function AdminOffers() {
     }
 
     const totalPages = Math.ceil(totalCount / pageSize)
+    const statusLabel = (status) => {
+        const map = {
+            active: tr('Active', 'Actif'),
+            inactive: tr('Inactive', 'Inactif'),
+            pending: tr('Pending', 'En attente'),
+            expired: tr('Expired', 'Expire'),
+            closed: tr('Closed', 'Ferme')
+        }
+        return map[status] || status
+    }
 
     return (
         <div className="admin-container">
             <div className="admin-header">
-                <h1>💼 Offers Management</h1>
-                <p>Manage all job offers</p>
+                <h1>{tr('Offers Management', 'Gestion des offres')}</h1>
+                <p>{tr('Manage all job offers', 'Gerer toutes les offres')}</p>
             </div>
 
-            {/* Toolbar */}
             <div className="admin-toolbar">
                 <input
                     type="text"
                     className="admin-search"
-                    placeholder="Search by title..."
+                    placeholder={tr('Search by title...', 'Rechercher par titre...')}
                     value={searchTerm}
                     onChange={(e) => {
                         setSearchTerm(e.target.value)
@@ -131,45 +134,44 @@ export default function AdminOffers() {
                         setCurrentPage(1)
                     }}
                 >
-                    <option value="all">All Status</option>
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
-                    <option value="pending">Pending</option>
-                    <option value="expired">Expired</option>
+                    <option value="all">{tr('All Status', 'Tous les statuts')}</option>
+                    <option value="active">{tr('Active', 'Actif')}</option>
+                    <option value="inactive">{tr('Inactive', 'Inactif')}</option>
+                    <option value="pending">{tr('Pending', 'En attente')}</option>
+                    <option value="expired">{tr('Expired', 'Expire')}</option>
                 </select>
             </div>
 
-            {/* Offers Table */}
             <div className="admin-section">
                 {loading ? (
-                    <div className="admin-loading">Loading offers...</div>
+                    <div className="admin-loading">{tr('Loading offers...', 'Chargement des offres...')}</div>
                 ) : (
                     <>
                         <div className="admin-table-container">
                             <table className="admin-table">
                                 <thead>
                                     <tr>
-                                        <th>Title</th>
-                                        <th>Company</th>
-                                        <th>Location</th>
-                                        <th>Status</th>
-                                        <th>Created</th>
-                                        <th>Actions</th>
+                                        <th>{tr('Title', 'Titre')}</th>
+                                        <th>{tr('Company', 'Entreprise')}</th>
+                                        <th>{tr('Location', 'Localisation')}</th>
+                                        <th>{tr('Status', 'Statut')}</th>
+                                        <th>{tr('Created', 'Cree le')}</th>
+                                        <th>{tr('Actions', 'Actions')}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {offers.map(offer => (
+                                    {offers.map((offer) => (
                                         <tr key={offer.id}>
-                                            <td data-label="Title">{offer.title}</td>
-                                            <td data-label="Company">{offer.companies?.company_name || 'N/A'}</td>
-                                            <td data-label="Location">{offer.location || 'Remote'}</td>
-                                            <td data-label="Status">
+                                            <td data-label={tr('Title', 'Titre')}>{offer.title}</td>
+                                            <td data-label={tr('Company', 'Entreprise')}>{offer.companies?.company_name || tr('N/A', 'N/A')}</td>
+                                            <td data-label={tr('Location', 'Localisation')}>{offer.location || tr('Remote', 'A distance')}</td>
+                                            <td data-label={tr('Status', 'Statut')}>
                                                 <span className={`status-badge status-${offer.status}`}>
-                                                    {offer.status}
+                                                    {statusLabel(offer.status)}
                                                 </span>
                                             </td>
-                                            <td data-label="Created">{new Date(offer.created_at).toLocaleDateString()}</td>
-                                            <td data-label="Actions" className="admin-actions-cell">
+                                            <td data-label={tr('Created', 'Cree le')}>{new Date(offer.created_at).toLocaleDateString()}</td>
+                                            <td data-label={tr('Actions', 'Actions')} className="admin-actions-cell">
                                                 <button
                                                     className="admin-btn admin-btn-primary admin-btn-sm"
                                                     onClick={() => {
@@ -177,28 +179,28 @@ export default function AdminOffers() {
                                                         setShowModal(true)
                                                     }}
                                                 >
-                                                    View
+                                                    {tr('View', 'Voir')}
                                                 </button>
                                                 {offer.status === 'active' ? (
                                                     <button
                                                         className="admin-btn admin-btn-warning admin-btn-sm"
                                                         onClick={() => updateOfferStatus(offer.id, 'inactive')}
                                                     >
-                                                        Deactivate
+                                                        {tr('Deactivate', 'Desactiver')}
                                                     </button>
                                                 ) : (
                                                     <button
                                                         className="admin-btn admin-btn-success admin-btn-sm"
                                                         onClick={() => updateOfferStatus(offer.id, 'active')}
                                                     >
-                                                        Activate
+                                                        {tr('Activate', 'Activer')}
                                                     </button>
                                                 )}
                                                 <button
                                                     className="admin-btn admin-btn-danger admin-btn-sm"
                                                     onClick={() => deleteOffer(offer.id)}
                                                 >
-                                                    Delete
+                                                    {tr('Delete', 'Supprimer')}
                                                 </button>
                                             </td>
                                         </tr>
@@ -211,16 +213,16 @@ export default function AdminOffers() {
                             <div className="admin-pagination">
                                 <button
                                     disabled={currentPage === 1}
-                                    onClick={() => setCurrentPage(p => p - 1)}
+                                    onClick={() => setCurrentPage((p) => p - 1)}
                                 >
-                                    Previous
+                                    {tr('Previous', 'Precedent')}
                                 </button>
-                                <span>Page {currentPage} of {totalPages}</span>
+                                <span>{tr(`Page ${currentPage} of ${totalPages}`, `Page ${currentPage} sur ${totalPages}`)}</span>
                                 <button
                                     disabled={currentPage === totalPages}
-                                    onClick={() => setCurrentPage(p => p + 1)}
+                                    onClick={() => setCurrentPage((p) => p + 1)}
                                 >
-                                    Next
+                                    {tr('Next', 'Suivant')}
                                 </button>
                             </div>
                         )}
@@ -228,42 +230,41 @@ export default function AdminOffers() {
                 )}
             </div>
 
-            {/* Offer Detail Modal */}
             {showModal && selectedOffer && (
                 <div className="admin-modal-overlay" onClick={() => setShowModal(false)}>
-                    <div className="admin-modal" onClick={e => e.stopPropagation()}>
+                    <div className="admin-modal" onClick={(e) => e.stopPropagation()}>
                         <h2>{selectedOffer.title}</h2>
-                        
+
                         <div className="admin-form-group">
-                            <label>Company</label>
-                            <input type="text" value={selectedOffer.companies?.company_name || 'N/A'} disabled />
+                            <label>{tr('Company', 'Entreprise')}</label>
+                            <input type="text" value={selectedOffer.companies?.company_name || tr('N/A', 'N/A')} disabled />
                         </div>
 
                         <div className="admin-form-group">
-                            <label>Description</label>
+                            <label>{tr('Description', 'Description')}</label>
                             <textarea value={selectedOffer.description || ''} disabled rows={4} />
                         </div>
 
                         <div className="admin-form-group">
-                            <label>Location</label>
-                            <input type="text" value={selectedOffer.location || 'Remote'} disabled />
+                            <label>{tr('Location', 'Localisation')}</label>
+                            <input type="text" value={selectedOffer.location || tr('Remote', 'A distance')} disabled />
                         </div>
 
                         <div className="admin-form-group">
-                            <label>Salary Range</label>
-                            <input 
-                                type="text" 
-                                value={`${selectedOffer.salary_min || 'N/A'} - ${selectedOffer.salary_max || 'N/A'}`} 
-                                disabled 
+                            <label>{tr('Salary Range', 'Fourchette salariale')}</label>
+                            <input
+                                type="text"
+                                value={`${selectedOffer.salary_min || 'N/A'} - ${selectedOffer.salary_max || 'N/A'}`}
+                                disabled
                             />
                         </div>
 
                         <div className="admin-form-group">
-                            <label>Required Skills</label>
-                            <input 
-                                type="text" 
-                                value={selectedOffer.required_skills?.join(', ') || 'None specified'} 
-                                disabled 
+                            <label>{tr('Required Skills', 'Competences requises')}</label>
+                            <input
+                                type="text"
+                                value={selectedOffer.required_skills?.join(', ') || tr('None specified', 'Aucune')}
+                                disabled
                             />
                         </div>
 
@@ -272,7 +273,7 @@ export default function AdminOffers() {
                                 className="admin-btn admin-btn-primary"
                                 onClick={() => setShowModal(false)}
                             >
-                                Close
+                                {tr('Close', 'Fermer')}
                             </button>
                         </div>
                     </div>

@@ -16,9 +16,10 @@
         "personalizedPlan": "Plan personnalise",
         "referrals": "Parrainage",
         "profile": "Profil",
-        "newCandidates": "Nouveaux candidats",
+        "newCandidates": "Candidats",
         "candidates": "Candidats",
         "archived": "Archives",
+        "myOffers": "Mes offres",
         "postJob": "Publier",
         "logout": "Déconnexion"
     },
@@ -454,6 +455,33 @@
         "typeMessage": "Écrivez un message...",
         "today": "Aujourd'hui"
     },
+    "conversationHub": {
+        "title": "Conversations",
+        "subtitle": "Gerez tous les messages candidat-entreprise au meme endroit.",
+        "searchLabel": "Rechercher des conversations",
+        "searchPlaceholder": "Rechercher par personne, offre ou message...",
+        "filterLabel": "Filtres de conversation",
+        "filters": {
+            "all": "Tous",
+            "active": "Actives",
+            "archived": "Archivees"
+        },
+        "loading": "Chargement des conversations...",
+        "loadingMessages": "Chargement des messages...",
+        "retry": "Reessayer",
+        "emptyResults": "Aucune conversation ne correspond au filtre.",
+        "emptyArchived": "Aucune conversation archivee.",
+        "pickConversation": "Selectionnez une conversation pour envoyer un message.",
+        "threadNotFoundTitle": "Conversation indisponible",
+        "threadNotFound": "Cette conversation n'existe pas ou n'est plus disponible.",
+        "backToMatches": "Retour aux matchs",
+        "backToInbox": "Retour a la boite",
+        "typeMessage": "Ecrivez un message...",
+        "send": "Envoyer",
+        "archived": "Archive",
+        "archivedNotice": "Ce match est archive. La messagerie est en lecture seule.",
+        "noMessagesYet": "Aucun message pour le moment."
+    },
     "candidates": {
         "title": "Candidats",
         "subtitle": "{{count}} candidats interesses par vos offres",
@@ -481,12 +509,12 @@
             "unknownOffer": "Offre"
         },
         "newCandidates": {
-            "title": "Nouveaux candidats",
+            "title": "Candidats",
             "subtitle": "Revoyez les nouveaux interets et decidez qui passe en match.",
             "pendingCount": "{{count}} en attente",
-            "loading": "Chargement des nouveaux candidats...",
-            "loadError": "Impossible de charger les nouveaux candidats.",
-            "emptyTitle": "Aucun nouveau candidat pour le moment",
+            "loading": "Chargement des candidats...",
+            "loadError": "Impossible de charger les candidats.",
+            "emptyTitle": "Aucun candidat pour le moment",
             "emptyDescription": "Les etudiants interesses par vos offres apparaitront ici.",
             "openOffers": "Voir les offres actives",
             "actions": {
@@ -507,8 +535,8 @@
             "loading": "Chargement des matchs...",
             "loadError": "Impossible de charger les matchs.",
             "emptyTitle": "Aucun match actif",
-            "emptyDescription": "Acceptez des nouveaux candidats pour ouvrir des conversations.",
-            "reviewCandidates": "Voir les nouveaux candidats",
+            "emptyDescription": "Acceptez des candidats pour ouvrir des conversations.",
+            "reviewCandidates": "Voir les candidats",
             "actions": {
                 "refresh": "Actualiser",
                 "message": "Message",
@@ -544,6 +572,95 @@
             "actions": {
                 "message": "Message"
             }
+        }
+    },
+    "companyOffers": {
+        "title": "Mes offres",
+        "subtitle": "Gerez vos offres publiees et suivez les performances du funnel.",
+        "loading": "Chargement des offres...",
+        "filters": {
+            "searchLabel": "Rechercher des offres",
+            "searchPlaceholder": "Rechercher par titre...",
+            "statusLabel": "Statut",
+            "statusAll": "Tous les statuts",
+            "statusActive": "Active",
+            "statusClosed": "Fermee"
+        },
+        "analytics": {
+            "lifetimeTitle": "Depuis le debut",
+            "last30Title": "30 derniers jours",
+            "totalOffers": "Total offres",
+            "activeOffers": "Offres actives",
+            "closedOffers": "Offres fermees",
+            "rightSwipes": "Swipes droite",
+            "pendingIntros": "Intros en attente",
+            "acceptedIntros": "Intros acceptees",
+            "matches": "Matchs",
+            "matchRate": "Taux de match",
+            "closeRate": "Taux de fermeture"
+        },
+        "charts": {
+            "trendTitle": "Tendance sur 30 jours",
+            "funnelTitle": "Vue funnel des offres"
+        },
+        "table": {
+            "title": "Offre",
+            "status": "Statut",
+            "location": "Lieu",
+            "created": "Cree le",
+            "rightSwipes": "Swipes droite",
+            "matches": "Matchs",
+            "matchRate": "Taux de match",
+            "actions": "Actions"
+        },
+        "status": {
+            "active": "Active",
+            "closed": "Fermee"
+        },
+        "actions": {
+            "refresh": "Actualiser",
+            "postOffer": "Publier une offre",
+            "edit": "Modifier",
+            "close": "Fermer",
+            "reopen": "Reouvrir",
+            "delete": "Supprimer",
+            "cancel": "Annuler",
+            "save": "Enregistrer",
+            "saving": "Enregistrement...",
+            "deleting": "Suppression..."
+        },
+        "form": {
+            "title": "Titre",
+            "description": "Description",
+            "skills": "Competences requises",
+            "skillsPlaceholder": "React, Node.js, SQL",
+            "location": "Lieu",
+            "salary": "Fourchette salariale",
+            "status": "Statut"
+        },
+        "validation": {
+            "titleRequired": "Le titre de l'offre est obligatoire."
+        },
+        "modals": {
+            "editTitle": "Modifier l'offre",
+            "deleteTitle": "Supprimer l'offre",
+            "deleteWarning": "Vous allez supprimer definitivement \"{{title}}\".",
+            "deleteImpact": "Cette action est irreversible et peut aussi supprimer des donnees liees selon les contraintes de base.",
+            "deleteConfirmLabel": "Tapez le titre de l'offre pour confirmer",
+            "deleteConfirmPlaceholder": "Saisissez le titre exact",
+            "deleteConfirmHint": "La suppression est activee uniquement si le titre saisi correspond exactement."
+        },
+        "empty": {
+            "title": "Aucune offre trouvee",
+            "description": "Publiez votre premiere offre pour commencer a attirer des candidats."
+        },
+        "error": {
+            "loadFailed": "Impossible de charger les offres"
+        },
+        "pagination": {
+            "previous": "Precedent",
+            "next": "Suivant",
+            "pageOf": "Page {{page}} sur {{totalPages}}"
         }
     },
     "postJob": {

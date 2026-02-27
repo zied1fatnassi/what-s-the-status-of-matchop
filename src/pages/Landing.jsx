@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { ArrowRight, Users, Briefcase, Heart, MessageCircle, Sparkles, Zap } from 'lucide-react'
 import Logo from '../components/Logo'
 import CandidatePipelineLoop from '../components/CandidatePipelineLoop'
+import { useBilingualText } from '../lib/useBilingualText'
 import './Landing.css'
 
 /**
@@ -11,6 +12,7 @@ import './Landing.css'
  */
 function Landing() {
     const { t } = useTranslation()
+    const tr = useBilingualText()
 
     return (
         <div className="landing-page">
@@ -123,25 +125,23 @@ function Landing() {
                             <h2>{t('landing.forStudentsTitle')}</h2>
                             <p>{t('landing.forStudentsDesc')}</p>
                             <ul className="feature-list">
-                                <li>✨ Personalized job recommendations</li>
-                                <li>✨ Direct access to hiring managers</li>
-                                <li>✨ Real-time application status</li>
-                                <li>✨ Interview scheduling built-in</li>
+                                <li>{tr('Personalized job recommendations', 'Recommandations personnalisees')}</li>
+                                <li>{tr('Direct access to hiring managers', 'Acces direct aux recruteurs')}</li>
+                                <li>{tr('Real-time application status', 'Suivi des candidatures en temps reel')}</li>
+                                <li>{tr('Interview scheduling built-in', 'Planification des entretiens integree')}</li>
                             </ul>
                             <Link to="/student/signup" className="btn btn-primary">
-                                Get Started Free
+                                {tr('Get Started Free', 'Commencer gratuitement')}
                                 <ArrowRight size={18} />
                             </Link>
                         </div>
-
-
                     </div>
 
                     <div className="features-grid reverse">
                         <div className="feature-visual">
                             <div className="dashboard-mockup pipeline-showcase">
                                 <div className="mock-header">
-                                    <span className="mock-title">Candidate Pipeline</span>
+                                    <span className="mock-title">{tr('Candidate Pipeline', 'Pipeline candidats')}</span>
                                 </div>
                                 <CandidatePipelineLoop />
                             </div>
@@ -155,13 +155,13 @@ function Landing() {
                             <h2>{t('landing.forCompaniesTitle')}</h2>
                             <p>{t('landing.forCompaniesDesc')}</p>
                             <ul className="feature-list">
-                                <li>🎯 Pre-qualified candidates</li>
-                                <li>🎯 Reduced time-to-hire</li>
-                                <li>🎯 Built-in screening tools</li>
-                                <li>🎯 Analytics dashboard</li>
+                                <li>{tr('Pre-qualified candidates', 'Candidats pre-qualifies')}</li>
+                                <li>{tr('Reduced time-to-hire', "Delai d'embauche reduit")}</li>
+                                <li>{tr('Built-in screening tools', 'Outils de preselection integres')}</li>
+                                <li>{tr('Analytics dashboard', "Tableau de bord d'analyse")}</li>
                             </ul>
                             <Link to="/company/signup" className="btn btn-primary">
-                                Start Hiring
+                                {tr('Start Hiring', 'Commencer a recruter')}
                                 <ArrowRight size={18} />
                             </Link>
                         </div>
@@ -186,8 +186,6 @@ function Landing() {
                     </div>
                 </div>
             </section>
-
-
         </div>
     )
 }

@@ -21,13 +21,24 @@ import { TUNISIAN_COMPANIES } from '../../data/companies'
 import { ALL_SKILLS } from '../../data/skills'
 import ErrorToast from '../../components/ErrorToast'
 import ErrorBoundary from '../../components/ErrorBoundary'
+import { useBilingualText } from '../../lib/useBilingualText'
 import './StudentProfile.css'
 import './StudentProfileEditor.css'
 
 // ============================================================================
 // PROFILE PREVIEW MODAL
 // ============================================================================
-function ProfilePreviewModal({ isOpen, onClose, profile, experiences, education, languages, completion }) {
+function ProfilePreviewModal({ isOpen, onClose, profile, experiences, education, languages, completion, tr }) {
+    useEffect(() => {
+        if (!isOpen) return
+
+        // Ensure the viewport and common page containers are at top before showing full-screen preview.
+        window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+        document.documentElement.scrollTop = 0
+        document.body.scrollTop = 0
+        document.querySelector('.app-main')?.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+        document.querySelector('.profile-page')?.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+    }, [isOpen])
     if (!isOpen) return null
 
     return (
@@ -39,48 +50,48 @@ function ProfilePreviewModal({ isOpen, onClose, profile, experiences, education,
                         <div className="preview-avatar">
                             {profile?.avatar_url ? <img src={profile.avatar_url} alt="Avatar" /> : <div className="preview-avatar-fallback"><User size={64} /></div>}
                         </div>
-                        <h2 className="preview-name">{profile?.display_name || 'Student'}</h2>
+                        <h2 className="preview-name">{profile?.display_name || tr('Student', 'Etudiant')}</h2>
                         {profile?.headline && <p className="preview-headline">{profile.headline}</p>}
                         {profile?.location && <p className="preview-location"><MapPin size={16} /> {profile.location}</p>}
-                        <div className="preview-completion"><CheckCircle size={16} /><span>{completion}% Complete</span></div>
-                        {profile?.bio && <div className="preview-section"><h3>About</h3><p>{profile.bio}</p></div>}
+                        <div className="preview-completion"><CheckCircle size={16} /><span>{completion}% {tr('Complete', 'Complete')}</span></div>
+                        {profile?.bio && <div className="preview-section"><h3>{tr('About', 'A propos')}</h3><p>{profile.bio}</p></div>}
                         {profile?.skills?.length > 0 && (
                             <div className="preview-section">
-                                <h3>Skills</h3>
+                                <h3>{tr('Skills', 'Competences')}</h3>
                                 <div className="preview-skills">{profile.skills.map(s => <span key={s} className="preview-skill-tag">{s}</span>)}</div>
                             </div>
                         )}
                         {experiences?.length > 0 && (
                             <div className="preview-section">
-                                <h3><Briefcase size={16} /> Experience</h3>
+                                <h3><Briefcase size={16} /> {tr('Experience', 'Experience')}</h3>
                                 <div className="preview-experiences">{experiences.map(exp => (
                                     <div key={exp.id} className="preview-exp">
                                         <strong>{exp.job_title}</strong>
                                         <span className="preview-exp-company">{exp.company}</span>
-                                        <span className="preview-exp-date">{exp.start_date} — {exp.is_current ? 'Present' : exp.end_date}</span>
+                                        <span className="preview-exp-date">{exp.start_date} — {exp.is_current ? tr('Present', 'Present') : exp.end_date}</span>
                                     </div>
                                 ))}</div>
                             </div>
                         )}
                         {education?.length > 0 && (
                             <div className="preview-section">
-                                <h3><GraduationCap size={16} /> Education</h3>
+                                <h3><GraduationCap size={16} /> {tr('Education', 'Education')}</h3>
                                 {education.map(edu => (
                                     <div key={edu.id} className="preview-exp">
                                         <strong>{edu.school}</strong>
-                                        <span className="preview-exp-company">{edu.degree} {edu.field_of_study && `in ${edu.field_of_study}`}</span>
+                                        <span className="preview-exp-company">{edu.degree} {edu.field_of_study && tr(`in ${edu.field_of_study}`, `en ${edu.field_of_study}`)}</span>
                                     </div>
                                 ))}
                             </div>
                         )}
                         {languages?.length > 0 && (
                             <div className="preview-section">
-                                <h3><Languages size={16} /> Languages</h3>
+                                <h3><Languages size={16} /> {tr('Languages', 'Langues')}</h3>
                                 <div className="preview-skills">{languages.map(l => <span key={l.id} className="preview-skill-tag">{l.language} ({l.proficiency})</span>)}</div>
                             </div>
                         )}
                     </div>
-                    <p className="preview-hint">This is how companies will see your profile</p>
+                    <p className="preview-hint">{tr('This is how companies will see your profile', 'Voici comment les entreprises verront votre profil')}</p>
                 </motion.div>
             </motion.div>
         </AnimatePresence>
@@ -107,6 +118,7 @@ function ProfileSection({ icon: Icon, title, children, error }) {
 // ============================================================================
 function StudentProfile() {
     void motion
+    const tr = useBilingualText()
 
     const { user } = useAuth()
     const {
@@ -166,8 +178,8 @@ function StudentProfile() {
         const file = e.target.files?.[0]
         if (!file) return
         const { url, error } = await uploadImage(file)
-        if (error) showError(error.message || 'Failed to upload')
-        else if (url) { setFormData(prev => ({ ...prev, avatar_url: url })); showSuccess('Avatar uploaded!') }
+        if (error) showError(error.message || tr('Failed to upload', "Echec du telechargement"))
+        else if (url) { setFormData(prev => ({ ...prev, avatar_url: url })); showSuccess(tr('Avatar uploaded!', 'Avatar telecharge !')) }
     }
 
 
@@ -197,7 +209,7 @@ function StudentProfile() {
 
         // 5MB limit
         if (file.size > 5 * 1024 * 1024) {
-            showError('File too large (Max 5MB)')
+            showError(tr('File too large (Max 5MB)', 'Fichier trop volumineux (max 5 Mo)'))
             if (cvInputRef.current) cvInputRef.current.value = ''
             return
         }
@@ -215,9 +227,9 @@ function StudentProfile() {
                 setFormData(prev => ({ ...prev, cv_url: path }))
                 const { error: saveError } = await updateProfile({ cv_url: path })
                 if (saveError) {
-                    showError('CV uploaded but failed to save to profile')
+                    showError(tr('CV uploaded but failed to save to profile', "CV telecharge mais impossible de l'enregistrer sur le profil"))
                 } else {
-                    showSuccess('CV uploaded successfully!')
+                    showSuccess(tr('CV uploaded successfully!', 'CV telecharge avec succes !'))
                     // Replace local blob URL with a proper signed URL
                     const signedUrl = await getSignedCVUrl(path)
                     if (signedUrl) setCvSignedUrl(signedUrl)
@@ -225,7 +237,7 @@ function StudentProfile() {
             }
         } catch (error) {
             console.error('[CV Upload] Error:', error)
-            showError('Failed to upload CV: ' + (error?.message || error))
+            showError(`${tr('Failed to upload CV:', 'Echec du telechargement du CV :')} ${error?.message || error}`)
             // Keep showing the file locally — don't revert the UI
         }
     }
@@ -278,7 +290,7 @@ function StudentProfile() {
 
     const improveBio = async () => {
         if (!formData.bio || formData.bio.trim().length < 10) {
-            showError('Please enter at least a short bio first')
+            showError(tr('Please enter at least a short bio first', 'Veuillez saisir une courte bio avant'))
             return
         }
         setAiLoading(true)
@@ -294,7 +306,7 @@ function StudentProfile() {
             if (error) throw error
             if (data?.success && data?.bio) {
                 setFormData(prev => ({ ...prev, bio: data.bio }))
-                showSuccess('Bio improved with AI! Review and save.')
+                showSuccess(tr('Bio improved with AI! Review and save.', "Bio amelioree par IA ! Verifiez et enregistrez."))
             } else {
                 throw new Error(data?.error || 'AI service unavailable')
             }
@@ -304,9 +316,9 @@ function StudentProfile() {
             const improved = improveBioLocally(formData.bio, formData.skills, formData.headline)
             if (improved !== formData.bio) {
                 setFormData(prev => ({ ...prev, bio: improved }))
-                showSuccess('Bio polished! Review and save.')
+                showSuccess(tr('Bio polished! Review and save.', 'Bio amelioree ! Verifiez et enregistrez.'))
             } else {
-                setAiError('Could not improve bio. Try adding more detail first.')
+                setAiError(tr('Could not improve bio. Try adding more detail first.', "Impossible d'ameliorer la bio. Ajoutez plus de details d'abord."))
             }
         } finally {
             setAiLoading(false)
@@ -319,27 +331,27 @@ function StudentProfile() {
         const { error } = await updateProfile(formData)
         setSaving(false)
         if (error) showError(error)
-        else { showSuccess('Profile saved!'); setShowPreview(true) }
+        else { showSuccess(tr('Profile saved!', 'Profil enregistre !')); setShowPreview(true) }
     }
 
     // Experience handlers (Supabase connected)
     const handleAddExperience = async () => {
-        if (!newExp.job_title || !newExp.company || !newExp.start_date) { showError('Fill required fields'); return }
+        if (!newExp.job_title || !newExp.company || !newExp.start_date) { showError(tr('Fill required fields', 'Remplissez les champs obligatoires')); return }
         const { error } = await addExperience(newExp)
         if (error) showError(error)
-        else { showSuccess('Experience added!'); setNewExp({ job_title: '', company: '', start_date: '', end_date: '', is_current: false, description: '' }) }
+        else { showSuccess(tr('Experience added!', 'Experience ajoutee !')); setNewExp({ job_title: '', company: '', start_date: '', end_date: '', is_current: false, description: '' }) }
     }
 
     // Education handlers (Supabase connected)
     const handleAddEducation = async () => {
-        if (!newEdu.school) { showError('School is required'); return }
+        if (!newEdu.school) { showError(tr('School is required', "L'ecole est obligatoire")); return }
         setAddingEducation(true)
         const { error } = await addEducation(newEdu)
         setAddingEducation(false)
         if (error) {
             showError(error)
         } else {
-            showSuccess('Education added!')
+            showSuccess(tr('Education added!', 'Formation ajoutee !'))
             setNewEdu({ school: '', degree: '', field_of_study: '', start_date: '', end_date: '', is_current: false })
         }
     }
@@ -347,71 +359,71 @@ function StudentProfile() {
     const handleRemoveEducation = async (id) => {
         const { error } = await removeEducation(id)
         if (error) showError(error)
-        else showSuccess('Education removed')
+        else showSuccess(tr('Education removed', 'Formation supprimee'))
     }
 
     // Certification handlers (local state)
     const handleAddCertification = () => {
-        if (!newCert.name || !newCert.issuing_organization) { showError('Name and organization required'); return }
+        if (!newCert.name || !newCert.issuing_organization) { showError(tr('Name and organization required', 'Nom et organisme obligatoires')); return }
         addCertification(newCert)
-        showSuccess('Certification added!')
+        showSuccess(tr('Certification added!', 'Certification ajoutee !'))
         setNewCert({ name: '', issuing_organization: '', issue_date: '', credential_url: '' })
     }
 
     // Project handlers (local state)
     const handleAddProject = () => {
-        if (!newProject.name) { showError('Project name required'); return }
+        if (!newProject.name) { showError(tr('Project name required', 'Nom du projet obligatoire')); return }
         addProject(newProject)
-        showSuccess('Project added!')
+        showSuccess(tr('Project added!', 'Projet ajoute !'))
         setNewProject({ name: '', description: '', url: '', start_date: '', end_date: '' })
     }
 
     // Language handlers (local state)
     const handleAddLanguage = () => {
-        if (!newLang.language) { showError('Language required'); return }
+        if (!newLang.language) { showError(tr('Language required', 'Langue obligatoire')); return }
         addLanguage(newLang)
-        showSuccess('Language added!')
+        showSuccess(tr('Language added!', 'Langue ajoutee !'))
         setNewLang({ language: '', proficiency: 'professional' })
     }
 
     // Volunteer handlers (local state)
     const handleAddVolunteer = () => {
-        if (!newVol.organization || !newVol.role) { showError('Organization and role required'); return }
+        if (!newVol.organization || !newVol.role) { showError(tr('Organization and role required', 'Organisation et role obligatoires')); return }
         addVolunteer(newVol)
-        showSuccess('Volunteer experience added!')
+        showSuccess(tr('Volunteer experience added!', 'Experience benevole ajoutee !'))
         setNewVol({ organization: '', role: '', cause: '', start_date: '', end_date: '', is_current: false })
     }
 
-    if (loading) return <div className="profile-page"><div className="loading-state"><Loader2 size={48} className="spin" /><p>Loading profile...</p></div></div>
-    if (error) return <div className="profile-page"><div className="error-state"><AlertCircle size={64} /><h2>Failed to Load</h2><p>{error}</p><button onClick={() => window.location.reload()}>Reload</button></div></div>
+    if (loading) return <div className="profile-page"><div className="loading-state"><Loader2 size={48} className="spin" /><p>{tr('Loading profile...', 'Chargement du profil...')}</p></div></div>
+    if (error) return <div className="profile-page"><div className="error-state"><AlertCircle size={64} /><h2>{tr('Failed to Load', 'Echec du chargement')}</h2><p>{error}</p><button onClick={() => window.location.reload()}>{tr('Reload', 'Recharger')}</button></div></div>
 
     return (
         <div className="profile-page animate-fade-in-up">
             <div className="profile-container">
                 {/* Header */}
                 <header className="profile-header">
-                    <h1>My Profile</h1>
-                    <div className="completion-indicator"><CheckCircle size={18} /><span>{completion}% Complete</span></div>
+                    <h1>{tr('My Profile', 'Mon profil')}</h1>
+                    <div className="completion-indicator"><CheckCircle size={18} /><span>{completion}% {tr('Complete', 'Complete')}</span></div>
                 </header>
                 <div className="completion-bar-wrapper"><motion.div className="completion-bar-fill" initial={{ width: 0 }} animate={{ width: `${completion}%` }} /></div>
 
                 {/* ============ SECTION 1: Profile Header ============ */}
-                <ProfileSection icon={User} title="Profile Header">
+                <ProfileSection icon={User} title={tr('Profile Header', 'En-tete du profil')}>
                     <div className="avatar-area">
                         <div className="avatar" onClick={() => fileInputRef.current?.click()}>
                             {formData.avatar_url ? <img src={formData.avatar_url} alt="Avatar" /> : <div className="avatar-fallback">{uploading ? <Loader2 className="spin" /> : <User size={40} />}</div>}
                             <div className="avatar-overlay"><Camera size={20} /></div>
                         </div>
                         <input ref={fileInputRef} type="file" accept="image/*" onChange={handleAvatarUpload} hidden />
-                        <span className="avatar-hint">Click to change photo</span>
+                        <span className="avatar-hint">{tr('Click to change photo', 'Cliquez pour changer la photo')}</span>
                     </div>
                     <div className="field">
-                        <label>Display Name *</label>
-                        <input type="text" value={formData.display_name} onChange={e => setFormData(prev => ({ ...prev, display_name: e.target.value }))} placeholder="Your full name" />
+                        <label>{tr('Display Name *', 'Nom affiche *')}</label>
+                        <input type="text" value={formData.display_name} onChange={e => setFormData(prev => ({ ...prev, display_name: e.target.value }))} placeholder={tr('Your full name', 'Votre nom complet')} />
                     </div>
                     <div className="field">
-                        <label>Headline</label>
-                        <input type="text" value={formData.headline} onChange={e => setFormData(prev => ({ ...prev, headline: e.target.value }))} placeholder="e.g. Full Stack Developer | React & Node.js" />
+                        <label>{tr('Headline', 'Titre')}</label>
+                        <input type="text" value={formData.headline} onChange={e => setFormData(prev => ({ ...prev, headline: e.target.value }))} placeholder={tr('e.g. Full Stack Developer | React & Node.js', 'ex. Developpeur Full Stack | React & Node.js')} />
                     </div>
                     <div className="field">
                         <FormLocationSelector
@@ -425,21 +437,21 @@ function StudentProfile() {
                 </ProfileSection>
 
                 {/* ============ SECTION: CV / Resume ============ */}
-                <ProfileSection icon={FileText} title="CV / Resume">
+                <ProfileSection icon={FileText} title={tr('CV / Resume', 'CV')}>
                     <div className="cv-upload-area">
                         {(formData.cv_url || cvFileName) ? (
                             <div className="cv-display">
                                 <FileText size={48} className="cv-icon" />
                                 <div className="cv-info">
-                                    <span className="cv-label">{cvFileName || 'Current CV'}</span>
+                                    <span className="cv-label">{cvFileName || tr('Current CV', 'CV actuel')}</span>
                                     <div className="cv-actions">
                                         {cvSignedUrl && (
                                             <a href={cvSignedUrl} target="_blank" rel="noopener noreferrer" className="view-cv-btn">
-                                                <Download size={14} /> Download / View
+                                                <Download size={14} /> {tr('Download / View', 'Telecharger / Voir')}
                                             </a>
                                         )}
                                         <button onClick={() => cvInputRef.current?.click()} className="change-cv-btn">
-                                            Change
+                                            {tr('Change', 'Modifier')}
                                         </button>
                                     </div>
                                 </div>
@@ -447,8 +459,8 @@ function StudentProfile() {
                         ) : (
                             <div className="cv-placeholder" onClick={() => cvInputRef.current?.click()}>
                                 <div className="placeholder-icon"><Upload size={24} /></div>
-                                <p>Upload your CV / Resume</p>
-                                <span>PDF or Word (Max 5MB)</span>
+                                <p>{tr('Upload your CV / Resume', 'Telechargez votre CV')}</p>
+                                <span>{tr('PDF or Word (Max 5MB)', 'PDF ou Word (max 5 Mo)')}</span>
                             </div>
                         )}
                         <input
@@ -458,15 +470,15 @@ function StudentProfile() {
                             onChange={handleCVUpload}
                             hidden
                         />
-                        {uploadingCV && <div className="uploading-overlay"><Loader2 className="spin" /> Uploading...</div>}
+                        {uploadingCV && <div className="uploading-overlay"><Loader2 className="spin" /> {tr('Uploading...', 'Telechargement...')}</div>}
                     </div>
                 </ProfileSection>
 
                 {/* ============ SECTION 2: About ============ */}
-                <ProfileSection icon={User} title="About">
+                <ProfileSection icon={User} title={tr('About', 'A propos')}>
                     <div className="field">
                         <div className="bio-header">
-                            <label>Tell your story</label>
+                            <label>{tr('Tell your story', 'Parlez de vous')}</label>
                             <button
                                 type="button"
                                 className="ai-improve-btn"
@@ -474,20 +486,20 @@ function StudentProfile() {
                                 disabled={aiLoading || !formData.bio || formData.bio.length < 10}
                             >
                                 {aiLoading ? (
-                                    <><Loader2 size={14} className="spin" /> Improving...</>
+                                    <><Loader2 size={14} className="spin" /> {tr('Improving...', 'Amelioration...')}</>
                                 ) : (
-                                    <><Sparkles size={14} /> Improve my Bio</>
+                                    <><Sparkles size={14} /> {tr('Improve my Bio', 'Ameliorer ma bio')}</>
                                 )}
                             </button>
                         </div>
                         {aiError && <div className="ai-error"><AlertCircle size={14} />{aiError}</div>}
-                        <textarea value={formData.bio} onChange={e => setFormData(prev => ({ ...prev, bio: e.target.value }))} placeholder="Write a summary about yourself, your experience, and career goals..." rows={5} maxLength={2000} />
+                        <textarea value={formData.bio} onChange={e => setFormData(prev => ({ ...prev, bio: e.target.value }))} placeholder={tr('Write a summary about yourself, your experience, and career goals...', 'Ecrivez un resume sur vous, vos experiences et vos objectifs...')} rows={5} maxLength={2000} />
                         <span className="char-count">{formData.bio.length}/2000</span>
                     </div>
                 </ProfileSection>
 
                 {/* ============ SECTION 3: Experience ============ */}
-                <ProfileSection icon={Briefcase} title="Experience" error={experiencesError}>
+                <ProfileSection icon={Briefcase} title={tr('Experience', 'Experience')} error={experiencesError}>
                     {experiences.length > 0 ? (
                         <div className="items-list">
                             {experiences.map(exp => (
@@ -496,40 +508,40 @@ function StudentProfile() {
                                     <div className="item-info">
                                         <h3>{exp.job_title}</h3>
                                         <p className="item-subtitle">{exp.company}</p>
-                                        <p className="item-meta">{exp.start_date} — {exp.is_current ? 'Present' : exp.end_date || 'N/A'}</p>
+                                        <p className="item-meta">{exp.start_date} — {exp.is_current ? tr('Present', 'Present') : exp.end_date || tr('N/A', 'N/A')}</p>
                                         {exp.description && <p className="item-desc">{exp.description}</p>}
                                     </div>
                                     <button onClick={() => deleteExperience(exp.id)} className="delete-btn"><Trash2 size={16} /></button>
                                 </div>
                             ))}
                         </div>
-                    ) : <p className="empty-text">No experience added yet</p>}
+                    ) : <p className="empty-text">{tr('No experience added yet', 'Aucune experience ajoutee')}</p>}
                     <div className="add-form">
-                        <h4><Plus size={16} /> Add Experience</h4>
+                        <h4><Plus size={16} /> {tr('Add Experience', "Ajouter une experience")}</h4>
                         <div className="form-grid">
                             <SuggestionInput
-                                placeholder="Job Title *"
+                                placeholder={tr('Job Title *', 'Poste *')}
                                 value={newExp.job_title}
                                 onChange={val => setNewExp(prev => ({ ...prev, job_title: val }))}
                                 options={JOB_TITLES}
                             />
                             <SuggestionInput
-                                placeholder="Company *"
+                                placeholder={tr('Company *', 'Entreprise *')}
                                 value={newExp.company}
                                 onChange={val => setNewExp(prev => ({ ...prev, company: val }))}
                                 options={TUNISIAN_COMPANIES}
                             />
-                            <input type="month" placeholder="Start Date *" value={newExp.start_date} onChange={e => setNewExp(prev => ({ ...prev, start_date: e.target.value }))} />
-                            <input type="month" placeholder="End Date" value={newExp.end_date} onChange={e => setNewExp(prev => ({ ...prev, end_date: e.target.value }))} disabled={newExp.is_current} />
+                            <input type="month" placeholder={tr('Start Date *', 'Date de debut *')} value={newExp.start_date} onChange={e => setNewExp(prev => ({ ...prev, start_date: e.target.value }))} />
+                            <input type="month" placeholder={tr('End Date', 'Date de fin')} value={newExp.end_date} onChange={e => setNewExp(prev => ({ ...prev, end_date: e.target.value }))} disabled={newExp.is_current} />
                         </div>
-                        <label className="checkbox-row"><input type="checkbox" checked={newExp.is_current} onChange={e => setNewExp(prev => ({ ...prev, is_current: e.target.checked, end_date: '' }))} /> I currently work here</label>
-                        <textarea placeholder="Description (optional)" value={newExp.description} onChange={e => setNewExp(prev => ({ ...prev, description: e.target.value }))} rows={3} />
-                        <button onClick={handleAddExperience} className="add-item-btn"><Plus size={16} /> Add Experience</button>
+                        <label className="checkbox-row"><input type="checkbox" checked={newExp.is_current} onChange={e => setNewExp(prev => ({ ...prev, is_current: e.target.checked, end_date: '' }))} /> {tr('I currently work here', 'Je travaille actuellement ici')}</label>
+                        <textarea placeholder={tr('Description (optional)', 'Description (optionnelle)')} value={newExp.description} onChange={e => setNewExp(prev => ({ ...prev, description: e.target.value }))} rows={3} />
+                        <button onClick={handleAddExperience} className="add-item-btn"><Plus size={16} /> {tr('Add Experience', "Ajouter une experience")}</button>
                     </div>
                 </ProfileSection>
 
                 {/* ============ SECTION 4: Education (Supabase Connected) ============ */}
-                <ProfileSection icon={GraduationCap} title="Education" error={educationError}>
+                <ProfileSection icon={GraduationCap} title={tr('Education', 'Education')} error={educationError}>
                     {education.length > 0 ? (
                         <div className="items-list">
                             {education.map(edu => (
@@ -538,15 +550,15 @@ function StudentProfile() {
                                     <div className="item-info">
                                         <h3>{edu.school}</h3>
                                         <p className="item-subtitle">{edu.degree}{edu.field_of_study && `, ${edu.field_of_study}`}</p>
-                                        <p className="item-meta">{edu.start_date} — {edu.is_current ? 'Present' : edu.end_date || 'N/A'}</p>
+                                        <p className="item-meta">{edu.start_date} — {edu.is_current ? tr('Present', 'Present') : edu.end_date || tr('N/A', 'N/A')}</p>
                                     </div>
                                     <button onClick={() => handleRemoveEducation(edu.id)} className="delete-btn"><Trash2 size={16} /></button>
                                 </div>
                             ))}
                         </div>
-                    ) : <p className="empty-text">No education added yet</p>}
+                    ) : <p className="empty-text">{tr('No education added yet', 'Aucune formation ajoutee')}</p>}
                     <div className="add-form">
-                        <h4><Plus size={16} /> Add Education</h4>
+                        <h4><Plus size={16} /> {tr('Add Education', 'Ajouter une formation')}</h4>
                         <div className="form-grid">
                             <input
                                 type="text"
@@ -568,19 +580,19 @@ function StudentProfile() {
                                 onProgramChange={(val) => setNewEdu(prev => ({ ...prev, field_of_study: val }))}
                             />
 
-                            <input type="month" placeholder="Start Date" value={newEdu.start_date} onChange={e => setNewEdu(prev => ({ ...prev, start_date: e.target.value }))} />
+                            <input type="month" placeholder={tr('Start Date', 'Date de debut')} value={newEdu.start_date} onChange={e => setNewEdu(prev => ({ ...prev, start_date: e.target.value }))} />
 
-                            <input type="month" placeholder="End Date" value={newEdu.end_date} onChange={e => setNewEdu(prev => ({ ...prev, end_date: e.target.value }))} disabled={newEdu.is_current} />
+                            <input type="month" placeholder={tr('End Date', 'Date de fin')} value={newEdu.end_date} onChange={e => setNewEdu(prev => ({ ...prev, end_date: e.target.value }))} disabled={newEdu.is_current} />
                         </div>
-                        <label className="checkbox-row"><input type="checkbox" checked={newEdu.is_current} onChange={e => setNewEdu(prev => ({ ...prev, is_current: e.target.checked, end_date: '' }))} /> Currently studying here</label>
+                        <label className="checkbox-row"><input type="checkbox" checked={newEdu.is_current} onChange={e => setNewEdu(prev => ({ ...prev, is_current: e.target.checked, end_date: '' }))} /> {tr('Currently studying here', 'Je suis actuellement en etudes ici')}</label>
                         <button onClick={handleAddEducation} disabled={addingEducation} className="add-item-btn">
-                            {addingEducation ? <><Loader2 size={16} className="spin" /> Adding...</> : <><Plus size={16} /> Add Education</>}
+                            {addingEducation ? <><Loader2 size={16} className="spin" /> {tr('Adding...', 'Ajout...')}</> : <><Plus size={16} /> {tr('Add Education', 'Ajouter une formation')}</>}
                         </button>
                     </div>
                 </ProfileSection>
 
                 {/* ============ SECTION 5: Licenses & Certifications ============ */}
-                <ProfileSection icon={Award} title="Licenses & Certifications">
+                <ProfileSection icon={Award} title={tr('Licenses & Certifications', 'Licences et certifications')}>
                     {certifications.length > 0 ? (
                         <div className="items-list">
                             {certifications.map(cert => (
@@ -589,38 +601,38 @@ function StudentProfile() {
                                     <div className="item-info">
                                         <h3>{cert.name}</h3>
                                         <p className="item-subtitle">{cert.issuing_organization}</p>
-                                        <p className="item-meta">Issued {cert.issue_date}</p>
-                                        {cert.credential_url && <a href={cert.credential_url} target="_blank" rel="noopener noreferrer" className="item-link"><ExternalLink size={14} /> View credential</a>}
+                                        <p className="item-meta">{tr('Issued', 'Delivre')} {cert.issue_date}</p>
+                                        {cert.credential_url && <a href={cert.credential_url} target="_blank" rel="noopener noreferrer" className="item-link"><ExternalLink size={14} /> {tr('View credential', "Voir l'attestation")}</a>}
                                     </div>
                                     <button onClick={() => removeCertification(cert.id)} className="delete-btn"><Trash2 size={16} /></button>
                                 </div>
                             ))}
                         </div>
-                    ) : <p className="empty-text">No certifications added yet</p>}
+                    ) : <p className="empty-text">{tr('No certifications added yet', 'Aucune certification ajoutee')}</p>}
                     <div className="add-form">
-                        <h4><Plus size={16} /> Add Certification</h4>
+                        <h4><Plus size={16} /> {tr('Add Certification', 'Ajouter une certification')}</h4>
                         <div className="form-grid">
-                            <input type="text" placeholder="Certification Name *" value={newCert.name} onChange={e => setNewCert(prev => ({ ...prev, name: e.target.value }))} />
-                            <input type="text" placeholder="Issuing Organization *" value={newCert.issuing_organization} onChange={e => setNewCert(prev => ({ ...prev, issuing_organization: e.target.value }))} />
-                            <input type="month" placeholder="Issue Date" value={newCert.issue_date} onChange={e => setNewCert(prev => ({ ...prev, issue_date: e.target.value }))} />
-                            <input type="url" placeholder="Credential URL" value={newCert.credential_url} onChange={e => setNewCert(prev => ({ ...prev, credential_url: e.target.value }))} />
+                            <input type="text" placeholder={tr('Certification Name *', 'Nom de certification *')} value={newCert.name} onChange={e => setNewCert(prev => ({ ...prev, name: e.target.value }))} />
+                            <input type="text" placeholder={tr('Issuing Organization *', 'Organisme emetteur *')} value={newCert.issuing_organization} onChange={e => setNewCert(prev => ({ ...prev, issuing_organization: e.target.value }))} />
+                            <input type="month" placeholder={tr('Issue Date', "Date d'emission")} value={newCert.issue_date} onChange={e => setNewCert(prev => ({ ...prev, issue_date: e.target.value }))} />
+                            <input type="url" placeholder={tr('Credential URL', "URL de l'attestation")} value={newCert.credential_url} onChange={e => setNewCert(prev => ({ ...prev, credential_url: e.target.value }))} />
                         </div>
-                        <button onClick={handleAddCertification} className="add-item-btn"><Plus size={16} /> Add Certification</button>
+                        <button onClick={handleAddCertification} className="add-item-btn"><Plus size={16} /> {tr('Add Certification', 'Ajouter une certification')}</button>
                     </div>
                 </ProfileSection>
 
                 {/* ============ SECTION 6: Skills ============ */}
 
-                <ProfileSection icon={CheckCircle} title="Skills">
+                <ProfileSection icon={CheckCircle} title={tr('Skills', 'Competences')}>
                     <div className="skills-container">
                         {formData.skills.length > 0 ? formData.skills.map(skill => (
                             <span key={skill} className="skill-chip">{skill}<button onClick={() => handleRemoveSkill(skill)}><X size={14} /></button></span>
-                        )) : <span className="empty-text">No skills added yet</span>}
+                        )) : <span className="empty-text">{tr('No skills added yet', 'Aucune competence ajoutee')}</span>}
                     </div>
                     <div className="skills-input-container">
                         <div className="skills-input-wrapper">
                             <SuggestionInput
-                                placeholder="Add a skill (e.g. Python, Leadership...)"
+                                placeholder={tr('Add a skill (e.g. Python, Leadership...)', 'Ajouter une competence (ex. Python, Leadership...)')}
                                 value={newSkill}
                                 onChange={setNewSkill}
                                 onSelect={(val) => {
@@ -631,12 +643,12 @@ function StudentProfile() {
                                 options={ALL_SKILLS}
                             />
                         </div>
-                        <button onClick={handleAddSkill} className="add-btn"><Plus size={16} /> Add</button>
+                        <button onClick={handleAddSkill} className="add-btn"><Plus size={16} /> {tr('Add', 'Ajouter')}</button>
                     </div>
                 </ProfileSection>
 
                 {/* ============ SECTION 7: Projects ============ */}
-                <ProfileSection icon={FolderGit2} title="Projects">
+                <ProfileSection icon={FolderGit2} title={tr('Projects', 'Projets')}>
                     {projects.length > 0 ? (
                         <div className="items-list">
                             {projects.map(proj => (
@@ -645,26 +657,26 @@ function StudentProfile() {
                                     <div className="item-info">
                                         <h3>{proj.name}</h3>
                                         {proj.description && <p className="item-desc">{proj.description}</p>}
-                                        {proj.url && <a href={proj.url} target="_blank" rel="noopener noreferrer" className="item-link"><ExternalLink size={14} /> View project</a>}
+                                        {proj.url && <a href={proj.url} target="_blank" rel="noopener noreferrer" className="item-link"><ExternalLink size={14} /> {tr('View project', 'Voir le projet')}</a>}
                                     </div>
                                     <button onClick={() => removeProject(proj.id)} className="delete-btn"><Trash2 size={16} /></button>
                                 </div>
                             ))}
                         </div>
-                    ) : <p className="empty-text">No projects added yet</p>}
+                    ) : <p className="empty-text">{tr('No projects added yet', 'Aucun projet ajoute')}</p>}
                     <div className="add-form">
-                        <h4><Plus size={16} /> Add Project</h4>
+                        <h4><Plus size={16} /> {tr('Add Project', 'Ajouter un projet')}</h4>
                         <div className="form-grid">
-                            <input type="text" placeholder="Project Name *" value={newProject.name} onChange={e => setNewProject(prev => ({ ...prev, name: e.target.value }))} />
-                            <input type="url" placeholder="Project URL" value={newProject.url} onChange={e => setNewProject(prev => ({ ...prev, url: e.target.value }))} />
+                            <input type="text" placeholder={tr('Project Name *', 'Nom du projet *')} value={newProject.name} onChange={e => setNewProject(prev => ({ ...prev, name: e.target.value }))} />
+                            <input type="url" placeholder={tr('Project URL', 'URL du projet')} value={newProject.url} onChange={e => setNewProject(prev => ({ ...prev, url: e.target.value }))} />
                         </div>
-                        <textarea placeholder="Description" value={newProject.description} onChange={e => setNewProject(prev => ({ ...prev, description: e.target.value }))} rows={3} />
-                        <button onClick={handleAddProject} className="add-item-btn"><Plus size={16} /> Add Project</button>
+                        <textarea placeholder={tr('Description', 'Description')} value={newProject.description} onChange={e => setNewProject(prev => ({ ...prev, description: e.target.value }))} rows={3} />
+                        <button onClick={handleAddProject} className="add-item-btn"><Plus size={16} /> {tr('Add Project', 'Ajouter un projet')}</button>
                     </div>
                 </ProfileSection>
 
                 {/* ============ SECTION 8: Languages ============ */}
-                <ProfileSection icon={Languages} title="Languages">
+                <ProfileSection icon={Languages} title={tr('Languages', 'Langues')}>
                     {languages.length > 0 ? (
                         <div className="items-list compact">
                             {languages.map(lang => (
@@ -677,25 +689,25 @@ function StudentProfile() {
                                 </div>
                             ))}
                         </div>
-                    ) : <p className="empty-text">No languages added yet</p>}
+                    ) : <p className="empty-text">{tr('No languages added yet', 'Aucune langue ajoutee')}</p>}
                     <div className="add-form compact">
-                        <h4><Plus size={16} /> Add Language</h4>
+                        <h4><Plus size={16} /> {tr('Add Language', 'Ajouter une langue')}</h4>
                         <div className="form-grid">
-                            <input type="text" placeholder="Language *" value={newLang.language} onChange={e => setNewLang(prev => ({ ...prev, language: e.target.value }))} />
+                            <input type="text" placeholder={tr('Language *', 'Langue *')} value={newLang.language} onChange={e => setNewLang(prev => ({ ...prev, language: e.target.value }))} />
                             <select value={newLang.proficiency} onChange={e => setNewLang(prev => ({ ...prev, proficiency: e.target.value }))}>
-                                <option value="native">Native</option>
-                                <option value="fluent">Fluent</option>
-                                <option value="professional">Professional</option>
-                                <option value="conversational">Conversational</option>
-                                <option value="elementary">Elementary</option>
+                                <option value="native">{tr('Native', 'Natif')}</option>
+                                <option value="fluent">{tr('Fluent', 'Courant')}</option>
+                                <option value="professional">{tr('Professional', 'Professionnel')}</option>
+                                <option value="conversational">{tr('Conversational', 'Conversationnel')}</option>
+                                <option value="elementary">{tr('Elementary', 'Elementaire')}</option>
                             </select>
                         </div>
-                        <button onClick={handleAddLanguage} className="add-item-btn"><Plus size={16} /> Add Language</button>
+                        <button onClick={handleAddLanguage} className="add-item-btn"><Plus size={16} /> {tr('Add Language', 'Ajouter une langue')}</button>
                     </div>
                 </ProfileSection>
 
                 {/* ============ SECTION 9: Volunteer Experience ============ */}
-                <ProfileSection icon={Heart} title="Volunteer Experience">
+                <ProfileSection icon={Heart} title={tr('Volunteer Experience', 'Experience benevole')}>
                     {volunteer.length > 0 ? (
                         <div className="items-list">
                             {volunteer.map(vol => (
@@ -705,32 +717,32 @@ function StudentProfile() {
                                         <h3>{vol.role}</h3>
                                         <p className="item-subtitle">{vol.organization}</p>
                                         {vol.cause && <p className="item-meta">{vol.cause}</p>}
-                                        <p className="item-meta">{vol.start_date} — {vol.is_current ? 'Present' : vol.end_date || 'N/A'}</p>
+                                        <p className="item-meta">{vol.start_date} — {vol.is_current ? tr('Present', 'Present') : vol.end_date || tr('N/A', 'N/A')}</p>
                                     </div>
                                     <button onClick={() => removeVolunteer(vol.id)} className="delete-btn"><Trash2 size={16} /></button>
                                 </div>
                             ))}
                         </div>
-                    ) : <p className="empty-text">No volunteer experience added yet</p>}
+                    ) : <p className="empty-text">{tr('No volunteer experience added yet', 'Aucune experience benevole ajoutee')}</p>}
                     <div className="add-form">
-                        <h4><Plus size={16} /> Add Volunteer Experience</h4>
+                        <h4><Plus size={16} /> {tr('Add Volunteer Experience', 'Ajouter une experience benevole')}</h4>
                         <div className="form-grid">
-                            <input type="text" placeholder="Organization *" value={newVol.organization} onChange={e => setNewVol(prev => ({ ...prev, organization: e.target.value }))} />
-                            <input type="text" placeholder="Role *" value={newVol.role} onChange={e => setNewVol(prev => ({ ...prev, role: e.target.value }))} />
-                            <input type="text" placeholder="Cause" value={newVol.cause} onChange={e => setNewVol(prev => ({ ...prev, cause: e.target.value }))} />
-                            <input type="month" placeholder="Start Date" value={newVol.start_date} onChange={e => setNewVol(prev => ({ ...prev, start_date: e.target.value }))} />
-                            <input type="month" placeholder="End Date" value={newVol.end_date} onChange={e => setNewVol(prev => ({ ...prev, end_date: e.target.value }))} disabled={newVol.is_current} />
+                            <input type="text" placeholder={tr('Organization *', 'Organisation *')} value={newVol.organization} onChange={e => setNewVol(prev => ({ ...prev, organization: e.target.value }))} />
+                            <input type="text" placeholder={tr('Role *', 'Role *')} value={newVol.role} onChange={e => setNewVol(prev => ({ ...prev, role: e.target.value }))} />
+                            <input type="text" placeholder={tr('Cause', 'Cause')} value={newVol.cause} onChange={e => setNewVol(prev => ({ ...prev, cause: e.target.value }))} />
+                            <input type="month" placeholder={tr('Start Date', 'Date de debut')} value={newVol.start_date} onChange={e => setNewVol(prev => ({ ...prev, start_date: e.target.value }))} />
+                            <input type="month" placeholder={tr('End Date', 'Date de fin')} value={newVol.end_date} onChange={e => setNewVol(prev => ({ ...prev, end_date: e.target.value }))} disabled={newVol.is_current} />
                         </div>
-                        <label className="checkbox-row"><input type="checkbox" checked={newVol.is_current} onChange={e => setNewVol(prev => ({ ...prev, is_current: e.target.checked, end_date: '' }))} /> Currently volunteering</label>
-                        <button onClick={handleAddVolunteer} className="add-item-btn"><Plus size={16} /> Add Volunteer</button>
+                        <label className="checkbox-row"><input type="checkbox" checked={newVol.is_current} onChange={e => setNewVol(prev => ({ ...prev, is_current: e.target.checked, end_date: '' }))} /> {tr('Currently volunteering', 'Je fais actuellement du benevolat')}</label>
+                        <button onClick={handleAddVolunteer} className="add-item-btn"><Plus size={16} /> {tr('Add Volunteer', 'Ajouter un benevolat')}</button>
                     </div>
                 </ProfileSection>
 
                 {/* ============ BOTTOM ACTION BUTTONS ============ */}
                 <div className="bottom-actions">
-                    <button onClick={() => setShowPreview(true)} className="preview-btn"><Eye size={20} /> Preview Profile</button>
+                    <button onClick={() => setShowPreview(true)} className="preview-btn"><Eye size={20} /> {tr('Preview Profile', 'Apercu du profil')}</button>
                     <button onClick={handleSave} disabled={saving} className="save-btn">
-                        {saving ? <><Loader2 size={20} className="spin" /> Saving...</> : <><Save size={20} /> Save Profile</>}
+                        {saving ? <><Loader2 size={20} className="spin" /> {tr('Saving...', 'Enregistrement...')}</> : <><Save size={20} /> {tr('Save Profile', 'Enregistrer le profil')}</>}
                     </button>
                 </div>
             </div>
@@ -741,6 +753,7 @@ function StudentProfile() {
                 profile={formData} experiences={experiences} education={education}
                 languages={languages}
                 completion={completion}
+                tr={tr}
             />
 
             {toast && <ErrorToast {...toast} onClose={hideToast} />}        </div>
@@ -748,11 +761,10 @@ function StudentProfile() {
 }
 
 export default function StudentProfileWithErrorBoundary() {
+    const tr = useBilingualText()
     return (
-        <ErrorBoundary fallbackMessage="Profile page encountered an error. Please reload.">
+        <ErrorBoundary fallbackMessage={tr('Profile page encountered an error. Please reload.', 'La page profil a rencontre une erreur. Veuillez recharger.')}>
             <StudentProfile />
         </ErrorBoundary>
     )
 }
-
-

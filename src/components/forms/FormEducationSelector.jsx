@@ -8,6 +8,7 @@ import {
     DOCTORAT_PROGRAMS,
     ALL_ACADEMIC_PROGRAMS
 } from '../../lib/validation'
+import { useBilingualText } from '../../lib/useBilingualText'
 import './FormComponents.css'
 
 /**
@@ -15,7 +16,7 @@ import './FormComponents.css'
  * First select degree level, then select program/major
  */
 export function FormEducationSelector({
-    label = 'Formation / Education',
+    label = null,
     degreeValue,
     programValue,
     onDegreeChange,
@@ -25,6 +26,8 @@ export function FormEducationSelector({
     error = null,
     helperText = null,
 }) {
+    const tr = useBilingualText()
+    const resolvedLabel = label || tr('Formation / Education', 'Formation / Education')
     const [availablePrograms, setAvailablePrograms] = useState([])
 
     // Update available programs when degree changes
@@ -61,9 +64,9 @@ export function FormEducationSelector({
 
     return (
         <div className="form-input-group">
-            {label && (
+            {resolvedLabel && (
                 <label className="form-label">
-                    {label}
+                    {resolvedLabel}
                     {required && <span className="required-indicator"> *</span>}
                 </label>
             )}
@@ -77,7 +80,7 @@ export function FormEducationSelector({
                     required={required}
                     disabled={disabled}
                 >
-                    <option value="">Diplôme / Degree</option>
+                    <option value="">{tr('Degree', 'Diplome')}</option>
                     {DEGREE_LEVELS.map((level) => (
                         <option key={level} value={level}>
                             {level}
@@ -91,7 +94,7 @@ export function FormEducationSelector({
                         type="text"
                         list="programs-list"
                         className={`form-input ${error ? 'form-input-error' : ''}`}
-                        placeholder="Spécialité / Major"
+                        placeholder={tr('Specialty / Major', 'Specialite / filiere')}
                         value={programValue || ''}
                         onChange={(e) => handleProgramChange(e.target.value)}
                         required={required}

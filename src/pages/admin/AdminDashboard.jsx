@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
+import { useBilingualText } from '../../lib/useBilingualText'
 import './Admin.css'
 
 export default function AdminDashboard() {
+    const tr = useBilingualText()
     const [stats, setStats] = useState({
         totalUsers: 0,
         totalStudents: 0,
@@ -23,7 +25,6 @@ export default function AdminDashboard() {
 
     async function fetchDashboardData() {
         try {
-            // Fetch counts in parallel
             const [
                 { count: totalUsers },
                 { count: totalStudents },
@@ -49,11 +50,10 @@ export default function AdminDashboard() {
                 totalOffers: totalOffers || 0,
                 activeOffers: activeOffers || 0,
                 totalMatches: totalMatches || 0,
-                totalApplications: 0, // Add if you have applications table
+                totalApplications: 0,
                 pendingReports: pendingReports || 0
             })
 
-            // Fetch recent activity (audit logs if available)
             const { data: logs } = await supabase
                 .from('admin_audit_logs')
                 .select('*')
@@ -71,7 +71,7 @@ export default function AdminDashboard() {
     if (loading) {
         return (
             <div className="admin-container">
-                <div className="admin-loading">Loading dashboard...</div>
+                <div className="admin-loading">{tr('Loading dashboard...', 'Chargement du tableau de bord...')}</div>
             </div>
         )
     }
@@ -79,100 +79,90 @@ export default function AdminDashboard() {
     return (
         <div className="admin-container">
             <div className="admin-header">
-                <h1>🎛️ Admin Dashboard</h1>
-                <p>Welcome to the MATCHOP administration panel</p>
+                <h1>{tr('Admin Dashboard', 'Tableau de bord admin')}</h1>
+                <p>{tr('Welcome to the MATCHOP administration panel', "Bienvenue sur le panneau d'administration MATCHOP")}</p>
             </div>
 
-            {/* Stats Grid */}
             <div className="admin-stats-grid">
                 <div className="stat-card">
-                    <div className="stat-icon">👥</div>
                     <div className="stat-content">
                         <h3>{stats.totalUsers}</h3>
-                        <p>Total Users</p>
+                        <p>{tr('Total Users', 'Utilisateurs totaux')}</p>
                     </div>
                 </div>
 
                 <div className="stat-card">
-                    <div className="stat-icon">🎓</div>
                     <div className="stat-content">
                         <h3>{stats.totalStudents}</h3>
-                        <p>Students</p>
+                        <p>{tr('Students', 'Etudiants')}</p>
                     </div>
                 </div>
 
                 <div className="stat-card">
-                    <div className="stat-icon">🏢</div>
                     <div className="stat-content">
                         <h3>{stats.totalCompanies}</h3>
-                        <p>Companies</p>
+                        <p>{tr('Companies', 'Entreprises')}</p>
                     </div>
                 </div>
 
                 <div className="stat-card">
-                    <div className="stat-icon">💼</div>
                     <div className="stat-content">
                         <h3>{stats.totalOffers}</h3>
-                        <p>Total Offers</p>
+                        <p>{tr('Total Offers', 'Offres totales')}</p>
                     </div>
                 </div>
 
                 <div className="stat-card highlight">
-                    <div className="stat-icon">✅</div>
                     <div className="stat-content">
                         <h3>{stats.activeOffers}</h3>
-                        <p>Active Offers</p>
+                        <p>{tr('Active Offers', 'Offres actives')}</p>
                     </div>
                 </div>
 
                 <div className="stat-card">
-                    <div className="stat-icon">🤝</div>
                     <div className="stat-content">
                         <h3>{stats.totalMatches}</h3>
-                        <p>Matches</p>
+                        <p>{tr('Matches', 'Matchs')}</p>
                     </div>
                 </div>
 
                 <div className="stat-card warning">
-                    <div className="stat-icon">⚠️</div>
                     <div className="stat-content">
                         <h3>{stats.pendingReports}</h3>
-                        <p>Pending Reports</p>
+                        <p>{tr('Pending Reports', 'Signalements en attente')}</p>
                     </div>
                 </div>
             </div>
 
-            {/* Quick Actions */}
             <div className="admin-section">
-                <h2>Quick Actions</h2>
+                <h2>{tr('Quick Actions', 'Actions rapides')}</h2>
                 <div className="admin-quick-actions">
                     <Link to="/admin/users" className="quick-action-btn">
-                        👥 Manage Users
+                        {tr('Manage Users', 'Gerer les utilisateurs')}
                     </Link>
                     <Link to="/admin/offers" className="quick-action-btn">
-                        💼 Manage Offers
+                        {tr('Manage Offers', 'Gerer les offres')}
                     </Link>
                     <Link to="/admin/companies" className="quick-action-btn">
-                        🏢 Manage Companies
+                        {tr('Manage Companies', 'Gerer les entreprises')}
                     </Link>
                     <Link to="/admin/reports" className="quick-action-btn warning">
-                        🚨 View Reports
+                        {tr('View Reports', 'Voir les signalements')}
                     </Link>
                     <Link to="/admin/analytics" className="quick-action-btn">
-                        📊 Analytics
+                        {tr('Analytics', 'Analyses')}
                     </Link>
                     <Link to="/admin/settings" className="quick-action-btn">
-                        ⚙️ Settings
+                        {tr('Settings', 'Parametres')}
                     </Link>
                     <Link to="/admin/payments" className="quick-action-btn">
-                        💳 Review Payments
+                        {tr('Review Payments', 'Verifier les paiements')}
                     </Link>
                 </div>
             </div>
 
-            {/* Recent Activity */}
             <div className="admin-section">
-                <h2>Recent Activity</h2>
+                <h2>{tr('Recent Activity', 'Activite recente')}</h2>
                 {recentActivity.length > 0 ? (
                     <div className="activity-list">
                         {recentActivity.map((log, index) => (
@@ -186,7 +176,7 @@ export default function AdminDashboard() {
                         ))}
                     </div>
                 ) : (
-                    <p className="no-activity">No recent activity logged</p>
+                    <p className="no-activity">{tr('No recent activity logged', 'Aucune activite recente')}</p>
                 )}
             </div>
         </div>

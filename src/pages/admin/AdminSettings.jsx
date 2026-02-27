@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
+import { useBilingualText } from '../../lib/useBilingualText'
 import './Admin.css'
 
 export default function AdminSettings() {
+    const tr = useBilingualText()
     const [settings, setSettings] = useState({
         siteName: 'MATCHOP',
         siteDescription: 'Match students with internship opportunities',
@@ -53,11 +55,11 @@ export default function AdminSettings() {
             if (error) throw error
 
             await logAdminAction('Updated app settings')
-            setMessage({ type: 'success', text: 'Settings saved successfully!' })
+            setMessage({ type: 'success', text: tr('Settings saved successfully!', 'Parametres enregistres avec succes !') })
             setTimeout(() => setMessage(null), 3000)
         } catch (error) {
             console.error('Error saving settings:', error)
-            setMessage({ type: 'error', text: 'Failed to save settings' })
+            setMessage({ type: 'error', text: tr('Failed to save settings', "Echec d'enregistrement des parametres") })
         } finally {
             setSaving(false)
         }
@@ -76,7 +78,7 @@ export default function AdminSettings() {
     if (loading) {
         return (
             <div className="admin-container">
-                <div className="admin-loading">Loading settings...</div>
+                <div className="admin-loading">{tr('Loading settings...', 'Chargement des parametres...')}</div>
             </div>
         )
     }
@@ -84,8 +86,8 @@ export default function AdminSettings() {
     return (
         <div className="admin-container">
             <div className="admin-header">
-                <h1>⚙️ System Settings</h1>
-                <p>Configure application settings</p>
+                <h1>{tr('System Settings', 'Parametres systeme')}</h1>
+                <p>{tr('Configure application settings', "Configurer les parametres de l'application")}</p>
             </div>
 
             {message && (
@@ -94,12 +96,11 @@ export default function AdminSettings() {
                 </div>
             )}
 
-            {/* General Settings */}
             <div className="admin-section">
-                <h2>General Settings</h2>
-                
+                <h2>{tr('General Settings', 'Parametres generaux')}</h2>
+
                 <div className="admin-form-group">
-                    <label>Site Name</label>
+                    <label>{tr('Site Name', 'Nom du site')}</label>
                     <input
                         type="text"
                         value={settings.siteName}
@@ -108,7 +109,7 @@ export default function AdminSettings() {
                 </div>
 
                 <div className="admin-form-group">
-                    <label>Site Description</label>
+                    <label>{tr('Site Description', 'Description du site')}</label>
                     <textarea
                         value={settings.siteDescription}
                         onChange={(e) => setSettings({ ...settings, siteDescription: e.target.value })}
@@ -117,7 +118,7 @@ export default function AdminSettings() {
                 </div>
 
                 <div className="admin-form-group">
-                    <label>Contact Email</label>
+                    <label>{tr('Contact Email', 'Email de contact')}</label>
                     <input
                         type="email"
                         value={settings.contactEmail}
@@ -126,37 +127,35 @@ export default function AdminSettings() {
                 </div>
             </div>
 
-            {/* Limits & Rules */}
             <div className="admin-section">
-                <h2>Limits & Rules</h2>
-                
+                <h2>{tr('Limits & Rules', 'Limites et regles')}</h2>
+
                 <div className="admin-form-group">
-                    <label>Max Offers Per Company</label>
+                    <label>{tr('Max Offers Per Company', "Max d'offres par entreprise")}</label>
                     <input
                         type="number"
                         value={settings.maxOffersPerCompany}
-                        onChange={(e) => setSettings({ ...settings, maxOffersPerCompany: parseInt(e.target.value) })}
+                        onChange={(e) => setSettings({ ...settings, maxOffersPerCompany: parseInt(e.target.value, 10) })}
                         min={1}
                         max={1000}
                     />
                 </div>
 
                 <div className="admin-form-group">
-                    <label>Match Expiry (days)</label>
+                    <label>{tr('Match Expiry (days)', 'Expiration des matchs (jours)')}</label>
                     <input
                         type="number"
                         value={settings.matchExpiryDays}
-                        onChange={(e) => setSettings({ ...settings, matchExpiryDays: parseInt(e.target.value) })}
+                        onChange={(e) => setSettings({ ...settings, matchExpiryDays: parseInt(e.target.value, 10) })}
                         min={1}
                         max={365}
                     />
                 </div>
             </div>
 
-            {/* Notifications */}
             <div className="admin-section">
-                <h2>Notifications</h2>
-                
+                <h2>{tr('Notifications', 'Notifications')}</h2>
+
                 <div className="settings-toggle">
                     <label>
                         <input
@@ -164,7 +163,7 @@ export default function AdminSettings() {
                             checked={settings.enableEmailNotifications}
                             onChange={(e) => setSettings({ ...settings, enableEmailNotifications: e.target.checked })}
                         />
-                        <span>Enable Email Notifications</span>
+                        <span>{tr('Enable Email Notifications', 'Activer les notifications email')}</span>
                     </label>
                 </div>
 
@@ -175,15 +174,14 @@ export default function AdminSettings() {
                             checked={settings.enablePushNotifications}
                             onChange={(e) => setSettings({ ...settings, enablePushNotifications: e.target.checked })}
                         />
-                        <span>Enable Push Notifications</span>
+                        <span>{tr('Enable Push Notifications', 'Activer les notifications push')}</span>
                     </label>
                 </div>
             </div>
 
-            {/* System Controls */}
             <div className="admin-section">
-                <h2>System Controls</h2>
-                
+                <h2>{tr('System Controls', 'Controles systeme')}</h2>
+
                 <div className="settings-toggle warning">
                     <label>
                         <input
@@ -191,10 +189,10 @@ export default function AdminSettings() {
                             checked={settings.maintenanceMode}
                             onChange={(e) => setSettings({ ...settings, maintenanceMode: e.target.checked })}
                         />
-                        <span>Maintenance Mode</span>
+                        <span>{tr('Maintenance Mode', 'Mode maintenance')}</span>
                     </label>
                     <p className="setting-description">
-                        When enabled, only admins can access the site
+                        {tr('When enabled, only admins can access the site', "Quand active, seuls les admins peuvent acceder au site")}
                     </p>
                 </div>
 
@@ -205,22 +203,21 @@ export default function AdminSettings() {
                             checked={settings.allowNewSignups}
                             onChange={(e) => setSettings({ ...settings, allowNewSignups: e.target.checked })}
                         />
-                        <span>Allow New Signups</span>
+                        <span>{tr('Allow New Signups', 'Autoriser les nouvelles inscriptions')}</span>
                     </label>
                     <p className="setting-description">
-                        Disable to prevent new user registrations
+                        {tr('Disable to prevent new user registrations', 'Desactivez pour bloquer les nouvelles inscriptions')}
                     </p>
                 </div>
             </div>
 
-            {/* Save Button */}
             <div className="admin-settings-actions">
                 <button
                     className="admin-btn admin-btn-success admin-btn-lg"
                     onClick={saveSettings}
                     disabled={saving}
                 >
-                    {saving ? 'Saving...' : '💾 Save Settings'}
+                    {saving ? tr('Saving...', 'Enregistrement...') : tr('Save Settings', 'Enregistrer les parametres')}
                 </button>
             </div>
         </div>

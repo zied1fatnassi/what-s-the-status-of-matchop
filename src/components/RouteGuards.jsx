@@ -66,7 +66,7 @@ export function ProtectedRoute({ children, requiredType = null }) {
 
     // Check user type if required (profile takes precedence; fallback to metadata)
     if (requiredType === 'student' && !isStudent && !metadataSaysStudent) {
-        return <Navigate to="/company/intros" replace />
+        return <Navigate to="/company/candidates" replace />
     }
 
     if (requiredType === 'company' && !isCompany && !metadataSaysCompany) {
@@ -100,7 +100,7 @@ export function PublicRoute({ children }) {
         }
 
         if (isCompanyType) {
-            return <Navigate to="/company/intros" replace />
+            return <Navigate to="/company/candidates" replace />
         }
 
         // Role unknown for now: let /dashboard resolve destination after profile initialization.
@@ -136,7 +136,7 @@ export function AdminRoute({ children }) {
             return <Navigate to="/student/swipe" replace />
         }
         if (isCompany) {
-            return <Navigate to="/company/intros" replace />
+            return <Navigate to="/company/candidates" replace />
         }
         return <Navigate to="/" replace />
     }

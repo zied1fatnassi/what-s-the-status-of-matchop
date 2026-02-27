@@ -24,6 +24,7 @@ function createMockResponse(data = [], error = null) {
 
 function createMockRows(tableName, currentUser) {
     const now = '2026-01-15T10:00:00.000Z'
+    const archivedAt = '2026-01-03T10:00:00.000Z'
 
     const studentProfile = {
         id: 'e2e-student-user',
@@ -86,10 +87,32 @@ function createMockRows(tableName, currentUser) {
         }
     }
 
+    const mockArchivedOffer = {
+        id: 'offer-2',
+        company_id: 'e2e-company-user',
+        title: 'Backend Intern',
+        status: 'closed',
+        location: 'Hybrid',
+        required_skills: ['Node.js', 'SQL'],
+        salary_min: 1200,
+        salary_max: 1700,
+        description: 'Build APIs and data flows',
+        created_at: archivedAt,
+        companies: {
+            id: 'e2e-company-user',
+            company_name: 'Acme Labs',
+            logo_url: null
+        }
+    }
+
     const mockMatch = {
         id: MOCK_MATCH_ID,
         company_id: 'e2e-company-user',
         student_id: 'e2e-student-user',
+        offer_id: 'offer-1',
+        status: 'active',
+        matched_at: now,
+        last_message: 'Thank you, I am available this week.',
         created_at: now,
         email: 'hr@acme.local',
         company: 'Acme Labs',
@@ -109,6 +132,33 @@ function createMockRows(tableName, currentUser) {
         }
     }
 
+    const mockArchivedMatch = {
+        id: 'archived-match',
+        company_id: 'e2e-company-user',
+        student_id: 'e2e-student-user',
+        offer_id: 'offer-2',
+        status: 'archived',
+        matched_at: archivedAt,
+        last_message: 'We have archived this thread.',
+        created_at: archivedAt,
+        email: 'hr@acme.local',
+        company: 'Acme Labs',
+        companies: {
+            id: 'e2e-company-user',
+            logo_url: null,
+            company_name: 'Acme Labs'
+        },
+        offers: {
+            title: 'Backend Intern'
+        },
+        profiles: {
+            id: 'e2e-student-user',
+            name: 'Student E2E',
+            avatar_url: null,
+            bio: 'Computer science student'
+        }
+    }
+
     const mockMessages = [
         {
             id: 'msg-1',
@@ -116,6 +166,7 @@ function createMockRows(tableName, currentUser) {
             sender_id: 'e2e-company-user',
             content: 'Welcome! Let us schedule an interview.',
             created_at: now,
+            is_read: false,
             sender: { name: 'Acme HR', avatar_url: null }
         },
         {
@@ -124,7 +175,17 @@ function createMockRows(tableName, currentUser) {
             sender_id: 'e2e-student-user',
             content: 'Thank you, I am available this week.',
             created_at: now,
+            is_read: false,
             sender: { name: 'Student E2E', avatar_url: null }
+        },
+        {
+            id: 'msg-3',
+            match_id: 'archived-match',
+            sender_id: 'e2e-company-user',
+            content: 'We have archived this thread.',
+            created_at: archivedAt,
+            is_read: true,
+            sender: { name: 'Acme HR', avatar_url: null }
         }
     ]
 
@@ -142,8 +203,8 @@ function createMockRows(tableName, currentUser) {
             skills: ['React', 'TypeScript']
         }],
         companies: [mockCompany],
-        offers: [mockOffer],
-        matches: [mockMatch],
+        offers: [mockOffer, mockArchivedOffer],
+        matches: [mockMatch, mockArchivedMatch],
         messages: mockMessages,
         reports: [{
             id: 'report-1',
