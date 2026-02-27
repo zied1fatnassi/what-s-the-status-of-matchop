@@ -347,6 +347,9 @@ export function AuthProvider({ children }) {
 
         try {
             const metadata = { type: userType, name: userData.name || 'User' }
+            if (userType === 'student' && typeof userData.referralCode === 'string' && userData.referralCode.trim()) {
+                metadata.referral_code = userData.referralCode.trim().toUpperCase()
+            }
             if (userType === 'company') {
                 metadata.website = userData.website || null
                 metadata.sector = userData.sector || null
@@ -644,5 +647,4 @@ export function useAuth() {
 }
 
 export default AuthContext
-
 

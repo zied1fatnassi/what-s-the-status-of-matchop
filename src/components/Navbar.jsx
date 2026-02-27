@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Menu, X, User, Briefcase, Heart, Home, LogOut, Globe, ChevronDown, Moon, Sun, Crown, Receipt, Users, FolderArchive } from 'lucide-react'
+import { Menu, X, User, Briefcase, Heart, Home, LogOut, Globe, ChevronDown, Moon, Sun, Crown, Receipt, Users, FolderArchive, Gift } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useApplications } from '../context/ApplicationContext'
 import { useTheme } from '../context/ThemeContext'
@@ -46,6 +46,7 @@ function Navbar({ isLanding = false }) {
         { to: '/student/matches', icon: <Heart size={18} />, label: t('nav.matches') },
         { to: '/student/swipe', icon: <Home size={18} />, label: t('nav.discover') },
         { to: '/payments', icon: <Receipt size={18} />, label: 'Payments' },
+        { to: '/student/referrals', icon: <Gift size={18} />, label: t('nav.referrals') },
         { to: '/student/profile', icon: <User size={18} />, label: t('nav.profile') },
     ]
 

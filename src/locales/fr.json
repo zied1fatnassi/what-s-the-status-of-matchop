@@ -14,6 +14,7 @@
         "discover": "Découvrir",
         "matches": "Matchs",
         "personalizedPlan": "Plan personnalise",
+        "referrals": "Parrainage",
         "profile": "Profil",
         "newCandidates": "Nouveaux candidats",
         "candidates": "Candidats",
@@ -921,6 +922,60 @@
             "loadFailed": "Impossible de charger l'historique des paiements.",
             "previewFailed": "Impossible d'afficher la preuve.",
             "auditLoadFailed": "Impossible de charger la chronologie des paiements."
+        }
+    },
+    "referrals": {
+        "title": "Inviter des amis",
+        "subtitle": "Partagez votre code et votre lien d'invitation pour debloquer des recompenses.",
+        "labels": {
+            "referralCode": "Votre code de parrainage",
+            "inviteLink": "Votre lien d'invitation",
+            "share": "Partager avec des amis",
+            "loadingCode": "Generation du code de parrainage...",
+            "loadingLink": "Le lien apparaitra des que le code sera pret."
+        },
+        "actions": {
+            "copyCode": "Copier le code",
+            "copyLink": "Copier le lien",
+            "shareWhatsApp": "Partager sur WhatsApp",
+            "shareEmail": "Partager par e-mail",
+            "increaseInvite": "+ Invite",
+            "decreaseInvite": "- Invite"
+        },
+        "share": {
+            "whatsappTemplate": "Rejoins-moi sur MatchOp avec le code {{code}}. Inscription: {{link}}",
+            "emailSubject": "Rejoins-moi sur MatchOp",
+            "emailBody": "Utilise mon code de parrainage {{code}} pour rejoindre MatchOp.\n\nInscription: {{link}}"
+        },
+        "rewards": {
+            "title": "Recompenses",
+            "body": "Invitez 3 amis pour debloquer 7 jours Premium."
+        },
+        "progress": {
+            "current": "{{invites}}/{{goal}} invitations",
+            "hint": "La progression demo est stockee localement sur cet appareil.",
+            "demoBadge": "Mode demo",
+            "neverUpdated": "Pas encore mis a jour",
+            "lastUpdated": "Derniere mise a jour : {{timestamp}}",
+            "stepsLabel": "Etapes du cycle de parrainage",
+            "steps": {
+                "inviteSent": "Invitation envoyee",
+                "signedUp": "Inscription effectuee",
+                "verified": "Verification terminee"
+            }
+        },
+        "toast": {
+            "copyCodeSuccess": "Code de parrainage copie.",
+            "copyLinkSuccess": "Lien d'invitation copie.",
+            "copyFailed": "Impossible de copier pour le moment. Reessayez."
+        },
+        "signupAttribution": "Code de parrainage detecte : {{ref}}",
+        "signupApplied": "Le code de parrainage {{ref}} a ete applique a votre inscription.",
+        "cta": {
+            "sectionAria": "Banniere de parrainage",
+            "title": "Invitez et debloquez des recompenses",
+            "body": "Partagez votre code avec des amis et suivez la progression demo.",
+            "action": "Ouvrir parrainage"
         }
     },
     "companyProfile": {

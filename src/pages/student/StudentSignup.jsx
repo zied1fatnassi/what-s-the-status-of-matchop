@@ -1,11 +1,16 @@
-import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
+import { useNavigate, Link, useSearchParams } from 'react-router-dom'
 import { Mail, Lock, User, ArrowRight, GraduationCap, Loader2, AlertCircle, RefreshCw } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../context/AuthContext'
+import { track } from '../../lib/analytics'
 import { validatePassword, validateEmail, validateName, getAuthErrorMessage, TUNISIAN_UNIVERSITIES } from '../../lib/validation'
 import PasswordInput from '../../components/forms/PasswordInput'
 import './StudentSignup.css'
 import './StudentAuthLayout.css'
+
+const REFERRAL_ATTRIBUTION_KEY = 'matchop_referral_attribution'
+const REFERRAL_QUERY_PATTERN = /^MOP-[A-Z0-9]{8}$/
 
 /**
  * Student Signup Page
@@ -13,7 +18,10 @@ import './StudentAuthLayout.css'
  */
 function StudentSignup() {
     const navigate = useNavigate()
+    const { t } = useTranslation()
+    const [searchParams] = useSearchParams()
     const { signUp, resendVerificationEmail } = useAuth()
+    const trackedRef = useRef(null)
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -22,12 +30,26 @@ function StudentSignup() {
         major: '',
         graduationYear: '',
     })
+    const [referralAttribution, setReferralAttribution] = useState(null)
     const [error, setError] = useState('')
     const [isLoading, setIsLoading] = useState(false)
     const [showEmailVerification, setShowEmailVerification] = useState(false)
+    const [referralAppliedNotice, setReferralAppliedNotice] = useState('')
     const [passwordStrength, setPasswordStrength] = useState({ strength: 0, errors: [] })
     const [resendStatus, setResendStatus] = useState('')
     const [resendCooldown, setResendCooldown] = useState(0)
+
+    useEffect(() => {
+        const maybeRef = (searchParams.get('ref') || '').trim().toUpperCase()
+        if (!REFERRAL_QUERY_PATTERN.test(maybeRef)) return
+        if (trackedRef.current === maybeRef) return
+
+        trackedRef.current = maybeRef
+        const captured = { ref: maybeRef, capturedAt: new Date().toISOString() }
+        setReferralAttribution(captured)
+        localStorage.setItem(REFERRAL_ATTRIBUTION_KEY, JSON.stringify(captured))
+        track('referral_signup_attributed', { ref: maybeRef })
+    }, [searchParams])
 
     const handleChange = (e) => {
         const { name, value } = e.target
@@ -78,13 +100,18 @@ function StudentSignup() {
                     name: formData.name,
                     university: formData.university,
                     major: formData.major,
-                    graduationYear: formData.graduationYear
+                    graduationYear: formData.graduationYear,
+                    referralCode: referralAttribution?.ref || undefined
                 }
             )
 
             if (signUpError) {
                 setError(getAuthErrorMessage(signUpError))
                 return
+            }
+
+            if (referralAttribution?.ref) {
+                setReferralAppliedNotice(t('referrals.signupApplied', { ref: referralAttribution.ref }))
             }
 
             if (needsEmailVerification) {
@@ -136,6 +163,11 @@ function StudentSignup() {
                         We've sent a verification link to <strong>{formData.email}</strong>.
                         Click the link to activate your account.
                     </p>
+                    {referralAppliedNotice && (
+                        <p className="student-signup-referral-applied">
+                            {referralAppliedNotice}
+                        </p>
+                    )}
                     <div className="student-auth-verify-hints">
                         <p>Check your spam/junk folder, the email may land there.</p>
                         <p>It can take up to 2 minutes to arrive.</p>
@@ -186,6 +218,12 @@ function StudentSignup() {
                 </div>
 
                 <div className="student-auth-form-wrapper">
+                    {referralAttribution?.ref && (
+                        <div className="student-signup-referral-note">
+                            {t('referrals.signupAttribution', { ref: referralAttribution.ref })}
+                        </div>
+                    )}
+
                     {error && (
                         <div className="auth-error mb-4">
                             <AlertCircle size={18} />

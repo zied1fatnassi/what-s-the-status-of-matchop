@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { X, Heart, Star, RotateCcw, Loader, Lock } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import SwipeCard from '../../components/SwipeCard'
 import MatchModal from '../../components/MatchModal'
 import OfferDetailModal from '../../components/OfferDetailModal'
@@ -47,6 +48,7 @@ function StudentSwipe() {
     const [toastIsExternal, setToastIsExternal] = useState(false)
     const [toastTitle, setToastTitle] = useState('Application was sent!')
     const [toastVariant, setToastVariant] = useState('application')
+    const { t } = useTranslation(undefined, { useSuspense: false })
     const navigate = useNavigate()
     const topCardRef = useRef(null)
 
@@ -352,6 +354,16 @@ function StudentSwipe() {
                         )}
                     </div>
                 )}
+
+                <section className="swipe-referral-cta" aria-label={t('referrals.cta.sectionAria')}>
+                    <div>
+                        <h3 className="swipe-referral-cta-title">{t('referrals.cta.title')}</h3>
+                        <p className="swipe-referral-cta-copy">{t('referrals.cta.body')}</p>
+                    </div>
+                    <Link to="/student/referrals" className="btn btn-secondary">
+                        {t('referrals.cta.action')}
+                    </Link>
+                </section>
 
                 {hasMoreOffers ? (
                     <>

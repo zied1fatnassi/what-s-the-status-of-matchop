@@ -40,6 +40,7 @@ const StudentProfile = lazy(() => import('./pages/student/StudentProfile'))
 const StudentSwipe = lazy(() => import('./pages/student/StudentSwipe'))
 const StudentMatches = lazy(() => import('./pages/student/StudentMatches'))
 const StudentChat = lazy(() => import('./pages/student/StudentChat'))
+const Referrals = lazy(() => import('./pages/student/Referrals'))
 
 // Company pages
 const CompanySignup = lazy(() => import('./pages/company/CompanySignup'))
@@ -247,6 +248,7 @@ function App() {
               <Route path="checkout/success" element={<ProtectedRoute><CheckoutSuccess /></ProtectedRoute>} />
               <Route path="checkout/cancel" element={<ProtectedRoute><CheckoutCancel /></ProtectedRoute>} />
               <Route path="payments" element={<ProtectedRoute requiredType="student"><Payments /></ProtectedRoute>} />
+              <Route path="/referrals" element={<Navigate to="/student/referrals" replace />} />
 
               {/* Legal */}
               <Route path="legal/terms" element={<TermsOfService />} />
@@ -265,6 +267,7 @@ function App() {
               <Route path="student/swipe" element={<ProtectedRoute requiredType="student"><StudentSwipe /></ProtectedRoute>} />
               <Route path="student/matches" element={<ProtectedRoute requiredType="student"><StudentMatches /></ProtectedRoute>} />
               <Route path="student/chat/:matchId" element={<ProtectedRoute requiredType="student"><StudentChat /></ProtectedRoute>} />
+              <Route path="/student/referrals" element={<ProtectedRoute requiredType="student"><Referrals /></ProtectedRoute>} />
               <Route path="student/offers" element={<Navigate to="/student/swipe" replace />} />
               <Route path="offers" element={<Navigate to="/student/swipe" replace />} />
 
