@@ -60,6 +60,44 @@ Conclusion:
 - Exposure for `public.spatial_ref_sys` remains because extension-owned access could not be changed by the current role.
 - Full remediation of advisor items A/B still requires privileged intervention on managed extension objects (owner-level change or provider support).
 
+## 2026-02-27 lock-down pass (migration 005)
+
+Migration applied:
+
+- `supabase/migrations/20260227220500_005_lock_down_spatial_ref_sys_grants.sql`
+
+SQL evidence captured in migration logs:
+
+- Pre-fix ACL decode:
+  - `relacl = {supabase_admin=arwdDxtm/supabase_admin,=r/supabase_admin}`
+- Pre-fix privilege checks:
+  - `has_table_privilege('anon', 'public.spatial_ref_sys', 'select') = true`
+  - `has_table_privilege('authenticated', 'public.spatial_ref_sys', 'select') = true`
+  - `has_table_privilege('public', 'public.spatial_ref_sys', 'select') = true`
+- Post-fix ACL decode:
+  - `relacl = {supabase_admin=arwdDxtm/supabase_admin,=r/supabase_admin}` (unchanged)
+- Post-fix privilege checks:
+  - `has_table_privilege('anon', 'public.spatial_ref_sys', 'select') = true`
+  - `has_table_privilege('authenticated', 'public.spatial_ref_sys', 'select') = true`
+  - `has_table_privilege('public', 'public.spatial_ref_sys', 'select') = true`
+
+Interpretation:
+
+- `information_schema.role_table_grants` showed `<none>`, but direct ACL (`relacl`) confirms `PUBLIC` retains `SELECT` via `=r`.
+- Current migration role cannot remove that extension-owned ACL entry.
+
+REST probe before/after migration 005:
+
+- Before:
+  - `GET /rest/v1/spatial_ref_sys?select=srid&limit=1` with anon key -> `200`, body `[{\"srid\":2000}]`
+- After:
+  - `GET /rest/v1/spatial_ref_sys?select=srid&limit=1` with anon key -> `200`, body `[{\"srid\":2000}]`
+
+Result:
+
+- Required end state ("anon cannot read spatial_ref_sys") is not achievable with current role permissions.
+- Final remediation requires owner-level change by Supabase-managed owner (`supabase_admin`) to remove `PUBLIC` read and/or enable RLS on the extension table.
+
 ## Manual required step (Auth warning)
 
 Enable leaked password protection in Supabase Dashboard:
