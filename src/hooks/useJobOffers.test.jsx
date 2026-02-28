@@ -42,7 +42,7 @@ function resolveQuery(tableName) {
         return { data: [], error: null }
     }
 
-    if (tableName === 'external_jobs') {
+    if (tableName === 'external_jobs_public') {
         return { data: [], error: null }
     }
 

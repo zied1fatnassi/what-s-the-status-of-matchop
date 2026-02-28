@@ -178,13 +178,13 @@ async function fetchLegacyOffers(userId) {
         }
     }
 
-    let externalOffers = []
-    try {
-        const { data: extData } = await supabase
-            .from('external_jobs')
-            .select('*')
-            .order('posted_at', { ascending: false })
-            .limit(FETCH_LIMIT)
+        let externalOffers = []
+        try {
+            const { data: extData } = await supabase
+                .from('external_jobs_public')
+                .select('*')
+                .order('posted_at', { ascending: false })
+                .limit(FETCH_LIMIT)
 
         if (extData) {
             externalOffers = extData.map((job) => ({

@@ -32,7 +32,7 @@ export function useExternalJobs() {
             const rangeEnd = rangeStart + ITEMS_PER_PAGE - 1
 
             let query = supabase
-                .from('external_jobs')
+                .from('external_jobs_public')
                 .select('*', { count: 'exact' })
                 .order('posted_at', { ascending: false })
                 .range(rangeStart, rangeEnd)
