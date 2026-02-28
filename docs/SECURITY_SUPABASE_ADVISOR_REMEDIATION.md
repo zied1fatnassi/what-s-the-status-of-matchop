@@ -2,6 +2,15 @@
 
 Date: 2026-02-27
 
+## Status summary
+
+| Issue | Status | Reason |
+|---|---|---|
+| A) `public.spatial_ref_sys` RLS disabled | Blocked | Table is extension-owned by `supabase_admin`; current migration role (`postgres`) cannot enable RLS or change effective public read ACL. |
+| B) `postgis` extension in `public` | Blocked | `ALTER EXTENSION postgis SET SCHEMA ...` is not supported in this managed project context. |
+| C) Mutable function `search_path` | Fixed | Target functions were recreated with explicit `SET search_path = pg_catalog, public`. |
+| D) Leaked password protection disabled | Manual | Auth dashboard setting; not managed through these SQL migrations. |
+
 ## What changed
 
 1. `public.spatial_ref_sys` hardening:
@@ -98,6 +107,99 @@ Result:
 - Required end state ("anon cannot read spatial_ref_sys") is not achievable with current role permissions.
 - Final remediation requires owner-level change by Supabase-managed owner (`supabase_admin`) to remove `PUBLIC` read and/or enable RLS on the extension table.
 
+## 2026-02-27 authoritative ownership/ACL evidence (migration 006)
+
+Migration applied:
+
+- `supabase/migrations/20260227220600_006_spatial_ref_sys_owner_evidence.sql`
+
+Logged evidence from linked project:
+
+- `current_user = postgres`
+- `owner = supabase_admin`
+- `relacl = {supabase_admin=arwdDxtm/supabase_admin,=r/supabase_admin}`
+- `has_table_privilege('public','public.spatial_ref_sys','select') = true`
+- `has_table_privilege('anon','public.spatial_ref_sys','select') = true`
+- `has_table_privilege('authenticated','public.spatial_ref_sys','select') = true`
+- Anon REST probe still returns data:
+  - `GET /rest/v1/spatial_ref_sys?select=srid&limit=1` -> `200`, `[{\"srid\":2000}]`
+
+## Privileged SQL Editor attempt (run as higher-privilege owner)
+
+Paste this in Supabase Dashboard SQL Editor and execute:
+
+```sql
+SELECT current_user;
+
+SELECT
+  n.nspname AS schema_name,
+  c.relname AS table_name,
+  c.relowner::regrole AS owner_role,
+  c.relacl
+FROM pg_class c
+JOIN pg_namespace n ON n.oid = c.relnamespace
+WHERE n.nspname = 'public' AND c.relname = 'spatial_ref_sys';
+
+REVOKE ALL ON TABLE public.spatial_ref_sys FROM PUBLIC;
+REVOKE ALL ON TABLE public.spatial_ref_sys FROM anon;
+REVOKE ALL ON TABLE public.spatial_ref_sys FROM authenticated;
+
+SELECT
+  has_table_privilege('public','public.spatial_ref_sys','select') AS public_select,
+  has_table_privilege('anon','public.spatial_ref_sys','select') AS anon_select,
+  has_table_privilege('authenticated','public.spatial_ref_sys','select') AS auth_select;
+
+ALTER TABLE public.spatial_ref_sys ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.spatial_ref_sys FORCE ROW LEVEL SECURITY;
+```
+
+Expected success state:
+
+- `public_select = false`
+- `anon_select = false`
+- `auth_select = false`
+- RLS statements execute without privilege errors.
+
+If revoke/alter fails with ownership or insufficient privilege:
+
+- It confirms a platform-owned extension object constraint.
+- Remediation must be completed by Supabase support/platform owner action.
+
+## Supabase support request template
+
+Use this ticket template verbatim:
+
+```text
+Subject: Managed owner action required for postgis public exposure (spatial_ref_sys)
+
+Project ref: kedqldpdvycbnznejbbl
+Environment: production
+
+Issue:
+- Security Advisor flags:
+  A) RLS disabled on public.spatial_ref_sys (critical)
+  B) postgis extension installed in public schema (warning)
+- Our migration role evidence:
+  current_user = postgres
+  table owner = supabase_admin
+  relacl = {supabase_admin=arwdDxtm/supabase_admin,=r/supabase_admin}
+  has_table_privilege(public/anon/auth) = true/true/true
+- Attempted REVOKE/ALTER from migration role does not change effective ACL.
+- Anonymous REST still reads data:
+  GET /rest/v1/spatial_ref_sys?select=srid&limit=1 -> 200 with rows
+
+Request:
+1) Remove PUBLIC read on public.spatial_ref_sys (and related PostGIS metadata relations exposed in public, if applicable).
+2) Enable and force RLS on public.spatial_ref_sys if supported in your managed setup.
+3) Confirm whether postgis can be relocated out of public for this project; if yes, perform or provide supported runbook.
+
+Success criteria:
+- has_table_privilege('public','public.spatial_ref_sys','select') = false
+- has_table_privilege('anon','public.spatial_ref_sys','select') = false
+- has_table_privilege('authenticated','public.spatial_ref_sys','select') = false
+- GET /rest/v1/spatial_ref_sys?select=srid&limit=1 with anon no longer returns data
+```
+
 ## Manual required step (Auth warning)
 
 Enable leaked password protection in Supabase Dashboard:
@@ -106,3 +208,4 @@ Enable leaked password protection in Supabase Dashboard:
 2. Turn on `Leaked password protection (HaveIBeenPwned)`
 3. Save changes
 4. Capture screenshot evidence for deployment records
+5. Expected impact: new/changed passwords will be checked against known breached-password corpus (HIBP).
