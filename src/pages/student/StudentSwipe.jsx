@@ -93,7 +93,7 @@ function StudentSwipe() {
     const [selectedOffer, setSelectedOffer] = useState(null)
     const [showToast, setShowToast] = useState(false)
     const [toastIsExternal, setToastIsExternal] = useState(false)
-    const [toastTitle, setToastTitle] = useState('Application was sent!')
+    const [toastTitle, setToastTitle] = useState('')
     const [toastVariant, setToastVariant] = useState('application')
     const [showPreferencesModal, setShowPreferencesModal] = useState(false)
     const [swipePreferences, setSwipePreferences] = useState(() => normalizeSwipePreferences(
@@ -140,8 +140,8 @@ function StudentSwipe() {
     const showGlobalTab = isPremiumEnabled
     const activeScope = showGlobalTab && mode === 'premium' ? 'global' : 'local'
     const lockedGlobalCtaLabel = isExpiredPremium
-        ? (isPremiumWaitlistMode ? 'Join waitlist' : 'Renew Premium')
-        : (isPremiumWaitlistMode ? 'Join waitlist' : 'Upgrade to unlock Global')
+        ? (isPremiumWaitlistMode ? t('studentSwipe.actions.joinWaitlist') : t('studentSwipe.actions.renewPremium'))
+        : (isPremiumWaitlistMode ? t('studentSwipe.actions.joinWaitlist') : t('studentSwipe.actions.upgradeToUnlockGlobal'))
 
     const currentOffer = offers[currentIndex]
     const hasMoreOffers = currentIndex < offers.length
@@ -346,16 +346,16 @@ function StudentSwipe() {
 
         if (direction === 'left') {
             setToastIsExternal(false)
-            setToastTitle('Not interested')
+            setToastTitle(t('studentSwipe.toasts.notInterested'))
             setToastVariant('rejected')
             setShowToast(true)
         } else if (direction === 'right' || direction === 'super') {
             setToastIsExternal(isExternal)
             if (direction === 'super') {
-                setToastTitle('Added to favorites')
+                setToastTitle(t('studentSwipe.toasts.addedToFavorites'))
                 setToastVariant('favorites')
             } else {
-                setToastTitle('Application was sent!')
+                setToastTitle(t('studentSwipe.toasts.applicationSent'))
                 setToastVariant('application')
             }
             setShowToast(true)
@@ -367,7 +367,7 @@ function StudentSwipe() {
             import('../../lib/email').then(({ sendMatchEmail }) => {
                 sendMatchEmail(
                     user?.email,
-                    user?.user_metadata?.name || 'Student',
+                    user?.user_metadata?.name || t('matches.studentFallback'),
                     offerToSwipe.company,
                     'Company'
                 )
@@ -391,7 +391,7 @@ function StudentSwipe() {
         return (
             <div className="swipe-page loading">
                 <Loader className="animate-spin text-primary" size={48} />
-                <p>Finding the best jobs for you...</p>
+                <p>{t('studentSwipe.loading.findingBestJobs')}</p>
             </div>
         )
     }
@@ -400,9 +400,9 @@ function StudentSwipe() {
         return (
             <div className="swipe-page error">
                 <div className="glass-card">
-                    <h3 className="text-red-500">Oops! Something went wrong.</h3>
+                    <h3 className="text-red-500">{t('studentSwipe.error.title')}</h3>
                     <p>{error}</p>
-                    <button className="btn btn-primary mt-4" onClick={() => refresh()}>Try Again</button>
+                    <button className="btn btn-primary mt-4" onClick={() => refresh()}>{t('studentSwipe.error.tryAgain')}</button>
                 </div>
             </div>
         )
@@ -416,7 +416,7 @@ function StudentSwipe() {
                         <div
                             className={`stack-mode-toggle ${showGlobalTab ? '' : 'stack-mode-toggle-single'}`.trim()}
                             role="tablist"
-                            aria-label="Discovery scope"
+                            aria-label={t('studentSwipe.stack.discoveryScopeAria')}
                         >
                             <button
                                 type="button"
@@ -425,10 +425,10 @@ function StudentSwipe() {
                                 disabled={loading}
                             >
                                 <span className="stack-mode-option-label">
-                                    Local
-                                    <span className="stack-mode-option-badge stack-mode-option-badge-free">Free</span>
+                                    {t('studentSwipe.stack.localLabel')}
+                                    <span className="stack-mode-option-badge stack-mode-option-badge-free">{t('studentSwipe.stack.freeBadge')}</span>
                                 </span>
-                                <span className="stack-mode-option-description">Local / regional opportunities</span>
+                                <span className="stack-mode-option-description">{t('studentSwipe.stack.localDescription')}</span>
                             </button>
                             {showGlobalTab && (
                                 <button
@@ -440,7 +440,7 @@ function StudentSwipe() {
                                 >
                                     <span className="stack-mode-option-label">
                                         {!canUsePremiumMode && <Lock size={14} aria-hidden="true" />}
-                                        Global
+                                        {t('studentSwipe.stack.globalLabel')}
                                         <span
                                             className={`stack-mode-option-badge ${
                                                 isExpiredPremium
@@ -448,10 +448,10 @@ function StudentSwipe() {
                                                     : 'stack-mode-option-badge-premium'
                                             }`}
                                         >
-                                            {isExpiredPremium ? 'Expired' : 'Premium'}
+                                            {isExpiredPremium ? t('studentSwipe.stack.expiredBadge') : t('studentSwipe.stack.premiumBadge')}
                                         </span>
                                     </span>
-                                    <span className="stack-mode-option-description">International opportunities (Premium)</span>
+                                    <span className="stack-mode-option-description">{t('studentSwipe.stack.globalDescription')}</span>
                                 </button>
                             )}
                         </div>
@@ -463,12 +463,12 @@ function StudentSwipe() {
                         )}
 
                         {showGlobalTab && !canUsePremiumMode && (
-                            <section className="global-teaser" aria-label="Global opportunities teaser">
-                                <h3 className="global-teaser-title">Preview: Global opportunities</h3>
+                            <section className="global-teaser" aria-label={t('studentSwipe.stack.globalTeaserAria')}>
+                                <h3 className="global-teaser-title">{t('studentSwipe.stack.globalTeaserTitle')}</h3>
 
                                 {isExpiredPremium && (
                                     <p className="global-teaser-status">
-                                        Your Premium access is expired.
+                                        {t('studentSwipe.stack.globalExpiredStatus')}
                                     </p>
                                 )}
 
@@ -483,9 +483,9 @@ function StudentSwipe() {
                                 </div>
 
                                 <ul className="global-teaser-features">
-                                    <li>Global reach</li>
-                                    <li>Faster matches</li>
-                                    <li>Unlimited swipes</li>
+                                    <li>{t('studentSwipe.stack.features.globalReach')}</li>
+                                    <li>{t('studentSwipe.stack.features.fasterMatches')}</li>
+                                    <li>{t('studentSwipe.stack.features.unlimitedSwipes')}</li>
                                 </ul>
 
                                 <button
@@ -567,8 +567,8 @@ function StudentSwipe() {
                         {isLocalEmptyState ? (
                             <>
                                 <div className="empty-icon">📍</div>
-                                <h2>No offers nearby.</h2>
-                                <p>Try updating your discovery preferences or switch to Global mode.</p>
+                                <h2>{t('studentSwipe.empty.noOffersNearbyTitle')}</h2>
+                                <p>{t('studentSwipe.empty.noOffersNearbyBody')}</p>
                                 <div className="no-offers-actions">
                                     <button
                                         ref={preferencesTriggerRef}
@@ -577,7 +577,7 @@ function StudentSwipe() {
                                         onClick={openPreferencesModal}
                                     >
                                         <SlidersHorizontal size={16} />
-                                        Adjust preferences
+                                        {t('studentSwipe.empty.adjustPreferences')}
                                     </button>
                                     {showGlobalTab && canUsePremiumMode && (
                                         <button
@@ -586,18 +586,18 @@ function StudentSwipe() {
                                             onClick={() => handleScopeChange('global')}
                                         >
                                             <Globe2 size={16} />
-                                            Switch to Global
+                                            {t('studentSwipe.empty.switchToGlobal')}
                                         </button>
                                     )}
                                 </div>
 
                                 {showGlobalTab && !canUsePremiumMode && (
-                                    <section className="empty-global-lock" aria-label="Global premium lock">
-                                        <p className="empty-global-lock-title">Global is Premium</p>
+                                    <section className="empty-global-lock" aria-label={t('studentSwipe.empty.globalPremiumLockAria')}>
+                                        <p className="empty-global-lock-title">{t('studentSwipe.empty.globalIsPremium')}</p>
                                         <ul className="empty-global-lock-benefits">
-                                            <li>Access global opportunities</li>
-                                            <li>Reach more companies faster</li>
-                                            <li>Unlock unlimited discovery</li>
+                                            <li>{t('studentSwipe.empty.globalBenefits.accessGlobalOpportunities')}</li>
+                                            <li>{t('studentSwipe.empty.globalBenefits.reachCompaniesFaster')}</li>
+                                            <li>{t('studentSwipe.empty.globalBenefits.unlimitedDiscovery')}</li>
                                         </ul>
                                         <button
                                             type="button"
@@ -605,7 +605,7 @@ function StudentSwipe() {
                                             onClick={handleLockedGlobalCta}
                                         >
                                             <Sparkles size={16} />
-                                            Unlock Premium
+                                            {t('studentSwipe.empty.unlockPremium')}
                                         </button>
                                     </section>
                                 )}
@@ -613,8 +613,8 @@ function StudentSwipe() {
                         ) : (
                             <>
                                 <div className="empty-icon">🎯</div>
-                                <h2>You're all caught up!</h2>
-                                <p>You've seen all available opportunities. Check back later for new matches.</p>
+                                <h2>{t('swipe.allCaughtUp')}</h2>
+                                <p>{t('swipe.noMoreOffers')}</p>
                                 <button
                                     className="btn btn-primary"
                                     onClick={() => {
@@ -623,7 +623,7 @@ function StudentSwipe() {
                                         refresh()
                                     }}
                                 >
-                                    Refresh Jobs <RotateCcw size={18} className="ml-2" />
+                                    {t('studentSwipe.empty.refreshJobs')} <RotateCcw size={18} className="ml-2" />
                                 </button>
                             </>
                         )}
@@ -646,48 +646,48 @@ function StudentSwipe() {
                         onClick={(event) => event.stopPropagation()}
                     >
                         <div className="swipe-preferences-modal-header">
-                            <h3 id="swipe-preferences-title">Adjust preferences</h3>
+                            <h3 id="swipe-preferences-title">{t('studentSwipe.preferences.title')}</h3>
                             <button
                                 type="button"
                                 className="btn btn-secondary btn-sm"
                                 onClick={closePreferencesModal}
-                                aria-label="Close preferences"
+                                aria-label={t('studentSwipe.preferences.closeAria')}
                             >
                                 <X size={14} />
                             </button>
                         </div>
                         <p className="swipe-preferences-modal-copy">
-                            Preview: preferences are saved on this device.
+                            {t('studentSwipe.preferences.previewCopy')}
                         </p>
 
                         <label className="swipe-preferences-field">
-                            <span>Location mode</span>
+                            <span>{t('studentSwipe.preferences.locationMode.label')}</span>
                             <select
                                 value={swipePreferences.locationMode}
                                 onChange={(event) => updateSwipePreference('locationMode', event.target.value)}
                             >
-                                <option value="all">All</option>
-                                <option value="remote">Remote-first</option>
-                                <option value="onsite">Onsite / hybrid</option>
+                                <option value="all">{t('studentSwipe.preferences.locationMode.all')}</option>
+                                <option value="remote">{t('studentSwipe.preferences.locationMode.remote')}</option>
+                                <option value="onsite">{t('studentSwipe.preferences.locationMode.onsite')}</option>
                             </select>
                         </label>
 
                         <label className="swipe-preferences-field">
-                            <span>Opportunity type</span>
+                            <span>{t('studentSwipe.preferences.opportunityType.label')}</span>
                             <select
                                 value={swipePreferences.opportunityType}
                                 onChange={(event) => updateSwipePreference('opportunityType', event.target.value)}
                             >
-                                <option value="all">All</option>
-                                <option value="internship">Internship</option>
-                                <option value="full-time">Full-time</option>
-                                <option value="part-time">Part-time</option>
-                                <option value="contract">Contract</option>
+                                <option value="all">{t('studentSwipe.preferences.opportunityType.all')}</option>
+                                <option value="internship">{t('studentSwipe.preferences.opportunityType.internship')}</option>
+                                <option value="full-time">{t('studentSwipe.preferences.opportunityType.fullTime')}</option>
+                                <option value="part-time">{t('studentSwipe.preferences.opportunityType.partTime')}</option>
+                                <option value="contract">{t('studentSwipe.preferences.opportunityType.contract')}</option>
                             </select>
                         </label>
 
                         <label className="swipe-preferences-field">
-                            <span>Category</span>
+                            <span>{t('studentSwipe.preferences.categoryLabel')}</span>
                             <select
                                 value={swipePreferences.category}
                                 onChange={(event) => updateSwipePreference('category', event.target.value)}
@@ -709,14 +709,14 @@ function StudentSwipe() {
                                     closePreferencesModal()
                                 }}
                             >
-                                Reset
+                                {t('studentSwipe.preferences.actions.reset')}
                             </button>
                             <button
                                 type="button"
                                 className="btn btn-primary"
                                 onClick={closePreferencesModal}
                             >
-                                Save
+                                {t('studentSwipe.preferences.actions.save')}
                             </button>
                         </div>
                     </div>

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link, Navigate, useLocation } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../context/AuthContext'
 import './RouteGuards.css'
 
@@ -8,11 +9,11 @@ const PROFILE_WAIT_TIMEOUT_MS = 5000
 /**
  * Loading spinner for auth state resolution
  */
-const AuthLoadingSpinner = () => (
+const AuthLoadingSpinner = ({ t }) => (
     <div className="route-guard-loading">
         <div className="route-guard-loading-card">
             <div className="route-guard-spinner" />
-            <p>Checking access...</p>
+            <p>{t('routeGuards.checkingAccess')}</p>
         </div>
     </div>
 )
@@ -29,13 +30,11 @@ function isSessionExpiredError(error) {
     )
 }
 
-function SessionExpiredNotice({ loginPath }) {
+function SessionExpiredNotice({ loginPath, t }) {
     return (
         <div className="route-guard-session-expired" role="alert" aria-live="polite">
-            <h2>Session expired — please sign in again.</h2>
-            <Link to={loginPath} className="btn btn-primary">
-                Go to login
-            </Link>
+            <h2>{t('routeGuards.sessionExpired')}</h2>
+            <Link to={loginPath} className="btn btn-primary">{t('routeGuards.goToLogin')}</Link>
         </div>
     )
 }
@@ -49,6 +48,7 @@ function SessionExpiredNotice({ loginPath }) {
  * @param {string} requiredType - Optional: 'student' or 'company' to restrict by user type
  */
 export function ProtectedRoute({ children, requiredType = null }) {
+    const { t } = useTranslation(undefined, { useSuspense: false })
     const { isLoggedIn, isLoading, isStudent, isCompany, user, profile, authError } = useAuth()
     const location = useLocation()
     const [profileWaitTimedOut, setProfileWaitTimedOut] = useState(false)
@@ -69,11 +69,11 @@ export function ProtectedRoute({ children, requiredType = null }) {
 
     // While loading, show spinner - don't render anything else
     if (isLoading) {
-        return <AuthLoadingSpinner />
+        return <AuthLoadingSpinner t={t} />
     }
 
     if (isSessionExpiredError(authError)) {
-        return <SessionExpiredNotice loginPath={loginPath} />
+        return <SessionExpiredNotice loginPath={loginPath} t={t} />
     }
 
     // Not logged in - redirect to appropriate login page
@@ -91,7 +91,7 @@ export function ProtectedRoute({ children, requiredType = null }) {
         (requiredType === 'company' && metadataSaysCompany)
 
     if (requiredType && !profile && !canProceedWithoutProfile && !profileWaitTimedOut) {
-        return <AuthLoadingSpinner />
+        return <AuthLoadingSpinner t={t} />
     }
 
     // Check user type if required (profile takes precedence; fallback to metadata)
@@ -113,10 +113,11 @@ export function ProtectedRoute({ children, requiredType = null }) {
  * Uses user_metadata.type when profile isn't loaded yet so we don't stick on spinner after login.
  */
 export function PublicRoute({ children }) {
+    const { t } = useTranslation(undefined, { useSuspense: false })
     const { isLoggedIn, isLoading, isStudent, isCompany, user } = useAuth()
 
     if (isLoading) {
-        return <AuthLoadingSpinner />
+        return <AuthLoadingSpinner t={t} />
     }
 
     if (isLoggedIn) {
@@ -147,6 +148,7 @@ export function PublicRoute({ children }) {
  * @param {ReactNode} children - The admin component to render
  */
 export function AdminRoute({ children }) {
+    const { t } = useTranslation(undefined, { useSuspense: false })
     const { isLoggedIn, isLoading, isAdmin, isStudent, isCompany, user, authError } = useAuth()
     const location = useLocation()
     const userTypeFromMetadata = user?.user_metadata?.type || null
@@ -161,11 +163,11 @@ export function AdminRoute({ children }) {
 
     // While loading or resolving role, show skeleton/loading state
     if (isRoleResolving) {
-        return <AuthLoadingSpinner />
+        return <AuthLoadingSpinner t={t} />
     }
 
     if (isSessionExpiredError(authError)) {
-        return <SessionExpiredNotice loginPath="/student/login" />
+        return <SessionExpiredNotice loginPath="/student/login" t={t} />
     }
 
     // Not logged in - redirect to login

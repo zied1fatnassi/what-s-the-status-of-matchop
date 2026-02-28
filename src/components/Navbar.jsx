@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+<<<<<<< HEAD
 import {
     Menu,
     X,
@@ -20,6 +21,9 @@ import {
     Gift,
     Bell,
 } from 'lucide-react'
+=======
+import { Menu, X, User, Briefcase, Heart, Home, LogOut, Globe, ChevronDown, Moon, Sun, Crown, Users, Bell } from 'lucide-react'
+>>>>>>> f1dacb96d3052adf82fd2817d641a859bc707cd6
 import { useAuth } from '../context/AuthContext'
 import { useApplications } from '../context/ApplicationContext'
 import { useTheme } from '../context/ThemeContext'
@@ -79,6 +83,52 @@ function Navbar({ isLanding = false }) {
         setTheme(theme === 'dark' ? 'light' : 'dark')
     }
 
+<<<<<<< HEAD
+=======
+    const handleStudentPremiumNav = (event) => {
+        if (hasActivePremium) return
+        event.preventDefault()
+        openPremiumUpsell('personalized_mode')
+        setIsOpen(false)
+    }
+
+    const studentLinks = [
+        { to: '/student/swipe', icon: <Home size={18} />, label: t('nav.discover') },
+        { to: '/student/matches', icon: <Heart size={18} />, label: t('nav.matches') },
+        { to: '/student/profile', icon: <User size={18} />, label: t('nav.profile') },
+    ]
+
+    if (isPremiumEnabled) {
+        studentLinks.splice(2, 0, {
+            to: '/premium',
+            icon: <Crown size={18} />,
+            label: t('nav.personalizedPlan'),
+            onClick: handleStudentPremiumNav
+        })
+    }
+
+    const companyLinks = [
+        { to: '/company/intros', icon: <Users size={18} />, label: t('nav.newCandidates') },
+        { to: '/company/matches', icon: <Heart size={18} />, label: t('nav.matches') },
+        { to: '/company/offers', icon: <Briefcase size={18} />, label: t('nav.myOffers') },
+        { to: '/company/post-offer', icon: <Briefcase size={18} />, label: t('nav.postJob') },
+        { to: '/company/profile', icon: <User size={18} />, label: t('nav.profile') },
+    ]
+
+    const links = isStudent ? studentLinks : isCompany ? companyLinks : []
+    const guestMobileLinks = [
+        { to: '/student/signup', icon: <User size={18} />, label: t('landing.ctaStudent') },
+        { to: '/company/signup', icon: <Briefcase size={18} />, label: t('landing.ctaCompany'), className: 'navbar-link--primary' },
+    ]
+    const mobileLinks = hasSession ? links : guestMobileLinks
+    const notificationsTarget = notificationScope === NOTIFICATION_SCOPE_STUDENT
+        ? '/student/notifications'
+        : (notificationScope === NOTIFICATION_SCOPE_COMPANY ? '/company/notifications' : null)
+    const logoTarget = hasSession
+        ? (isCompany ? '/company/intros' : isStudent ? '/student/swipe' : '/discovery')
+        : '/'
+
+>>>>>>> f1dacb96d3052adf82fd2817d641a859bc707cd6
     const languages = [
         { code: 'en', label: 'EN', fullLabel: 'English' },
         { code: 'fr', label: 'FR', fullLabel: 'Francais' },
@@ -500,6 +550,7 @@ function Navbar({ isLanding = false }) {
                     <Logo size="small" showText={true} />
                 </Link>
 
+<<<<<<< HEAD
                 {supportsRoleNav ? (
                     <div className="navbar-primary" aria-label="Primary navigation">
                         {primaryLinks.map((link) => (
@@ -539,6 +590,108 @@ function Navbar({ isLanding = false }) {
                                 items={profileMenuItems}
                                 onLogout={handleLogout}
                             />
+=======
+                <div
+                    id="navbar-links"
+                    className={`navbar-links ${hasSession ? '' : 'navbar-links--guest'} ${isOpen ? 'active' : ''}`}
+                    onClick={(event) => {
+                        if (event.target === event.currentTarget) {
+                            setIsOpen(false)
+                        }
+                    }}
+                >
+                    {mobileLinks.map((link) => (
+                        <Link
+                            key={link.to}
+                            to={link.to}
+                            className={`navbar-link ${link.className || ''} ${location.pathname === link.to ? 'active' : ''}`}
+                            onClick={(event) => {
+                                link.onClick?.(event)
+                                if (!event.defaultPrevented) {
+                                    setIsOpen(false)
+                                }
+                            }}
+                        >
+                            {link.icon}
+                            <span>{link.label}</span>
+                            {Number.isFinite(link.badge) && link.badge > 0 && (
+                                <span className="navbar-notification-badge" aria-label={t('uiAria.unreadNotifications', { count: link.badge })}>
+                                    {link.badge > 99 ? '99+' : link.badge}
+                                </span>
+                            )}
+                        </Link>
+                    ))}
+
+                    {hasSession && (
+                        <button onClick={handleLogout} className="btn btn-secondary btn-sm logout-btn logout-btn--mobile">
+                            <LogOut size={16} />
+                            <span>{t('nav.logout')}</span>
+                        </button>
+                    )}
+                </div>
+
+                <div className="navbar-right">
+                    <div className="lang-switcher" ref={langSwitcherRef}>
+                        <button
+                            className="lang-btn"
+                            onClick={() => setLangOpen(!langOpen)}
+                            aria-label={t('uiAria.changeLanguage')}
+                            aria-expanded={langOpen}
+                        >
+                            <Globe size={16} />
+                            <span>{currentLang.label}</span>
+                            <ChevronDown size={14} />
+                        </button>
+
+                        {langOpen && (
+                            <div className="lang-dropdown">
+                                {languages.map((lang) => (
+                                    <button
+                                        key={lang.code}
+                                        className={`lang-option ${i18n.language === lang.code ? 'active' : ''}`}
+                                        onClick={() => changeLanguage(lang.code)}
+                                    >
+                                        <span>{lang.fullLabel}</span>
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    {hasSession && notificationsTarget && (
+                        <Link
+                            to={notificationsTarget}
+                            className={`navbar-icon-link navbar-notification-btn ${location.pathname === notificationsTarget ? 'active' : ''}`}
+                            aria-label={t('nav.notifications')}
+                            title={t('nav.notifications')}
+                        >
+                            <Bell size={18} />
+                            {unreadNotifications > 0 && (
+                                <span className="navbar-notification-badge navbar-notification-badge--floating" aria-label={t('uiAria.unreadNotifications', { count: unreadNotifications })}>
+                                    {unreadNotifications > 99 ? '99+' : unreadNotifications}
+                                </span>
+                            )}
+                        </Link>
+                    )}
+
+                    <button
+                        className="theme-toggle-btn"
+                        onClick={toggleTheme}
+                        aria-label={theme === 'dark' ? t('uiAria.switchToLightMode') : t('uiAria.switchToDarkMode')}
+                        title={theme === 'dark' ? t('uiAria.switchToLightMode') : t('uiAria.switchToDarkMode')}
+                    >
+                        {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+                    </button>
+
+                    {!hasSession && (
+                        <div className={`navbar-auth ${isLoading ? 'is-loading' : ''}`} aria-hidden={isLoading}>
+                            <Link to="/student/signup" className="btn btn-secondary btn-sm">
+                                {t('landing.ctaStudent')}
+                            </Link>
+                            <Link to="/company/signup" className="btn btn-primary btn-sm">
+                                {t('landing.ctaCompany')}
+                            </Link>
+>>>>>>> f1dacb96d3052adf82fd2817d641a859bc707cd6
                         </div>
                     )}
 
@@ -588,8 +741,13 @@ function Navbar({ isLanding = false }) {
                     <button
                         type="button"
                         className="navbar-toggle"
+<<<<<<< HEAD
                         onClick={() => setIsOpen((prev) => !prev)}
                         aria-label={isOpen ? 'Close navigation menu' : 'Open navigation menu'}
+=======
+                        onClick={() => setIsOpen(!isOpen)}
+                        aria-label={isOpen ? t('uiAria.closeNavigationMenu') : t('uiAria.openNavigationMenu')}
+>>>>>>> f1dacb96d3052adf82fd2817d641a859bc707cd6
                         aria-expanded={isOpen}
                         aria-controls="navbar-links"
                     >

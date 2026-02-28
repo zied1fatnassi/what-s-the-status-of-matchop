@@ -1462,6 +1462,122 @@
             "uploadFailedDefault": "Failed to upload logo."
         }
     },
+    "appAuth": {
+        "emailVerifiedSuccess": "Email verified successfully! You can now sign in.",
+        "resetLinkConfirmed": "Reset link confirmed. Please set your new password.",
+        "welcomeBackSignedIn": "Welcome back! You are now signed in.",
+        "authenticationFailed": "Authentication failed",
+        "verificationLinkExpired": "The verification link has expired. Please request a new one.",
+        "accessDenied": "Access denied. Please try again or request a new link."
+    },
+    "routeGuards": {
+        "checkingAccess": "Checking access...",
+        "sessionExpired": "Session expired, please sign in again.",
+        "goToLogin": "Go to login"
+    },
+    "uiAria": {
+        "closeNotification": "Close notification",
+        "changeLanguage": "Change language",
+        "switchToLightMode": "Switch to light mode",
+        "switchToDarkMode": "Switch to dark mode",
+        "openNavigationMenu": "Open navigation menu",
+        "closeNavigationMenu": "Close navigation menu",
+        "unreadNotifications": "{{count}} unread notifications"
+    },
+    "studentSwipe": {
+        "actions": {
+            "joinWaitlist": "Join waitlist",
+            "renewPremium": "Renew Premium",
+            "upgradeToUnlockGlobal": "Upgrade to unlock Global"
+        },
+        "toasts": {
+            "applicationSent": "Application was sent!",
+            "notInterested": "Not interested",
+            "addedToFavorites": "Added to favorites"
+        },
+        "loading": {
+            "findingBestJobs": "Finding the best jobs for you..."
+        },
+        "error": {
+            "title": "Oops! Something went wrong.",
+            "tryAgain": "Try Again"
+        },
+        "stack": {
+            "discoveryScopeAria": "Discovery scope",
+            "localLabel": "Local",
+            "freeBadge": "Free",
+            "localDescription": "Local / regional opportunities",
+            "globalLabel": "Global",
+            "premiumBadge": "Premium",
+            "expiredBadge": "Expired",
+            "globalDescription": "International opportunities (Premium)",
+            "globalTeaserAria": "Global opportunities teaser",
+            "globalTeaserTitle": "Preview: Global opportunities",
+            "globalExpiredStatus": "Your Premium access is expired.",
+            "features": {
+                "globalReach": "Global reach",
+                "fasterMatches": "Faster matches",
+                "unlimitedSwipes": "Unlimited swipes"
+            }
+        },
+        "empty": {
+            "noOffersNearbyTitle": "No offers nearby.",
+            "noOffersNearbyBody": "Try updating your discovery preferences or switch to Global mode.",
+            "adjustPreferences": "Adjust preferences",
+            "switchToGlobal": "Switch to Global",
+            "globalPremiumLockAria": "Global premium lock",
+            "globalIsPremium": "Global is Premium",
+            "globalBenefits": {
+                "accessGlobalOpportunities": "Access global opportunities",
+                "reachCompaniesFaster": "Reach more companies faster",
+                "unlimitedDiscovery": "Unlock unlimited discovery"
+            },
+            "unlockPremium": "Unlock Premium",
+            "refreshJobs": "Refresh Jobs"
+        },
+        "preferences": {
+            "title": "Adjust preferences",
+            "closeAria": "Close preferences",
+            "previewCopy": "Preview: preferences are saved on this device.",
+            "locationMode": {
+                "label": "Location mode",
+                "all": "All",
+                "remote": "Remote-first",
+                "onsite": "Onsite / hybrid"
+            },
+            "opportunityType": {
+                "label": "Opportunity type",
+                "all": "All",
+                "internship": "Internship",
+                "fullTime": "Full-time",
+                "partTime": "Part-time",
+                "contract": "Contract"
+            },
+            "categoryLabel": "Category",
+            "actions": {
+                "reset": "Reset",
+                "save": "Save"
+            }
+        }
+    },
+    "useJobOffers": {
+        "profilePreparingError": "Your account profile is still being prepared. Please refresh in a moment.",
+        "profilePreparingNotice": "If this keeps happening, sign out and sign back in.",
+        "premiumUpgradeRequired": "Premium mode requires an upgrade.",
+        "personalizedUnavailableNotice": "Personalized stack is currently unavailable. Showing standard opportunities.",
+        "loadOffersFailed": "Failed to load opportunities",
+        "notAuthenticated": "Not authenticated",
+        "dailyLimitReached": "Daily swipe limit reached",
+        "recordSwipeFailed": "Failed to record swipe"
+    },
+    "missingConfig": {
+        "title": "Missing configuration",
+        "subtitle": "MatchOp cannot start because required Supabase environment variables are not set.",
+        "requiredVariables": "Required variables:",
+        "instructionsPrefix": "Copy",
+        "instructionsMiddle": "to",
+        "instructionsSuffix": "and provide valid values, then restart the app."
+    },
     "empty": {
         "noMatches": "No matches yet",
         "noCandidates": "No candidates yet",

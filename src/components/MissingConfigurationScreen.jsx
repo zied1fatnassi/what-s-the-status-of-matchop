@@ -1,7 +1,9 @@
 import { AlertTriangle } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { requiredSupabaseEnvVars } from '../lib/supabase'
 
 function MissingConfigurationScreen() {
+    const { t } = useTranslation(undefined, { useSuspense: false })
     return (
         <main style={{
             minHeight: '100dvh',
@@ -23,14 +25,14 @@ function MissingConfigurationScreen() {
             }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
                     <AlertTriangle size={22} color="#d97706" />
-                    <h1 style={{ margin: 0, fontSize: '1.35rem' }}>Missing configuration</h1>
+                    <h1 style={{ margin: 0, fontSize: '1.35rem' }}>{t('missingConfig.title')}</h1>
                 </div>
 
                 <p style={{ margin: '0 0 16px 0', lineHeight: 1.5 }}>
-                    MatchOp cannot start because required Supabase environment variables are not set.
+                    {t('missingConfig.subtitle')}
                 </p>
 
-                <p style={{ margin: '0 0 8px 0', fontWeight: 600 }}>Required variables:</p>
+                <p style={{ margin: '0 0 8px 0', fontWeight: 600 }}>{t('missingConfig.requiredVariables')}</p>
                 <ul style={{ margin: 0, paddingLeft: '20px', lineHeight: 1.6 }}>
                     {requiredSupabaseEnvVars.map((envKey) => (
                         <li key={envKey}>
@@ -40,7 +42,7 @@ function MissingConfigurationScreen() {
                 </ul>
 
                 <p style={{ margin: '16px 0 0 0', color: 'var(--text-secondary, #475569)' }}>
-                    Copy <code>.env.example</code> to <code>.env</code> and provide valid values, then restart the app.
+                    {t('missingConfig.instructionsPrefix')} <code>.env.example</code> {t('missingConfig.instructionsMiddle')} <code>.env</code> {t('missingConfig.instructionsSuffix')}
                 </p>
             </section>
         </main>

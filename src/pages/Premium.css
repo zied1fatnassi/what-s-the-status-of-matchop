@@ -27,6 +27,17 @@
     color: var(--primary);
 }
 
+.premium-top-bar {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-2);
+}
+
+.premium-referrals-btn {
+    flex-shrink: 0;
+}
+
 .premium-shell h1 {
     margin: var(--space-2) 0 var(--space-2);
     font-size: clamp(1.4rem, 1.2rem + 1vw, 2rem);
