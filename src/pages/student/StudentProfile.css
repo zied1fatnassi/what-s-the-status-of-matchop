@@ -110,38 +110,6 @@
     transition: width 1s var(--ease-in-out);
 }
 
-.profile-referral-followup {
-    margin-top: var(--space-3);
-    margin-bottom: var(--space-4);
-    border: 1px solid color-mix(in srgb, var(--accent-teal) 45%, var(--border));
-    border-radius: var(--radius-lg);
-    background: color-mix(in srgb, var(--accent-teal) 10%, var(--surface-2));
-    padding: var(--space-3);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-3);
-    flex-wrap: wrap;
-}
-
-.profile-referral-followup h2 {
-    margin: 0;
-    font-size: 1rem;
-    color: var(--text-primary);
-}
-
-.profile-referral-followup p {
-    margin: 0.35rem 0 0;
-    color: var(--text-secondary);
-    font-size: 0.85rem;
-}
-
-.profile-referral-followup-actions {
-    display: flex;
-    gap: var(--space-2);
-    flex-wrap: wrap;
-}
-
 /* Photo Section - MOBILE FIRST */
 .photo-section {
     display: flex;

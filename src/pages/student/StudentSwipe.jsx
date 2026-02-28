@@ -1,17 +1,19 @@
-import { useState, useEffect, useMemo, useRef, useCallback } from 'react'
-import { X, Heart, Star, RotateCcw, Loader, Lock, SlidersHorizontal, Globe2, Sparkles } from 'lucide-react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useState, useEffect, useMemo, useRef } from 'react'
+import { X, Heart, Star, RotateCcw, Loader, Globe2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import SwipeCard from '../../components/SwipeCard'
 import MatchModal from '../../components/MatchModal'
 import OfferDetailModal from '../../components/OfferDetailModal'
 import ApplicationToast from '../../components/ApplicationToast'
 import MatchToast from '../../components/MatchToast'
+import OfferScopeToggle from '../../components/offers/OfferScopeToggle'
+import PreferencesButton from '../../components/offers/PreferencesButton'
+import PreferencesDrawerOrModal from '../../components/offers/PreferencesDrawerOrModal'
 import { useAuth } from '../../context/AuthContext'
 import { useApplications } from '../../context/ApplicationContext'
 import { useJobOffers } from '../../hooks/useJobOffers'
 import { useMatchListener } from '../../hooks/useMatchListener'
-import { getEntitlements } from '../../lib/premiumEntitlements'
+import { usePremiumGate } from '../../hooks/usePremiumGate'
 import { isLimitReachedCode } from '../../lib/swipeLimit'
 import { readStorageJSON, writeStorageJSON } from '../../lib/localStorageState'
 import './StudentSwipe.css'
@@ -24,23 +26,33 @@ const DEFAULT_SWIPE_PREFERENCES = {
     locationMode: 'all',
     opportunityType: 'all',
     category: 'all',
+    locationQuery: '',
+    radiusKm: 'any',
 }
 
-const FOCUSABLE_SELECTOR = [
-    'button:not([disabled])',
-    '[href]',
-    'input:not([disabled])',
-    'select:not([disabled])',
-    'textarea:not([disabled])',
-    '[tabindex]:not([tabindex="-1"])'
-].join(', ')
+const LOCATION_MODE_VALUES = new Set(['all', 'remote', 'onsite'])
+const OPPORTUNITY_TYPE_VALUES = new Set(['all', 'internship', 'full-time', 'part-time', 'contract'])
+const RADIUS_VALUES = new Set(['any', '25', '50', '100', '250'])
 
 function normalizeSwipePreferences(value) {
     if (!value || typeof value !== 'object') return DEFAULT_SWIPE_PREFERENCES
+
+    const locationMode = LOCATION_MODE_VALUES.has(value.locationMode)
+        ? value.locationMode
+        : 'all'
+    const opportunityType = OPPORTUNITY_TYPE_VALUES.has(value.opportunityType)
+        ? value.opportunityType
+        : 'all'
+    const radiusKm = RADIUS_VALUES.has(String(value.radiusKm))
+        ? String(value.radiusKm)
+        : 'any'
+
     return {
-        locationMode: value.locationMode || 'all',
-        opportunityType: value.opportunityType || 'all',
-        category: value.category || 'all',
+        locationMode,
+        opportunityType,
+        category: `${value.category || 'all'}` || 'all',
+        locationQuery: `${value.locationQuery || ''}`,
+        radiusKm,
     }
 }
 
@@ -49,6 +61,8 @@ function applySwipePreferences(rawOffers, preferences) {
     const locationMode = preferences?.locationMode || 'all'
     const opportunityType = preferences?.opportunityType || 'all'
     const category = preferences?.category || 'all'
+    const locationQuery = `${preferences?.locationQuery || ''}`.trim().toLowerCase()
+    const radiusKm = `${preferences?.radiusKm || 'any'}`
 
     return offers.filter((offer) => {
         const locationLabel = `${offer?.location || ''}`.toLowerCase()
@@ -61,13 +75,22 @@ function applySwipePreferences(rawOffers, preferences) {
         if (opportunityType !== 'all' && !offerType.includes(opportunityType)) return false
         if (category !== 'all' && offerCategory !== category.toLowerCase()) return false
 
+        if (locationQuery) {
+            const searchable = `${offer?.location || ''} ${offer?.company || ''} ${offer?.description || ''}`.toLowerCase()
+            if (radiusKm === '25' || radiusKm === '50') {
+                if (!searchable.includes(locationQuery)) return false
+            } else {
+                const tokens = locationQuery.split(/\s+/).filter(Boolean)
+                if (tokens.length > 0 && !tokens.some((token) => searchable.includes(token))) return false
+            }
+        }
+
         return true
     })
 }
 
 function StudentSwipe() {
     const isPremiumEnabled = import.meta.env.VITE_PREMIUM_ENABLED !== 'false'
-    const isPremiumWaitlistMode = import.meta.env.VITE_PREMIUM_WAITLIST_MODE === 'true'
     const {
         offers: realOffers,
         loading,
@@ -85,6 +108,12 @@ function StudentSwipe() {
     } = useJobOffers()
     const { openPremiumUpsell } = useApplications()
     const { newMatch, clearMatch } = useMatchListener()
+    const { user, isLoading: authLoading } = useAuth()
+    const { isPremium, requirePremium } = usePremiumGate({
+        source: 'student_swipe',
+        premiumEnabled: isPremiumEnabled
+    })
+
     const [offers, setOffers] = useState([])
     const [currentIndex, setCurrentIndex] = useState(0)
     const [showMatch, setShowMatch] = useState(false)
@@ -100,27 +129,28 @@ function StudentSwipe() {
         readStorageJSON(STUDENT_SWIPE_PREFERENCES_KEY, DEFAULT_SWIPE_PREFERENCES)
     ))
     const { t } = useTranslation(undefined, { useSuspense: false })
-    const navigate = useNavigate()
     const topCardRef = useRef(null)
     const preloadedAssetUrlsRef = useRef(new Set())
-    const preferencesModalRef = useRef(null)
-    const preferencesTriggerRef = useRef(null)
-    const preferencesReturnFocusRef = useRef(null)
+    const modeInitializedRef = useRef(false)
 
-    const closePreferencesModal = useCallback(() => {
-        setShowPreferencesModal(false)
-        queueMicrotask(() => {
-            const target = preferencesReturnFocusRef.current
-            if (target && typeof target.focus === 'function') {
-                target.focus()
-            }
+    const canUsePremiumMode = isPremiumEnabled && (effectivePlan === 'premium' || isPremium)
+    const showDiscoveryControls = isSwipeStackV2Enabled && isPremiumEnabled
+    const activeScope = showDiscoveryControls && mode === 'premium' && canUsePremiumMode
+        ? 'global'
+        : 'local'
+
+    const currentOffer = offers[currentIndex]
+    const hasMoreOffers = currentIndex < offers.length
+    const isLocalEmptyState = !hasMoreOffers && activeScope === 'local'
+
+    const categoryOptions = useMemo(() => {
+        const categories = new Set(['all'])
+        ;(realOffers || []).forEach((offer) => {
+            const nextCategory = `${offer?.industry || offer?.department || 'General'}`
+            categories.add(nextCategory)
         })
-    }, [])
-
-    const openPreferencesModal = useCallback((event) => {
-        preferencesReturnFocusRef.current = event?.currentTarget || document.activeElement
-        setShowPreferencesModal(true)
-    }, [])
+        return Array.from(categories)
+    }, [realOffers])
 
     useEffect(() => {
         const filteredOffers = applySwipePreferences(realOffers, swipePreferences)
@@ -131,30 +161,6 @@ function StudentSwipe() {
     useEffect(() => {
         writeStorageJSON(STUDENT_SWIPE_PREFERENCES_KEY, swipePreferences)
     }, [swipePreferences])
-
-    const { user, profile, isLoading: authLoading } = useAuth()
-    const modeInitializedRef = useRef(false)
-    const entitlements = getEntitlements(profile)
-    const isExpiredPremium = entitlements.premiumStatusLabel === 'Expired'
-    const canUsePremiumMode = isPremiumEnabled && (effectivePlan === 'premium' || entitlements.premiumActive)
-    const showGlobalTab = isPremiumEnabled
-    const activeScope = showGlobalTab && mode === 'premium' ? 'global' : 'local'
-    const lockedGlobalCtaLabel = isExpiredPremium
-        ? (isPremiumWaitlistMode ? t('studentSwipe.actions.joinWaitlist') : t('studentSwipe.actions.renewPremium'))
-        : (isPremiumWaitlistMode ? t('studentSwipe.actions.joinWaitlist') : t('studentSwipe.actions.upgradeToUnlockGlobal'))
-
-    const currentOffer = offers[currentIndex]
-    const hasMoreOffers = currentIndex < offers.length
-    const isLocalEmptyState = !hasMoreOffers && activeScope === 'local'
-
-    const categoryOptions = useMemo(() => {
-        const categories = new Set(['all'])
-        ;(realOffers || []).forEach((offer) => {
-            const nextCategory = offer?.industry || offer?.department || 'General'
-            categories.add(nextCategory)
-        })
-        return Array.from(categories)
-    }, [realOffers])
 
     useEffect(() => {
         if (!hasMoreOffers) return
@@ -169,37 +175,63 @@ function StudentSwipe() {
         })
     }, [currentIndex, offers, hasMoreOffers])
 
-    const handleLockedGlobalCta = () => {
-        if (isExpiredPremium) {
-            navigate('/premium?source=expired')
+    const handleScopeChange = (nextScope) => {
+        if (!showDiscoveryControls) return
+        if (nextScope !== 'local' && nextScope !== 'global') return
+
+        const nextMode = nextScope === 'global' ? 'premium' : 'standard'
+        if (nextScope === 'local') {
+            if (mode === 'standard') return
+            clearPaywall()
+            setMode('standard')
             return
         }
-        openPremiumUpsell('global_discovery')
+
+        if (nextMode === mode) return
+
+        requirePremium('switch_global_scope', () => {
+            clearPaywall()
+            setMode('premium')
+        }, {
+            reason: 'premium_discovery_controls',
+            isPremiumOverride: canUsePremiumMode
+        })
     }
 
-    const handleScopeChange = (nextScope) => {
-        if (!isSwipeStackV2Enabled) return
-        if (nextScope !== 'local' && nextScope !== 'global') return
-        if (nextScope === 'global' && !showGlobalTab) return
-        const nextMode = nextScope === 'global' ? 'premium' : 'standard'
-        if (nextMode === mode) return
-        if (nextScope === 'global' && !canUsePremiumMode) {
-            if (isExpiredPremium) {
-                navigate('/premium?source=expired')
-                return
-            }
-            openPremiumUpsell('global_discovery')
-            return
-        }
-        clearPaywall()
-        setMode(nextMode)
+    const handleOpenPreferences = () => {
+        requirePremium('open_preferences', () => {
+            setShowPreferencesModal(true)
+        }, {
+            reason: 'premium_discovery_controls',
+            isPremiumOverride: canUsePremiumMode
+        })
     }
 
     const updateSwipePreference = (key, value) => {
-        setSwipePreferences((prev) => ({
-            ...prev,
-            [key]: value
-        }))
+        const actionName = key === 'locationQuery'
+            ? 'change_preference_location'
+            : key === 'radiusKm'
+                ? 'change_preference_radius'
+                : 'change_preference_filter'
+
+        requirePremium(actionName, () => {
+            setSwipePreferences((prev) => ({
+                ...prev,
+                [key]: value
+            }))
+        }, {
+            reason: 'premium_discovery_controls',
+            isPremiumOverride: canUsePremiumMode
+        })
+    }
+
+    const resetSwipePreferences = () => {
+        requirePremium('change_preference_filter', () => {
+            setSwipePreferences(DEFAULT_SWIPE_PREFERENCES)
+        }, {
+            reason: 'premium_discovery_controls',
+            isPremiumOverride: canUsePremiumMode
+        })
     }
 
     useEffect(() => {
@@ -207,109 +239,67 @@ function StudentSwipe() {
         if (authLoading) return
         if (modeInitializedRef.current) return
 
+        if (!isPremiumEnabled) {
+            if (mode === 'premium') {
+                setMode('standard')
+            }
+            modeInitializedRef.current = true
+            return
+        }
+
         let preferredScope = 'local'
         try {
-            if (showGlobalTab) {
-                const storedScope = localStorage.getItem(DISCOVERY_SCOPE_STORAGE_KEY)
-                if (storedScope === 'local' || storedScope === 'global') {
-                    preferredScope = storedScope
-                } else {
-                    const legacyMode = localStorage.getItem(LEGACY_DISCOVERY_MODE_STORAGE_KEY)
-                    if (legacyMode === 'premium') preferredScope = 'global'
-                    if (legacyMode === 'standard') preferredScope = 'local'
-                }
+            const storedScope = localStorage.getItem(DISCOVERY_SCOPE_STORAGE_KEY)
+            if (storedScope === 'local' || storedScope === 'global') {
+                preferredScope = storedScope
+            } else {
+                const legacyMode = localStorage.getItem(LEGACY_DISCOVERY_MODE_STORAGE_KEY)
+                if (legacyMode === 'premium') preferredScope = 'global'
+                if (legacyMode === 'standard') preferredScope = 'local'
             }
         } catch {
             preferredScope = 'local'
         }
 
-        if (!showGlobalTab || (preferredScope === 'global' && !canUsePremiumMode)) {
+        if (preferredScope === 'global' && !canUsePremiumMode) {
             preferredScope = 'local'
         }
 
-        const preferredMode = preferredScope === 'global' && showGlobalTab ? 'premium' : 'standard'
+        const preferredMode = preferredScope === 'global' ? 'premium' : 'standard'
         if (preferredMode !== mode) {
             clearPaywall()
             setMode(preferredMode)
         }
 
         modeInitializedRef.current = true
-    }, [isSwipeStackV2Enabled, authLoading, canUsePremiumMode, mode, clearPaywall, setMode, showGlobalTab])
+    }, [isSwipeStackV2Enabled, authLoading, isPremiumEnabled, canUsePremiumMode, mode, clearPaywall, setMode])
 
     useEffect(() => {
         if (!isSwipeStackV2Enabled) return
+        if (!isPremiumEnabled) return
         try {
-            const persistedScope = showGlobalTab && mode === 'premium' && canUsePremiumMode ? 'global' : 'local'
+            const persistedScope = mode === 'premium' && canUsePremiumMode ? 'global' : 'local'
             localStorage.setItem(DISCOVERY_SCOPE_STORAGE_KEY, persistedScope)
             localStorage.removeItem(LEGACY_DISCOVERY_MODE_STORAGE_KEY)
         } catch {
             // Ignore storage write errors in restricted environments.
         }
-    }, [mode, canUsePremiumMode, isSwipeStackV2Enabled, showGlobalTab])
+    }, [mode, canUsePremiumMode, isSwipeStackV2Enabled, isPremiumEnabled])
 
     useEffect(() => {
         if (!paywall) return
-        if (!showGlobalTab) {
-            clearPaywall()
-            if (mode === 'premium') {
-                setMode('standard')
-            }
-            return
-        }
-        if (isExpiredPremium) {
-            navigate('/premium?source=expired')
-            clearPaywall()
-            if (mode === 'premium') {
-                setMode('standard')
-            }
-            return
-        }
-        openPremiumUpsell('global_discovery')
+
         clearPaywall()
         if (mode === 'premium') {
             setMode('standard')
         }
-    }, [paywall, mode, setMode, clearPaywall, openPremiumUpsell, isExpiredPremium, navigate, showGlobalTab])
-
-    useEffect(() => {
-        if (!showPreferencesModal) return undefined
-        if (!preferencesReturnFocusRef.current) {
-            preferencesReturnFocusRef.current = document.activeElement
+        if (isPremiumEnabled) {
+            requirePremium('switch_global_scope', () => {}, {
+                reason: 'premium_discovery_controls',
+                isPremiumOverride: false
+            })
         }
-
-        const handleKeyDown = (event) => {
-            if (event.key === 'Escape') {
-                event.preventDefault()
-                closePreferencesModal()
-                return
-            }
-
-            if (event.key !== 'Tab' || !preferencesModalRef.current) return
-            const focusableElements = Array.from(preferencesModalRef.current.querySelectorAll(FOCUSABLE_SELECTOR))
-            if (focusableElements.length === 0) return
-
-            const firstElement = focusableElements[0]
-            const lastElement = focusableElements[focusableElements.length - 1]
-
-            if (event.shiftKey && document.activeElement === firstElement) {
-                event.preventDefault()
-                lastElement.focus()
-            } else if (!event.shiftKey && document.activeElement === lastElement) {
-                event.preventDefault()
-                firstElement.focus()
-            }
-        }
-
-        document.addEventListener('keydown', handleKeyDown)
-        queueMicrotask(() => {
-            const firstField = preferencesModalRef.current?.querySelector('select')
-            firstField?.focus()
-        })
-
-        return () => {
-            document.removeEventListener('keydown', handleKeyDown)
-        }
-    }, [showPreferencesModal, closePreferencesModal])
+    }, [paywall, mode, setMode, clearPaywall, isPremiumEnabled, requirePremium])
 
     const handleSwipe = async (direction) => {
         if (!currentOffer) return
@@ -411,49 +401,20 @@ function StudentSwipe() {
     return (
         <div className="swipe-page">
             <div className="swipe-container">
-                {isSwipeStackV2Enabled && (
+                {showDiscoveryControls && (
                     <div className="stack-mode-panel">
-                        <div
-                            className={`stack-mode-toggle ${showGlobalTab ? '' : 'stack-mode-toggle-single'}`.trim()}
-                            role="tablist"
-                            aria-label={t('studentSwipe.stack.discoveryScopeAria')}
-                        >
-                            <button
-                                type="button"
-                                className={`stack-mode-option ${activeScope === 'local' ? 'active' : ''}`}
-                                onClick={() => handleScopeChange('local')}
+                        <div className="offer-discovery-toolbar">
+                            <OfferScopeToggle
+                                activeScope={activeScope}
+                                isPremium={canUsePremiumMode}
                                 disabled={loading}
-                            >
-                                <span className="stack-mode-option-label">
-                                    {t('studentSwipe.stack.localLabel')}
-                                    <span className="stack-mode-option-badge stack-mode-option-badge-free">{t('studentSwipe.stack.freeBadge')}</span>
-                                </span>
-                                <span className="stack-mode-option-description">{t('studentSwipe.stack.localDescription')}</span>
-                            </button>
-                            {showGlobalTab && (
-                                <button
-                                    type="button"
-                                    className={`stack-mode-option ${activeScope === 'global' ? 'active' : ''} ${!canUsePremiumMode ? 'locked' : ''}`}
-                                    onClick={() => handleScopeChange('global')}
-                                    disabled={loading}
-                                    aria-disabled={!canUsePremiumMode}
-                                >
-                                    <span className="stack-mode-option-label">
-                                        {!canUsePremiumMode && <Lock size={14} aria-hidden="true" />}
-                                        {t('studentSwipe.stack.globalLabel')}
-                                        <span
-                                            className={`stack-mode-option-badge ${
-                                                isExpiredPremium
-                                                    ? 'stack-mode-option-badge-expired'
-                                                    : 'stack-mode-option-badge-premium'
-                                            }`}
-                                        >
-                                            {isExpiredPremium ? t('studentSwipe.stack.expiredBadge') : t('studentSwipe.stack.premiumBadge')}
-                                        </span>
-                                    </span>
-                                    <span className="stack-mode-option-description">{t('studentSwipe.stack.globalDescription')}</span>
-                                </button>
-                            )}
+                                onChange={handleScopeChange}
+                                premiumEnabled={isPremiumEnabled}
+                            />
+                            <PreferencesButton
+                                onClick={handleOpenPreferences}
+                                disabled={loading}
+                            />
                         </div>
 
                         {notice && (
@@ -461,54 +422,8 @@ function StudentSwipe() {
                                 {notice}
                             </div>
                         )}
-
-                        {showGlobalTab && !canUsePremiumMode && (
-                            <section className="global-teaser" aria-label={t('studentSwipe.stack.globalTeaserAria')}>
-                                <h3 className="global-teaser-title">{t('studentSwipe.stack.globalTeaserTitle')}</h3>
-
-                                {isExpiredPremium && (
-                                    <p className="global-teaser-status">
-                                        {t('studentSwipe.stack.globalExpiredStatus')}
-                                    </p>
-                                )}
-
-                                <div className="global-teaser-cards" aria-hidden="true">
-                                    {[1, 2, 3].map((card) => (
-                                        <article key={card} className="global-teaser-card">
-                                            <span className="global-teaser-line global-teaser-line-title" />
-                                            <span className="global-teaser-line global-teaser-line-meta" />
-                                            <span className="global-teaser-line global-teaser-line-meta short" />
-                                        </article>
-                                    ))}
-                                </div>
-
-                                <ul className="global-teaser-features">
-                                    <li>{t('studentSwipe.stack.features.globalReach')}</li>
-                                    <li>{t('studentSwipe.stack.features.fasterMatches')}</li>
-                                    <li>{t('studentSwipe.stack.features.unlimitedSwipes')}</li>
-                                </ul>
-
-                                <button
-                                    type="button"
-                                    className="btn btn-primary global-teaser-cta"
-                                    onClick={handleLockedGlobalCta}
-                                >
-                                    {lockedGlobalCtaLabel}
-                                </button>
-                            </section>
-                        )}
                     </div>
                 )}
-
-                <section className="swipe-referral-cta" aria-label={t('referrals.cta.sectionAria')}>
-                    <div>
-                        <h3 className="swipe-referral-cta-title">{t('referrals.cta.title')}</h3>
-                        <p className="swipe-referral-cta-copy">{t('referrals.cta.body')}</p>
-                    </div>
-                    <Link to="/student/referrals" className="btn btn-secondary">
-                        {t('referrals.cta.action')}
-                    </Link>
-                </section>
 
                 {hasMoreOffers ? (
                     <>
@@ -566,20 +481,11 @@ function StudentSwipe() {
                     <div className="no-more-offers glass-card hover-lift">
                         {isLocalEmptyState ? (
                             <>
-                                <div className="empty-icon">📍</div>
+                                <div className="empty-icon" aria-hidden="true"><Globe2 size={42} /></div>
                                 <h2>{t('studentSwipe.empty.noOffersNearbyTitle')}</h2>
                                 <p>{t('studentSwipe.empty.noOffersNearbyBody')}</p>
-                                <div className="no-offers-actions">
-                                    <button
-                                        ref={preferencesTriggerRef}
-                                        type="button"
-                                        className="btn btn-secondary"
-                                        onClick={openPreferencesModal}
-                                    >
-                                        <SlidersHorizontal size={16} />
-                                        {t('studentSwipe.empty.adjustPreferences')}
-                                    </button>
-                                    {showGlobalTab && canUsePremiumMode && (
+                                {isPremiumEnabled && (
+                                    <div className="no-offers-actions">
                                         <button
                                             type="button"
                                             className="btn btn-primary"
@@ -588,31 +494,12 @@ function StudentSwipe() {
                                             <Globe2 size={16} />
                                             {t('studentSwipe.empty.switchToGlobal')}
                                         </button>
-                                    )}
-                                </div>
-
-                                {showGlobalTab && !canUsePremiumMode && (
-                                    <section className="empty-global-lock" aria-label={t('studentSwipe.empty.globalPremiumLockAria')}>
-                                        <p className="empty-global-lock-title">{t('studentSwipe.empty.globalIsPremium')}</p>
-                                        <ul className="empty-global-lock-benefits">
-                                            <li>{t('studentSwipe.empty.globalBenefits.accessGlobalOpportunities')}</li>
-                                            <li>{t('studentSwipe.empty.globalBenefits.reachCompaniesFaster')}</li>
-                                            <li>{t('studentSwipe.empty.globalBenefits.unlimitedDiscovery')}</li>
-                                        </ul>
-                                        <button
-                                            type="button"
-                                            className="btn btn-primary"
-                                            onClick={handleLockedGlobalCta}
-                                        >
-                                            <Sparkles size={16} />
-                                            {t('studentSwipe.empty.unlockPremium')}
-                                        </button>
-                                    </section>
+                                    </div>
                                 )}
                             </>
                         ) : (
                             <>
-                                <div className="empty-icon">🎯</div>
+                                <div className="empty-icon" aria-hidden="true"><Star size={42} /></div>
                                 <h2>{t('swipe.allCaughtUp')}</h2>
                                 <p>{t('swipe.noMoreOffers')}</p>
                                 <button
@@ -631,99 +518,16 @@ function StudentSwipe() {
                 )}
             </div>
 
-            {showPreferencesModal && (
-                <div
-                    className="swipe-preferences-overlay"
-                    role="presentation"
-                    onClick={closePreferencesModal}
-                >
-                    <div
-                        ref={preferencesModalRef}
-                        className="swipe-preferences-modal"
-                        role="dialog"
-                        aria-modal="true"
-                        aria-labelledby="swipe-preferences-title"
-                        onClick={(event) => event.stopPropagation()}
-                    >
-                        <div className="swipe-preferences-modal-header">
-                            <h3 id="swipe-preferences-title">{t('studentSwipe.preferences.title')}</h3>
-                            <button
-                                type="button"
-                                className="btn btn-secondary btn-sm"
-                                onClick={closePreferencesModal}
-                                aria-label={t('studentSwipe.preferences.closeAria')}
-                            >
-                                <X size={14} />
-                            </button>
-                        </div>
-                        <p className="swipe-preferences-modal-copy">
-                            {t('studentSwipe.preferences.previewCopy')}
-                        </p>
+            <PreferencesDrawerOrModal
+                isOpen={showPreferencesModal}
+                preferences={swipePreferences}
+                categoryOptions={categoryOptions}
+                onChange={updateSwipePreference}
+                onReset={resetSwipePreferences}
+                onClose={() => setShowPreferencesModal(false)}
+                onSave={() => setShowPreferencesModal(false)}
+            />
 
-                        <label className="swipe-preferences-field">
-                            <span>{t('studentSwipe.preferences.locationMode.label')}</span>
-                            <select
-                                value={swipePreferences.locationMode}
-                                onChange={(event) => updateSwipePreference('locationMode', event.target.value)}
-                            >
-                                <option value="all">{t('studentSwipe.preferences.locationMode.all')}</option>
-                                <option value="remote">{t('studentSwipe.preferences.locationMode.remote')}</option>
-                                <option value="onsite">{t('studentSwipe.preferences.locationMode.onsite')}</option>
-                            </select>
-                        </label>
-
-                        <label className="swipe-preferences-field">
-                            <span>{t('studentSwipe.preferences.opportunityType.label')}</span>
-                            <select
-                                value={swipePreferences.opportunityType}
-                                onChange={(event) => updateSwipePreference('opportunityType', event.target.value)}
-                            >
-                                <option value="all">{t('studentSwipe.preferences.opportunityType.all')}</option>
-                                <option value="internship">{t('studentSwipe.preferences.opportunityType.internship')}</option>
-                                <option value="full-time">{t('studentSwipe.preferences.opportunityType.fullTime')}</option>
-                                <option value="part-time">{t('studentSwipe.preferences.opportunityType.partTime')}</option>
-                                <option value="contract">{t('studentSwipe.preferences.opportunityType.contract')}</option>
-                            </select>
-                        </label>
-
-                        <label className="swipe-preferences-field">
-                            <span>{t('studentSwipe.preferences.categoryLabel')}</span>
-                            <select
-                                value={swipePreferences.category}
-                                onChange={(event) => updateSwipePreference('category', event.target.value)}
-                            >
-                                {categoryOptions.map((option) => (
-                                    <option key={option} value={option}>
-                                        {option}
-                                    </option>
-                                ))}
-                            </select>
-                        </label>
-
-                        <div className="swipe-preferences-actions">
-                            <button
-                                type="button"
-                                className="btn btn-secondary"
-                                onClick={() => {
-                                    setSwipePreferences(DEFAULT_SWIPE_PREFERENCES)
-                                    closePreferencesModal()
-                                }}
-                            >
-                                {t('studentSwipe.preferences.actions.reset')}
-                            </button>
-                            <button
-                                type="button"
-                                className="btn btn-primary"
-                                onClick={closePreferencesModal}
-                            >
-                                {t('studentSwipe.preferences.actions.save')}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* Application Toast */}
             {showToast && (
                 <ApplicationToast
                     title={toastTitle}
@@ -733,7 +537,6 @@ function StudentSwipe() {
                 />
             )}
 
-            {/* Match Modal */}
             {showMatch && (
                 <MatchModal
                     match={matchedOffer}
@@ -742,7 +545,6 @@ function StudentSwipe() {
                 />
             )}
 
-            {/* Offer Detail Modal */}
             {selectedOffer && (
                 <OfferDetailModal
                     offer={selectedOffer}
@@ -750,7 +552,6 @@ function StudentSwipe() {
                 />
             )}
 
-            {/* Real-time Match Toast */}
             {newMatch && (
                 <MatchToast
                     match={newMatch}

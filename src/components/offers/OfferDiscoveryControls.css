@@ -1,0 +1,199 @@
+.offer-discovery-toolbar {
+    width: 100%;
+    max-width: 440px;
+    display: flex;
+    align-items: stretch;
+    gap: var(--space-2);
+}
+
+.offer-scope-toggle {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-1);
+    padding: var(--space-1);
+    border: 1px solid var(--bento-card-border-subtle);
+    border-radius: var(--radius-lg);
+    background: var(--bento-card);
+}
+
+.offer-scope-toggle-btn {
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-secondary);
+    border-radius: var(--radius-md);
+    min-height: 48px;
+    padding: 0.5rem 0.6rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--duration-fast) var(--ease-in-out);
+    display: grid;
+    gap: 0.15rem;
+    justify-items: center;
+}
+
+.offer-scope-toggle-btn:hover:not(:disabled),
+.offer-scope-toggle-btn:focus-visible {
+    border-color: color-mix(in srgb, var(--primary) 36%, var(--border));
+    color: var(--text-primary);
+    outline: none;
+}
+
+.offer-scope-toggle-btn.active {
+    border-color: color-mix(in srgb, var(--primary) 58%, var(--border));
+    color: var(--text-primary);
+    background: color-mix(in srgb, var(--primary) 12%, transparent);
+}
+
+.offer-scope-toggle-btn.locked {
+    color: var(--text-muted);
+}
+
+.offer-scope-toggle-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.offer-scope-toggle-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.offer-scope-toggle-badge {
+    padding: 0.1rem 0.45rem;
+    border-radius: var(--radius-pill);
+    font-size: 0.68rem;
+    line-height: 1.35;
+    border: 1px solid transparent;
+}
+
+.offer-scope-toggle-badge-free {
+    border-color: color-mix(in srgb, var(--accent-teal) 44%, var(--border));
+    color: var(--accent-teal);
+    background: color-mix(in srgb, var(--accent-teal) 12%, transparent);
+}
+
+.offer-scope-toggle-badge-premium {
+    border-color: color-mix(in srgb, var(--primary) 46%, var(--border));
+    color: var(--primary);
+    background: color-mix(in srgb, var(--primary) 12%, transparent);
+}
+
+.offer-preferences-button {
+    border: 1px solid var(--bento-card-border-subtle);
+    background: var(--bento-card);
+    border-radius: var(--radius-lg);
+    color: var(--text-primary);
+    padding: 0.55rem 0.75rem;
+    min-width: 110px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--duration-fast) var(--ease-in-out);
+}
+
+.offer-preferences-button:hover:not(:disabled),
+.offer-preferences-button:focus-visible {
+    border-color: color-mix(in srgb, var(--primary) 46%, var(--border));
+    background: color-mix(in srgb, var(--primary) 10%, var(--surface));
+    outline: none;
+}
+
+.offer-preferences-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.offer-preferences-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-3);
+    background: var(--overlay-bg);
+}
+
+.offer-preferences-modal {
+    width: min(560px, 100%);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    box-shadow: var(--shadow-xl);
+    padding: var(--space-4);
+    display: grid;
+    gap: var(--space-3);
+}
+
+.offer-preferences-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+}
+
+.offer-preferences-header h3 {
+    margin: 0;
+    color: var(--text-primary);
+}
+
+.offer-preferences-close {
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+.offer-preferences-copy {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.84rem;
+}
+
+.offer-preferences-field {
+    display: grid;
+    gap: 0.35rem;
+    text-align: left;
+    color: var(--text-secondary);
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+.offer-preferences-field input,
+.offer-preferences-field select {
+    min-height: 40px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    background: var(--surface-muted);
+    color: var(--text-primary);
+    padding: 0 0.65rem;
+}
+
+.offer-preferences-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-2);
+}
+
+@media (max-width: 540px) {
+    .offer-discovery-toolbar {
+        flex-direction: column;
+    }
+
+    .offer-preferences-button {
+        width: 100%;
+    }
+}

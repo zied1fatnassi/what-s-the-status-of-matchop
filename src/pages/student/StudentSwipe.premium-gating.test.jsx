@@ -4,8 +4,6 @@ import { fireEvent, render, screen } from '@testing-library/react'
 
 const openPremiumUpsellMock = vi.fn()
 const setModeMock = vi.fn()
-const swipeMock = vi.fn()
-const clearPaywallMock = vi.fn()
 const useJobOffersStateMock = vi.fn()
 const entitlementsMock = vi.fn()
 
@@ -54,47 +52,15 @@ function renderSwipe() {
     )
 }
 
-describe('StudentSwipe discovery controls', () => {
+describe('StudentSwipe premium gating', () => {
     beforeEach(() => {
         localStorage.clear()
         openPremiumUpsellMock.mockReset()
         setModeMock.mockReset()
-        swipeMock.mockReset()
-        clearPaywallMock.mockReset()
         entitlementsMock.mockReset()
     })
 
-    it('renders segmented scope toggle with always-visible preferences button', () => {
-        entitlementsMock.mockReturnValue({
-            premiumStatusLabel: 'Premium',
-            premiumActive: true
-        })
-
-        useJobOffersStateMock.mockReturnValue({
-            offers: [],
-            loading: false,
-            error: '',
-            notice: '',
-            paywall: null,
-            mode: 'standard',
-            setMode: setModeMock,
-            effectivePlan: 'premium',
-            dailySwipeUsage: { reached: false },
-            isSwipeStackV2Enabled: true,
-            swipe: swipeMock,
-            refresh: vi.fn(),
-            clearPaywall: clearPaywallMock
-        })
-
-        renderSwipe()
-
-        expect(screen.getByTestId('offer-scope-local')).toBeInTheDocument()
-        expect(screen.getByTestId('offer-scope-global')).toBeInTheDocument()
-        expect(screen.getByTestId('preferences-button')).toBeInTheDocument()
-        expect(screen.queryByText('referrals.cta.title')).toBeNull()
-    })
-
-    it('keeps local selected and opens upgrade modal when free user clicks global', () => {
+    it('opens upgrade modal when free user clicks preferences', () => {
         entitlementsMock.mockReturnValue({
             premiumStatusLabel: 'Free',
             premiumActive: false
@@ -111,22 +77,52 @@ describe('StudentSwipe discovery controls', () => {
             effectivePlan: 'standard',
             dailySwipeUsage: { reached: false },
             isSwipeStackV2Enabled: true,
-            swipe: swipeMock,
+            swipe: vi.fn(),
             refresh: vi.fn(),
-            clearPaywall: clearPaywallMock
+            clearPaywall: vi.fn()
+        })
+
+        renderSwipe()
+        fireEvent.click(screen.getByTestId('preferences-button'))
+
+        expect(openPremiumUpsellMock).toHaveBeenCalledWith(
+            'premium_discovery_controls',
+            expect.objectContaining({
+                actionName: 'open_preferences'
+            })
+        )
+    })
+
+    it('allows premium user to switch scope and open preferences modal', () => {
+        entitlementsMock.mockReturnValue({
+            premiumStatusLabel: 'Premium',
+            premiumActive: true
+        })
+
+        useJobOffersStateMock.mockReturnValue({
+            offers: [],
+            loading: false,
+            error: '',
+            notice: '',
+            paywall: null,
+            mode: 'standard',
+            setMode: setModeMock,
+            effectivePlan: 'premium',
+            dailySwipeUsage: { reached: false },
+            isSwipeStackV2Enabled: true,
+            swipe: vi.fn(),
+            refresh: vi.fn(),
+            clearPaywall: vi.fn()
         })
 
         renderSwipe()
 
         fireEvent.click(screen.getByTestId('offer-scope-global'))
+        expect(setModeMock).toHaveBeenCalledWith('premium')
+        expect(openPremiumUpsellMock).not.toHaveBeenCalled()
 
-        expect(setModeMock).not.toHaveBeenCalledWith('premium')
-        expect(openPremiumUpsellMock).toHaveBeenCalledWith(
-            'premium_discovery_controls',
-            expect.objectContaining({
-                actionName: 'switch_global_scope',
-                premiumStatusLabel: 'Free'
-            })
-        )
+        fireEvent.click(screen.getByTestId('preferences-button'))
+        expect(screen.getByRole('dialog')).toBeInTheDocument()
+        expect(screen.getByText('studentSwipe.preferences.title')).toBeInTheDocument()
     })
 })

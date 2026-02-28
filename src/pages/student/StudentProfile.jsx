@@ -23,7 +23,7 @@ import { ALL_SKILLS } from '../../data/skills'
 import ErrorToast from '../../components/ErrorToast'
 import ErrorBoundary from '../../components/ErrorBoundary'
 import { useBilingualText } from '../../lib/useBilingualText'
-import { buildReferralInviteLink, resolveMyReferralCode } from '../../lib/referrals'
+import ReferralsCard from '../../components/ReferralsCard'
 import { addNotification, NOTIFICATION_SCOPE_STUDENT } from '../../lib/notifications'
 import './StudentProfile.css'
 import './StudentProfileEditor.css'
@@ -157,7 +157,7 @@ function StudentProfile() {
 
     const [saving, setSaving] = useState(false)
     const [showPreview, setShowPreview] = useState(false)
-    const [showReferralFollowup, setShowReferralFollowup] = useState(() => Boolean(location.state?.referralFollowUp))
+    const [showReferralFollowup] = useState(() => Boolean(location.state?.referralFollowUp))
     const [addingEducation, setAddingEducation] = useState(false)
     const [aiLoading, setAiLoading] = useState(false)
     const [aiError, setAiError] = useState('')
@@ -339,21 +339,6 @@ function StudentProfile() {
         else { showSuccess(tr('Profile saved!', 'Profil enregistre !')); setShowPreview(true) }
     }
 
-    const handleCopyInviteLink = async () => {
-        const code = resolveMyReferralCode(user?.id)
-        const link = buildReferralInviteLink(code)
-
-        try {
-            if (!navigator?.clipboard?.writeText) {
-                throw new Error('Clipboard API unavailable')
-            }
-            await navigator.clipboard.writeText(link)
-            showSuccess(tr('Invite link copied.', "Lien d'invitation copie."))
-        } catch {
-            showError(tr('Unable to copy invite link right now.', "Impossible de copier le lien d'invitation pour le moment."))
-        }
-    }
-
     useEffect(() => {
         if (!showPreview) return
         addNotification(NOTIFICATION_SCOPE_STUDENT, {
@@ -441,33 +426,7 @@ function StudentProfile() {
                     </div>
                 </header>
 
-                {showReferralFollowup && (
-                    <section className="profile-referral-followup" aria-label={tr('Invite your friends too', 'Invitez vos amis aussi')}>
-                        <div>
-                            <h2>{tr('Invite your friends too', 'Invitez vos amis aussi')}</h2>
-                            <p>{tr('Share your invite link to unlock referral benefits (Preview).', "Partagez votre lien d'invitation pour debloquer les avantages de parrainage (Apercu).")}</p>
-                        </div>
-                        <div className="profile-referral-followup-actions">
-                            <Link to="/student/referrals" className="btn btn-secondary">
-                                {tr('Open Referrals', 'Ouvrir parrainage')}
-                            </Link>
-                            <button
-                                type="button"
-                                className="btn btn-secondary"
-                                onClick={handleCopyInviteLink}
-                            >
-                                {tr("Copy invite link", "Copier le lien d'invitation")}
-                            </button>
-                            <button
-                                type="button"
-                                className="btn btn-secondary"
-                                onClick={() => setShowReferralFollowup(false)}
-                            >
-                                {tr('Dismiss', 'Fermer')}
-                            </button>
-                        </div>
-                    </section>
-                )}
+                <ReferralsCard compact emphasized={showReferralFollowup} />
 
                 <div className="completion-bar-wrapper"><motion.div className="completion-bar-fill" initial={{ width: 0 }} animate={{ width: `${completion}%` }} /></div>
 

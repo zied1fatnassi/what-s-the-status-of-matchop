@@ -775,6 +775,10 @@
         "closeAria": "Fermer la fenetre de mise a niveau Premium",
         "featuresAria": "Avantages du plan Premium",
         "reasons": {
+            "premium_discovery_controls": {
+                "title": "Debloquez les opportunites globales",
+                "subtitle": "Passez a Premium pour la portee globale, des matchs plus rapides, des swipes illimites et des preferences avancees."
+            },
             "global_discovery": {
                 "title": "Les opportunites globales sont Premium",
                 "subtitle": "Passez a Premium pour debloquer la decouverte internationale."
@@ -799,10 +803,12 @@
         "features": {
             "unlimitedSwipes": "Swipes illimites",
             "globalReach": "Portee globale",
+            "fasterMatches": "Matchs plus rapides",
+            "advancedPreferences": "Preferences avancees et controle de localisation",
             "personalizedStack": "Pile hyper personnalisee"
         },
         "actions": {
-            "upgrade": "Mettre a niveau",
+            "upgrade": "Passer a Premium",
             "notNow": "Pas maintenant"
         }
     },
@@ -1323,6 +1329,10 @@
         "unreadNotifications": "{{count}} notifications non lues"
     },
     "studentSwipe": {
+        "controls": {
+            "preferences": "Preferences",
+            "preferencesAria": "Ouvrir les preferences Premium"
+        },
         "actions": {
             "joinWaitlist": "Rejoindre la liste d'attente",
             "renewPremium": "Renouveler Premium",
@@ -1377,6 +1387,16 @@
             "title": "Ajuster les preferences",
             "closeAria": "Fermer les preferences",
             "previewCopy": "Apercu : les preferences sont enregistrees sur cet appareil.",
+            "locationQueryLabel": "Localisation preferee",
+            "locationQueryPlaceholder": "Ville, region ou mot-cle",
+            "radiusLabel": "Rayon de recherche",
+            "radius": {
+                "any": "Toute distance",
+                "km25": "Dans 25 km",
+                "km50": "Dans 50 km",
+                "km100": "Dans 100 km",
+                "km250": "Dans 250 km"
+            },
             "locationMode": {
                 "label": "Mode de localisation",
                 "all": "Toutes",
@@ -1396,6 +1416,17 @@
                 "reset": "Reinitialiser",
                 "save": "Enregistrer"
             }
+        }
+    },
+    "studentProfile": {
+        "referrals": {
+            "ariaLabel": "Recompenses et parrainage",
+            "title": "Recompenses & Parrainage",
+            "subtitle": "Partagez votre lien d'invitation et suivez la progression depuis votre compte.",
+            "codeLabel": "Code",
+            "copyInviteLink": "Copier le lien d'invitation",
+            "copyInviteLinkDone": "Lien copie",
+            "openReferrals": "Ouvrir Parrainage"
         }
     },
     "useJobOffers": {

@@ -937,6 +937,10 @@
         "closeAria": "Close premium upgrade modal",
         "featuresAria": "Premium plan highlights",
         "reasons": {
+            "premium_discovery_controls": {
+                "title": "Unlock Global Opportunities",
+                "subtitle": "Upgrade to access global reach, faster matches, unlimited swipes, and advanced preferences."
+            },
             "global_discovery": {
                 "title": "Global opportunities are Premium",
                 "subtitle": "Upgrade to unlock international discovery."
@@ -961,10 +965,12 @@
         "features": {
             "unlimitedSwipes": "Unlimited swipes",
             "globalReach": "Global reach",
+            "fasterMatches": "Faster matches",
+            "advancedPreferences": "Advanced preferences and location controls",
             "personalizedStack": "Hyper-personalized stack"
         },
         "actions": {
-            "upgrade": "Upgrade",
+            "upgrade": "Upgrade to Premium",
             "notNow": "Not now"
         }
     },
@@ -1485,6 +1491,10 @@
         "unreadNotifications": "{{count}} unread notifications"
     },
     "studentSwipe": {
+        "controls": {
+            "preferences": "Preferences",
+            "preferencesAria": "Open premium preferences"
+        },
         "actions": {
             "joinWaitlist": "Join waitlist",
             "renewPremium": "Renew Premium",
@@ -1539,6 +1549,16 @@
             "title": "Adjust preferences",
             "closeAria": "Close preferences",
             "previewCopy": "Preview: preferences are saved on this device.",
+            "locationQueryLabel": "Preferred location",
+            "locationQueryPlaceholder": "City, region, or keyword",
+            "radiusLabel": "Search radius",
+            "radius": {
+                "any": "Any distance",
+                "km25": "Within 25 km",
+                "km50": "Within 50 km",
+                "km100": "Within 100 km",
+                "km250": "Within 250 km"
+            },
             "locationMode": {
                 "label": "Location mode",
                 "all": "All",
@@ -1558,6 +1578,17 @@
                 "reset": "Reset",
                 "save": "Save"
             }
+        }
+    },
+    "studentProfile": {
+        "referrals": {
+            "ariaLabel": "Rewards and referrals",
+            "title": "Rewards & Referrals",
+            "subtitle": "Share your invite link and track referral progress from your account.",
+            "codeLabel": "Code",
+            "copyInviteLink": "Copy invite link",
+            "copyInviteLinkDone": "Invite link copied",
+            "openReferrals": "Open referrals"
         }
     },
     "useJobOffers": {
