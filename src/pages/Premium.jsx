@@ -4,6 +4,7 @@ import {
     BadgeCheck,
     ChevronDown,
     Clock3,
+    Gift,
     Globe2,
     Infinity as InfinityIcon,
     RefreshCw,
@@ -135,7 +136,13 @@ function Premium() {
             )}
 
             <div className="premium-shell glass-card">
-                <span className="premium-eyebrow">{t('premium.eyebrow')}</span>
+                <div className="premium-top-bar">
+                    <span className="premium-eyebrow">{t('premium.eyebrow')}</span>
+                    <Link to="/student/referrals" className="btn btn-primary btn-sm premium-referrals-btn">
+                        <Gift size={16} />
+                        Refer Friends
+                    </Link>
+                </div>
                 <h1>{headline}</h1>
                 <p className="premium-subtitle">
                     {t('premium.subtitle')}

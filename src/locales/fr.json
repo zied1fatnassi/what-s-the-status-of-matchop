@@ -390,7 +390,47 @@
         "termsAgree": "En vous inscrivant, vous acceptez nos",
         "termsOfService": "Conditions d'Utilisation",
         "and": "et",
-        "privacyPolicy": "Politique de Confidentialité"
+        "privacyPolicy": "Politique de Confidentialité",
+        "studentSignup": {
+            "title": "Rejoignez MatchOp",
+            "subtitle": "Lancez votre parcours professionnel aujourd'hui",
+            "nameLabel": "Nom complet",
+            "namePlaceholder": "ex. Ahmed Ben Ali",
+            "emailLabel": "Adresse email",
+            "emailPlaceholder": "student@university.tn",
+            "passwordLabel": "Mot de passe",
+            "passwordPlaceholder": "Creez un mot de passe fort",
+            "passwordStrengthPlaceholder": "Force du mot de passe",
+            "universityLabel": "Universite",
+            "universityPlaceholder": "Selectionnez une universite",
+            "majorLabel": "Specialite",
+            "majorPlaceholder": "ex. CS",
+            "graduationYearLabel": "Annee de diplomation",
+            "graduationYearPlaceholder": "2026",
+            "submit": "Creer un compte",
+            "submitting": "Creation du compte...",
+            "alreadyHaveAccount": "Vous avez deja un compte ?",
+            "signIn": "Se connecter",
+            "verification": {
+                "title": "Verifiez votre email",
+                "sentPrefix": "Nous avons envoye un lien de verification a",
+                "sentSuffix": "Cliquez sur le lien pour activer votre compte.",
+                "spamHint": "Verifiez votre dossier spam/courrier indesirable, l'email peut y arriver.",
+                "arrivalHint": "L'email peut prendre jusqu'a 2 minutes pour arriver.",
+                "preauthorizedHint": "Toujours rien ? L'email par defaut Supabase fonctionne seulement pour les adresses pre-autorisees.",
+                "setupHintPrefix": "Executez",
+                "setupHintMiddle": "dans l'editeur SQL Supabase, ou configurez un SMTP personnalise. Voir",
+                "goToLogin": "Aller a la connexion",
+                "resendButton": "Renvoyer l'email de verification",
+                "resendSending": "Envoi...",
+                "resendIn": "Renvoyer dans {{seconds}}s",
+                "resendSuccess": "Email de verification renvoye.",
+                "resendError": "Echec du renvoi. Veuillez reessayer plus tard."
+            },
+            "errors": {
+                "completeAllFields": "Veuillez completer tous les champs (Universite, Specialite, Annee de diplomation)."
+            }
+        }
     },
     "profile": {
         "completeProfile": "Complétez Votre Profil",
@@ -1256,6 +1296,122 @@
             "uploadDeniedByRls": "Televersement refuse. Verifiez vos permissions ou la politique de securite des lignes.",
             "uploadFailedDefault": "Echec du televersement du logo."
         }
+    },
+    "appAuth": {
+        "emailVerifiedSuccess": "Email verifie avec succes. Vous pouvez maintenant vous connecter.",
+        "resetLinkConfirmed": "Lien de reinitialisation confirme. Veuillez definir votre nouveau mot de passe.",
+        "welcomeBackSignedIn": "Bon retour ! Vous etes maintenant connecte.",
+        "authenticationFailed": "Echec de l'authentification",
+        "verificationLinkExpired": "Le lien de verification a expire. Veuillez en demander un nouveau.",
+        "accessDenied": "Acces refuse. Veuillez reessayer ou demander un nouveau lien."
+    },
+    "routeGuards": {
+        "checkingAccess": "Verification de l'acces...",
+        "sessionExpired": "Session expiree, veuillez vous reconnecter.",
+        "goToLogin": "Aller a la connexion"
+    },
+    "uiAria": {
+        "closeNotification": "Fermer la notification",
+        "changeLanguage": "Changer la langue",
+        "switchToLightMode": "Passer au mode clair",
+        "switchToDarkMode": "Passer au mode sombre",
+        "openNavigationMenu": "Ouvrir le menu de navigation",
+        "closeNavigationMenu": "Fermer le menu de navigation",
+        "unreadNotifications": "{{count}} notifications non lues"
+    },
+    "studentSwipe": {
+        "actions": {
+            "joinWaitlist": "Rejoindre la liste d'attente",
+            "renewPremium": "Renouveler Premium",
+            "upgradeToUnlockGlobal": "Passez a Premium pour debloquer Global"
+        },
+        "toasts": {
+            "applicationSent": "Candidature envoyee !",
+            "notInterested": "Pas interesse",
+            "addedToFavorites": "Ajoute aux favoris"
+        },
+        "loading": {
+            "findingBestJobs": "Recherche des meilleures opportunites pour vous..."
+        },
+        "error": {
+            "title": "Oups ! Une erreur s'est produite.",
+            "tryAgain": "Reessayer"
+        },
+        "stack": {
+            "discoveryScopeAria": "Portee de decouverte",
+            "localLabel": "Local",
+            "freeBadge": "Gratuit",
+            "localDescription": "Opportunites locales / regionales",
+            "globalLabel": "Global",
+            "premiumBadge": "Premium",
+            "expiredBadge": "Expire",
+            "globalDescription": "Opportunites internationales (Premium)",
+            "globalTeaserAria": "Apercu des opportunites globales",
+            "globalTeaserTitle": "Apercu : opportunites globales",
+            "globalExpiredStatus": "Votre acces Premium a expire.",
+            "features": {
+                "globalReach": "Portee globale",
+                "fasterMatches": "Matchs plus rapides",
+                "unlimitedSwipes": "Swipes illimites"
+            }
+        },
+        "empty": {
+            "noOffersNearbyTitle": "Aucune offre a proximite.",
+            "noOffersNearbyBody": "Essayez de mettre a jour vos preferences ou passez en mode Global.",
+            "adjustPreferences": "Ajuster les preferences",
+            "switchToGlobal": "Passer en Global",
+            "globalPremiumLockAria": "Verrou Premium global",
+            "globalIsPremium": "Global est Premium",
+            "globalBenefits": {
+                "accessGlobalOpportunities": "Accedez aux opportunites globales",
+                "reachCompaniesFaster": "Atteignez plus d'entreprises plus vite",
+                "unlimitedDiscovery": "Debloquez la decouverte illimitee"
+            },
+            "unlockPremium": "Debloquer Premium",
+            "refreshJobs": "Actualiser les offres"
+        },
+        "preferences": {
+            "title": "Ajuster les preferences",
+            "closeAria": "Fermer les preferences",
+            "previewCopy": "Apercu : les preferences sont enregistrees sur cet appareil.",
+            "locationMode": {
+                "label": "Mode de localisation",
+                "all": "Toutes",
+                "remote": "Priorite remote",
+                "onsite": "Sur site / hybride"
+            },
+            "opportunityType": {
+                "label": "Type d'opportunite",
+                "all": "Tous",
+                "internship": "Stage",
+                "fullTime": "Temps plein",
+                "partTime": "Temps partiel",
+                "contract": "Contrat"
+            },
+            "categoryLabel": "Categorie",
+            "actions": {
+                "reset": "Reinitialiser",
+                "save": "Enregistrer"
+            }
+        }
+    },
+    "useJobOffers": {
+        "profilePreparingError": "Le profil de votre compte est encore en preparation. Veuillez actualiser dans un instant.",
+        "profilePreparingNotice": "Si cela continue, deconnectez-vous puis reconnectez-vous.",
+        "premiumUpgradeRequired": "Le mode Premium necessite une mise a niveau.",
+        "personalizedUnavailableNotice": "La pile personnalisee est indisponible pour le moment. Opportunites standard affichees.",
+        "loadOffersFailed": "Impossible de charger les opportunites",
+        "notAuthenticated": "Non authentifie",
+        "dailyLimitReached": "Limite quotidienne de swipes atteinte",
+        "recordSwipeFailed": "Echec de l'enregistrement du swipe"
+    },
+    "missingConfig": {
+        "title": "Configuration manquante",
+        "subtitle": "MatchOp ne peut pas demarrer car les variables d'environnement Supabase requises ne sont pas definies.",
+        "requiredVariables": "Variables requises :",
+        "instructionsPrefix": "Copiez",
+        "instructionsMiddle": "vers",
+        "instructionsSuffix": "puis ajoutez des valeurs valides et redemarrez l'application."
     },
     "empty": {
         "noMatches": "Pas encore de matchs",

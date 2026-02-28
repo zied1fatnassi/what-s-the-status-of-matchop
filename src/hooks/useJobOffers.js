@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
 import { fetchSwipeStack, isNoProfileError, isPaywallError } from '../lib/swipeStackApi'
@@ -216,6 +217,7 @@ async function fetchLegacyOffers(userId) {
  * Otherwise, it falls back to the existing direct query behavior.
  */
 export function useJobOffers() {
+    const { t } = useTranslation(undefined, { useSuspense: false })
     const [offers, setOffers] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
@@ -403,8 +405,8 @@ export function useJobOffers() {
         } catch (err) {
             if (isNoProfileError(err)) {
                 if (isMounted.current) {
-                    setError('Your account profile is still being prepared. Please refresh in a moment.')
-                    setNotice('If this keeps happening, sign out and sign back in.')
+                    setError(t('useJobOffers.profilePreparingError'))
+                    setNotice(t('useJobOffers.profilePreparingNotice'))
                     setLoading(false)
                 }
                 return
@@ -413,7 +415,7 @@ export function useJobOffers() {
             if (isPaywallError(err)) {
                 if (isMounted.current) {
                     setPaywall({
-                        message: err.message || 'Premium mode requires an upgrade.',
+                        message: err.message || t('useJobOffers.premiumUpgradeRequired'),
                         upgradeHint: Boolean(err.upgradeHint)
                     })
                     setLoading(false)
@@ -432,7 +434,7 @@ export function useJobOffers() {
                         setOffers(fallback?.offers || [])
                         setEffectivePlan(fallback?.effectivePlan || 'standard')
                         setMode('standard')
-                        setNotice('Personalized stack is currently unavailable. Showing standard opportunities.')
+                        setNotice(t('useJobOffers.personalizedUnavailableNotice'))
                         setError(null)
                         setLoading(false)
                     }
@@ -444,18 +446,18 @@ export function useJobOffers() {
 
             safeLogError('[useJobOffers] fetch error', { error: err })
             if (isMounted.current) {
-                setError(err.message || 'Failed to load opportunities')
+                setError(err.message || t('useJobOffers.loadOffersFailed'))
                 setLoading(false)
             }
         }
-    }, [user, mode, fetchOffersForMode, getDailyUsage])
+    }, [user, mode, fetchOffersForMode, getDailyUsage, t])
 
     useEffect(() => {
         fetchOffers()
     }, [fetchOffers])
 
     const swipe = useCallback(async (offerId, direction) => {
-        if (!user?.id) return { error: 'Not authenticated' }
+        if (!user?.id) return { error: t('useJobOffers.notAuthenticated') }
 
         const normalizedDirection = direction === 'super' ? 'right' : direction
         const isInternalOffer = isInternalOfferId(offerId)
@@ -464,7 +466,7 @@ export function useJobOffers() {
             const usage = await getDailyUsage({ forceRefresh: true })
             if (usage.reached) {
                 return {
-                    error: 'Daily swipe limit reached',
+                    error: t('useJobOffers.dailyLimitReached'),
                     code: 'LIMIT_REACHED',
                     usage
                 }
@@ -493,13 +495,13 @@ export function useJobOffers() {
                 syncDailyUsage(usage)
 
                 return {
-                    error: error.message || 'Daily swipe limit reached',
+                    error: error.message || t('useJobOffers.dailyLimitReached'),
                     code: 'LIMIT_REACHED',
                     usage
                 }
             }
 
-            return { error: error.message || 'Failed to record swipe' }
+            return { error: error.message || t('useJobOffers.recordSwipeFailed') }
         }
 
         if (swipePayload?.usage) {
@@ -528,7 +530,7 @@ export function useJobOffers() {
         }
 
         return { error: null }
-    }, [user, mode, isPremiumUser, getDailyUsage, syncDailyUsage])
+    }, [user, mode, isPremiumUser, getDailyUsage, syncDailyUsage, t])
 
     const switchMode = useCallback((nextMode) => {
         if (nextMode !== 'standard' && nextMode !== 'premium') return

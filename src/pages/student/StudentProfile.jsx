@@ -348,20 +348,20 @@ function StudentProfile() {
                 throw new Error('Clipboard API unavailable')
             }
             await navigator.clipboard.writeText(link)
-            showSuccess('Invite link copied.')
+            showSuccess(tr('Invite link copied.', "Lien d'invitation copie."))
         } catch {
-            showError('Unable to copy invite link right now.')
+            showError(tr('Unable to copy invite link right now.', "Impossible de copier le lien d'invitation pour le moment."))
         }
     }
 
     useEffect(() => {
         if (!showPreview) return
         addNotification(NOTIFICATION_SCOPE_STUDENT, {
-            title: 'Company viewed your profile',
-            body: 'Preview activity: a company viewed your profile.',
+            title: tr('Company viewed your profile', 'Une entreprise a consulte votre profil'),
+            body: tr('Preview activity: a company viewed your profile.', "Activite d'apercu : une entreprise a consulte votre profil."),
             read: false,
         })
-    }, [showPreview])
+    }, [showPreview, tr])
 
     // Experience handlers (Supabase connected)
     const handleAddExperience = async () => {
@@ -433,31 +433,37 @@ function StudentProfile() {
                 <header className="profile-header">
                     <h1>{tr('My Profile', 'Mon profil')}</h1>
                     <div className="completion-indicator"><CheckCircle size={18} /><span>{completion}% {tr('Complete', 'Complete')}</span></div>
+                    <div className="profile-header-actions">
+                        <Link to="/payments" className="btn btn-primary btn-sm profile-payments-btn">
+                            <span aria-hidden="true">€</span>
+                            {tr('My payments', 'Mes paiements')}
+                        </Link>
+                    </div>
                 </header>
 
                 {showReferralFollowup && (
-                    <section className="profile-referral-followup" aria-label="Invite your friends too">
+                    <section className="profile-referral-followup" aria-label={tr('Invite your friends too', 'Invitez vos amis aussi')}>
                         <div>
-                            <h2>Invite your friends too</h2>
-                            <p>Share your invite link to unlock referral benefits (Preview).</p>
+                            <h2>{tr('Invite your friends too', 'Invitez vos amis aussi')}</h2>
+                            <p>{tr('Share your invite link to unlock referral benefits (Preview).', "Partagez votre lien d'invitation pour debloquer les avantages de parrainage (Apercu).")}</p>
                         </div>
                         <div className="profile-referral-followup-actions">
                             <Link to="/student/referrals" className="btn btn-secondary">
-                                Open Referrals
+                                {tr('Open Referrals', 'Ouvrir parrainage')}
                             </Link>
                             <button
                                 type="button"
                                 className="btn btn-secondary"
                                 onClick={handleCopyInviteLink}
                             >
-                                Copy invite link
+                                {tr("Copy invite link", "Copier le lien d'invitation")}
                             </button>
                             <button
                                 type="button"
                                 className="btn btn-secondary"
                                 onClick={() => setShowReferralFollowup(false)}
                             >
-                                Dismiss
+                                {tr('Dismiss', 'Fermer')}
                             </button>
                         </div>
                     </section>

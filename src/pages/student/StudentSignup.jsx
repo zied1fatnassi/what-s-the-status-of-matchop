@@ -132,7 +132,7 @@ function StudentSignup() {
         }
 
         if (!formData.university || !formData.major || !formData.graduationYear) {
-            setError('Please complete all fields (University, Major, Graduation Year)')
+            setError(t('auth.studentSignup.errors.completeAllFields'))
             return
         }
 
@@ -238,10 +238,10 @@ function StudentSignup() {
                     <div className="student-auth-verify-icon">
                         <Mail size={64} />
                     </div>
-                    <h2>Check Your Email</h2>
+                    <h2>{t('auth.studentSignup.verification.title')}</h2>
                     <p className="student-auth-verify-copy">
-                        We've sent a verification link to <strong>{formData.email}</strong>.
-                        Click the link to activate your account.
+                        {t('auth.studentSignup.verification.sentPrefix')} <strong>{formData.email}</strong>.{' '}
+                        {t('auth.studentSignup.verification.sentSuffix')}
                     </p>
                     {referralAppliedNotice && (
                         <p className="student-signup-referral-applied">
@@ -249,17 +249,17 @@ function StudentSignup() {
                         </p>
                     )}
                     <div className="student-auth-verify-hints">
-                        <p>Check your spam/junk folder, the email may land there.</p>
-                        <p>It can take up to 2 minutes to arrive.</p>
+                        <p>{t('auth.studentSignup.verification.spamHint')}</p>
+                        <p>{t('auth.studentSignup.verification.arrivalHint')}</p>
                         <p>
-                            Still nothing? Supabase default email only works for pre-authorized addresses.
-                            Run <code>database/auto_confirm_emails.sql</code> in Supabase SQL Editor,
-                            or configure Custom SMTP. See <code>docs/EMAIL_SETUP.md</code>.
+                            {t('auth.studentSignup.verification.preauthorizedHint')}{' '}
+                            {t('auth.studentSignup.verification.setupHintPrefix')} <code>database/auto_confirm_emails.sql</code>{' '}
+                            {t('auth.studentSignup.verification.setupHintMiddle')} <code>docs/EMAIL_SETUP.md</code>.
                         </p>
                     </div>
                     <div className="student-auth-verify-actions">
                         <Link to="/student/login" className="btn btn-primary student-auth-submit">
-                            Go to Login
+                            {t('auth.studentSignup.verification.goToLogin')}
                         </Link>
                         <button
                             onClick={handleResendEmail}
@@ -267,22 +267,22 @@ function StudentSignup() {
                             disabled={resendCooldown > 0 || resendStatus === 'sending'}
                         >
                             {resendStatus === 'sending' ? (
-                                <><Loader2 size={16} className="spinner" /> Sending...</>
+                                <><Loader2 size={16} className="spinner" /> {t('auth.studentSignup.verification.resendSending')}</>
                             ) : resendCooldown > 0 ? (
-                                <>Resend in {resendCooldown}s</>
+                                <>{t('auth.studentSignup.verification.resendIn', { seconds: resendCooldown })}</>
                             ) : (
-                                <><RefreshCw size={16} /> Resend Verification Email</>
+                                <><RefreshCw size={16} /> {t('auth.studentSignup.verification.resendButton')}</>
                             )}
                         </button>
                         {resendStatus === 'sent' && (
-                            <p className="student-auth-feedback success">Verification email resent.</p>
+                            <p className="student-auth-feedback success">{t('auth.studentSignup.verification.resendSuccess')}</p>
                         )}
                         {resendStatus === 'error' && (
-                            <p className="student-auth-feedback error">Failed to resend. Please try again later.</p>
+                            <p className="student-auth-feedback error">{t('auth.studentSignup.verification.resendError')}</p>
                         )}
                     </div>
                     {showInviteFollowup && (
-                        <section className="student-signup-followup-card" aria-label="Invite your friends too">
+                        <section className="student-signup-followup-card" aria-label={t('referrals.signupFlow.followupTitle')}>
                             <h3>{t('referrals.signupFlow.followupTitle')}</h3>
                             <p>{t('referrals.signupFlow.followupSubtitle')}</p>
                             <div className="student-signup-followup-actions">
@@ -319,8 +319,8 @@ function StudentSignup() {
                     <div className="student-auth-icon-wrapper">
                         <GraduationCap size={40} className="text-white" />
                     </div>
-                    <h1>Join MatchOp</h1>
-                    <p>Start your career journey today</p>
+                    <h1>{t('auth.studentSignup.title')}</h1>
+                    <p>{t('auth.studentSignup.subtitle')}</p>
                 </div>
 
                 <div className="student-auth-form-wrapper">
@@ -352,7 +352,7 @@ function StudentSignup() {
 
                     <form onSubmit={handleSubmit} className="login-form">
                         <div className="student-auth-group">
-                            <label htmlFor="student-signup-name">Full Name</label>
+                            <label htmlFor="student-signup-name">{t('auth.studentSignup.nameLabel')}</label>
                             <div className="student-auth-input-wrapper">
                                 <User size={20} className="student-auth-input-icon" />
                                 <input
@@ -360,7 +360,7 @@ function StudentSignup() {
                                     type="text"
                                     name="name"
                                     className="input"
-                                    placeholder="e.g. Ahmed Ben Ali"
+                                    placeholder={t('auth.studentSignup.namePlaceholder')}
                                     value={formData.name}
                                     onChange={handleChange}
                                     disabled={isLoading}
@@ -371,7 +371,7 @@ function StudentSignup() {
                         </div>
 
                         <div className="student-auth-group">
-                            <label htmlFor="student-signup-email">Email Address</label>
+                            <label htmlFor="student-signup-email">{t('auth.studentSignup.emailLabel')}</label>
                             <div className="student-auth-input-wrapper">
                                 <Mail size={20} className="student-auth-input-icon" />
                                 <input
@@ -379,7 +379,7 @@ function StudentSignup() {
                                     type="email"
                                     name="email"
                                     className="input"
-                                    placeholder="student@university.tn"
+                                    placeholder={t('auth.studentSignup.emailPlaceholder')}
                                     value={formData.email}
                                     onChange={handleChange}
                                     disabled={isLoading}
@@ -390,13 +390,13 @@ function StudentSignup() {
                         </div>
 
                         <div className="student-auth-group">
-                            <label htmlFor="student-signup-password">Password</label>
+                            <label htmlFor="student-signup-password">{t('auth.studentSignup.passwordLabel')}</label>
                             <div className="student-auth-input-wrapper">
                                 <Lock size={20} className="student-auth-input-icon" />
                                 <PasswordInput
                                     id="student-signup-password"
                                     name="password"
-                                    placeholder="Create a strong password"
+                                    placeholder={t('auth.studentSignup.passwordPlaceholder')}
                                     value={formData.password}
                                     onChange={handleChange}
                                     disabled={isLoading}
@@ -420,14 +420,14 @@ function StudentSignup() {
                                         />
                                     </div>
                                     <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
-                                        {passwordStrength.errors[0] || 'Password strength'}
+                                        {passwordStrength.errors[0] || t('auth.studentSignup.passwordStrengthPlaceholder')}
                                     </p>
                                 </div>
                             )}
                         </div>
 
                         <div className="student-auth-group">
-                            <label htmlFor="student-signup-university">University</label>
+                            <label htmlFor="student-signup-university">{t('auth.studentSignup.universityLabel')}</label>
                             <div className="student-auth-input-wrapper">
                                 <GraduationCap size={20} className="student-auth-input-icon" />
                                 <select
@@ -439,7 +439,7 @@ function StudentSignup() {
                                     disabled={isLoading}
                                     required
                                 >
-                                    <option value="">Select University</option>
+                                    <option value="">{t('auth.studentSignup.universityPlaceholder')}</option>
                                     {TUNISIAN_UNIVERSITIES.map((uni) => (
                                         <option key={uni} value={uni}>{uni}</option>
                                     ))}
@@ -450,26 +450,26 @@ function StudentSignup() {
                         <div className="student-auth-group">
                             <div className="student-auth-split-fields">
                                 <div>
-                                    <label htmlFor="student-signup-major">Major</label>
+                                    <label htmlFor="student-signup-major">{t('auth.studentSignup.majorLabel')}</label>
                                     <input
                                         id="student-signup-major"
                                         type="text"
                                         name="major"
                                         className="input"
-                                        placeholder="e.g. CS"
+                                        placeholder={t('auth.studentSignup.majorPlaceholder')}
                                         value={formData.major}
                                         onChange={handleChange}
                                         required
                                     />
                                 </div>
                                 <div>
-                                    <label htmlFor="student-signup-graduation-year">Graduation Year</label>
+                                    <label htmlFor="student-signup-graduation-year">{t('auth.studentSignup.graduationYearLabel')}</label>
                                     <input
                                         id="student-signup-graduation-year"
                                         type="number"
                                         name="graduationYear"
                                         className="input"
-                                        placeholder="2026"
+                                        placeholder={t('auth.studentSignup.graduationYearPlaceholder')}
                                         value={formData.graduationYear}
                                         onChange={handleChange}
                                         required
@@ -488,20 +488,20 @@ function StudentSignup() {
                             {isLoading ? (
                                 <>
                                     <Loader2 size={18} className="animate-spin mr-2" />
-                                    Creating Account...
+                                    {t('auth.studentSignup.submitting')}
                                 </>
                             ) : (
                                 <>
-                                    Create Account
+                                    {t('auth.studentSignup.submit')}
                                     <ArrowRight size={20} />
                                 </>
                             )}
                         </button>
 
                         <div className="student-auth-footer">
-                            <p>Already have an account? <Link to="/student/login" className="text-primary font-bold">Sign in</Link></p>
+                            <p>{t('auth.studentSignup.alreadyHaveAccount')} <Link to="/student/login" className="text-primary font-bold">{t('auth.studentSignup.signIn')}</Link></p>
                             <p className="mt-2 text-sm text-muted">
-                                By signing up, you agree to our <Link to="/legal/terms" className="text-primary underline">Terms</Link> and <Link to="/legal/privacy" className="text-primary underline">Privacy Policy</Link>.
+                                {t('auth.termsAgree')} <Link to="/legal/terms" className="text-primary underline">{t('auth.termsOfService')}</Link> {t('auth.and')} <Link to="/legal/privacy" className="text-primary underline">{t('auth.privacyPolicy')}</Link>.
                             </p>
                         </div>
                     </form>

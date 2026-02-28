@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { CheckCircle, XCircle, X, Info } from 'lucide-react'
 import './AuthToast.css'
 
@@ -7,6 +8,7 @@ import './AuthToast.css'
  * Shows success/error messages and auto-dismisses
  */
 function AuthToast({ type = 'success', message, duration = 5000, onClose }) {
+    const { t } = useTranslation(undefined, { useSuspense: false })
     const [isVisible, setIsVisible] = useState(true)
     const [isExiting, setIsExiting] = useState(false)
 
@@ -46,7 +48,7 @@ function AuthToast({ type = 'success', message, duration = 5000, onClose }) {
                 type="button"
                 className="auth-toast-close"
                 onClick={handleClose}
-                aria-label="Close notification"
+                aria-label={t('uiAria.closeNotification')}
             >
                 <X size={18} />
             </button>

@@ -82,6 +82,18 @@
     margin-top: var(--space-2);
 }
 
+.profile-header-actions {
+    margin-top: var(--space-3);
+    display: flex;
+    justify-content: center;
+}
+
+.profile-payments-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
 .completion-bar-wrapper {
     height: 6px;
     background: var(--glass-border);

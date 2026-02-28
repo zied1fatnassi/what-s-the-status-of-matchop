@@ -192,7 +192,6 @@
 }
 
 .navbar-notification-badge {
-    margin-left: auto;
     min-width: 1.2rem;
     height: 1.2rem;
     border-radius: 999px;
@@ -205,6 +204,20 @@
     justify-content: center;
     padding: 0 0.32rem;
     font-weight: 700;
+}
+
+.navbar-link .navbar-notification-badge {
+    margin-left: auto;
+}
+
+.navbar-notification-badge--floating {
+    position: absolute;
+    top: 0.2rem;
+    right: 0.2rem;
+    min-width: 1rem;
+    height: 1rem;
+    padding: 0 0.2rem;
+    font-size: 0.62rem;
 }
 
 @media (min-width: 1024px) {
@@ -310,6 +323,7 @@
 
 .theme-toggle-btn,
 .lang-btn,
+.navbar-icon-link,
 .navbar-toggle {
     min-width: 44px;
     min-height: 44px;
@@ -324,12 +338,28 @@
     transition: all var(--duration-normal) var(--ease-in-out);
 }
 
+.navbar-icon-link {
+    text-decoration: none;
+}
+
 .theme-toggle-btn:hover,
 .lang-btn:hover,
+.navbar-icon-link:hover,
 .navbar-toggle:hover {
     background: var(--glass-surface);
     color: var(--primary);
     border-color: var(--primary);
+}
+
+.navbar-notification-btn {
+    position: relative;
+}
+
+.navbar-notification-btn.active {
+    color: var(--primary);
+    background: var(--bento-card);
+    border-color: var(--primary);
+    box-shadow: var(--shadow-sm);
 }
 
 .lang-btn {

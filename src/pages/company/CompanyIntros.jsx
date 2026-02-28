@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Users, Loader, AlertCircle, RefreshCw, MapPin, Clock3, MessageCircle, Archive, XCircle, Star } from 'lucide-react'
+import { Users, Loader, AlertCircle, RefreshCw, MapPin, Clock3, MessageCircle, Archive, XCircle, Star, FolderArchive } from 'lucide-react'
 import { useIntros } from '../../hooks/useIntros'
 import { supabase } from '../../lib/supabase'
 import './CompanyIntros.css'
@@ -172,6 +172,10 @@ function CompanyIntros() {
                             <RefreshCw size={16} />
                             {t('companyWorkflow.newCandidates.actions.refresh')}
                         </button>
+                        <Link to="/company/archived" className="btn btn-secondary btn-sm">
+                            <FolderArchive size={16} />
+                            {t('nav.archived')}
+                        </Link>
                     </div>
                 </div>
 

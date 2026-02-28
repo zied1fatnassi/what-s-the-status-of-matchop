@@ -1,5 +1,6 @@
 import { useState, useEffect, lazy, Suspense } from 'react'
 import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { SpeedInsights } from '@vercel/speed-insights/react'
 import { Analytics } from '@vercel/analytics/react'
 import Navbar from './components/Navbar'
@@ -127,6 +128,7 @@ function App() {
   const [toast, setToast] = useState(null)
   const location = useLocation()
   const navigate = useNavigate()
+  const { t } = useTranslation(undefined, { useSuspense: false })
   const { premiumUpsell, closePremiumUpsell } = useApplications()
   const showVercelTelemetry = shouldRenderVercelTelemetry()
 
@@ -164,7 +166,7 @@ function App() {
     if (accessToken && type === 'signup') {
       scheduleToast({
         type: 'success',
-        message: 'Email verified successfully! You can now sign in.'
+        message: t('appAuth.emailVerifiedSuccess')
       })
       clearHash()
     }
@@ -172,7 +174,7 @@ function App() {
     else if (accessToken && type === 'recovery') {
       scheduleToast({
         type: 'success',
-        message: 'Reset link confirmed. Please set your new password.'
+        message: t('appAuth.resetLinkConfirmed')
       })
       // Clear hash before navigation to avoid mutating the wrong history entry.
       clearHash()
@@ -189,18 +191,18 @@ function App() {
     else if (accessToken && !type) {
       scheduleToast({
         type: 'success',
-        message: 'Welcome back! You are now signed in.'
+        message: t('appAuth.welcomeBackSignedIn')
       })
       clearHash()
     }
     // Handle errors
     else if (error) {
-      let message = errorDescription?.replace(/\+/g, ' ') || 'Authentication failed'
+      let message = errorDescription?.replace(/\+/g, ' ') || t('appAuth.authenticationFailed')
 
       if (error === 'access_denied' && errorDescription?.includes('expired')) {
-        message = 'The verification link has expired. Please request a new one.'
+        message = t('appAuth.verificationLinkExpired')
       } else if (error === 'access_denied') {
-        message = 'Access denied. Please try again or request a new link.'
+        message = t('appAuth.accessDenied')
       }
 
       scheduleToast({
@@ -213,7 +215,7 @@ function App() {
     return () => {
       isCancelled = true
     }
-  }, [location.hash, location.pathname, location.search, navigate])
+  }, [location.hash, location.pathname, location.search, navigate, t])
 
   const handleToastClose = () => {
     setToast(null)

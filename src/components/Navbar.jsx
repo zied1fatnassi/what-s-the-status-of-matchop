@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Menu, X, User, Briefcase, Heart, Home, LogOut, Globe, ChevronDown, Moon, Sun, Crown, Receipt, Users, FolderArchive, Gift, Bell } from 'lucide-react'
+import { Menu, X, User, Briefcase, Heart, Home, LogOut, Globe, ChevronDown, Moon, Sun, Crown, Users, Bell } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useApplications } from '../context/ApplicationContext'
 import { useTheme } from '../context/ThemeContext'
@@ -56,11 +56,8 @@ function Navbar({ isLanding = false }) {
     }
 
     const studentLinks = [
-        { to: '/student/matches', icon: <Heart size={18} />, label: t('nav.matches') },
         { to: '/student/swipe', icon: <Home size={18} />, label: t('nav.discover') },
-        { to: '/payments', icon: <Receipt size={18} />, label: 'Payments' },
-        { to: '/student/referrals', icon: <Gift size={18} />, label: t('nav.referrals') },
-        { to: '/student/notifications', icon: <Bell size={18} />, label: t('nav.notifications'), badge: unreadNotifications },
+        { to: '/student/matches', icon: <Heart size={18} />, label: t('nav.matches') },
         { to: '/student/profile', icon: <User size={18} />, label: t('nav.profile') },
     ]
 
@@ -77,9 +74,7 @@ function Navbar({ isLanding = false }) {
         { to: '/company/intros', icon: <Users size={18} />, label: t('nav.newCandidates') },
         { to: '/company/matches', icon: <Heart size={18} />, label: t('nav.matches') },
         { to: '/company/offers', icon: <Briefcase size={18} />, label: t('nav.myOffers') },
-        { to: '/company/archived', icon: <FolderArchive size={18} />, label: t('nav.archived') },
         { to: '/company/post-offer', icon: <Briefcase size={18} />, label: t('nav.postJob') },
-        { to: '/company/notifications', icon: <Bell size={18} />, label: t('nav.notifications'), badge: unreadNotifications },
         { to: '/company/profile', icon: <User size={18} />, label: t('nav.profile') },
     ]
 
@@ -89,6 +84,9 @@ function Navbar({ isLanding = false }) {
         { to: '/company/signup', icon: <Briefcase size={18} />, label: t('landing.ctaCompany'), className: 'navbar-link--primary' },
     ]
     const mobileLinks = hasSession ? links : guestMobileLinks
+    const notificationsTarget = notificationScope === NOTIFICATION_SCOPE_STUDENT
+        ? '/student/notifications'
+        : (notificationScope === NOTIFICATION_SCOPE_COMPANY ? '/company/notifications' : null)
     const logoTarget = hasSession
         ? (isCompany ? '/company/intros' : isStudent ? '/student/swipe' : '/discovery')
         : '/'
@@ -213,7 +211,7 @@ function Navbar({ isLanding = false }) {
                             {link.icon}
                             <span>{link.label}</span>
                             {Number.isFinite(link.badge) && link.badge > 0 && (
-                                <span className="navbar-notification-badge" aria-label={`${link.badge} unread notifications`}>
+                                <span className="navbar-notification-badge" aria-label={t('uiAria.unreadNotifications', { count: link.badge })}>
                                     {link.badge > 99 ? '99+' : link.badge}
                                 </span>
                             )}
@@ -233,7 +231,7 @@ function Navbar({ isLanding = false }) {
                         <button
                             className="lang-btn"
                             onClick={() => setLangOpen(!langOpen)}
-                            aria-label="Change language"
+                            aria-label={t('uiAria.changeLanguage')}
                             aria-expanded={langOpen}
                         >
                             <Globe size={16} />
@@ -256,11 +254,27 @@ function Navbar({ isLanding = false }) {
                         )}
                     </div>
 
+                    {hasSession && notificationsTarget && (
+                        <Link
+                            to={notificationsTarget}
+                            className={`navbar-icon-link navbar-notification-btn ${location.pathname === notificationsTarget ? 'active' : ''}`}
+                            aria-label={t('nav.notifications')}
+                            title={t('nav.notifications')}
+                        >
+                            <Bell size={18} />
+                            {unreadNotifications > 0 && (
+                                <span className="navbar-notification-badge navbar-notification-badge--floating" aria-label={t('uiAria.unreadNotifications', { count: unreadNotifications })}>
+                                    {unreadNotifications > 99 ? '99+' : unreadNotifications}
+                                </span>
+                            )}
+                        </Link>
+                    )}
+
                     <button
                         className="theme-toggle-btn"
                         onClick={toggleTheme}
-                        aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-                        title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+                        aria-label={theme === 'dark' ? t('uiAria.switchToLightMode') : t('uiAria.switchToDarkMode')}
+                        title={theme === 'dark' ? t('uiAria.switchToLightMode') : t('uiAria.switchToDarkMode')}
                     >
                         {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
                     </button>
@@ -287,7 +301,7 @@ function Navbar({ isLanding = false }) {
                         type="button"
                         className="navbar-toggle"
                         onClick={() => setIsOpen(!isOpen)}
-                        aria-label={isOpen ? 'Close navigation menu' : 'Open navigation menu'}
+                        aria-label={isOpen ? t('uiAria.closeNavigationMenu') : t('uiAria.openNavigationMenu')}
                         aria-expanded={isOpen}
                         aria-controls="navbar-links"
                     >
