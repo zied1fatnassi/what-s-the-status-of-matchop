@@ -138,3 +138,10 @@ test-results
 Thumbs.db
 .vercel
 .env*.local
+
+# Python scraping worker
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+scraping/.venv/

@@ -639,21 +639,86 @@
     "matches": {
         "yourMatches": "Your Matches",
         "studentsSubtitle": "Companies interested in your profile",
+        "externalTitle": "External Matches",
+        "externalSubtitle": "Saved external opportunities ready for you to apply on the source website.",
         "companiesSubtitle": "Candidates who matched with your opportunities",
         "loading": "Loading your matches...",
         "loadError": "Failed to load matches",
         "recently": "Recently",
+        "savedOn": "Saved {{date}}",
         "unknownCandidate": "Unknown Candidate",
         "unknownCompany": "Unknown Company",
         "studentFallback": "Student",
         "jobOpportunity": "Job Opportunity",
         "remote": "Remote",
         "noMatchesYet": "No matches yet",
+        "noExternalMatchesYet": "No external matches yet",
         "companyEmptyDesc": "When you match with candidates, they'll appear here!",
+        "externalEmptyDesc": "Swipe right on external opportunities to save them here.",
         "keepSwipingTip": "Keep swiping to find your perfect opportunity!",
         "startSwiping": "Start Swiping",
         "viewCandidates": "View Candidates",
-        "startConversation": "Start the conversation!"
+        "startConversation": "Start the conversation!",
+        "applyOn": "Apply on {{source}}",
+        "applyUnavailable": "Application link unavailable",
+        "externalSourceFallback": "the source website",
+        "statusUpdateFailed": "Unable to update this external opportunity right now.",
+        "statusTabs": {
+            "ariaLabel": "External application status filters",
+            "saved": "Saved",
+            "applied": "Applied",
+            "archived": "Archived"
+        },
+        "statuses": {
+            "applied": "Applied",
+            "interview": "Interview",
+            "rejected": "Rejected",
+            "archived": "Archived"
+        },
+        "statusDates": {
+            "appliedOn": "Applied on {{date}}",
+            "interviewOn": "Interview on {{date}}",
+            "rejectedOn": "Rejected on {{date}}",
+            "archivedOn": "Archived on {{date}}"
+        },
+        "actions": {
+            "markAsApplied": "Mark as Applied (external)",
+            "moveToInterview": "Move to Interview",
+            "markAsFollowedUp": "Mark as Followed Up",
+            "archive": "Archive"
+        },
+        "nudges": {
+            "followUpNow": "Follow up now",
+            "noResponseAfter14Days": "No response after 14 days"
+        },
+        "priority": {
+            "high": "High priority",
+            "medium": "Medium"
+        },
+        "focus": {
+            "title": "Your focus today"
+        },
+        "insights": {
+            "title": "Application insights",
+            "applications": "Applications",
+            "interviews": "Interviews",
+            "conversion": "Conversion"
+        },
+        "followUpSummary": "You have {{count}} applications to follow up",
+        "externalTrackingTooltip": "This job is external. You are tracking your application manually.",
+        "externalEmptyStates": {
+            "savedTitle": "No saved external matches",
+            "savedDescription": "Swipe right on external opportunities to save them here.",
+            "appliedTitle": "No tracked applications yet",
+            "appliedDescription": "Mark saved jobs as applied to track interviews and outcomes here.",
+            "archivedTitle": "No archived external jobs",
+            "archivedDescription": "Archived external opportunities will appear here."
+        },
+        "tabs": {
+            "navigationAria": "Matches navigation",
+            "matches": "Matches",
+            "externalMatches": "External Matches"
+        }
     },
     "chat": {
         "online": "Online",
@@ -1503,7 +1568,8 @@
         "toasts": {
             "applicationSent": "Application was sent!",
             "notInterested": "Not interested",
-            "addedToFavorites": "Added to favorites"
+            "addedToFavorites": "Added to favorites",
+            "externalSaved": "Saved opportunity. Apply on {{source}}"
         },
         "loading": {
             "findingBestJobs": "Finding the best jobs for you..."
@@ -1599,7 +1665,8 @@
         "loadOffersFailed": "Failed to load opportunities",
         "notAuthenticated": "Not authenticated",
         "dailyLimitReached": "Daily swipe limit reached",
-        "recordSwipeFailed": "Failed to record swipe"
+        "recordSwipeFailed": "Failed to record swipe",
+        "saveExternalMatchFailed": "Failed to save external opportunity"
     },
     "missingConfig": {
         "title": "Missing configuration",

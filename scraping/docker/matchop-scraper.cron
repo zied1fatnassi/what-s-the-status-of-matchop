@@ -1,0 +1,4 @@
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+0 */4 * * * cd /app && /usr/local/bin/python run_worker.py >> /var/log/matchop-scraper.log 2>&1

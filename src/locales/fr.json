@@ -477,21 +477,86 @@
     "matches": {
         "yourMatches": "Vos matchs",
         "studentsSubtitle": "Entreprises interessees par votre profil",
+        "externalTitle": "Matchs externes",
+        "externalSubtitle": "Opportunites externes sauvegardees, prêtes pour postuler sur le site source.",
         "companiesSubtitle": "Candidats qui ont matche avec vos opportunites",
         "loading": "Chargement de vos matchs...",
         "loadError": "Echec du chargement des matchs",
         "recently": "Recent",
+        "savedOn": "Sauvegarde le {{date}}",
         "unknownCandidate": "Candidat inconnu",
         "unknownCompany": "Entreprise inconnue",
         "studentFallback": "Etudiant",
         "jobOpportunity": "Opportunite d'emploi",
         "remote": "Teletravail",
         "noMatchesYet": "Pas encore de matchs",
+        "noExternalMatchesYet": "Pas encore de matchs externes",
         "companyEmptyDesc": "Quand vous matchez avec des candidats, ils apparaitront ici !",
+        "externalEmptyDesc": "Swipez a droite sur des opportunites externes pour les sauvegarder ici.",
         "keepSwipingTip": "Continuez a swiper pour trouver votre opportunite parfaite !",
         "startSwiping": "Commencer a swiper",
         "viewCandidates": "Voir les candidats",
-        "startConversation": "Demarrez la conversation !"
+        "startConversation": "Demarrez la conversation !",
+        "applyOn": "Postuler sur {{source}}",
+        "applyUnavailable": "Lien de candidature indisponible",
+        "externalSourceFallback": "la source",
+        "statusUpdateFailed": "Impossible de mettre a jour cette opportunite externe pour le moment.",
+        "statusTabs": {
+            "ariaLabel": "Filtres du statut des candidatures externes",
+            "saved": "Sauvegardees",
+            "applied": "Postulees",
+            "archived": "Archivees"
+        },
+        "statuses": {
+            "applied": "Postulee",
+            "interview": "Entretien",
+            "rejected": "Rejetee",
+            "archived": "Archivee"
+        },
+        "statusDates": {
+            "appliedOn": "Postulee le {{date}}",
+            "interviewOn": "Entretien le {{date}}",
+            "rejectedOn": "Rejetee le {{date}}",
+            "archivedOn": "Archivee le {{date}}"
+        },
+        "actions": {
+            "markAsApplied": "Marquer comme postulee (externe)",
+            "moveToInterview": "Passer a entretien",
+            "markAsFollowedUp": "Marquer comme relancee",
+            "archive": "Archiver"
+        },
+        "nudges": {
+            "followUpNow": "Relancez maintenant",
+            "noResponseAfter14Days": "Aucune reponse apres 14 jours"
+        },
+        "priority": {
+            "high": "Priorite haute",
+            "medium": "Moyenne"
+        },
+        "focus": {
+            "title": "Votre focus du jour"
+        },
+        "insights": {
+            "title": "Indicateurs de candidature",
+            "applications": "Candidatures",
+            "interviews": "Entretiens",
+            "conversion": "Conversion"
+        },
+        "followUpSummary": "Vous avez {{count}} candidatures a relancer",
+        "externalTrackingTooltip": "Cette offre est externe. Vous suivez votre candidature manuellement.",
+        "externalEmptyStates": {
+            "savedTitle": "Aucun match externe sauvegarde",
+            "savedDescription": "Swipez a droite sur des opportunites externes pour les sauvegarder ici.",
+            "appliedTitle": "Aucune candidature suivie pour le moment",
+            "appliedDescription": "Marquez les offres sauvegardees comme postulees pour suivre les entretiens et les resultats ici.",
+            "archivedTitle": "Aucune offre externe archivee",
+            "archivedDescription": "Les opportunites externes archivees apparaitront ici."
+        },
+        "tabs": {
+            "navigationAria": "Navigation des matchs",
+            "matches": "Matchs",
+            "externalMatches": "Matchs externes"
+        }
     },
     "chat": {
         "online": "En ligne",
@@ -1341,7 +1406,8 @@
         "toasts": {
             "applicationSent": "Candidature envoyee !",
             "notInterested": "Pas interesse",
-            "addedToFavorites": "Ajoute aux favoris"
+            "addedToFavorites": "Ajoute aux favoris",
+            "externalSaved": "Opportunite sauvegardee. Postulez sur {{source}}"
         },
         "loading": {
             "findingBestJobs": "Recherche des meilleures opportunites pour vous..."
@@ -1437,7 +1503,8 @@
         "loadOffersFailed": "Impossible de charger les opportunites",
         "notAuthenticated": "Non authentifie",
         "dailyLimitReached": "Limite quotidienne de swipes atteinte",
-        "recordSwipeFailed": "Echec de l'enregistrement du swipe"
+        "recordSwipeFailed": "Echec de l'enregistrement du swipe",
+        "saveExternalMatchFailed": "Impossible de sauvegarder l'opportunite externe"
     },
     "missingConfig": {
         "title": "Configuration manquante",

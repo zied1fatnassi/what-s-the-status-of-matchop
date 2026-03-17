@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { MessageCircle, MapPin, Loader, AlertCircle, RefreshCw, Briefcase } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useMatches } from '../../hooks/useMatches'
+import StudentMatchesTabs from '../../components/student/StudentMatchesTabs'
 import './StudentMatches.css'
 
 /**
@@ -20,6 +21,7 @@ function StudentMatches() {
                     <div className="matches-header">
                         <h1>{t('matches.yourMatches')}</h1>
                         <p>{t('matches.studentsSubtitle')}</p>
+                        <StudentMatchesTabs />
                     </div>
                     <div className="matches-loading">
                         <Loader className="animate-spin" size={48} />
@@ -38,6 +40,7 @@ function StudentMatches() {
                     <div className="matches-header">
                         <h1>{t('matches.yourMatches')}</h1>
                         <p>{t('matches.studentsSubtitle')}</p>
+                        <StudentMatchesTabs />
                     </div>
                     <div className="matches-error glass-card">
                         <AlertCircle size={48} className="text-red-500" />
@@ -59,6 +62,7 @@ function StudentMatches() {
                 <div className="matches-header">
                     <h1>{t('matches.yourMatches')}</h1>
                     <p>{t('matches.studentsSubtitle')}</p>
+                    <StudentMatchesTabs />
                 </div>
 
                 {matches.length > 0 ? (

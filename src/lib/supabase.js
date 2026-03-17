@@ -262,6 +262,35 @@ function createMockRows(tableName, currentUser) {
         }
     }
 
+    const mockExternalJob = {
+        id: 'external-job-1',
+        title: 'Growth Product Designer',
+        company_name: 'Orbit Labs',
+        location: 'Remote',
+        job_type: 'Full-time',
+        salary_range: 'Competitive',
+        description: 'Design onboarding and marketplace product flows.',
+        logo_url: null,
+        source_website: 'LinkedIn',
+        original_url: 'https://example.com/external-job-1',
+        posted_at: now,
+        created_at: now,
+        tags: ['Design', 'Product'],
+        is_global: true
+    }
+
+    const mockExternalMatch = {
+        id: 'external-match-1',
+        student_id: 'e2e-student-user',
+        external_job_id: 'external-job-1',
+        source_website: 'LinkedIn',
+        original_url: 'https://example.com/external-job-1',
+        title: 'Growth Product Designer',
+        company_name: 'Orbit Labs',
+        saved_at: now,
+        status: 'saved'
+    }
+
     const mockMatch = {
         id: MOCK_MATCH_ID,
         company_id: 'e2e-company-user',
@@ -361,6 +390,9 @@ function createMockRows(tableName, currentUser) {
         }],
         companies: [mockCompany],
         offers: [mockOffer, mockArchivedOffer],
+        external_jobs: [mockExternalJob],
+        external_jobs_public: [mockExternalJob],
+        external_matches: [mockExternalMatch],
         matches: [mockMatch, mockArchivedMatch],
         messages: mockMessages,
         reports: [{

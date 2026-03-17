@@ -31,6 +31,8 @@ const debugLog = (...args) => {
 const offersCacheMap = new Map()
 // Map<userId -> Set<offerId>>
 const swipedIdsCacheMap = new Map()
+// Map<userId -> Set<externalOfferId>>
+const savedExternalOfferIdsCacheMap = new Map()
 
 function createDefaultSwipeUsage() {
     return {
@@ -75,12 +77,49 @@ function getSwipedIdsCache(userId) {
     return swipedIdsCacheMap.get(userId)
 }
 
+function getSavedExternalOfferIdsCache(userId) {
+    if (!savedExternalOfferIdsCacheMap.has(userId)) {
+        savedExternalOfferIdsCacheMap.set(userId, new Set())
+    }
+    return savedExternalOfferIdsCacheMap.get(userId)
+}
+
+function extractExternalJobId(offerId) {
+    if (typeof offerId !== 'string' || !offerId.startsWith('ext-')) return null
+    return offerId.slice(4) || null
+}
+
+function resolveExternalOfferId(externalJobId) {
+    if (externalJobId == null) return null
+    const normalizedJobId = String(externalJobId).trim()
+    return normalizedJobId ? `ext-${normalizedJobId}` : null
+}
+
+function resolveSourceWebsite(sourceWebsite, externalUrl) {
+    if (typeof sourceWebsite === 'string' && sourceWebsite.trim()) {
+        return sourceWebsite.trim()
+    }
+
+    if (typeof externalUrl === 'string' && externalUrl.trim()) {
+        try {
+            return new URL(externalUrl).hostname.replace(/^www\./, '')
+        } catch {
+            return null
+        }
+    }
+
+    return null
+}
+
 function normalizeEdgeOffer(offer) {
+    const offerId = typeof offer?.id === 'string'
+        ? offer.id
+        : String(offer?.id ?? '')
     const rawScore = Number(offer?.score ?? 0)
     const normalizedScore = Number.isFinite(rawScore) ? Math.max(0, Math.min(100, rawScore)) : 0
 
     return {
-        id: offer.id,
+        id: offerId,
         title: offer.title,
         description: offer.description || '',
         company: offer.company || 'Unknown Company',
@@ -92,8 +131,9 @@ function normalizeEdgeOffer(offer) {
         type: offer.type || 'Full-time',
         createdAt: offer.createdAt || null,
         isExternal: Boolean(offer.isExternal),
+        externalJobId: offer.isExternal ? extractExternalJobId(offerId) : null,
         externalUrl: offer.externalUrl || null,
-        sourceWebsite: offer.sourceWebsite || null,
+        sourceWebsite: resolveSourceWebsite(offer.sourceWebsite, offer.externalUrl),
         is_global: Boolean(offer.isGlobal),
         matchScore: normalizedScore / 100,
         score: normalizedScore,
@@ -103,6 +143,32 @@ function normalizeEdgeOffer(offer) {
 
 function isInternalOfferId(offerId) {
     return typeof offerId === 'string' && !offerId.startsWith('ext-')
+}
+
+function filterAvailableOffers(userId, offers) {
+    const swipedIds = getSwipedIdsCache(userId)
+    const savedExternalIds = getSavedExternalOfferIdsCache(userId)
+
+    return (offers || []).filter((offer) => {
+        if (isInternalOfferId(offer?.id)) {
+            return !swipedIds.has(offer.id)
+        }
+        return !savedExternalIds.has(offer?.id)
+    })
+}
+
+function buildExternalMatchPayload(studentId, offer) {
+    const externalJobId = offer?.externalJobId || extractExternalJobId(offer?.id)
+    if (!studentId || !externalJobId) return null
+
+    return {
+        student_id: studentId,
+        external_job_id: externalJobId,
+        source_website: resolveSourceWebsite(offer?.sourceWebsite, offer?.externalUrl),
+        original_url: offer?.externalUrl || null,
+        title: offer?.title || null,
+        company_name: offer?.company || null
+    }
 }
 
 function removeOfferFromAllUserCaches(userId, offerId) {
@@ -128,9 +194,28 @@ async function fetchSwipedOfferIds(userId) {
     return swipedOfferIds
 }
 
+async function fetchSavedExternalOfferIds(userId) {
+    const savedResult = await supabase
+        .from('external_matches')
+        .select('external_job_id')
+        .eq('student_id', userId)
+
+    if (savedResult.error) {
+        return Array.from(getSavedExternalOfferIdsCache(userId))
+    }
+
+    const savedOfferIds = (savedResult.data || [])
+        .map((row) => resolveExternalOfferId(row?.external_job_id))
+        .filter(Boolean)
+
+    savedExternalOfferIdsCacheMap.set(userId, new Set(savedOfferIds))
+    return savedOfferIds
+}
+
 async function fetchLegacyOffers(userId) {
     let internalOffers = []
-    const swipedOfferIds = await fetchSwipedOfferIds(userId)
+    const swipedOfferIds = new Set(await fetchSwipedOfferIds(userId))
+    const savedExternalOfferIds = new Set(await fetchSavedExternalOfferIds(userId))
 
     let matchedData = null
     let matchError = null
@@ -153,7 +238,7 @@ async function fetchLegacyOffers(userId) {
 
     if (!matchError && matchedData?.success && matchedData?.offers?.length > 0) {
         internalOffers = matchedData.offers
-            .filter((offer) => !swipedOfferIds.includes(offer.id))
+            .filter((offer) => !swipedOfferIds.has(offer.id))
             .map((offer) => ({ ...offer, isExternal: false, externalUrl: null }))
     } else {
         const offersResult = await supabase
@@ -164,7 +249,7 @@ async function fetchLegacyOffers(userId) {
 
         if (!offersResult.error) {
             internalOffers = (offersResult.data || [])
-                .filter((offer) => !swipedOfferIds.includes(offer.id))
+                .filter((offer) => !swipedOfferIds.has(offer.id))
                 .map((offer) => ({
                     ...offer,
                     company: offer.companies?.company_name || 'Unknown Company',
@@ -190,6 +275,7 @@ async function fetchLegacyOffers(userId) {
         if (extData) {
             externalOffers = extData.map((job) => ({
                 id: `ext-${job.id}`,
+                externalJobId: job.id ? String(job.id) : null,
                 title: job.title,
                 company: job.company_name,
                 companyLogo: job.logo_url || job.logo || null,
@@ -200,9 +286,10 @@ async function fetchLegacyOffers(userId) {
                 skills: [],
                 isExternal: true,
                 externalUrl: job.original_url || null,
-                sourceWebsite: job.source_website || null,
-                matchScore: null
-            }))
+                sourceWebsite: resolveSourceWebsite(job.source_website, job.original_url),
+                matchScore: null,
+                createdAt: job.posted_at || job.created_at || null
+            })).filter((offer) => !savedExternalOfferIds.has(offer.id))
         }
     } catch (error) {
         debugLog('[useJobOffers] Failed to fetch external jobs:', error)
@@ -304,14 +391,18 @@ export function useJobOffers() {
     const fetchOffersForMode = useCallback(async ({ targetMode, forceRefresh = false }) => {
         if (!user) return null
 
+        await Promise.all([
+            fetchSwipedOfferIds(user.id),
+            fetchSavedExternalOfferIds(user.id)
+        ])
+
         const cache = getOffersCache(user.id, targetMode)
         const now = Date.now()
         const cacheValid = cache.data && (now - cache.timestamp) < CACHE_TTL
 
         if (!forceRefresh && cacheValid) {
-            const swipedIds = getSwipedIdsCache(user.id)
             return {
-                offers: cache.data.filter((offer) => !isInternalOfferId(offer.id) || !swipedIds.has(offer.id)),
+                offers: filterAvailableOffers(user.id, cache.data),
                 effectivePlan: cache.effectivePlan
             }
         }
@@ -338,7 +429,7 @@ export function useJobOffers() {
         freshCache.effectivePlan = resolvedPlan
 
         return {
-            offers: normalized,
+            offers: filterAvailableOffers(user.id, normalized),
             effectivePlan: resolvedPlan
         }
     }, [user])
@@ -373,7 +464,6 @@ export function useJobOffers() {
 
         try {
             if (!isSwipeStackV2Enabled) {
-                await fetchSwipedOfferIds(user.id)
                 const legacyOffers = await fetchLegacyOffers(user.id)
                 const cache = getOffersCache(user.id, 'standard')
                 cache.data = legacyOffers
@@ -456,11 +546,16 @@ export function useJobOffers() {
         fetchOffers()
     }, [fetchOffers])
 
-    const swipe = useCallback(async (offerId, direction) => {
+    const swipe = useCallback(async (offerOrId, direction) => {
         if (!user?.id) return { error: t('useJobOffers.notAuthenticated') }
 
+        const offer = offerOrId && typeof offerOrId === 'object'
+            ? offerOrId
+            : null
+        const offerId = offer?.id || offerOrId
         const normalizedDirection = direction === 'super' ? 'right' : direction
-        const isInternalOffer = isInternalOfferId(offerId)
+        const isExternalOffer = offer?.isExternal === true || !isInternalOfferId(offerId)
+        const isInternalOffer = !isExternalOffer
 
         if (isInternalOffer && mode === 'standard' && !isPremiumUser) {
             const usage = await getDailyUsage({ forceRefresh: true })
@@ -473,10 +568,39 @@ export function useJobOffers() {
             }
         }
 
-        if (!isInternalOffer) {
+        if (isExternalOffer) {
+            if (normalizedDirection === 'right') {
+                const externalMatchPayload = buildExternalMatchPayload(user.id, offer)
+
+                if (!externalMatchPayload) {
+                    return { error: t('useJobOffers.saveExternalMatchFailed') }
+                }
+
+                const { error: saveError } = await supabase
+                    .from('external_matches')
+                    .upsert(externalMatchPayload, {
+                        onConflict: 'student_id,external_job_id'
+                    })
+
+                if (saveError) {
+                    safeLogWarn('[useJobOffers] external match save warning', { error: saveError })
+                    return { error: saveError.message || t('useJobOffers.saveExternalMatchFailed') }
+                }
+
+                getSavedExternalOfferIdsCache(user.id).add(offerId)
+                removeOfferFromAllUserCaches(user.id, offerId)
+                debugLog('[useJobOffers] Saved external opportunity:', offerId)
+
+                return {
+                    error: null,
+                    externalMatchSaved: true,
+                    sourceWebsite: externalMatchPayload.source_website
+                }
+            }
+
             removeOfferFromAllUserCaches(user.id, offerId)
             debugLog('[useJobOffers] Swiped external opportunity:', offerId, direction)
-            return { error: null }
+            return { error: null, externalMatchSaved: false }
         }
 
         let swipePayload = null
@@ -529,7 +653,7 @@ export function useJobOffers() {
             }
         }
 
-        return { error: null }
+        return { error: null, externalMatchSaved: false }
     }, [user, mode, isPremiumUser, getDailyUsage, syncDailyUsage, t])
 
     const switchMode = useCallback((nextMode) => {

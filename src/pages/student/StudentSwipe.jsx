@@ -312,21 +312,19 @@ function StudentSwipe() {
         }
 
         const offerToSwipe = currentOffer
-        const isExternal = offerToSwipe.isExternal === true && !!offerToSwipe.externalUrl
+        const isExternal = offerToSwipe.isExternal === true
+        const swipeResult = await swipe(offerToSwipe, direction)
 
-        if (!isExternal) {
-            const swipeResult = await swipe(offerToSwipe.id, direction)
-            if (isLimitReachedCode(swipeResult?.code)) {
-                openPremiumUpsell('daily_limit', {
-                    used: swipeResult?.usage?.used ?? dailySwipeUsage?.used ?? null,
-                    limit: swipeResult?.usage?.limit ?? dailySwipeUsage?.limit ?? null
-                })
-                return
-            }
+        if (isLimitReachedCode(swipeResult?.code)) {
+            openPremiumUpsell('daily_limit', {
+                used: swipeResult?.usage?.used ?? dailySwipeUsage?.used ?? null,
+                limit: swipeResult?.usage?.limit ?? dailySwipeUsage?.limit ?? null
+            })
+            return
+        }
 
-            if (swipeResult?.error) {
-                return
-            }
+        if (swipeResult?.error) {
+            return
         }
 
         setSwipeHistory([...swipeHistory, { offer: offerToSwipe, direction }])
@@ -340,11 +338,19 @@ function StudentSwipe() {
             setToastVariant('rejected')
             setShowToast(true)
         } else if (direction === 'right' || direction === 'super') {
-            setToastIsExternal(isExternal)
-            if (direction === 'super') {
+            if (isExternal && swipeResult?.externalMatchSaved) {
+                const sourceWebsite = swipeResult?.sourceWebsite
+                    || offerToSwipe.sourceWebsite
+                    || t('matches.externalSourceFallback')
+                setToastIsExternal(true)
+                setToastTitle(t('studentSwipe.toasts.externalSaved', { source: sourceWebsite }))
+                setToastVariant('application')
+            } else if (direction === 'super') {
+                setToastIsExternal(false)
                 setToastTitle(t('studentSwipe.toasts.addedToFavorites'))
                 setToastVariant('favorites')
             } else {
+                setToastIsExternal(false)
                 setToastTitle(t('studentSwipe.toasts.applicationSent'))
                 setToastVariant('application')
             }

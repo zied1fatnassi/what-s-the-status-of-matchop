@@ -15,6 +15,8 @@ const fromMock = vi.fn()
 const rpcMock = vi.fn()
 const functionsInvokeMock = vi.fn()
 const recordSwipeActionMock = vi.fn()
+const externalMatchesUpsertMock = vi.fn()
+const tMock = (key) => key
 
 function createQueryBuilder(tableName) {
     const builder = {
@@ -24,6 +26,12 @@ function createQueryBuilder(tableName) {
         order: vi.fn(() => builder),
         limit: vi.fn(() => builder),
         in: vi.fn(() => builder),
+        upsert: vi.fn((...args) => {
+            if (tableName === 'external_matches') {
+                externalMatchesUpsertMock(...args)
+            }
+            return builder
+        }),
         maybeSingle: vi.fn(async () => ({ data: null, error: null })),
         single: vi.fn(async () => ({ data: null, error: null })),
         then(resolve, reject) {
@@ -46,6 +54,10 @@ function resolveQuery(tableName) {
         return { data: [], error: null }
     }
 
+    if (tableName === 'external_matches') {
+        return { data: [], error: null }
+    }
+
     return { data: [], error: null }
 }
 
@@ -60,6 +72,12 @@ async function waitForCondition(predicate, timeoutMs = 1500) {
 
 vi.mock('../context/AuthContext', () => ({
     useAuth: () => authState
+}))
+
+vi.mock('react-i18next', () => ({
+    useTranslation: () => ({
+        t: tMock
+    })
 }))
 
 vi.mock('../lib/supabase', () => ({
@@ -101,6 +119,7 @@ describe('useJobOffers integration', () => {
     beforeEach(() => {
         latestSnapshot = null
         vi.clearAllMocks()
+        externalMatchesUpsertMock.mockClear()
 
         fromMock.mockImplementation((tableName) => createQueryBuilder(tableName))
 
@@ -201,5 +220,47 @@ describe('useJobOffers integration', () => {
         expect(swipeResult?.code).toBe('LIMIT_REACHED')
         expect(swipeResult?.usage?.reached).toBe(true)
         expect(recordSwipeActionMock).toHaveBeenCalledTimes(1)
+    })
+
+    it('saves external opportunities without touching the internal swipe workflow', async () => {
+        await act(async () => {
+            root.render(
+                <HookHarness onSnapshot={(snapshot) => { latestSnapshot = snapshot }} />
+            )
+        })
+
+        await waitForCondition(() => latestSnapshot && latestSnapshot.loading === false)
+
+        let swipeResult = null
+        await act(async () => {
+            swipeResult = await latestSnapshot.swipe({
+                id: 'ext-external-job-1',
+                externalJobId: 'external-job-1',
+                isExternal: true,
+                title: 'Growth Product Designer',
+                company: 'Orbit Labs',
+                externalUrl: 'https://example.com/external-job-1',
+                sourceWebsite: 'LinkedIn'
+            }, 'right')
+        })
+
+        expect(swipeResult).toEqual({
+            error: null,
+            externalMatchSaved: true,
+            sourceWebsite: 'LinkedIn'
+        })
+        expect(externalMatchesUpsertMock).toHaveBeenCalledWith(
+            expect.objectContaining({
+                student_id: 'student-1',
+                external_job_id: 'external-job-1',
+                source_website: 'LinkedIn',
+                original_url: 'https://example.com/external-job-1',
+                title: 'Growth Product Designer',
+                company_name: 'Orbit Labs'
+            }),
+            { onConflict: 'student_id,external_job_id' }
+        )
+        expect(recordSwipeActionMock).not.toHaveBeenCalled()
+        expect(rpcMock).not.toHaveBeenCalledWith('create_intro_from_swipe', expect.anything())
     })
 })

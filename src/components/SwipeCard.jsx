@@ -31,18 +31,22 @@ const SwipeCard = forwardRef(function SwipeCard({ offer, onSwipe, onSwipeStart, 
         ? { duration: 0.01 }
         : { type: 'spring', stiffness: 500, damping: 30 }
 
+    const completeSwipe = (direction, animX) => {
+        onSwipeStart?.(direction, offer)
+        controls
+            .start({ x: animX, opacity: 0, transition: swipeTransition })
+            .then(() => onSwipe(direction, offer))
+    }
+
     // Expose triggerSwipe so parent buttons can play the same fly-off animation
     useImperativeHandle(ref, () => ({
         triggerSwipe(direction) {
             const animX = direction === 'left' ? -500 : 500
-            onSwipeStart?.(direction, offer)
             // Drive the motion value so indicators + rotate react instantly
             x.set(animX * 0.3)
             // Wait for animation to finish before notifying parent (otherwise the
             // parent unmounts this card immediately, killing the animation)
-            controls
-                .start({ x: animX, opacity: 0, transition: swipeTransition })
-                .then(() => onSwipe(direction, offer))
+            completeSwipe(direction, animX)
         }
     }))
 
@@ -51,15 +55,9 @@ const SwipeCard = forwardRef(function SwipeCard({ offer, onSwipe, onSwipeStart, 
         const velocity = info.velocity.x
 
         if (info.offset.x > threshold || velocity > 500) {
-            onSwipeStart?.('right', offer)
-            controls
-                .start({ x: 500, opacity: 0, transition: swipeTransition })
-                .then(() => onSwipe('right', offer))
+            completeSwipe('right', 500)
         } else if (info.offset.x < -threshold || velocity < -500) {
-            onSwipeStart?.('left', offer)
-            controls
-                .start({ x: -500, opacity: 0, transition: swipeTransition })
-                .then(() => onSwipe('left', offer))
+            completeSwipe('left', -500)
         } else {
             // Satisfying snap back
             controls.start({ x: 0, transition: resetTransition })
@@ -100,7 +98,7 @@ const SwipeCard = forwardRef(function SwipeCard({ offer, onSwipe, onSwipeStart, 
                 className={`swipe-indicator like ${offer.isExternal ? 'apply' : ''}`}
                 style={{ opacity: likeOpacity }}
             >
-                {offer.isExternal ? tr('APPLY', 'POSTULER') : tr('LIKE', "J'AIME")}
+                {offer.isExternal ? tr('SAVE', 'SAUVEGARDER') : tr('LIKE', "J'AIME")}
             </motion.div>
             <motion.div
                 className="swipe-indicator pass"
