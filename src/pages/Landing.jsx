@@ -141,7 +141,6 @@ function Landing() {
                         <div className="feature-visual">
                             <div className="dashboard-mockup pipeline-showcase">
                                 <div className="mock-header">
-                                    <span className="mock-title">{tr('Candidate Pipeline', 'Pipeline candidats')}</span>
                                 </div>
                                 <CandidatePipelineLoop />
                             </div>
