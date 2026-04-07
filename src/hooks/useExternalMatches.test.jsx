@@ -13,6 +13,7 @@ const updateCalls = []
 const DAY_IN_MS = 24 * 60 * 60 * 1000
 const externalMatchesTable = []
 const externalJobsTable = []
+let externalMatchesError = null
 
 function createExternalMatchRow(overrides = {}) {
     return {
@@ -103,6 +104,13 @@ function applyFilters(rows, state) {
 }
 
 function resolveExternalMatches(state, single = false) {
+    if (externalMatchesError) {
+        return {
+            data: single ? null : [],
+            error: externalMatchesError
+        }
+    }
+
     if (state.operation === 'update') {
         const rowsToUpdate = applyFilters(externalMatchesTable, state)
         updateCalls.push({
@@ -199,6 +207,7 @@ describe('useExternalMatches', () => {
         updateCalls.splice(0, updateCalls.length)
         externalMatchesTable.splice(0, externalMatchesTable.length, createExternalMatchRow())
         externalJobsTable.splice(0, externalJobsTable.length, createExternalJobRow())
+        externalMatchesError = null
 
         container = document.createElement('div')
         document.body.appendChild(container)
@@ -515,5 +524,23 @@ describe('useExternalMatches', () => {
         expect(externalMatchesTable[0].status).toBe('applied')
         expect(externalMatchesTable[0].follow_up_at).toBe('2026-03-25T09:00:00.000Z')
         expect(latestSnapshot.externalMatches[0].follow_up_at).toBe('2026-03-25T09:00:00.000Z')
+    })
+
+    it('returns an empty state when external_matches is missing locally', async () => {
+        externalMatchesError = {
+            code: '42P01',
+            message: 'relation "public.external_matches" does not exist'
+        }
+
+        await act(async () => {
+            root.render(
+                <HookHarness onSnapshot={(snapshot) => { latestSnapshot = snapshot }} />
+            )
+        })
+
+        await waitForCondition(() => latestSnapshot && latestSnapshot.loading === false)
+
+        expect(latestSnapshot.externalMatches).toEqual([])
+        expect(latestSnapshot.error).toBe(null)
     })
 })

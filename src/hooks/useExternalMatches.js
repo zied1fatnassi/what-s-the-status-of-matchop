@@ -33,6 +33,17 @@ const RECENT_SAVE_WINDOW_DAYS = 3
 const HIGH_PRIORITY_THRESHOLD = 60
 const MEDIUM_PRIORITY_THRESHOLD = 30
 
+function isMissingExternalMatchesTableError(error) {
+    const code = String(error?.code || '').toUpperCase()
+    if (code === '42P01' || code === 'PGRST205') {
+        return true
+    }
+
+    const message = String(error?.message || '').toLowerCase()
+    return message.includes('external_matches')
+        && (message.includes('does not exist') || message.includes('could not find the table'))
+}
+
 function normalizeStatus(status) {
     return EXTERNAL_MATCH_STATUS_VALUES.has(status) ? status : 'saved'
 }
@@ -245,6 +256,17 @@ export function useExternalMatches() {
                 .order('saved_at', { ascending: false })
 
             if (matchesError) {
+                if (isMissingExternalMatchesTableError(matchesError)) {
+                    safeLogWarn('[useExternalMatches] external_matches unavailable; returning empty state', {
+                        error: matchesError
+                    })
+                    if (isMounted.current) {
+                        setExternalMatches([])
+                        setError(null)
+                        setLoading(false)
+                    }
+                    return
+                }
                 throw matchesError
             }
 
@@ -334,6 +356,17 @@ export function useExternalMatches() {
             .maybeSingle()
 
         if (currentRowError) {
+            if (isMissingExternalMatchesTableError(currentRowError)) {
+                safeLogWarn('[useExternalMatches] external_matches unavailable during status read; skipping update', {
+                    error: currentRowError,
+                    externalMatchId
+                })
+                return {
+                    error: null,
+                    skipped: true,
+                    tableMissing: true
+                }
+            }
             safeLogError('[useExternalMatches] status read failed', {
                 error: currentRowError,
                 externalMatchId
@@ -395,6 +428,18 @@ export function useExternalMatches() {
             .maybeSingle()
 
         if (updateError) {
+            if (isMissingExternalMatchesTableError(updateError)) {
+                safeLogWarn('[useExternalMatches] external_matches unavailable during status update; skipping update', {
+                    error: updateError,
+                    externalMatchId,
+                    nextStatus: normalizedStatus
+                })
+                return {
+                    error: null,
+                    skipped: true,
+                    tableMissing: true
+                }
+            }
             safeLogError('[useExternalMatches] status update failed', {
                 error: updateError,
                 externalMatchId,
@@ -452,6 +497,17 @@ export function useExternalMatches() {
             .maybeSingle()
 
         if (currentRowError) {
+            if (isMissingExternalMatchesTableError(currentRowError)) {
+                safeLogWarn('[useExternalMatches] external_matches unavailable during follow-up read; skipping update', {
+                    error: currentRowError,
+                    externalMatchId
+                })
+                return {
+                    error: null,
+                    skipped: true,
+                    tableMissing: true
+                }
+            }
             safeLogError('[useExternalMatches] follow-up read failed', {
                 error: currentRowError,
                 externalMatchId
@@ -483,6 +539,17 @@ export function useExternalMatches() {
             .maybeSingle()
 
         if (updateError) {
+            if (isMissingExternalMatchesTableError(updateError)) {
+                safeLogWarn('[useExternalMatches] external_matches unavailable during follow-up update; skipping update', {
+                    error: updateError,
+                    externalMatchId
+                })
+                return {
+                    error: null,
+                    skipped: true,
+                    tableMissing: true
+                }
+            }
             safeLogError('[useExternalMatches] follow-up update failed', {
                 error: updateError,
                 externalMatchId

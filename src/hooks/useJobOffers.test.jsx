@@ -17,6 +17,7 @@ const functionsInvokeMock = vi.fn()
 const recordSwipeActionMock = vi.fn()
 const externalMatchesUpsertMock = vi.fn()
 const tMock = (key) => key
+let externalMatchesError = null
 
 function createQueryBuilder(tableName) {
     const builder = {
@@ -55,7 +56,7 @@ function resolveQuery(tableName) {
     }
 
     if (tableName === 'external_matches') {
-        return { data: [], error: null }
+        return { data: [], error: externalMatchesError }
     }
 
     return { data: [], error: null }
@@ -101,6 +102,7 @@ vi.mock('../lib/swipeActionApi', () => ({
     isSwipeLimitReachedError: (error) => error?.code === 'LIMIT_REACHED'
 }))
 
+import { fetchSwipeStack } from '../lib/swipeStackApi'
 import { useJobOffers } from './useJobOffers'
 
 function HookHarness({ onSnapshot }) {
@@ -120,6 +122,14 @@ describe('useJobOffers integration', () => {
         latestSnapshot = null
         vi.clearAllMocks()
         externalMatchesUpsertMock.mockClear()
+        externalMatchesError = null
+        fetchSwipeStack.mockResolvedValue({
+            items: [],
+            next_cursor: null,
+            meta: {
+                effective_plan: 'standard'
+            }
+        })
 
         fromMock.mockImplementation((tableName) => createQueryBuilder(tableName))
 
@@ -262,5 +272,40 @@ describe('useJobOffers integration', () => {
         )
         expect(recordSwipeActionMock).not.toHaveBeenCalled()
         expect(rpcMock).not.toHaveBeenCalledWith('create_intro_from_swipe', expect.anything())
+    })
+
+    it('keeps swiping external opportunities even when external_matches is missing', async () => {
+        externalMatchesError = {
+            code: '42P01',
+            message: 'relation "public.external_matches" does not exist'
+        }
+
+        await act(async () => {
+            root.render(
+                <HookHarness onSnapshot={(snapshot) => { latestSnapshot = snapshot }} />
+            )
+        })
+
+        await waitForCondition(() => latestSnapshot && latestSnapshot.loading === false)
+
+        let swipeResult = null
+        await act(async () => {
+            swipeResult = await latestSnapshot.swipe({
+                id: 'ext-external-job-2',
+                externalJobId: 'external-job-2',
+                isExternal: true,
+                title: 'Platform Engineer',
+                company: 'Northwind',
+                externalUrl: 'https://example.com/external-job-2',
+                sourceWebsite: 'Indeed'
+            }, 'right')
+        })
+
+        expect(swipeResult).toEqual({
+            error: null,
+            externalMatchSaved: false,
+            externalTrackingSkipped: true
+        })
+        expect(recordSwipeActionMock).not.toHaveBeenCalled()
     })
 })

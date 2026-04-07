@@ -111,6 +111,28 @@ function resolveSourceWebsite(sourceWebsite, externalUrl) {
     return null
 }
 
+function isMissingExternalMatchesTableError(error) {
+    const code = String(error?.code || '').toUpperCase()
+    if (code === '42P01' || code === 'PGRST205') {
+        return true
+    }
+
+    const message = String(error?.message || '').toLowerCase()
+    return message.includes('external_matches')
+        && (message.includes('does not exist') || message.includes('could not find the table'))
+}
+
+function logOffersDebugSummary(nextOffers) {
+    const normalizedOffers = Array.isArray(nextOffers) ? nextOffers : []
+    const externalCount = normalizedOffers.filter((offer) => offer?.isExternal === true).length
+
+    console.log({
+        mode: isSwipeStackV2Enabled ? 'V2' : 'legacy',
+        offersCount: normalizedOffers.length,
+        externalCount
+    })
+}
+
 function normalizeEdgeOffer(offer) {
     const offerId = typeof offer?.id === 'string'
         ? offer.id
@@ -201,6 +223,11 @@ async function fetchSavedExternalOfferIds(userId) {
         .eq('student_id', userId)
 
     if (savedResult.error) {
+        if (isMissingExternalMatchesTableError(savedResult.error)) {
+            safeLogWarn('[useJobOffers] external_matches unavailable during saved lookup; continuing without external tracking', {
+                error: savedResult.error
+            })
+        }
         return Array.from(getSavedExternalOfferIdsCache(userId))
     }
 
@@ -469,6 +496,7 @@ export function useJobOffers() {
                 cache.data = legacyOffers
                 cache.timestamp = Date.now()
                 cache.effectivePlan = 'standard'
+                logOffersDebugSummary(legacyOffers)
 
                 if (isMounted.current) {
                     setOffers(legacyOffers)
@@ -484,6 +512,7 @@ export function useJobOffers() {
                 targetMode: mode,
                 forceRefresh
             })
+            logOffersDebugSummary(primaryResult?.offers || [])
 
             if (isMounted.current) {
                 setOffers(primaryResult?.offers || [])
@@ -519,6 +548,7 @@ export function useJobOffers() {
                         targetMode: 'standard',
                         forceRefresh: true
                     })
+                    logOffersDebugSummary(fallback?.offers || [])
 
                     if (isMounted.current) {
                         setOffers(fallback?.offers || [])
@@ -583,6 +613,19 @@ export function useJobOffers() {
                     })
 
                 if (saveError) {
+                    if (isMissingExternalMatchesTableError(saveError)) {
+                        safeLogWarn('[useJobOffers] external_matches unavailable; continuing without external tracking', {
+                            error: saveError
+                        })
+                        getSavedExternalOfferIdsCache(user.id).add(offerId)
+                        removeOfferFromAllUserCaches(user.id, offerId)
+                        return {
+                            error: null,
+                            externalMatchSaved: false,
+                            externalTrackingSkipped: true
+                        }
+                    }
+
                     safeLogWarn('[useJobOffers] external match save warning', { error: saveError })
                     return { error: saveError.message || t('useJobOffers.saveExternalMatchFailed') }
                 }

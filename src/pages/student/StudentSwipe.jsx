@@ -301,7 +301,7 @@ function StudentSwipe() {
         }
     }, [paywall, mode, setMode, clearPaywall, isPremiumEnabled, requirePremium])
 
-    const handleSwipe = async (direction) => {
+    const handleSwipe = (direction) => {
         if (!currentOffer) return
         if (mode === 'standard' && !canUsePremiumMode && dailySwipeUsage?.reached) {
             openPremiumUpsell('daily_limit', {
@@ -313,64 +313,67 @@ function StudentSwipe() {
 
         const offerToSwipe = currentOffer
         const isExternal = offerToSwipe.isExternal === true
-        const swipeResult = await swipe(offerToSwipe, direction)
+        setSwipeHistory((prev) => [...prev, { offer: offerToSwipe, direction }])
+        setCurrentIndex((prev) => prev + 1)
 
-        if (isLimitReachedCode(swipeResult?.code)) {
-            openPremiumUpsell('daily_limit', {
-                used: swipeResult?.usage?.used ?? dailySwipeUsage?.used ?? null,
-                limit: swipeResult?.usage?.limit ?? dailySwipeUsage?.limit ?? null
+        void swipe(offerToSwipe, direction)
+            .then((swipeResult) => {
+                if (isLimitReachedCode(swipeResult?.code)) {
+                    openPremiumUpsell('daily_limit', {
+                        used: swipeResult?.usage?.used ?? dailySwipeUsage?.used ?? null,
+                        limit: swipeResult?.usage?.limit ?? dailySwipeUsage?.limit ?? null
+                    })
+                    return
+                }
+
+                if (swipeResult?.error) {
+                    console.error('[StudentSwipe] swipe failed', swipeResult.error)
+                    return
+                }
+
+                if (direction === 'left') {
+                    setToastIsExternal(false)
+                    setToastTitle(t('studentSwipe.toasts.notInterested'))
+                    setToastVariant('rejected')
+                    setShowToast(true)
+                } else if (direction === 'right' || direction === 'super') {
+                    if (isExternal && swipeResult?.externalMatchSaved) {
+                        const sourceWebsite = swipeResult?.sourceWebsite
+                            || offerToSwipe.sourceWebsite
+                            || t('matches.externalSourceFallback')
+                        setToastIsExternal(true)
+                        setToastTitle(t('studentSwipe.toasts.externalSaved', { source: sourceWebsite }))
+                        setToastVariant('application')
+                    } else if (direction === 'super') {
+                        setToastIsExternal(false)
+                        setToastTitle(t('studentSwipe.toasts.addedToFavorites'))
+                        setToastVariant('favorites')
+                    } else {
+                        setToastIsExternal(false)
+                        setToastTitle(t('studentSwipe.toasts.applicationSent'))
+                        setToastVariant('application')
+                    }
+                    setShowToast(true)
+                }
+
+                if ((direction === 'right' || direction === 'super') && !isExternal && offerToSwipe.hasMatched) {
+                    setMatchedOffer(offerToSwipe)
+
+                    import('../../lib/email').then(({ sendMatchEmail }) => {
+                        sendMatchEmail(
+                            user?.email,
+                            user?.user_metadata?.name || t('matches.studentFallback'),
+                            offerToSwipe.company,
+                            'Company'
+                        )
+                    })
+
+                    setTimeout(() => setShowMatch(true), 500)
+                }
             })
-            return
-        }
-
-        if (swipeResult?.error) {
-            return
-        }
-
-        setSwipeHistory([...swipeHistory, { offer: offerToSwipe, direction }])
-
-        const nextIndex = currentIndex + 1
-        setCurrentIndex(nextIndex)
-
-        if (direction === 'left') {
-            setToastIsExternal(false)
-            setToastTitle(t('studentSwipe.toasts.notInterested'))
-            setToastVariant('rejected')
-            setShowToast(true)
-        } else if (direction === 'right' || direction === 'super') {
-            if (isExternal && swipeResult?.externalMatchSaved) {
-                const sourceWebsite = swipeResult?.sourceWebsite
-                    || offerToSwipe.sourceWebsite
-                    || t('matches.externalSourceFallback')
-                setToastIsExternal(true)
-                setToastTitle(t('studentSwipe.toasts.externalSaved', { source: sourceWebsite }))
-                setToastVariant('application')
-            } else if (direction === 'super') {
-                setToastIsExternal(false)
-                setToastTitle(t('studentSwipe.toasts.addedToFavorites'))
-                setToastVariant('favorites')
-            } else {
-                setToastIsExternal(false)
-                setToastTitle(t('studentSwipe.toasts.applicationSent'))
-                setToastVariant('application')
-            }
-            setShowToast(true)
-        }
-
-        if ((direction === 'right' || direction === 'super') && !isExternal && offerToSwipe.hasMatched) {
-            setMatchedOffer(offerToSwipe)
-
-            import('../../lib/email').then(({ sendMatchEmail }) => {
-                sendMatchEmail(
-                    user?.email,
-                    user?.user_metadata?.name || t('matches.studentFallback'),
-                    offerToSwipe.company,
-                    'Company'
-                )
+            .catch((swipeError) => {
+                console.error('[StudentSwipe] swipe request failed', swipeError)
             })
-
-            setTimeout(() => setShowMatch(true), 500)
-        }
     }
 
     const handleUndo = () => {
