@@ -537,18 +537,22 @@ export function AuthProvider({ children }) {
 
         setAuthError(null)
 
-        const { error } = await supabase.auth.signOut()
-
-        if (error) {
-            safeLogError('[AuthContext] signOut failed', { error })
-            setAuthError(error)
-            throw error
-        }
-
-        // Clear all auth cookies (session + CSRF)
+        // Always clear local state first so the user is never trapped in a broken session
         clearAuthCookies()
         setUser(null)
         setProfile(null)
+
+        // Then attempt server-side sign out (best-effort)
+        try {
+            const { error } = await supabase.auth.signOut()
+            if (error) {
+                safeLogError('[AuthContext] signOut server-side failed (local session cleared)', { error })
+                // Don't throw — local state is already cleared, user is effectively logged out
+            }
+        } catch (err) {
+            safeLogError('[AuthContext] signOut crashed (local session cleared)', { error: err })
+            // Swallow — local logout already succeeded
+        }
     }, [])
 
     /**
