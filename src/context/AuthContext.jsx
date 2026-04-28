@@ -512,9 +512,13 @@ export function AuthProvider({ children }) {
 
             // Track login activity for engagement decay system without blocking sign-in.
             ;(async () => {
-                const { error: activityError } = await supabase.rpc('touch_activity')
-                if (activityError) {
-                    debugLog('[Auth] Activity tracking failed:', activityError.message)
+                try {
+                    const { error: activityError } = await supabase.rpc('touch_activity')
+                    if (activityError) {
+                        debugLog('[Auth] Activity tracking failed:', activityError.message)
+                    }
+                } catch (e) {
+                    debugLog('[Auth] Activity tracking error:', e)
                 }
             })()
 
@@ -631,7 +635,12 @@ export function AuthProvider({ children }) {
             const defaultUp = ups.find(up => up.is_default) || ups[0]
             return defaultUp?.profile_type
         }
-        // Fallback to user_metadata during the brief window before profile loads
+        // SECURITY: For admin, ONLY trust app_metadata (server-writable) — never user_metadata.
+        // user_metadata is client-writable and can be spoofed.
+        const appRole = user?.app_metadata?.role
+        if (appRole === 'admin') return 'admin'
+        // For non-privileged roles (student/company), user_metadata is acceptable
+        // as a temporary fallback before the profile loads from DB.
         return user?.user_metadata?.type || null
     }, [profile, user])
 

@@ -30,10 +30,24 @@ import { serve } from 'https://deno.land/std@0.208.0/http/server.ts'
 // CONSTANTS
 // ============================================
 
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
+const CORS_BASE_HEADERS = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-partner-key',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
+}
+
+const DEV_ORIGINS = new Set(['http://localhost:5173', 'http://127.0.0.1:5173'])
+
+function getAllowedOrigins() {
+  const siteUrl = (Deno.env.get('SITE_URL') ?? '').trim().replace(/\/+$/, '')
+  const allowed = new Set(DEV_ORIGINS)
+  if (siteUrl) allowed.add(siteUrl)
+  return allowed
+}
+
+function getCorsHeaders(origin: string | null) {
+  const allowed = getAllowedOrigins()
+  const allowOrigin = origin && allowed.has(origin) ? origin : 'null'
+  return { ...CORS_BASE_HEADERS, 'Access-Control-Allow-Origin': allowOrigin, 'Vary': 'Origin' }
 }
 
 const MAX_OFFERS_PER_REQUEST = 100
@@ -95,14 +109,14 @@ function validateOffer(raw: Record<string, unknown>): { valid: true; offer: Reco
 serve(async (req: Request) => {
   // CORS preflight
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: CORS_HEADERS })
+    return new Response(null, { status: 204, headers: getCorsHeaders(req.headers.get('origin')) })
   }
 
   // Only POST allowed
   if (req.method !== 'POST') {
     return new Response(
       JSON.stringify({ error: 'Method not allowed' }),
-      { status: 405, headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } }
+      { status: 405, headers: { ...getCorsHeaders(req.headers.get('origin')), 'Content-Type': 'application/json' } }
     )
   }
 
@@ -112,7 +126,7 @@ serve(async (req: Request) => {
     if (!partnerKey || partnerKey.length < 32) {
       return new Response(
         JSON.stringify({ error: 'Missing or invalid X-Partner-Key header' }),
-        { status: 401, headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } }
+        { status: 401, headers: { ...getCorsHeaders(req.headers.get('origin')), 'Content-Type': 'application/json' } }
       )
     }
 
@@ -136,14 +150,14 @@ serve(async (req: Request) => {
     if (partnerError || !partner) {
       return new Response(
         JSON.stringify({ error: 'Invalid API key' }),
-        { status: 401, headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } }
+        { status: 401, headers: { ...getCorsHeaders(req.headers.get('origin')), 'Content-Type': 'application/json' } }
       )
     }
 
     if (partner.status !== 'active') {
       return new Response(
         JSON.stringify({ error: `Partner account is ${partner.status}` }),
-        { status: 403, headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } }
+        { status: 403, headers: { ...getCorsHeaders(req.headers.get('origin')), 'Content-Type': 'application/json' } }
       )
     }
 
@@ -153,21 +167,21 @@ serve(async (req: Request) => {
     if (!body.offers || !Array.isArray(body.offers)) {
       return new Response(
         JSON.stringify({ error: 'Body must contain an "offers" array' }),
-        { status: 400, headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } }
+        { status: 400, headers: { ...getCorsHeaders(req.headers.get('origin')), 'Content-Type': 'application/json' } }
       )
     }
 
     if (body.offers.length === 0) {
       return new Response(
         JSON.stringify({ error: 'Offers array is empty' }),
-        { status: 400, headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } }
+        { status: 400, headers: { ...getCorsHeaders(req.headers.get('origin')), 'Content-Type': 'application/json' } }
       )
     }
 
     if (body.offers.length > MAX_OFFERS_PER_REQUEST) {
       return new Response(
         JSON.stringify({ error: `Maximum ${MAX_OFFERS_PER_REQUEST} offers per request` }),
-        { status: 400, headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } }
+        { status: 400, headers: { ...getCorsHeaders(req.headers.get('origin')), 'Content-Type': 'application/json' } }
       )
     }
 
@@ -190,7 +204,7 @@ serve(async (req: Request) => {
     if (validOffers.length === 0) {
       return new Response(
         JSON.stringify({ error: 'No valid offers in payload', details: errors }),
-        { status: 422, headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } }
+        { status: 422, headers: { ...getCorsHeaders(req.headers.get('origin')), 'Content-Type': 'application/json' } }
       )
     }
 
@@ -204,7 +218,7 @@ serve(async (req: Request) => {
       console.error('[ingest-partner-offers] Insert error:', insertError)
       return new Response(
         JSON.stringify({ error: 'Database insert failed', detail: insertError.message }),
-        { status: 500, headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } }
+        { status: 500, headers: { ...getCorsHeaders(req.headers.get('origin')), 'Content-Type': 'application/json' } }
       )
     }
 
@@ -217,14 +231,14 @@ serve(async (req: Request) => {
         rejected: errors.length,
         errors: errors.length > 0 ? errors : undefined,
       }),
-      { status: 201, headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } }
+      { status: 201, headers: { ...getCorsHeaders(req.headers.get('origin')), 'Content-Type': 'application/json' } }
     )
 
   } catch (err) {
     console.error('[ingest-partner-offers] Unhandled error:', err)
     return new Response(
       JSON.stringify({ error: 'Internal server error' }),
-      { status: 500, headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } }
+      { status: 500, headers: { ...getCorsHeaders(req.headers.get('origin')), 'Content-Type': 'application/json' } }
     )
   }
 })

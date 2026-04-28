@@ -1,10 +1,24 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.89.0'
 import { serve } from 'https://deno.land/std@0.208.0/http/server.ts'
 
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
+const CORS_BASE_HEADERS = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
+}
+
+const DEV_ORIGINS = new Set(['http://localhost:5173', 'http://127.0.0.1:5173'])
+
+function getAllowedOrigins() {
+  const siteUrl = (Deno.env.get('SITE_URL') ?? '').trim().replace(/\/+$/, '')
+  const allowed = new Set(DEV_ORIGINS)
+  if (siteUrl) allowed.add(siteUrl)
+  return allowed
+}
+
+function getCorsHeaders(origin: string | null) {
+  const allowed = getAllowedOrigins()
+  const allowOrigin = origin && allowed.has(origin) ? origin : 'null'
+  return { ...CORS_BASE_HEADERS, 'Access-Control-Allow-Origin': allowOrigin, 'Vary': 'Origin' }
 }
 
 const DEFAULT_DAYS = 30
@@ -15,10 +29,10 @@ type RequestBody = {
   days?: number
 }
 
-function jsonResponse(body: Record<string, unknown>, status = 200) {
+function jsonResponse(body: Record<string, unknown>, status = 200, origin: string | null = null) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+    headers: { ...getCorsHeaders(origin), 'Content-Type': 'application/json' },
   })
 }
 
@@ -51,9 +65,8 @@ function hasAdminClaim(user: { app_metadata?: Record<string, unknown> | null; us
   const appRoles = Array.isArray(user.app_metadata?.roles)
     ? user.app_metadata?.roles.map((entry) => String(entry).toLowerCase())
     : []
-  const userRole = String(user.user_metadata?.role ?? '').toLowerCase()
-
-  return appRole === 'admin' || appRoles.includes('admin') || userRole === 'admin'
+  // SECURITY: Do NOT check user_metadata here — it is client-writable and can be spoofed.
+  return appRole === 'admin' || appRoles.includes('admin')
 }
 
 async function isRequesterAdmin(
@@ -95,12 +108,14 @@ async function isRequesterAdmin(
 }
 
 serve(async (req) => {
+  const origin = req.headers.get('origin')
+
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: CORS_HEADERS })
+    return new Response(null, { status: 204, headers: getCorsHeaders(origin) })
   }
 
   if (req.method !== 'POST') {
-    return jsonResponse({ code: 'METHOD_NOT_ALLOWED', message: 'Use POST' }, 405)
+    return jsonResponse({ code: 'METHOD_NOT_ALLOWED', message: 'Use POST' }, 405, origin)
   }
 
   if (Deno.env.get('ALLOW_DEV_PREMIUM_GRANT') !== 'true') {
@@ -110,6 +125,7 @@ serve(async (req) => {
         message: 'grant-premium-dev is disabled. Set ALLOW_DEV_PREMIUM_GRANT=true in local/dev only.',
       },
       403,
+      origin,
     )
   }
 
@@ -119,12 +135,12 @@ serve(async (req) => {
     const supabaseServiceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
 
     if (!supabaseUrl || !supabaseAnonKey || !supabaseServiceRoleKey) {
-      return jsonResponse({ code: 'SERVER_MISCONFIG', message: 'Supabase env vars are missing' }, 500)
+      return jsonResponse({ code: 'SERVER_MISCONFIG', message: 'Supabase env vars are missing' }, 500, origin)
     }
 
     const token = getBearerToken(req.headers.get('Authorization'))
     if (!token) {
-      return jsonResponse({ code: 'UNAUTHORIZED', message: 'Authorization bearer token required' }, 401)
+      return jsonResponse({ code: 'UNAUTHORIZED', message: 'Authorization bearer token required' }, 401, origin)
     }
 
     const authClient = createClient(supabaseUrl, supabaseAnonKey, {
@@ -137,7 +153,7 @@ serve(async (req) => {
     } = await authClient.auth.getUser(token)
 
     if (authError || !user) {
-      return jsonResponse({ code: 'UNAUTHORIZED', message: 'Invalid or expired token' }, 401)
+      return jsonResponse({ code: 'UNAUTHORIZED', message: 'Invalid or expired token' }, 401, origin)
     }
 
     const userClient = createClient(supabaseUrl, supabaseAnonKey, {
@@ -151,19 +167,19 @@ serve(async (req) => {
 
     const admin = await isRequesterAdmin(userClient, user)
     if (!admin) {
-      return jsonResponse({ code: 'FORBIDDEN', message: 'Admin access required' }, 403)
+      return jsonResponse({ code: 'FORBIDDEN', message: 'Admin access required' }, 403, origin)
     }
 
     let body: RequestBody
     try {
       body = await req.json()
     } catch {
-      return jsonResponse({ code: 'BAD_REQUEST', message: 'Invalid JSON body' }, 400)
+      return jsonResponse({ code: 'BAD_REQUEST', message: 'Invalid JSON body' }, 400, origin)
     }
 
     const targetUserId = String(body.user_id ?? '').trim()
     if (!targetUserId || !isUuid(targetUserId)) {
-      return jsonResponse({ code: 'BAD_REQUEST', message: 'user_id must be a valid UUID' }, 400)
+      return jsonResponse({ code: 'BAD_REQUEST', message: 'user_id must be a valid UUID' }, 400, origin)
     }
 
     const days = normalizeDays(body.days)
@@ -185,11 +201,11 @@ serve(async (req) => {
 
     if (updateError) {
       console.error(`[grant-premium-dev] update failed by=${shortUserTag(user.id)} err=${updateError.message}`)
-      return jsonResponse({ code: 'DB_ERROR', message: 'Failed to grant premium' }, 500)
+      return jsonResponse({ code: 'DB_ERROR', message: 'Failed to grant premium' }, 500, origin)
     }
 
     if (!updated) {
-      return jsonResponse({ code: 'NOT_FOUND', message: 'Target profile was not found' }, 404)
+      return jsonResponse({ code: 'NOT_FOUND', message: 'Target profile was not found' }, 404, origin)
     }
 
     console.log(
@@ -205,10 +221,10 @@ serve(async (req) => {
         premium_expires_at: updated.premium_expires_at,
         days,
       },
-    })
+    }, 200, origin)
   } catch (error) {
     console.error('[grant-premium-dev] unhandled error', error)
-    return jsonResponse({ code: 'INTERNAL_ERROR', message: 'Failed to grant premium' }, 500)
+    return jsonResponse({ code: 'INTERNAL_ERROR', message: 'Failed to grant premium' }, 500, origin)
   }
 })
 

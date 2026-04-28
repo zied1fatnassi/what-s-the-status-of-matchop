@@ -1,9 +1,23 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
-const corsHeaders = {
-    'Access-Control-Allow-Origin': '*',
+const CORS_BASE_HEADERS = {
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+}
+
+const DEV_ORIGINS = new Set(['http://localhost:5173', 'http://127.0.0.1:5173'])
+
+function getAllowedOrigins() {
+    const siteUrl = (Deno.env.get('SITE_URL') ?? '').trim().replace(/\/+$/, '')
+    const allowed = new Set(DEV_ORIGINS)
+    if (siteUrl) allowed.add(siteUrl)
+    return allowed
+}
+
+function getCorsHeaders(origin) {
+    const allowed = getAllowedOrigins()
+    const allowOrigin = origin && allowed.has(origin) ? origin : 'null'
+    return { ...CORS_BASE_HEADERS, 'Access-Control-Allow-Origin': allowOrigin, 'Vary': 'Origin' }
 }
 
 function buildFallbackDescription(
@@ -40,7 +54,7 @@ We are hiring a **${jobTitle}**${normalizedDepartment}. This ${normalizedType.to
 serve(async (req) => {
     // Handle CORS preflight
     if (req.method === 'OPTIONS') {
-        return new Response('ok', { headers: corsHeaders })
+        return new Response(null, { headers: getCorsHeaders(req.headers.get('origin')) })
     }
 
     try {
@@ -48,7 +62,7 @@ serve(async (req) => {
         const authHeader = req.headers.get('Authorization')
         if (!authHeader) {
             return new Response(JSON.stringify({ success: false, error: 'Authorization required' }), {
-                status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+                status: 401, headers: { ...getCorsHeaders(req.headers.get('origin')), 'Content-Type': 'application/json' }
             })
         }
         const supabaseClient = createClient(
@@ -59,7 +73,7 @@ serve(async (req) => {
         const { data: { user }, error: authError } = await supabaseClient.auth.getUser()
         if (authError || !user) {
             return new Response(JSON.stringify({ success: false, error: 'Invalid token' }), {
-                status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+                status: 401, headers: { ...getCorsHeaders(req.headers.get('origin')), 'Content-Type': 'application/json' }
             })
         }
         // --- End auth check ---
@@ -72,7 +86,7 @@ serve(async (req) => {
                 success: false,
                 error: 'Job title is required'
             }), {
-                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+                headers: { ...getCorsHeaders(req.headers.get('origin')), 'Content-Type': 'application/json' },
                 status: 400,
             })
         }
@@ -86,7 +100,7 @@ serve(async (req) => {
                 provider: 'local',
                 warning: 'OPENROUTER_API_KEY is not configured'
             }), {
-                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+                headers: { ...getCorsHeaders(req.headers.get('origin')), 'Content-Type': 'application/json' },
                 status: 200,
             })
         }
@@ -136,7 +150,7 @@ Write in a ${tone} but energetic tone that appeals to young professionals.`
                 provider: 'local',
                 warning: `OpenRouter API error: ${response.status}`
             }), {
-                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+                headers: { ...getCorsHeaders(req.headers.get('origin')), 'Content-Type': 'application/json' },
                 status: 200,
             })
         }
@@ -152,7 +166,7 @@ Write in a ${tone} but energetic tone that appeals to young professionals.`
                 provider: 'local',
                 warning: 'AI response was empty'
             }), {
-                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+                headers: { ...getCorsHeaders(req.headers.get('origin')), 'Content-Type': 'application/json' },
                 status: 200,
             })
         }
@@ -161,7 +175,7 @@ Write in a ${tone} but energetic tone that appeals to young professionals.`
             success: true,
             description
         }), {
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            headers: { ...getCorsHeaders(req.headers.get('origin')), 'Content-Type': 'application/json' },
             status: 200,
         })
 
@@ -171,7 +185,7 @@ Write in a ${tone} but energetic tone that appeals to young professionals.`
             success: false,
             error: error instanceof Error ? error.message : 'An unexpected error occurred'
         }), {
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            headers: { ...getCorsHeaders(req.headers.get('origin')), 'Content-Type': 'application/json' },
             status: 500,
         })
     }

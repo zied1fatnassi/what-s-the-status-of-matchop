@@ -1,10 +1,24 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.89.0'
 import { serve } from 'https://deno.land/std@0.208.0/http/server.ts'
 
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
+const CORS_BASE_HEADERS = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
+}
+
+const DEV_ORIGINS = new Set(['http://localhost:5173', 'http://127.0.0.1:5173'])
+
+function getAllowedOrigins() {
+  const siteUrl = (Deno.env.get('SITE_URL') ?? '').trim().replace(/\/+$/, '')
+  const allowed = new Set(DEV_ORIGINS)
+  if (siteUrl) allowed.add(siteUrl)
+  return allowed
+}
+
+function getCorsHeaders(origin: string | null) {
+  const allowed = getAllowedOrigins()
+  const allowOrigin = origin && allowed.has(origin) ? origin : 'null'
+  return { ...CORS_BASE_HEADERS, 'Access-Control-Allow-Origin': allowOrigin, 'Vary': 'Origin' }
 }
 
 const D17_PHONE = '+21652460278'
@@ -20,10 +34,10 @@ type RequestBody = {
 
 type PlanId = keyof typeof PRICING
 
-function jsonResponse(body: Record<string, unknown>, status = 200) {
+function jsonResponse(body: Record<string, unknown>, status = 200, origin: string | null = null) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+    headers: { ...getCorsHeaders(origin), 'Content-Type': 'application/json' },
   })
 }
 
@@ -40,24 +54,26 @@ function parsePlanId(raw: unknown): PlanId | null {
 }
 
 serve(async (req) => {
+  const origin = req.headers.get('origin')
+
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: CORS_HEADERS })
+    return new Response(null, { status: 204, headers: getCorsHeaders(origin) })
   }
 
   if (req.method !== 'POST') {
-    return jsonResponse({ code: 'METHOD_NOT_ALLOWED', message: 'Use POST' }, 405)
+    return jsonResponse({ code: 'METHOD_NOT_ALLOWED', message: 'Use POST' }, 405, origin)
   }
 
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')
     const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')
     if (!supabaseUrl || !supabaseAnonKey) {
-      return jsonResponse({ code: 'SERVER_MISCONFIG', message: 'Supabase env vars are missing' }, 500)
+      return jsonResponse({ code: 'SERVER_MISCONFIG', message: 'Supabase env vars are missing' }, 500, origin)
     }
 
     const token = getBearerToken(req.headers.get('Authorization'))
     if (!token) {
-      return jsonResponse({ code: 'UNAUTHORIZED', message: 'Authorization bearer token required' }, 401)
+      return jsonResponse({ code: 'UNAUTHORIZED', message: 'Authorization bearer token required' }, 401, origin)
     }
 
     const authClient = createClient(supabaseUrl, supabaseAnonKey, {
@@ -70,19 +86,19 @@ serve(async (req) => {
     } = await authClient.auth.getUser(token)
 
     if (authError || !user) {
-      return jsonResponse({ code: 'UNAUTHORIZED', message: 'Invalid or expired token' }, 401)
+      return jsonResponse({ code: 'UNAUTHORIZED', message: 'Invalid or expired token' }, 401, origin)
     }
 
     let body: RequestBody
     try {
       body = await req.json()
     } catch {
-      return jsonResponse({ code: 'BAD_REQUEST', message: 'Invalid JSON body' }, 400)
+      return jsonResponse({ code: 'BAD_REQUEST', message: 'Invalid JSON body' }, 400, origin)
     }
 
     const planId = parsePlanId(body.plan_id)
     if (!planId) {
-      return jsonResponse({ code: 'BAD_REQUEST', message: 'plan_id must be "monthly" or "yearly"' }, 400)
+      return jsonResponse({ code: 'BAD_REQUEST', message: 'plan_id must be "monthly" or "yearly"' }, 400, origin)
     }
 
     const userClient = createClient(supabaseUrl, supabaseAnonKey, {
@@ -104,7 +120,7 @@ serve(async (req) => {
 
     if (cooldownRes.error) {
       console.error('[create-d17-payment-request] cooldown check failed', cooldownRes.error)
-      return jsonResponse({ code: 'DB_ERROR', message: 'Failed to validate payment cooldown' }, 500)
+      return jsonResponse({ code: 'DB_ERROR', message: 'Failed to validate payment cooldown' }, 500, origin)
     }
 
     if ((cooldownRes.data ?? 0) > 0) {
@@ -115,6 +131,7 @@ serve(async (req) => {
           cooldown_minutes: cooldownMinutes,
         },
         429,
+        origin,
       )
     }
 
@@ -148,11 +165,12 @@ serve(async (req) => {
             payment_request: pendingRes.data ?? null,
           },
           409,
+          origin,
         )
       }
 
       console.error('[create-d17-payment-request] insert failed', insertRes.error)
-      return jsonResponse({ code: 'DB_ERROR', message: 'Failed to create payment request' }, 500)
+      return jsonResponse({ code: 'DB_ERROR', message: 'Failed to create payment request' }, 500, origin)
     }
 
     const paymentRequest = insertRes.data
@@ -166,9 +184,9 @@ serve(async (req) => {
       status: paymentRequest.status,
       created_at: paymentRequest.created_at,
       plan_id: paymentRequest.plan_id,
-    })
+    }, 200, origin)
   } catch (error) {
     console.error('[create-d17-payment-request] unhandled error', error)
-    return jsonResponse({ code: 'INTERNAL_ERROR', message: 'Failed to create payment request' }, 500)
+    return jsonResponse({ code: 'INTERNAL_ERROR', message: 'Failed to create payment request' }, 500, origin)
   }
 })

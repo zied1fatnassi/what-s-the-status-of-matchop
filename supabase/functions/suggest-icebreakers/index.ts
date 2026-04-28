@@ -1,14 +1,28 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
-const corsHeaders = {
-    'Access-Control-Allow-Origin': '*',
+const CORS_BASE_HEADERS = {
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+}
+
+const DEV_ORIGINS = new Set(['http://localhost:5173', 'http://127.0.0.1:5173'])
+
+function getAllowedOrigins() {
+    const siteUrl = (Deno.env.get('SITE_URL') ?? '').trim().replace(/\/+$/, '')
+    const allowed = new Set(DEV_ORIGINS)
+    if (siteUrl) allowed.add(siteUrl)
+    return allowed
+}
+
+function getCorsHeaders(origin) {
+    const allowed = getAllowedOrigins()
+    const allowOrigin = origin && allowed.has(origin) ? origin : 'null'
+    return { ...CORS_BASE_HEADERS, 'Access-Control-Allow-Origin': allowOrigin, 'Vary': 'Origin' }
 }
 
 serve(async (req) => {
     if (req.method === 'OPTIONS') {
-        return new Response('ok', { headers: corsHeaders })
+        return new Response(null, { headers: getCorsHeaders(req.headers.get('origin')) })
     }
 
     try {
@@ -16,7 +30,7 @@ serve(async (req) => {
 
         if (!match_id) {
             return new Response(JSON.stringify({ error: 'Missing match_id' }), {
-                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+                headers: { ...getCorsHeaders(req.headers.get('origin')), 'Content-Type': 'application/json' },
                 status: 400,
             })
         }
@@ -29,7 +43,7 @@ serve(async (req) => {
         const authHeader = req.headers.get('Authorization')
         if (!authHeader) {
             return new Response(JSON.stringify({ error: 'Missing authorization header' }), {
-                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+                headers: { ...getCorsHeaders(req.headers.get('origin')), 'Content-Type': 'application/json' },
                 status: 401,
             })
         }
@@ -41,7 +55,7 @@ serve(async (req) => {
         const { data: { user }, error: authError } = await supabaseUser.auth.getUser()
         if (authError || !user) {
             return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+                headers: { ...getCorsHeaders(req.headers.get('origin')), 'Content-Type': 'application/json' },
                 status: 401,
             })
         }
@@ -75,7 +89,7 @@ serve(async (req) => {
 
         if (matchError || !match) {
             return new Response(JSON.stringify({ error: 'Match not found' }), {
-                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+                headers: { ...getCorsHeaders(req.headers.get('origin')), 'Content-Type': 'application/json' },
                 status: 404,
             })
         }
@@ -86,7 +100,7 @@ serve(async (req) => {
 
         if (!isStudent && !isCompany) {
             return new Response(JSON.stringify({ error: 'Forbidden: You are not part of this match' }), {
-                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+                headers: { ...getCorsHeaders(req.headers.get('origin')), 'Content-Type': 'application/json' },
                 status: 403,
             })
         }
@@ -149,13 +163,13 @@ serve(async (req) => {
         }
 
         return new Response(JSON.stringify({ suggestions }), {
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            headers: { ...getCorsHeaders(req.headers.get('origin')), 'Content-Type': 'application/json' },
             status: 200,
         })
 
     } catch (error) {
         return new Response(JSON.stringify({ error: error.message }), {
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            headers: { ...getCorsHeaders(req.headers.get('origin')), 'Content-Type': 'application/json' },
             status: 500,
         })
     }

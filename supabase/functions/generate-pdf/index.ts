@@ -14,32 +14,48 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import { StudentCV } from './templates/StudentCV.tsx'
 
 // ─── CORS ────────────────────────────────────────────────────────────
-const corsHeaders = {
-    'Access-Control-Allow-Origin': '*',
+const CORS_BASE_HEADERS = {
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
 }
 
-function jsonResponse(body: Record<string, unknown>, status = 200) {
+const DEV_ORIGINS = new Set(['http://localhost:5173', 'http://127.0.0.1:5173'])
+
+function getAllowedOrigins() {
+    const siteUrl = (Deno.env.get('SITE_URL') ?? '').trim().replace(/\/+$/, '')
+    const allowed = new Set(DEV_ORIGINS)
+    if (siteUrl) allowed.add(siteUrl)
+    return allowed
+}
+
+function getCorsHeaders(origin: string | null) {
+    const allowed = getAllowedOrigins()
+    const allowOrigin = origin && allowed.has(origin) ? origin : 'null'
+    return { ...CORS_BASE_HEADERS, 'Access-Control-Allow-Origin': allowOrigin, 'Vary': 'Origin' }
+}
+
+function jsonResponse(body: Record<string, unknown>, status = 200, origin: string | null = null) {
     return new Response(JSON.stringify(body), {
         status,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: { ...getCorsHeaders(origin), 'Content-Type': 'application/json' },
     })
 }
 
-function errorResponse(message: string, status = 400) {
-    return jsonResponse({ success: false, error: message }, status)
+function errorResponse(message: string, status = 400, origin: string | null = null) {
+    return jsonResponse({ success: false, error: message }, status, origin)
 }
 
 // ─── Main Handler ────────────────────────────────────────────────────
 serve(async (req) => {
+    const origin = req.headers.get('origin')
+
     // CORS preflight
     if (req.method === 'OPTIONS') {
-        return new Response('ok', { headers: corsHeaders })
+        return new Response(null, { status: 204, headers: getCorsHeaders(origin) })
     }
 
     if (req.method !== 'POST') {
-        return errorResponse('Method not allowed', 405)
+        return errorResponse('Method not allowed', 405, origin)
     }
 
     try {
@@ -47,14 +63,14 @@ serve(async (req) => {
         const { profile_id, profile_type } = await req.json()
 
         if (!profile_id) {
-            return errorResponse('Missing required field: profile_id')
+            return errorResponse('Missing required field: profile_id', 400, origin)
         }
 
         // Default to student-cv; future: company-report, etc.
         const pdfType = profile_type || 'student-cv'
 
         if (pdfType !== 'student-cv') {
-            return errorResponse(`Unsupported profile_type: "${pdfType}". Only "student-cv" is currently supported.`)
+            return errorResponse(`Unsupported profile_type: "${pdfType}". Only "student-cv" is currently supported.`, 400, origin)
         }
 
         // ── 2. Create Service-Role Client (bypasses RLS for data fetch + upload) ──
@@ -62,7 +78,7 @@ serve(async (req) => {
         const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 
         if (!supabaseUrl || !supabaseServiceKey) {
-            return errorResponse('Server configuration error: missing Supabase credentials', 500)
+            return errorResponse('Server configuration error: missing Supabase credentials', 500, origin)
         }
 
         const supabase = createClient(supabaseUrl, supabaseServiceKey)
@@ -76,12 +92,12 @@ serve(async (req) => {
 
         if (profileError || !profile) {
             console.error('Profile fetch error:', profileError)
-            return errorResponse('Profile not found', 404)
+            return errorResponse('Profile not found', 404, origin)
         }
 
         // Verify this is a student profile
         if (profile.role !== 'student') {
-            return errorResponse('PDF generation is currently only supported for student profiles')
+            return errorResponse('PDF generation is currently only supported for student profiles', 400, origin)
         }
 
         const { data: student, error: studentError } = await supabase
@@ -92,7 +108,7 @@ serve(async (req) => {
 
         if (studentError || !student) {
             console.error('Student fetch error:', studentError)
-            return errorResponse('Student profile data not found', 404)
+            return errorResponse('Student profile data not found', 404, origin)
         }
 
         // ── 4. Fetch Related Data (experiences, education, certifications) ──
@@ -157,7 +173,7 @@ serve(async (req) => {
 
         if (uploadError) {
             console.error('Storage upload error:', uploadError)
-            return errorResponse(`Failed to upload PDF: ${uploadError.message}`, 500)
+            return errorResponse(`Failed to upload PDF: ${uploadError.message}`, 500, origin)
         }
 
         // ── 7. Create Signed URL (15 minutes) ──
@@ -167,7 +183,7 @@ serve(async (req) => {
 
         if (signedUrlError || !signedUrlData?.signedUrl) {
             console.error('Signed URL error:', signedUrlError)
-            return errorResponse('Failed to create download link', 500)
+            return errorResponse('Failed to create download link', 500, origin)
         }
 
         console.log(`[generate-pdf] ✅ PDF generated and uploaded for ${profile_id}`)
@@ -179,13 +195,14 @@ serve(async (req) => {
             expires_in: 900,
             path: storagePath,
             profile_name: student.display_name,
-        })
+        }, 200, origin)
 
     } catch (error) {
         console.error('[generate-pdf] Unexpected error:', error)
         return errorResponse(
             error instanceof Error ? error.message : 'An unexpected error occurred',
-            500
+            500,
+            origin,
         )
     }
 })

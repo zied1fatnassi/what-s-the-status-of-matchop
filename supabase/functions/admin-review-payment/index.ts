@@ -1,10 +1,27 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.89.0'
 import { serve } from 'https://deno.land/std@0.208.0/http/server.ts'
 
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
+const CORS_BASE_HEADERS = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
+}
+
+const DEV_ORIGINS = new Set([
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+])
+
+function getAllowedOrigins() {
+  const siteUrl = (Deno.env.get('SITE_URL') ?? '').trim().replace(/\/+$/, '')
+  const allowed = new Set(DEV_ORIGINS)
+  if (siteUrl) allowed.add(siteUrl)
+  return allowed
+}
+
+function getCorsHeaders(origin: string | null) {
+  const allowed = getAllowedOrigins()
+  const allowOrigin = origin && allowed.has(origin) ? origin : 'null'
+  return { ...CORS_BASE_HEADERS, 'Access-Control-Allow-Origin': allowOrigin, 'Vary': 'Origin' }
 }
 
 type ReviewAction = 'approve' | 'reject' | 'revert'
@@ -24,10 +41,10 @@ type AdminActionResponse = {
   profile?: Record<string, unknown> | null
 }
 
-function jsonResponse(body: Record<string, unknown>, status = 200) {
+function jsonResponse(body: Record<string, unknown>, status = 200, origin: string | null = null) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+    headers: { ...getCorsHeaders(origin), 'Content-Type': 'application/json' },
   })
 }
 
@@ -43,9 +60,9 @@ function hasAdminClaim(user: { app_metadata?: Record<string, unknown> | null; us
   const appRoles = Array.isArray(user.app_metadata?.roles)
     ? user.app_metadata?.roles.map((entry) => String(entry).toLowerCase())
     : []
-  const userRole = String(user.user_metadata?.role ?? '').toLowerCase()
-
-  return appRole === 'admin' || appRoles.includes('admin') || userRole === 'admin'
+  // SECURITY: Do NOT check user_metadata here — it is client-writable and can be spoofed.
+  // Only app_metadata (server-writable) and the user_profiles DB table are trusted sources.
+  return appRole === 'admin' || appRoles.includes('admin')
 }
 
 async function isRequesterAdmin(
@@ -99,12 +116,14 @@ function mapRpcErrorToStatus(errorCode: string | null | undefined) {
 }
 
 serve(async (req) => {
+  const origin = req.headers.get('origin')
+
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: CORS_HEADERS })
+    return new Response(null, { status: 204, headers: getCorsHeaders(origin) })
   }
 
   if (req.method !== 'POST') {
-    return jsonResponse({ code: 'METHOD_NOT_ALLOWED', message: 'Use POST' }, 405)
+    return jsonResponse({ code: 'METHOD_NOT_ALLOWED', message: 'Use POST' }, 405, origin)
   }
 
   try {
@@ -113,12 +132,12 @@ serve(async (req) => {
     const supabaseServiceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
 
     if (!supabaseUrl || !supabaseAnonKey || !supabaseServiceRoleKey) {
-      return jsonResponse({ code: 'SERVER_MISCONFIG', message: 'Supabase env vars are missing' }, 500)
+      return jsonResponse({ code: 'SERVER_MISCONFIG', message: 'Supabase env vars are missing' }, 500, origin)
     }
 
     const token = getBearerToken(req.headers.get('Authorization'))
     if (!token) {
-      return jsonResponse({ code: 'UNAUTHORIZED', message: 'Authorization bearer token required' }, 401)
+      return jsonResponse({ code: 'UNAUTHORIZED', message: 'Authorization bearer token required' }, 401, origin)
     }
 
     const authClient = createClient(supabaseUrl, supabaseAnonKey, {
@@ -131,7 +150,7 @@ serve(async (req) => {
     } = await authClient.auth.getUser(token)
 
     if (authError || !user) {
-      return jsonResponse({ code: 'UNAUTHORIZED', message: 'Invalid or expired token' }, 401)
+      return jsonResponse({ code: 'UNAUTHORIZED', message: 'Invalid or expired token' }, 401, origin)
     }
 
     const userClient = createClient(supabaseUrl, supabaseAnonKey, {
@@ -143,14 +162,14 @@ serve(async (req) => {
 
     const isAdmin = await isRequesterAdmin(userClient, user)
     if (!isAdmin) {
-      return jsonResponse({ code: 'FORBIDDEN', message: 'Admin access required' }, 403)
+      return jsonResponse({ code: 'FORBIDDEN', message: 'Admin access required' }, 403, origin)
     }
 
     let body: RequestBody
     try {
       body = await req.json()
     } catch {
-      return jsonResponse({ code: 'BAD_REQUEST', message: 'Invalid JSON body' }, 400)
+      return jsonResponse({ code: 'BAD_REQUEST', message: 'Invalid JSON body' }, 400, origin)
     }
 
     const paymentRequestId = String(body.paymentRequestId ?? '').trim()
@@ -158,11 +177,11 @@ serve(async (req) => {
     const adminNote = body.admin_note ? String(body.admin_note).trim() : null
 
     if (!paymentRequestId || !isUuid(paymentRequestId)) {
-      return jsonResponse({ code: 'BAD_REQUEST', message: 'paymentRequestId must be a valid UUID' }, 400)
+      return jsonResponse({ code: 'BAD_REQUEST', message: 'paymentRequestId must be a valid UUID' }, 400, origin)
     }
 
     if (action !== 'approve' && action !== 'reject' && action !== 'revert') {
-      return jsonResponse({ code: 'BAD_REQUEST', message: 'action must be "approve", "reject", or "revert"' }, 400)
+      return jsonResponse({ code: 'BAD_REQUEST', message: 'action must be "approve", "reject", or "revert"' }, 400, origin)
     }
 
     const serviceClient = createClient(supabaseUrl, supabaseServiceRoleKey, {
@@ -178,7 +197,7 @@ serve(async (req) => {
 
     if (rpcRes.error) {
       console.error('[admin-review-payment] failed to apply admin action', rpcRes.error)
-      return jsonResponse({ code: 'DB_ERROR', message: 'Failed to review payment request' }, 500)
+      return jsonResponse({ code: 'DB_ERROR', message: 'Failed to review payment request' }, 500, origin)
     }
 
     const rpcData = (rpcRes.data ?? null) as AdminActionResponse | null
@@ -188,6 +207,7 @@ serve(async (req) => {
       return jsonResponse(
         { code: errorCode, message },
         mapRpcErrorToStatus(errorCode),
+        origin,
       )
     }
 
@@ -206,9 +226,9 @@ serve(async (req) => {
       reviewedBy: paymentRequest?.reviewed_by ?? user.id,
       reviewedAt: paymentRequest?.reviewed_at ?? null,
       premiumExpiresAt: profile?.premium_expires_at ?? null,
-    })
+    }, 200, origin)
   } catch (error) {
     console.error('[admin-review-payment] unhandled error', error)
-    return jsonResponse({ code: 'INTERNAL_ERROR', message: 'Failed to review payment request' }, 500)
+    return jsonResponse({ code: 'INTERNAL_ERROR', message: 'Failed to review payment request' }, 500, origin)
   }
 })

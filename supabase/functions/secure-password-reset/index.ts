@@ -235,8 +235,13 @@ async function handleRequestReset(supabase, body, req, origin) {
   }
 
   // --- Check if user exists (silently — never expose this to the client) ---
-  const { data: userData } = await supabase.auth.admin.listUsers()
-  const userExists = userData?.users?.some(u => u.email?.toLowerCase() === normalizedEmail)
+  // SECURITY FIX: Use filter instead of loading ALL users into memory
+  const { data: matchedUsers } = await supabase.auth.admin.listUsers({
+    filter: `email.eq.${normalizedEmail}`,
+    page: 1,
+    perPage: 1,
+  })
+  const userExists = (matchedUsers?.users?.length ?? 0) > 0
 
   if (!userExists) {
     // User doesn't exist — return same response to prevent enumeration
@@ -406,8 +411,13 @@ async function handleResetPassword(supabase, body, origin) {
   }
 
   // --- Find the user and update password ---
-  const { data: userData } = await supabase.auth.admin.listUsers()
-  const targetUser = userData?.users?.find(u => u.email?.toLowerCase() === normalizedEmail)
+  // SECURITY FIX: Use filter instead of loading ALL users into memory
+  const { data: matchedUsers } = await supabase.auth.admin.listUsers({
+    filter: `email.eq.${normalizedEmail}`,
+    page: 1,
+    perPage: 1,
+  })
+  const targetUser = matchedUsers?.users?.[0] ?? null
 
   if (!targetUser) {
     return jsonResponse({ error: 'User not found' }, 404, origin)

@@ -65,7 +65,7 @@ REVOKE ALL ON TABLE matches FROM anon;
 REVOKE ALL ON TABLE messages FROM anon;
 
 -- Re-grant proper access to authenticated role
-GRANT SELECT, INSERT, UPDATE ON TABLE profiles TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE profiles TO authenticated;
 GRANT SELECT, INSERT, UPDATE ON TABLE students TO authenticated;
 GRANT SELECT, INSERT, UPDATE ON TABLE companies TO authenticated;
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE offers TO authenticated;
@@ -87,6 +87,10 @@ CREATE POLICY "profiles_insert_own" ON profiles FOR INSERT
 
 CREATE POLICY "profiles_update_own" ON profiles FOR UPDATE
     TO authenticated USING (auth.uid() = id) WITH CHECK (auth.uid() = id);
+
+-- GDPR: Allow users to delete their own profile (account deletion)
+CREATE POLICY "profiles_delete_own" ON profiles FOR DELETE
+    TO authenticated USING (auth.uid() = id);
 
 -- ---- STUDENTS ----
 CREATE POLICY "students_select" ON students FOR SELECT
@@ -141,10 +145,10 @@ CREATE POLICY "matches_select_participant" ON matches FOR SELECT
         student_id = auth.uid() OR company_id = auth.uid()
     );
 
-CREATE POLICY "matches_insert_trigger" ON matches FOR INSERT
-    TO authenticated WITH CHECK (
-        student_id = auth.uid() OR company_id = auth.uid()
-    );
+-- SECURITY: Only the backend (service_role via Edge Functions/triggers) should create
+-- matches. Allowing either party to INSERT enables fake match creation.
+CREATE POLICY "matches_insert_service_only" ON matches FOR INSERT
+    TO service_role WITH CHECK (true);
 
 CREATE POLICY "matches_update_participant" ON matches FOR UPDATE
     TO authenticated USING (

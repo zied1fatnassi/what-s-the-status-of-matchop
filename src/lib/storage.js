@@ -1,5 +1,49 @@
 import { supabase } from './supabase'
 
+// ============================================
+// FILE UPLOAD SECURITY
+// ============================================
+
+const ALLOWED_IMAGE_MIMES = new Set(['image/png', 'image/jpeg', 'image/webp', 'image/gif'])
+const ALLOWED_IMAGE_EXTS = new Set(['png', 'jpg', 'jpeg', 'webp', 'gif'])
+const ALLOWED_CV_MIMES = new Set(['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'])
+const ALLOWED_CV_EXTS = new Set(['pdf', 'doc', 'docx'])
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024  // 5MB
+const MAX_CV_SIZE = 10 * 1024 * 1024    // 10MB
+
+/**
+ * Validate file type and size before upload.
+ * @param {File} file
+ * @param {Set<string>} allowedMimes
+ * @param {Set<string>} allowedExts
+ * @param {number} maxSize
+ * @throws {Error} if validation fails
+ */
+function validateFile(file, allowedMimes, allowedExts, maxSize) {
+    if (!file || !(file instanceof File)) {
+        throw new Error('Invalid file object')
+    }
+    if (file.size > maxSize) {
+        throw new Error(`File too large. Maximum size is ${Math.round(maxSize / 1024 / 1024)}MB`)
+    }
+    const ext = (file.name.split('.').pop() || '').toLowerCase()
+    if (!allowedExts.has(ext)) {
+        throw new Error(`File type .${ext} is not allowed. Allowed: ${[...allowedExts].join(', ')}`)
+    }
+    if (file.type && !allowedMimes.has(file.type)) {
+        throw new Error(`MIME type ${file.type} is not allowed. Allowed: ${[...allowedMimes].join(', ')}`)
+    }
+}
+
+/**
+ * Sanitize filename — strip path traversal and special chars
+ * @param {string} name
+ * @returns {string}
+ */
+function sanitizeFilename(name) {
+    return name.replace(/[^a-zA-Z0-9._-]/g, '_').replace(/\.{2,}/g, '.')
+}
+
 /**
  * Upload user avatar to Supabase Storage
  * @param {string} userId - User ID
@@ -7,12 +51,13 @@ import { supabase } from './supabase'
  * @returns {Promise<string>} Public URL of uploaded avatar
  */
 export async function uploadAvatar(userId, file) {
-    const fileExt = file.name.split('.').pop()
+    validateFile(file, ALLOWED_IMAGE_MIMES, ALLOWED_IMAGE_EXTS, MAX_IMAGE_SIZE)
+    const fileExt = (file.name.split('.').pop() || 'png').toLowerCase()
     const fileName = `${userId}.${fileExt}`
 
     const { data: _data, error } = await supabase.storage
         .from('avatars')
-        .upload(fileName, file, { upsert: true })
+        .upload(fileName, file, { upsert: true, contentType: file.type })
 
     if (error) throw error
 
@@ -30,6 +75,7 @@ export async function uploadAvatar(userId, file) {
  * @returns {Promise<string>} File path in the cvs bucket (NOT a URL)
  */
 export async function uploadCV(userId, file) {
+    validateFile(file, ALLOWED_CV_MIMES, ALLOWED_CV_EXTS, MAX_CV_SIZE)
     const rawExt = (file.name.split('.').pop() || '').toLowerCase()
     const fileExt = ['pdf', 'doc', 'docx'].includes(rawExt) ? rawExt : 'pdf'
     const fileName = `${userId}/cv.${fileExt}`
@@ -113,7 +159,8 @@ export async function getSignedCVUrl(cvPath, expiresIn = 3600) {
  * @returns {Promise<string>} Public URL of uploaded logo
  */
 export async function uploadCompanyLogo(companyId, file) {
-    const fileExt = file.name.split('.').pop()
+    validateFile(file, ALLOWED_IMAGE_MIMES, ALLOWED_IMAGE_EXTS, MAX_IMAGE_SIZE)
+    const fileExt = (file.name.split('.').pop() || 'png').toLowerCase()
     const fileName = `${companyId}.${fileExt}`
 
     const { data: _data, error } = await supabase.storage
