@@ -1,11 +1,13 @@
+"""Workable ATS scraper using their JSON API."""
 from __future__ import annotations
 
+import time
 from urllib.parse import urlparse
 
 import httpx
 
 from .base import BaseSourceScraper, ScrapeRunResult
-from ..normalizers import RawJobPosting
+from ..extractors.models import RawJobPosting
 
 TYPE_LABELS = {
     "full": "Full-time",
@@ -29,20 +31,25 @@ class WorkableScraper(BaseSourceScraper):
         return None
 
     def scrape(self) -> ScrapeRunResult:
+        """Override base scrape to use Workable's JSON API directly."""
         result = ScrapeRunResult()
 
         with httpx.Client(timeout=self.timeout, follow_redirects=True) as client:
             for seed_url in self.seed_urls:
-                account_subdomain = self.extract_account_subdomain(seed_url)
+                account_subdomain = self._extract_account_subdomain(seed_url)
                 if not account_subdomain:
                     self.logger.warning("Could not infer Workable account from %s", seed_url)
                     continue
 
-                company_profile = self.fetch_account_profile(client, account_subdomain)
+                company_profile = self._fetch_account_profile(client, account_subdomain)
                 if company_profile is None:
                     continue
 
                 self.logger.info("Fetching Workable API jobs for %s", account_subdomain)
+
+                # Politeness delay
+                self._polite_delay()
+
                 listing_response = client.post(
                     f"https://apply.workable.com/api/v3/accounts/{account_subdomain}/jobs",
                     json={},
@@ -62,6 +69,10 @@ class WorkableScraper(BaseSourceScraper):
                         continue
 
                     original_url = f"https://apply.workable.com/{account_subdomain}/j/{shortcode}/"
+
+                    # Politeness delay between detail requests
+                    self._polite_delay()
+
                     detail_response = client.get(
                         f"https://apply.workable.com/api/v2/accounts/{account_subdomain}/jobs/{shortcode}",
                         params={"lng": listing.get("language") or "en"},
@@ -80,7 +91,7 @@ class WorkableScraper(BaseSourceScraper):
                         )
                         continue
 
-                    job = self.parse_job_payload(
+                    job = self._parse_job_payload(
                         account_subdomain=account_subdomain,
                         seed_url=seed_url,
                         company_profile=company_profile,
@@ -92,13 +103,13 @@ class WorkableScraper(BaseSourceScraper):
 
         return result
 
-    def extract_account_subdomain(self, seed_url: str) -> str | None:
+    def _extract_account_subdomain(self, seed_url: str) -> str | None:
         path_parts = [part for part in urlparse(seed_url).path.split("/") if part]
         if not path_parts:
             return None
         return path_parts[0]
 
-    def fetch_account_profile(self, client: httpx.Client, account_subdomain: str) -> dict | None:
+    def _fetch_account_profile(self, client: httpx.Client, account_subdomain: str) -> dict | None:
         response = client.get(
             f"https://apply.workable.com/api/v1/accounts/{account_subdomain}",
             params={"full": "true"},
@@ -112,7 +123,7 @@ class WorkableScraper(BaseSourceScraper):
             return None
         return response.json()
 
-    def parse_job_payload(
+    def _parse_job_payload(
         self,
         *,
         account_subdomain: str,
@@ -121,15 +132,15 @@ class WorkableScraper(BaseSourceScraper):
         listing: dict,
         detail: dict,
     ) -> RawJobPosting | None:
-        title = self.clean_text(detail.get("title"))
-        shortcode = self.clean_text(detail.get("shortcode"))
+        title = self._clean_text(detail.get("title"))
+        shortcode = self._clean_text(detail.get("shortcode"))
         if not title or not shortcode:
             return None
 
         location = detail.get("location") or listing.get("location") or {}
-        location_display = self.clean_text(location.get("display")) if isinstance(location, dict) else None
+        location_display = self._clean_text(location.get("display")) if isinstance(location, dict) else None
         if not location_display and isinstance(location, dict):
-            location_display = self.clean_text(
+            location_display = self._clean_text(
                 ", ".join(
                     part
                     for part in [
@@ -142,9 +153,9 @@ class WorkableScraper(BaseSourceScraper):
             )
 
         logo_url = company_profile.get("logo")
-        company_name = self.clean_text(company_profile.get("name")) or self.company_hint_from_url(seed_url)
-        job_type = TYPE_LABELS.get(str(detail.get("type") or "").lower(), self.clean_text(detail.get("type")))
-        workplace = self.clean_text(detail.get("workplace"))
+        company_name = self._clean_text(company_profile.get("name")) or self.company_hint_from_url(seed_url)
+        job_type = TYPE_LABELS.get(str(detail.get("type") or "").lower(), self._clean_text(detail.get("type")))
+        workplace = self._clean_text(detail.get("workplace"))
 
         tags = [tag for tag in detail.get("department", []) if isinstance(tag, str) and tag.strip()]
         if workplace:
@@ -158,11 +169,11 @@ class WorkableScraper(BaseSourceScraper):
             title=title,
             company_name=company_name,
             location=location_display,
-            description=self.clean_text(detail.get("description")),
+            description=self._clean_text(detail.get("description")),
             salary_range=None,
             job_type=job_type,
-            logo_url=self.clean_text(logo_url),
-            posted_at=self.clean_text(detail.get("published")),
+            logo_url=self._clean_text(logo_url),
+            posted_at=self._clean_text(detail.get("published")),
             tags=tags,
             source_job_id=shortcode,
         )

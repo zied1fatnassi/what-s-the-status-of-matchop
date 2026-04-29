@@ -12,14 +12,15 @@ They are exposed to client reads through:
 They are intentionally different from internal MatchOp offers in `offers`.
 
 ## Current Population Path
-The active repository contains a standalone Python ingestion worker under `scraping/`.
+The active repository contains a standalone Python ingestion worker under `scraper/`.
 
-Current ingestion architecture:
+Current ingestion architecture (Scrapling + Groq AI):
 ```text
-Python worker
-  -> source scrapers
-  -> normalization
-  -> deduplication
+Python worker (scraper/matchop_scraper)
+  -> Scrapling fetches ATS pages (Greenhouse, Lever, Workable)
+  -> Groq AI extracts structured fields (skills, experience, summary)
+  -> normalisation (title, location, company, salary cleaning)
+  -> deduplication by URL / source_job_id / content_hash
   -> external_jobs upsert
 ```
 

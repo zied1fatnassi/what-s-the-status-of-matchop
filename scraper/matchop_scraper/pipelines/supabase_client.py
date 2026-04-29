@@ -1,7 +1,7 @@
+"""Supabase REST client for server-side writes using service role key."""
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-import os
 from typing import Any, Mapping
 
 import httpx
@@ -9,6 +9,8 @@ import httpx
 
 @dataclass(slots=True)
 class SupabaseRestClient:
+    """Thin HTTP client for Supabase PostgREST API."""
+
     url: str
     service_role_key: str
     timeout: float = 30.0
@@ -28,14 +30,6 @@ class SupabaseRestClient:
                 "Content-Type": "application/json",
             },
         )
-
-    @classmethod
-    def from_env(cls, timeout: float = 30.0) -> "SupabaseRestClient":
-        url = os.getenv("SUPABASE_URL") or os.getenv("VITE_SUPABASE_URL")
-        service_role_key = os.getenv("SUPABASE_SERVICE_ROLE_KEY") or os.getenv("VITE_SUPABASE_SERVICE_ROLE_KEY")
-        if not url or not service_role_key:
-            raise RuntimeError("SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be set for storage writes.")
-        return cls(url=url, service_role_key=service_role_key, timeout=timeout)
 
     def close(self) -> None:
         self._client.close()
@@ -59,10 +53,8 @@ class SupabaseRestClient:
         response = self._client.request(method, path, params=params, headers=headers, json=json)
         if response.status_code >= 400:
             raise RuntimeError(f"Supabase REST {method} {path} failed ({response.status_code}): {response.text}")
-
         if not response.content:
             return None
-
         content_type = response.headers.get("content-type", "")
         if "application/json" in content_type:
             return response.json()

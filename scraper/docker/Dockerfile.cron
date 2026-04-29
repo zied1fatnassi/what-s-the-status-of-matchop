@@ -9,12 +9,13 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends cron \
     && rm -rf /var/lib/apt/lists/*
 
-COPY scraping /app
+COPY scraper /app
 
 RUN python -m pip install --upgrade pip \
-    && pip install -e .
+    && pip install -e . \
+    && python -c "from scrapling.cli import install; install([], standalone_mode=False)"
 
-COPY scraping/docker/matchop-scraper.cron /etc/cron.d/matchop-scraper
+COPY scraper/docker/matchop-scraper.cron /etc/cron.d/matchop-scraper
 RUN chmod 0644 /etc/cron.d/matchop-scraper \
     && crontab /etc/cron.d/matchop-scraper
 

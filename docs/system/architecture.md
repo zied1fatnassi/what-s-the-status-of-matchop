@@ -19,8 +19,10 @@ Browser
     -> Supabase Storage
     -> Supabase Edge Functions
 
-Standalone Python worker
-  scraping/matchop_scraping
+Standalone Python worker (Scrapling + Groq AI)
+  scraper/matchop_scraper
+    -> Scrapling fetches ATS pages
+    -> Groq AI extracts structured fields
     -> writes external jobs only to external_jobs
 ```
 
@@ -46,9 +48,10 @@ Standalone Python worker
 - Supabase Storage for avatars, company logos, CVs, and payment proofs
 
 ### Additional Worker
-- `scraping/` contains a standalone Python subsystem for external job ingestion
+- `scraper/` contains a standalone Python subsystem for external job ingestion, powered by Scrapling and Groq AI
 - It is intentionally outside the SPA and edge runtime
 - It writes only to `external_jobs`
+- Groq AI enriches scraped data with structured fields (skills, experience level, summary)
 
 ## Supabase Services Used
 
@@ -134,13 +137,15 @@ Important functions in the repo:
 8. `messages` become available and chat opens.
 
 ### External Job Lifecycle
-1. The Python worker scrapes external boards.
-2. It upserts rows into `external_jobs`.
-3. The student feed reads those jobs either:
+1. The Scrapling-powered Python worker scrapes external ATS boards (Greenhouse, Lever, Workable).
+2. Groq AI extracts structured fields (skills, experience level, job type, summary) from raw descriptions.
+3. Normaliser cleans titles, locations, company names, and salary ranges.
+4. Pipeline deduplicates and upserts rows into `external_jobs`.
+5. The student feed reads those jobs either:
    - directly through `swipe-stack` on the server side, or
    - through `external_jobs_public` in client-side fallback paths
-4. The UI labels them as external and redirects to `original_url`.
-5. No intro, match, or chat is created for external jobs.
+6. The UI labels them as external and redirects to `original_url`.
+7. No intro, match, or chat is created for external jobs.
 
 ## Repository Map
 
@@ -174,8 +179,8 @@ Deployable migration history for the current Supabase project.
 ### `database/`
 Historical and supplemental SQL. This directory is important for understanding behavior, but not every file is equally current. Legacy files still reference older names like `job_offers` and `student_profiles`.
 
-### `scraping/`
-Standalone Python external-job ingestion worker.
+### `scraper/`
+Standalone Python external-job ingestion worker using Scrapling + Groq AI.
 
 ### `tests/`
 Automated UI tests and supporting test assets.

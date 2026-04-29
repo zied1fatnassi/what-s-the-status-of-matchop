@@ -2,7 +2,7 @@ services:
   scraper-cron:
     build:
       context: ..
-      dockerfile: scraping/docker/Dockerfile.cron
+      dockerfile: scraper/docker/Dockerfile.cron
     env_file:
       - ./.env
     restart: unless-stopped

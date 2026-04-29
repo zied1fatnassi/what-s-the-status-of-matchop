@@ -133,7 +133,11 @@ Realtime:
 
 ## 9. External Job Discovery
 ```text
-Python scraping worker
+Scrapling-powered Python scraper
+  -> Scrapling fetches ATS pages (Greenhouse, Lever, Workable)
+  -> Groq AI extracts structured fields (skills, experience, summary)
+  -> Normaliser cleans titles, locations, companies, salaries
+  -> Pipeline deduplicates by URL/source_job_id/content_hash
   -> external_jobs upsert
   -> swipe-stack or external_jobs_public read
   -> SwipeCard renders external badge

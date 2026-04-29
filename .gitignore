@@ -139,9 +139,10 @@ Thumbs.db
 .vercel
 .env*.local
 
-# Python scraping worker
+# Python scraper worker
 __pycache__/
 *.py[cod]
 .pytest_cache/
 .venv/
-scraping/.venv/
+scraper/.venv/
+*.egg-info/

@@ -1,38 +1,28 @@
+"""Supabase ingestion pipeline — upserts normalised jobs into external_jobs."""
 from __future__ import annotations
 
-from dataclasses import dataclass, field
 import logging
+from dataclasses import dataclass, field
 
-from ..normalizers import NormalizedJobPosting
-from ..normalizers.job_normalizer import canonicalize_url
+from ..extractors.models import NormalizedJobPosting
+from ..extractors.normalizer import canonicalize_url
 from .supabase_client import SupabaseRestClient
 
+
 BASE_EXTERNAL_JOB_COLUMNS = {
-    "id",
-    "source_website",
-    "original_url",
-    "title",
-    "company_name",
-    "location",
-    "description",
-    "salary_range",
-    "job_type",
-    "logo_url",
-    "posted_at",
-    "tags",
+    "id", "source_website", "original_url", "title", "company_name",
+    "location", "description", "salary_range", "job_type", "logo_url",
+    "posted_at", "tags",
 }
 
 OPTIONAL_EXTERNAL_JOB_COLUMNS = (
-    "source_job_id",
-    "content_hash",
-    "first_seen_at",
-    "last_seen_at",
-    "scraped_at",
+    "source_job_id", "content_hash", "first_seen_at", "last_seen_at", "scraped_at",
 )
 
 
 @dataclass(slots=True)
 class SaveResult:
+    """Outcome of a batch save operation."""
     inserted: int = 0
     updated: int = 0
     duplicates_skipped: int = 0
@@ -41,18 +31,30 @@ class SaveResult:
     errors: list[str] = field(default_factory=list)
 
 
-class ExternalJobRepository:
+class SupabasePipeline:
+    """Writes normalised job postings into the ``external_jobs`` table.
+
+    Handles deduplication by ``original_url``, ``source_job_id``, and
+    ``content_hash``.  Respects the schema column surface area detected
+    at init time so it never sends columns the table does not expose.
+    """
+
     def __init__(self, client: SupabaseRestClient) -> None:
         self.client = client
-        self.logger = logging.getLogger("matchop_scraping.storage.job_repository")
+        self.logger = logging.getLogger("matchop_scraper.pipelines.supabase")
         self.supported_columns = self._detect_supported_columns()
 
+    # ------------------------------------------------------------------
+    # Public API
+    # ------------------------------------------------------------------
+
     def save_jobs(self, jobs: list[NormalizedJobPosting], *, dry_run: bool = False) -> SaveResult:
+        """Persist a batch of normalised jobs."""
         result = SaveResult()
 
         for job in jobs:
             try:
-                existing = self.find_existing_job(job)
+                existing = self._find_existing_job(job)
                 payload = self._filter_payload(job.to_database_payload())
 
                 if existing and "first_seen_at" in payload and existing.get("first_seen_at"):
@@ -84,7 +86,36 @@ class ExternalJobRepository:
 
         return result
 
-    def find_existing_job(self, job: NormalizedJobPosting) -> dict | None:
+    def mark_jobs_expired(self, urls: list[str], *, seen_at: str, dry_run: bool = False) -> int:
+        """Update last_seen_at / scraped_at for expired URLs."""
+        payload = {}
+        if self._supports_column("last_seen_at"):
+            payload["last_seen_at"] = seen_at
+        if self._supports_column("scraped_at"):
+            payload["scraped_at"] = seen_at
+        if not payload:
+            self.logger.info("Skipping expired-job persistence — columns not available yet.")
+            return 0
+
+        marked = 0
+        for url in {canonicalize_url(v) for v in urls}:
+            if dry_run:
+                marked += 1
+                continue
+            updated = self.client.patch(
+                "external_jobs",
+                filters={"original_url": f"eq.{url}"},
+                payload=payload,
+            )
+            if updated:
+                marked += len(updated)
+        return marked
+
+    # ------------------------------------------------------------------
+    # Internal helpers
+    # ------------------------------------------------------------------
+
+    def _find_existing_job(self, job: NormalizedJobPosting) -> dict | None:
         select_clause = ",".join(self._select_columns())
 
         exact_url_match = self.client.select_one(
@@ -116,35 +147,8 @@ class ExternalJobRepository:
 
         return None
 
-    def mark_jobs_expired(self, urls: list[str], *, seen_at: str, dry_run: bool = False) -> int:
-        payload = {}
-        if self._supports_column("last_seen_at"):
-            payload["last_seen_at"] = seen_at
-        if self._supports_column("scraped_at"):
-            payload["scraped_at"] = seen_at
-        if not payload:
-            self.logger.info(
-                "Skipping expired job persistence because external_jobs does not expose last_seen_at/scraped_at yet."
-            )
-            return 0
-
-        marked = 0
-        for url in {canonicalize_url(value) for value in urls}:
-            if dry_run:
-                marked += 1
-                continue
-            updated = self.client.patch(
-                "external_jobs",
-                filters={"original_url": f"eq.{url}"},
-                payload=payload,
-            )
-            if updated:
-                marked += len(updated)
-        return marked
-
     def _detect_supported_columns(self) -> set[str]:
         supported = set(BASE_EXTERNAL_JOB_COLUMNS)
-
         try:
             rows = self.client.select("external_jobs", select="*", limit=1)
         except Exception as exc:
@@ -164,29 +168,18 @@ class ExternalJobRepository:
         return supported
 
     def _filter_payload(self, payload: dict) -> dict:
-        return {key: value for key, value in payload.items() if key in self.supported_columns}
+        return {k: v for k, v in payload.items() if k in self.supported_columns}
 
     def _supports_column(self, column: str) -> bool:
         return column in self.supported_columns
 
     def _select_columns(self) -> list[str]:
         preferred_order = [
-            "id",
-            "original_url",
-            "first_seen_at",
-            "title",
-            "company_name",
-            "location",
-            "description",
-            "salary_range",
-            "job_type",
-            "logo_url",
-            "posted_at",
-            "tags",
-            "source_job_id",
-            "content_hash",
+            "id", "original_url", "first_seen_at", "title", "company_name",
+            "location", "description", "salary_range", "job_type", "logo_url",
+            "posted_at", "tags", "source_job_id", "content_hash",
         ]
-        return [column for column in preferred_order if column in self.supported_columns]
+        return [col for col in preferred_order if col in self.supported_columns]
 
     def _existing_row_filter(self, existing: dict) -> dict[str, str]:
         if existing.get("id") is not None:
@@ -195,23 +188,14 @@ class ExternalJobRepository:
 
     def _has_material_changes(self, existing: dict, payload: dict) -> bool:
         comparable_fields = (
-            "title",
-            "company_name",
-            "location",
-            "description",
-            "salary_range",
-            "job_type",
-            "logo_url",
-            "posted_at",
-            "tags",
-            "source_job_id",
-            "content_hash",
+            "title", "company_name", "location", "description", "salary_range",
+            "job_type", "logo_url", "posted_at", "tags", "source_job_id", "content_hash",
         )
-        for field in comparable_fields:
-            if field not in payload:
+        for f in comparable_fields:
+            if f not in payload:
                 continue
-            existing_value = existing.get(field)
-            payload_value = payload.get(field)
+            existing_value = existing.get(f)
+            payload_value = payload.get(f)
             if isinstance(existing_value, list) or isinstance(payload_value, list):
                 if list(existing_value or []) != list(payload_value or []):
                     return True
