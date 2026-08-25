@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { Lock, Eye, EyeOff, CheckCircle, Loader2, KeyRound } from 'lucide-react'
+import { supabase } from '../lib/supabase'
 import { validatePassword } from '../lib/validation'
 import { validateResetToken, executePasswordReset, getResetParamsFromURL } from '../lib/passwordReset'
 import { useBilingualText } from '../lib/useBilingualText'
@@ -12,17 +13,13 @@ const COMPANY_LOGIN_PATH = '/company/login'
 /**
  * Reset Password Page
  * 
- * SECURITY: Uses single-use tokens validated by the secure-password-reset
- * Edge Function. Token is extracted from URL query params (?token=xxx&email=yyy).
- * 
- * Flow:
- * 1. On mount: extract token + email from URL → validate via Edge Function
- * 2. If valid: show password form with strength meter
- * 3. On submit: consume token + update password via Edge Function
- * 4. Token is single-use — cannot be reused after consumption
+ * Supports both:
+ * 1. Single-use tokens validated by secure-password-reset Edge Function (?token=xxx&email=yyy)
+ * 2. Native Supabase Auth recovery session (via location.state?.accessToken or active session)
  */
 function ResetPassword() {
     const navigate = useNavigate()
+    const location = useLocation()
     const tr = useBilingualText()
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
@@ -32,15 +29,37 @@ function ResetPassword() {
     const [isSuccess, setIsSuccess] = useState(false)
     const [isTokenValid, setIsTokenValid] = useState(false)
     const [isCheckingToken, setIsCheckingToken] = useState(true)
+    const [isSupabaseSession, setIsSupabaseSession] = useState(false)
     const [resetToken, setResetToken] = useState(null)
     const [resetEmail, setResetEmail] = useState(null)
 
-    // Validate the reset token from URL on mount
+    // Validate the reset token or check active auth session on mount
     useEffect(() => {
         let active = true
 
         const checkToken = async () => {
             try {
+                // Check if Supabase recovery session is active or passed in state
+                if (location.state?.accessToken) {
+                    if (active) {
+                        setIsSupabaseSession(true)
+                        setIsTokenValid(true)
+                        setIsCheckingToken(false)
+                    }
+                    return
+                }
+
+                const { data: { session } } = await supabase.auth.getSession()
+                if (session?.user) {
+                    if (active) {
+                        setIsSupabaseSession(true)
+                        setIsTokenValid(true)
+                        setResetEmail(session.user.email || null)
+                        setIsCheckingToken(false)
+                    }
+                    return
+                }
+
                 // Extract token and email from URL query params
                 const { token, email } = getResetParamsFromURL()
 
@@ -90,13 +109,13 @@ function ResetPassword() {
 
         checkToken()
         return () => { active = false }
-    }, [])
+    }, [location.state])
 
     const handleSubmit = async (e) => {
         e.preventDefault()
         setError('')
 
-        if (!isTokenValid || !resetToken || !resetEmail) {
+        if (!isTokenValid || (!isSupabaseSession && (!resetToken || !resetEmail))) {
             setError(tr(
                 'Your reset link is invalid or has expired. Please request a new one.',
                 'Votre lien de reinitialisation est invalide ou expire. Veuillez en demander un nouveau.'
@@ -119,16 +138,22 @@ function ResetPassword() {
         setIsLoading(true)
 
         try {
-            // Consume token + update password via Edge Function
-            const result = await executePasswordReset(resetToken, resetEmail, password)
-
-            if (result.success) {
+            if (isSupabaseSession) {
+                const { error: updateError } = await supabase.auth.updateUser({ password })
+                if (updateError) throw updateError
                 setIsSuccess(true)
             } else {
-                setError(result.error || tr(
-                    'Failed to reset password. Please try again.',
-                    'Echec de la reinitialisation du mot de passe. Veuillez reessayer.'
-                ))
+                // Consume token + update password via Edge Function
+                const result = await executePasswordReset(resetToken, resetEmail, password)
+
+                if (result.success) {
+                    setIsSuccess(true)
+                } else {
+                    setError(result.error || tr(
+                        'Failed to reset password. Please try again.',
+                        'Echec de la reinitialisation du mot de passe. Veuillez reessayer.'
+                    ))
+                }
             }
         } catch (err) {
             if (err.message?.includes('expired') || err.message?.includes('invalid')) {

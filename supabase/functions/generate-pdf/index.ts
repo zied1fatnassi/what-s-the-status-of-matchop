@@ -86,7 +86,7 @@ serve(async (req) => {
         // ── 3. Fetch Profile + Student Data ──
         const { data: profile, error: profileError } = await supabase
             .from('profiles')
-            .select('id, email, role, created_at')
+            .select('id, email, type, created_at')
             .eq('id', profile_id)
             .single()
 
@@ -96,7 +96,8 @@ serve(async (req) => {
         }
 
         // Verify this is a student profile
-        if (profile.role !== 'student') {
+        const userType = profile.type || profile.role
+        if (userType !== 'student') {
             return errorResponse('PDF generation is currently only supported for student profiles', 400, origin)
         }
 

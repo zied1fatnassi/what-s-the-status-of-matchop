@@ -41,8 +41,8 @@ async function callResetEndpoint(action, body) {
 
     const data = await response.json()
 
-    if (!response.ok && !data.success) {
-        throw new Error(data.error || data.message || `Request failed with status ${response.status}`)
+    if (!response.ok || !data?.success) {
+        throw new Error(data?.error || data?.message || `Request failed with status ${response.status}`)
     }
 
     return data

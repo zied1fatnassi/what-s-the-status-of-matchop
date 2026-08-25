@@ -129,37 +129,61 @@ serve(async (req) => {
             ["Hi! I saw you're looking for React devs. I recently built a dashboard using Next.js and would love to chat.", "Hello! I'm very interested in the ${offer.title} role. My background in Python seems like a great fit.", "Hi there! I admire ${company}'s work and would love to discuss how my design skills could contribute."]
         `
 
-        // 3. Call OpenRouter
+        // 3. Tailored fallback icebreakers based on actual offer/student data
+        const studentSkillsList = Array.isArray(student.skills) ? student.skills : []
+        const offerSkillsList = Array.isArray(offer.req_skills) ? offer.req_skills : []
+        const overlappingSkills = studentSkillsList.filter(s => offerSkillsList.some(os => os.toLowerCase() === s.toLowerCase()))
+        const skillMention = overlappingSkills.length > 0 ? overlappingSkills.slice(0, 2).join(' and ') : (studentSkillsList[0] || 'my skills')
+
+        const fallbackSuggestions = [
+            `Hi! I'm interested in the ${offer.title} position and would love to connect. My experience with ${skillMention} seems like a great match.`,
+            `Hello! I saw your opening for ${offer.title} and think my background would be a great fit. Would love to learn more!`,
+            `Hi there! I'd love to learn more about the team at ${company} and discuss how I could contribute to the ${offer.title} role.`
+        ]
+
+        // 4. Call OpenRouter (skip if key missing)
+        let suggestions = fallbackSuggestions
         const openRouterKey = Deno.env.get('OPENROUTER_API_KEY')
-        const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${openRouterKey}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                model: 'meta-llama/llama-3.2-3b-instruct:free',
-                messages: [{ role: 'user', content: prompt }],
-                temperature: 0.7,
-            }),
-        })
 
-        const aiData = await response.json()
-        const content = aiData.choices?.[0]?.message?.content || '[]'
+        if (openRouterKey) {
+            try {
+                const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${openRouterKey}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        model: 'meta-llama/llama-3.2-3b-instruct:free',
+                        messages: [{ role: 'user', content: prompt }],
+                        temperature: 0.7,
+                    }),
+                })
 
-        // Parse JSON from AI response (handle potential markdown wrapping)
-        let suggestions = []
-        try {
-            const cleanContent = content.replace(/```json/g, '').replace(/```/g, '').trim()
-            suggestions = JSON.parse(cleanContent)
-        } catch (e) {
-            console.error('Failed to parse AI response:', content)
-            // Fallback suggestions
-            suggestions = [
-                `Hi! I'm interested in the ${offer.title} position and would love to connect.`,
-                `Hello! I saw your opening for ${offer.title} and think my skills would be a great match.`,
-                `Hi there! I'd love to learn more about the engineering team at ${company}.`
-            ]
+                if (response.ok) {
+                    const aiData = await response.json()
+                    const content = aiData.choices?.[0]?.message?.content || '[]'
+
+                    try {
+                        const cleanContent = content.replace(/```json/g, '').replace(/```/g, '').trim()
+                        const parsed = JSON.parse(cleanContent)
+                        if (Array.isArray(parsed) && parsed.length > 0) {
+                            suggestions = parsed
+                        }
+                    } catch (parseErr) {
+                        console.error('Failed to parse AI response:', content)
+                        // Keep fallback suggestions
+                    }
+                } else {
+                    console.error('OpenRouter API error:', response.status, await response.text())
+                    // Keep fallback suggestions
+                }
+            } catch (apiErr) {
+                console.error('OpenRouter API call failed:', apiErr.message)
+                // Keep fallback suggestions
+            }
+        } else {
+            console.warn('OPENROUTER_API_KEY not configured, using fallback icebreakers')
         }
 
         return new Response(JSON.stringify({ suggestions }), {

@@ -22,7 +22,6 @@ function buildParticipant(match, role) {
             name:
                 companyFromOffer?.company_name ||
                 companyInline?.company_name ||
-                match?.company ||
                 FALLBACK_NAMES.company,
             avatarUrl: companyFromOffer?.logo_url || companyInline?.logo_url || null
         }
@@ -41,7 +40,7 @@ function toThread(match, role, latestMessage, unreadCount) {
         offerId: match.offer_id,
         offerTitle: match?.offers?.title || 'Offer',
         participant: buildParticipant(match, role),
-        lastMessage: latestMessage?.content || match?.last_message || '',
+        lastMessage: latestMessage?.content || '',
         lastActivityAt: latestMessage?.created_at || match?.matched_at || match?.created_at || null,
         unreadCount: unreadCount || 0,
         archived: match?.status === 'archived',
@@ -78,8 +77,6 @@ export function useConversationThreads(role = 'student') {
                     offer_id,
                     matched_at,
                     created_at,
-                    last_message,
-                    company,
                     companies (
                         id,
                         company_name,

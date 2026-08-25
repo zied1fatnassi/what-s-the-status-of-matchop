@@ -7,6 +7,8 @@ const signUpMock = vi.fn()
 const resendVerificationEmailMock = vi.fn()
 const writeTextMock = vi.fn()
 
+import i18n from '../../lib/i18n'
+
 vi.mock('react-i18next', () => ({
     useTranslation: () => ({
         t: (key, options = {}) => {
@@ -40,7 +42,7 @@ vi.mock('react-i18next', () => ({
             if (key === 'referrals.toast.copyFailed') {
                 return 'Unable to copy right now. Please try again.'
             }
-            return key
+            return i18n.t(key, options)
         }
     })
 }))

@@ -358,16 +358,6 @@ function StudentSwipe() {
 
                 if ((direction === 'right' || direction === 'super') && !isExternal && offerToSwipe.hasMatched) {
                     setMatchedOffer(offerToSwipe)
-
-                    import('../../lib/email').then(({ sendMatchEmail }) => {
-                        sendMatchEmail(
-                            user?.email,
-                            user?.user_metadata?.name || t('matches.studentFallback'),
-                            offerToSwipe.company,
-                            'Company'
-                        )
-                    })
-
                     setTimeout(() => setShowMatch(true), 500)
                 }
             })

@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom'
+import '../lib/i18n'
 
 // React 19 act() warning suppression for jsdom integration tests.
 globalThis.IS_REACT_ACT_ENVIRONMENT = true

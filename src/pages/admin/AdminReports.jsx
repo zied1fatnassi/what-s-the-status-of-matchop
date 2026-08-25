@@ -30,7 +30,7 @@ export default function AdminReports() {
         setLoading(true)
         try {
             let query = supabase
-                .from('reports')
+                .from('reported_users')
                 .select('*', { count: 'exact' })
                 .range((currentPage - 1) * pageSize, currentPage * pageSize - 1)
                 .order('created_at', { ascending: false })
@@ -67,11 +67,11 @@ export default function AdminReports() {
     async function resolveReport(reportId, status, resolutionNote) {
         try {
             const { error } = await supabase
-                .from('reports')
+                .from('reported_users')
                 .update({
                     status,
                     resolution: resolutionNote,
-                    resolved_at: new Date().toISOString()
+                    reviewed_at: new Date().toISOString()
                 })
                 .eq('id', reportId)
 
@@ -95,11 +95,11 @@ export default function AdminReports() {
                 .eq('id', userId)
 
             await supabase
-                .from('reports')
+                .from('reported_users')
                 .update({
                     status: 'resolved',
                     resolution: 'User suspended',
-                    resolved_at: new Date().toISOString()
+                    reviewed_at: new Date().toISOString()
                 })
                 .eq('id', reportId)
 
@@ -259,7 +259,7 @@ export default function AdminReports() {
 
                         <div className="admin-form-group">
                             <label>{tr('Description', 'Description')}</label>
-                            <textarea value={selectedReport.description || tr('No details provided', 'Aucun detail fourni')} disabled rows={4} />
+                            <textarea value={selectedReport.details || selectedReport.description || tr('No details provided', 'Aucun detail fourni')} disabled rows={4} />
                         </div>
 
                         <div className="admin-form-group">

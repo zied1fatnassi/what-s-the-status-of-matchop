@@ -132,7 +132,7 @@ export default function AdminUsers() {
     }
 
     function getUserDisplayName(user) {
-        if (user.students?.full_name) return user.students.full_name
+        if (user.students?.display_name) return user.students.display_name
         if (user.companies?.company_name) return user.companies.company_name
         return user.email?.split('@')[0] || tr('Unknown', 'Inconnu')
     }

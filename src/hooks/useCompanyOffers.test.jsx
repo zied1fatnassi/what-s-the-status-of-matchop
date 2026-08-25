@@ -142,7 +142,7 @@ describe('useCompanyOffers', () => {
         latestSnapshot = null
         vi.clearAllMocks()
 
-        const now = new Date('2026-02-27T12:00:00.000Z')
+        const now = new Date()
         const oneDayAgo = new Date(now.getTime() - (24 * 60 * 60 * 1000)).toISOString()
         const twoDaysAgo = new Date(now.getTime() - (2 * 24 * 60 * 60 * 1000)).toISOString()
         const fortyDaysAgo = new Date(now.getTime() - (40 * 24 * 60 * 60 * 1000)).toISOString()

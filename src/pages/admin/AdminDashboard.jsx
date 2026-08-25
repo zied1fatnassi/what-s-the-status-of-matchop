@@ -40,7 +40,7 @@ export default function AdminDashboard() {
                 supabase.from('offers').select('*', { count: 'exact', head: true }),
                 supabase.from('offers').select('*', { count: 'exact', head: true }).eq('status', 'active'),
                 supabase.from('matches').select('*', { count: 'exact', head: true }),
-                supabase.from('reports').select('*', { count: 'exact', head: true }).eq('status', 'pending')
+                supabase.from('reported_users').select('*', { count: 'exact', head: true }).eq('status', 'pending')
             ])
 
             setStats({

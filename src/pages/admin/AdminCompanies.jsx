@@ -32,7 +32,7 @@ export default function AdminCompanies() {
                 .from('companies')
                 .select('*', { count: 'exact' })
                 .range((currentPage - 1) * pageSize, currentPage * pageSize - 1)
-                .order('created_at', { ascending: false })
+                .order('id')
 
             if (searchTerm) query = query.ilike('company_name', `%${searchTerm}%`)
 

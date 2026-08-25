@@ -1,0 +1,10 @@
+{
+  "antigravity-cli-sidebar:open-antigravity-cli": [
+    {
+      "modifiers": [
+        "Mod"
+      ],
+      "key": "Numpad8"
+    }
+  ]
+}

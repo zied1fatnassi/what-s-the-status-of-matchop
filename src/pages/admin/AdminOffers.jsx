@@ -263,7 +263,7 @@ export default function AdminOffers() {
                             <label>{tr('Required Skills', 'Competences requises')}</label>
                             <input
                                 type="text"
-                                value={selectedOffer.required_skills?.join(', ') || tr('None specified', 'Aucune')}
+                                value={(selectedOffer.req_skills || []).join(', ') || tr('None specified', 'Aucune')}
                                 disabled
                             />
                         </div>

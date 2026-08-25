@@ -92,7 +92,23 @@ serve(async (req) => {
         // For now, let's use a simple approach: generate embeddings using a lightweight method
         // We'll use the Hugging Face Inference API which has free tier for embeddings
 
-        const hfApiKey = Deno.env.get('HF_API_KEY') || apiKey // Fallback to OpenRouter key
+        const hfApiKey = Deno.env.get('HF_API_KEY')
+
+        // If no HuggingFace key, use deterministic fallback immediately
+        if (!hfApiKey) {
+            console.warn('HF_API_KEY not configured, using fallback embedding')
+            const fallbackEmbedding = generateFallbackEmbedding(text)
+            await storeEmbedding(type, id, fallbackEmbedding)
+
+            return new Response(JSON.stringify({
+                success: true,
+                message: 'Used fallback embedding (no HF_API_KEY)',
+                dimensions: fallbackEmbedding.length
+            }), {
+                headers: { ...getCorsHeaders(req.headers.get('origin')), 'Content-Type': 'application/json' },
+                status: 200,
+            })
+        }
 
         // Use Hugging Face's free embedding model
         const embeddingResponse = await fetch(

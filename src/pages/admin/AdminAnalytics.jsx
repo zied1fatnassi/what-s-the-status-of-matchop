@@ -36,7 +36,7 @@ export default function AdminAnalytics() {
                 { count: newMatches }
             ] = await Promise.all([
                 supabase.from('profiles').select('created_at'),
-                supabase.from('offers').select('created_at, status, location, required_skills'),
+                supabase.from('offers').select('created_at, status, location, req_skills'),
                 supabase.from('matches').select('created_at'),
                 supabase.from('companies').select('id, company_name').limit(10),
                 supabase.from('profiles').select('*', { count: 'exact', head: true }).gte('created_at', daysAgo.toISOString()),
@@ -56,7 +56,7 @@ export default function AdminAnalytics() {
 
             const skillCounts = {}
             ;(offers || []).forEach((offer) => {
-                (offer.required_skills || []).forEach((skill) => {
+                (offer.req_skills || []).forEach((skill) => {
                     skillCounts[skill] = (skillCounts[skill] || 0) + 1
                 })
             })

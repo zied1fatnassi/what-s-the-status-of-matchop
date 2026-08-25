@@ -132,6 +132,7 @@ dist
 # Testing
 playwright-report
 test-results
+/output/
 
 # OS
 .DS_Store

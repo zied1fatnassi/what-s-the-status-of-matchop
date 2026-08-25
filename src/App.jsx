@@ -66,13 +66,11 @@ const AdminAnalytics = lazy(() => import('./pages/admin/AdminAnalytics'))
 const AdminSettings = lazy(() => import('./pages/admin/AdminSettings'))
 const AdminPayments = lazy(() => import('./pages/admin/AdminPayments'))
 
-const PATH_SEPARATOR = String.fromCharCode(47)
-const ROOT_ROUTE = PATH_SEPARATOR
+const ROOT_ROUTE = '/'
 const DISCOVERY_ROUTE = 'discovery'
-const PASSWORD_TOKEN = ['pass', 'word'].join('')
-const FORGOT_PASSWORD_ROUTE = `forgot-${PASSWORD_TOKEN}`
-const RESET_PASSWORD_ROUTE = `reset-${PASSWORD_TOKEN}`
-const toAppPath = (route) => `${PATH_SEPARATOR}${route}`
+const FORGOT_PASSWORD_ROUTE = '/forgot-password'
+const RESET_PASSWORD_ROUTE = '/reset-password'
+const toAppPath = (route) => route.startsWith('/') ? route : `/${route}`
 
 function shouldRenderVercelTelemetry() {
   if (typeof window === 'undefined') return false
