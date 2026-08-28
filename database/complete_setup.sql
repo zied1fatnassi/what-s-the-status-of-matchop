@@ -71,7 +71,7 @@ ON CONFLICT (id) DO NOTHING;
 -- Create company details
 INSERT INTO companies (id, website, sector, size, description, location, contact_email) VALUES
 ('00000000-0000-0000-0001-000000000001', 'https://instadeep.com', 'AI', '500+', 'AI solutions for global enterprises', 'Tunis', 'contact@instadeep.com'),
-('00000000-0000-0000-0001-000000000002', 'https://kaoun.com', 'Fintech', '100+', 'Mobile banking & payments (Flouci)', 'Tunis', 'contact@kaoun.com'),
+('00000000-0000-0000-0001-000000000002', 'https://kaoun.com', 'Fintech', '100+', 'Mobile banking & digital payments', 'Tunis', 'contact@kaoun.com'),
 ('00000000-0000-0000-0001-000000000003', 'https://kumulus-water.com', 'Cleantech', '50+', 'Water-from-air solutions', 'Sousse', 'contact@kumulus-water.com'),
 ('00000000-0000-0000-0001-000000000004', 'https://datavizion.ai', 'Big Data', '50+', 'Data analytics platform', 'Tunis', 'contact@datavizion.ai'),
 ('00000000-0000-0000-0001-000000000005', 'https://laflamme.tn', 'HealthTech', '20+', 'Mental health platform', 'Tunis', 'contact@laflamme.tn'),
@@ -131,7 +131,7 @@ ON CONFLICT (id) DO NOTHING;
 -- Insert job offers (1 per company = 56 offers)
 INSERT INTO job_offers (company_id, title, description, location, salary_min, salary_max, skills, requirements, is_active) VALUES
 ('00000000-0000-0000-0001-000000000001', 'Machine Learning Engineer Intern', 'Work on cutting-edge AI projects with our research team.', 'Tunis', 2000, 3000, ARRAY['Python', 'TensorFlow', 'PyTorch', 'ML'], ARRAY['CS/ML background', 'Python proficiency'], true),
-('00000000-0000-0000-0001-000000000002', 'Mobile Developer Intern', 'Develop features for Flouci mobile payment app.', 'Tunis', 1800, 2800, ARRAY['React Native', 'JavaScript', 'Mobile Dev'], ARRAY['Mobile development experience'], true),
+('00000000-0000-0000-0001-000000000002', 'Mobile Developer Intern', 'Develop features for mobile fintech applications.', 'Tunis', 1800, 2800, ARRAY['React Native', 'JavaScript', 'Mobile Dev'], ARRAY['Mobile development experience'], true),
 ('00000000-0000-0000-0001-000000000003', 'IoT Engineer Intern', 'Work on atmospheric water generation systems.', 'Sousse', 1700, 2500, ARRAY['IoT', 'Embedded C', 'Arduino'], ARRAY['Electronics background'], true),
 ('00000000-0000-0000-0001-000000000004', 'Data Scientist Intern', 'Analyze large datasets and build predictive models.', 'Tunis', 1900, 2800, ARRAY['Python', 'SQL', 'Spark', 'ML'], ARRAY['Statistics background'], true),
 ('00000000-0000-0000-0001-000000000005', 'Full Stack Developer Intern', 'Build mental health platform features.', 'Tunis', 1500, 2300, ARRAY['React', 'Node.js', 'MongoDB'], ARRAY['Full stack experience'], true),

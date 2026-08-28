@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ArrowRight, Users, Briefcase, Heart, MessageCircle, Sparkles, Zap } from 'lucide-react'
 import Logo from '../components/Logo'
-import CandidatePipelineLoop from '../components/CandidatePipelineLoop'
 import { useBilingualText } from '../lib/useBilingualText'
 import './Landing.css'
 
@@ -139,10 +138,33 @@ function Landing() {
 
                     <div className="features-grid reverse">
                         <div className="feature-visual">
-                            <div className="dashboard-mockup pipeline-showcase">
+                            <div className="dashboard-mockup">
                                 <div className="mock-header">
+                                    <span className="mock-title">{tr('Candidate Pipeline', 'Pipeline candidats')}</span>
                                 </div>
-                                <CandidatePipelineLoop />
+                                <div className="mock-candidates">
+                                    <div className="mock-candidate">
+                                        <div className="mock-avatar avatar-1"><span>AB</span></div>
+                                        <div className="mock-info">
+                                            <span>Ahmed Ben Ali</span>
+                                            <span className="match-score">95% Match</span>
+                                        </div>
+                                    </div>
+                                    <div className="mock-candidate">
+                                        <div className="mock-avatar avatar-2"><span>MS</span></div>
+                                        <div className="mock-info">
+                                            <span>Mariem Sassi</span>
+                                            <span className="match-score">92% Match</span>
+                                        </div>
+                                    </div>
+                                    <div className="mock-candidate">
+                                        <div className="mock-avatar avatar-3"><span>YH</span></div>
+                                        <div className="mock-info">
+                                            <span>Yassine Hammami</span>
+                                            <span className="match-score">88% Match</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
