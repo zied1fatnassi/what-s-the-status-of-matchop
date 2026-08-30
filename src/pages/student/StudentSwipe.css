@@ -1,349 +1,259 @@
 /* ===================================
-   STUDENT SWIPE PAGE - BENTO LAYOUT
-   Theme-Aware with Premium Styling
+   STUDENT DISCOVERY VERTICAL FEED PAGE
+   Full viewport (100vw x 100dvh), glassmorphism, responsive
    ================================ */
 
-.swipe-page {
-    min-height: 100dvh;
-    min-height: -webkit-fill-available;
-    padding-top: 0;
-    padding-bottom: var(--space-4);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--bento-bg);
-    overflow-x: hidden;
-}
-
-@media (min-width: 768px) {
-    .swipe-page {
-        padding-top: 0;
-        padding-bottom: var(--space-6);
-    }
-}
-
-/* Loading State */
-.swipe-page.loading {
-    flex-direction: column;
-    gap: var(--space-4);
-    color: var(--text-secondary);
-}
-
-.swipe-page.loading .animate-spin {
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
-
-/* Error State */
-.swipe-page.error {
-    padding: var(--space-4);
-}
-
-.swipe-page.error .glass-card {
-    text-align: center;
-    padding: var(--space-8);
-}
-
-.swipe-container {
-    width: 100%;
-    max-width: 100%;
-    padding: var(--space-2);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--space-4);
-}
-
-@media (min-width: 480px) {
-    .swipe-container {
-        max-width: 450px;
-        padding: var(--space-4);
-        gap: var(--space-6);
-    }
-}
-
-@media (min-width: 768px) {
-    .swipe-container {
-        gap: var(--space-8);
-    }
-}
-
-.stack-mode-panel {
-    width: 100%;
-    max-width: 440px;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
-}
-
-.stack-mode-notice {
-    font-size: 0.82rem;
-    color: var(--text-secondary);
-    border-left: 3px solid var(--primary);
-    padding: var(--space-2) var(--space-3);
-    background: var(--bento-card);
-    border-radius: var(--radius-md);
-}
-
-/* Card Stack */
-.cards-stack {
+.vertical-feed-page {
     position: relative;
+    width: 100vw;
+    height: 100dvh;
+    min-height: 100dvh;
+    max-height: 100dvh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background: var(--bento-bg);
+    box-sizing: border-box;
+}
+
+/* Sleek Floating Top Discovery Header */
+.feed-top-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: calc(var(--safe-top, 0px) + 0.45rem) 1rem 0.4rem 1rem;
+    pointer-events: none;
+}
+
+.feed-top-bar__inner {
+    pointer-events: auto;
     width: 100%;
-    height: calc(100dvh - 240px);
-    min-height: 340px;
-    max-height: 520px;
+    max-width: 620px;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    background: var(--glass-surface);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-2xl);
+    padding: 0.35rem 0.65rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
-@media (min-width: 480px) {
-    .cards-stack {
-        height: min(480px, calc(100dvh - 260px));
-        max-height: 520px;
-    }
+[data-theme='dark'] .feed-top-bar__inner {
+    background: rgba(18, 18, 22, 0.82);
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
 }
 
-@media (min-width: 768px) {
-    .cards-stack {
-        height: 520px;
-    }
-}
-
-/* Swipe Actions - Theme Aware */
-.swipe-actions {
+.feed-top-bar__brand {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--space-3);
-    padding-bottom: var(--safe-bottom);
-}
-
-@media (max-width: 767px) {
-    .swipe-actions {
-        transform: translateX(-26px);
-    }
-}
-
-@media (min-width: 768px) {
-    .swipe-actions {
-        gap: var(--space-4);
-    }
-}
-
-/* Action Buttons - Theme Aware */
-.action-btn {
-    width: 48px;
-    height: 48px;
-    border-radius: var(--radius-pill);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all var(--duration-normal) var(--ease-in-out);
-    border: 2px solid;
-    background: var(--bento-card);
-    box-shadow: var(--shadow-sm);
-    cursor: pointer;
-    touch-action: manipulation;
-}
-
-@media (min-width: 768px) {
-    .action-btn {
-        width: 56px;
-        height: 56px;
-    }
-    
-    .action-btn:hover:not(:disabled) {
-        transform: scale(1.1);
-        box-shadow: var(--shadow-lg);
-    }
-}
-
-.action-btn:active:not(:disabled) {
-    transform: scale(0.95);
-}
-
-.action-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    background: var(--bento-card);
-    box-shadow: none;
-}
-
-/* Undo Button */
-.action-btn.undo {
-    width: 40px;
-    height: 40px;
-    border-color: var(--bento-card-border-subtle);
-    color: var(--text-secondary);
-}
-
-@media (min-width: 768px) {
-    .action-btn.undo {
-        width: 44px;
-        height: 44px;
-    }
-}
-
-.action-btn.undo:hover:not(:disabled) {
-    color: var(--text-primary);
-    border-color: var(--text-primary);
-    background: var(--bento-card-hover);
-}
-
-/* Pass Button */
-.action-btn.pass {
-    width: 56px;
-    height: 56px;
-    border-color: var(--accent-red);
-    color: var(--accent-red);
-}
-
-@media (min-width: 768px) {
-    .action-btn.pass {
-        width: 64px;
-        height: 64px;
-    }
-}
-
-.action-btn.pass:hover:not(:disabled) {
-    background: color-mix(in srgb, var(--accent-red) 10%, transparent);
-}
-
-/* Super Like Button - same size as pass and like */
-.action-btn.super-like {
-    width: 56px;
-    height: 56px;
-    border-color: var(--primary);
-    color: var(--primary);
-}
-
-@media (min-width: 768px) {
-    .action-btn.super-like {
-        width: 64px;
-        height: 64px;
-    }
-}
-
-.action-btn.super-like:hover:not(:disabled) {
-    background: color-mix(in srgb, var(--primary) 10%, transparent);
-}
-
-/* Like Button */
-.action-btn.like {
-    width: 56px;
-    height: 56px;
-    border-color: var(--accent-teal);
-    color: var(--accent-teal);
-}
-
-@media (min-width: 768px) {
-    .action-btn.like {
-        width: 64px;
-        height: 64px;
-    }
-}
-
-.action-btn.like:hover:not(:disabled) {
-    background: color-mix(in srgb, var(--accent-teal) 10%, transparent);
-}
-
-/* No More Offers - Bento Card */
-.no-more-offers {
-    text-align: center;
-    padding: var(--space-8);
-    max-width: 100%;
-    margin: 0 var(--space-4);
-    background: var(--bento-card);
-    border: 1px solid var(--bento-card-border-subtle);
-    border-radius: var(--radius-xl);
-    box-shadow: var(--shadow-md);
-}
-
-@media (min-width: 480px) {
-    .no-more-offers {
-        padding: var(--space-12);
-        max-width: 400px;
-        margin: 0;
-    }
-}
-
-.no-offers-actions {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: var(--space-2);
-    margin-bottom: var(--space-3);
-}
-
-.no-offers-actions .btn {
-    display: inline-flex;
     align-items: center;
     gap: 0.4rem;
 }
 
-@media (prefers-reduced-motion: reduce) {
-    .action-btn,
-    .no-more-offers {
-        transition: none;
-    }
+.feed-brand-title {
+    font-size: 1.05rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
-.empty-icon {
-    display: inline-flex;
+.feed-top-bar__scope {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    max-width: 240px;
+}
+
+.feed-top-bar__scope .offer-scope-toggle {
+    margin: 0;
+    padding: 2px;
+    background: var(--surface-muted);
+    border-radius: var(--radius-pill);
+}
+
+.feed-top-bar__scope .offer-scope-toggle-btn {
+    min-height: 32px;
+    padding: 0.2rem 0.6rem;
+    font-size: 0.74rem;
+    border-radius: var(--radius-pill);
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.feed-top-bar__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.feed-top-bar__actions .offer-preferences-button {
+    min-width: unset;
+    padding: 0.4rem 0.65rem;
+    font-size: 0.74rem;
+    border-radius: var(--radius-pill);
+}
+
+.feed-notice-banner {
+    pointer-events: auto;
+    margin-top: 0.35rem;
+    max-width: 580px;
+    width: 100%;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    background: var(--glass-surface);
+    backdrop-filter: blur(16px);
+    border-left: 3px solid var(--primary);
+    border-radius: var(--radius-md);
+    padding: 0.4rem 0.75rem;
+    box-shadow: var(--shadow-sm);
+}
+
+/* Feed Stage Container */
+.feed-stage-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 100dvh;
+    padding-top: calc(var(--safe-top, 0px) + 52px);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Empty State Experience */
+.feed-empty-state-screen {
+    flex: 1;
+    display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: var(--space-3);
-    color: var(--text-muted);
+    padding: 1.5rem;
+    padding-bottom: 5.5rem;
 }
 
-@media (min-width: 768px) {
-    .empty-icon {
-        margin-bottom: var(--space-4);
-    }
-}
-
-.no-more-offers h2 {
-    font-size: 1.25rem;
-    font-weight: 700;
-    margin-bottom: var(--space-2);
-    color: var(--text-primary);
-}
-
-@media (min-width: 768px) {
-    .no-more-offers h2 {
-        font-size: 1.5rem;
-    }
-}
-
-.no-more-offers p {
-    color: var(--text-secondary);
-    margin-bottom: var(--space-4);
-    font-size: 0.9rem;
-}
-
-@media (min-width: 768px) {
-    .no-more-offers p {
-        margin-bottom: var(--space-6);
-        font-size: 1rem;
-    }
-}
-
-/* Loading/Error States - MOBILE FIRST */
-.swipe-page.loading,
-.swipe-page.error {
+.feed-empty-state-card {
+    width: 100%;
+    max-width: 440px;
+    padding: 2.2rem 1.8rem;
+    text-align: center;
+    display: flex;
     flex-direction: column;
-    gap: var(--space-4);
-    padding: var(--space-4);
+    align-items: center;
+    gap: 0.85rem;
+    border-radius: var(--radius-2xl);
+    background: var(--glass-surface);
+    backdrop-filter: blur(28px);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-lg);
+    animation: fade-in-up 0.4s var(--ease-out);
+}
+
+[data-theme='dark'] .feed-empty-state-card {
+    background: rgba(28, 28, 33, 0.85);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.feed-empty-icon-glow {
+    width: 72px;
+    height: 72px;
+    border-radius: var(--radius-full);
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.25) 0%, transparent 70%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.25rem;
+}
+
+.empty-sparkle-icon {
+    color: var(--primary);
+    filter: drop-shadow(0 0 12px var(--primary-glow));
+}
+
+.feed-empty-state-card h2 {
+    margin: 0;
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+}
+
+.feed-empty-state-card p {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.55;
+    color: var(--text-secondary);
+}
+
+.feed-empty-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-top: 0.6rem;
+    width: 100%;
+}
+
+.feed-empty-actions .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.65rem 1.15rem;
+    font-size: 0.85rem;
+    border-radius: var(--radius-pill);
+}
+
+/* Loading & Error States */
+.vertical-feed-page.loading,
+.vertical-feed-page.error {
+    align-items: center;
+    justify-content: center;
+}
+
+.feed-loading-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    padding-bottom: 4rem;
+}
+
+.feed-loading-spinner-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.error-card {
+    max-width: 440px;
+    padding: 2rem;
     text-align: center;
 }
 
-.swipe-page.loading p,
-.swipe-page.error p {
-    font-size: 0.9rem;
-    color: var(--text-secondary);
+@keyframes fade-in-up {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

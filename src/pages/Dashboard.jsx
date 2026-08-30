@@ -12,33 +12,22 @@ const DashboardLoading = () => (
 )
 
 const UnknownRoleFallback = ({ onSignOut, isSigningOut, email, tr }) => (
-    <div style={{
-        minHeight: '100dvh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '2rem'
-    }}>
-        <div className="glass-card" style={{
-            maxWidth: '560px',
-            width: '100%',
-            padding: '2rem',
-            textAlign: 'center'
-        }}>
-            <h2 style={{ marginBottom: '0.75rem' }}>{tr('Account Type Unresolved', 'Type de compte non resolu')}</h2>
-            <p style={{ margin: '0 0 1rem 0', color: 'var(--text-secondary)' }}>
+    <div className="dashboard-fallback-page">
+        <div className="dashboard-fallback-card">
+            <h2 className="dashboard-fallback-title">{tr('Account Type Unresolved', 'Type de compte non resolu')}</h2>
+            <p className="dashboard-fallback-desc">
                 {tr(
                     'Your session is active, but your account role could not be determined. Please sign out and sign in again. If this persists, contact support.',
                     "Votre session est active, mais le role du compte n'a pas pu etre determine. Veuillez vous deconnecter puis vous reconnecter. Si le probleme persiste, contactez le support."
                 )}
             </p>
             {email && (
-                <p style={{ margin: '0 0 1.5rem 0', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+                <p className="dashboard-fallback-email">
                     {tr('Signed in as:', 'Connecte en tant que :')} {email}
                 </p>
             )}
 
-            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <div className="dashboard-fallback-actions">
                 <button
                     type="button"
                     className="btn btn-primary"
@@ -85,7 +74,7 @@ function Dashboard() {
     }
 
     if (!isLoggedIn) {
-        return <Navigate to="/login" replace />
+        return <Navigate to="/student/login" replace />
     }
 
     if (isAdmin || metadataType === 'admin') {

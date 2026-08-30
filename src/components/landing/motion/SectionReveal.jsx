@@ -48,7 +48,7 @@ export function SectionReveal({
       variants={variants}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once, amount }}
+      viewport={{ once, amount: amount || 0.05, margin: '0px 0px -40px 0px' }}
       style={style}
     >
       {children}

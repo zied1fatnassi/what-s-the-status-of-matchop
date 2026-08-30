@@ -4,6 +4,22 @@
     min-height: 100dvh;
 }
 
+.app-wrapper--feed {
+    height: 100dvh;
+    min-height: 100dvh;
+    max-height: 100dvh;
+    overflow: hidden;
+}
+
+.app-main--feed {
+    height: 100dvh;
+    min-height: 100dvh;
+    max-height: 100dvh;
+    overflow: hidden;
+    padding: 0;
+    margin: 0;
+}
+
 .route-loading-fallback {
     display: flex;
     justify-content: center;

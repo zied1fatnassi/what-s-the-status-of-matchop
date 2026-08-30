@@ -454,7 +454,7 @@ body,
    2. Problem Section
    -------------------------------------------------------------------------- */
 .landing-problem {
-  padding: clamp(3.5rem, 7vw, 7rem) 0;
+  padding: clamp(2.5rem, 5vw, 4.5rem) 0;
   position: relative;
 }
 
@@ -575,7 +575,7 @@ body,
    3. Idea Section (3 Pillars Bento)
    -------------------------------------------------------------------------- */
 .landing-idea {
-  padding: clamp(3.5rem, 7vw, 7rem) 0;
+  padding: clamp(2.5rem, 5vw, 4.5rem) 0;
   position: relative;
   background: linear-gradient(180deg, transparent 0%, rgba(59, 130, 246, 0.02) 50%, transparent 100%);
 }
@@ -687,7 +687,7 @@ body,
    4. AI Engine Section
    -------------------------------------------------------------------------- */
 .landing-ai-engine {
-  padding: clamp(3.5rem, 7vw, 7rem) 0;
+  padding: clamp(2.5rem, 5vw, 4.5rem) 0;
   position: relative;
 }
 
@@ -939,7 +939,7 @@ body,
    5. Interactive Discovery & Swipe Demo Section
    -------------------------------------------------------------------------- */
 .landing-swipe-demo {
-  padding: clamp(3.5rem, 7vw, 7rem) 0;
+  padding: clamp(2.5rem, 5vw, 4.5rem) 0;
   position: relative;
 }
 
@@ -1345,7 +1345,7 @@ body,
    6. Match Moment Cinematic Arena
    -------------------------------------------------------------------------- */
 .landing-match-moment {
-  padding: clamp(3.5rem, 7vw, 7rem) 0;
+  padding: clamp(2.5rem, 5vw, 4.5rem) 0;
   position: relative;
   background: radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.05) 0%, transparent 70%);
 }
@@ -1544,7 +1544,7 @@ body,
    7. Chat Connection Section
    -------------------------------------------------------------------------- */
 .landing-chat-connection {
-  padding: clamp(3.5rem, 7vw, 7rem) 0;
+  padding: clamp(2.5rem, 5vw, 4.5rem) 0;
   position: relative;
 }
 
@@ -1773,7 +1773,7 @@ body,
    8. Dual Value Split Section (Sticky Left + Stream Right)
    -------------------------------------------------------------------------- */
 .landing-dual-value {
-  padding: clamp(3.5rem, 8vw, 7.5rem) 0;
+  padding: clamp(2.5rem, 5vw, 4.5rem) 0;
   position: relative;
 }
 
@@ -1943,7 +1943,7 @@ body,
    9. Final CTA Section
    -------------------------------------------------------------------------- */
 .landing-final-cta {
-  padding: clamp(3.5rem, 8vw, 7.5rem) 0;
+  padding: clamp(3rem, 6vw, 5.5rem) 0;
   position: relative;
   overflow: hidden;
 }

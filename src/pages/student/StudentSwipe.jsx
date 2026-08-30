@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
-import { X, Heart, Star, RotateCcw, Loader, Globe2 } from 'lucide-react'
+import { RotateCcw, Loader, Globe2, Sparkles, SlidersHorizontal } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import SwipeCard from '../../components/SwipeCard'
+import VerticalOpportunityFeed from '../../components/discovery/VerticalOpportunityFeed'
+import StudentBottomNav from '../../components/navigation/StudentBottomNav'
 import MatchModal from '../../components/MatchModal'
 import OfferDetailModal from '../../components/OfferDetailModal'
 import ApplicationToast from '../../components/ApplicationToast'
@@ -9,6 +10,7 @@ import MatchToast from '../../components/MatchToast'
 import OfferScopeToggle from '../../components/offers/OfferScopeToggle'
 import PreferencesButton from '../../components/offers/PreferencesButton'
 import PreferencesDrawerOrModal from '../../components/offers/PreferencesDrawerOrModal'
+import Logo from '../../components/Logo'
 import { useAuth } from '../../context/AuthContext'
 import { useApplications } from '../../context/ApplicationContext'
 import { useJobOffers } from '../../hooks/useJobOffers'
@@ -16,6 +18,7 @@ import { useMatchListener } from '../../hooks/useMatchListener'
 import { usePremiumGate } from '../../hooks/usePremiumGate'
 import { isLimitReachedCode } from '../../lib/swipeLimit'
 import { readStorageJSON, writeStorageJSON } from '../../lib/localStorageState'
+import { useBilingualText } from '../../lib/useBilingualText'
 import './StudentSwipe.css'
 
 const DISCOVERY_SCOPE_STORAGE_KEY = 'matchop_discovery_scope'
@@ -129,7 +132,7 @@ function StudentSwipe() {
         readStorageJSON(STUDENT_SWIPE_PREFERENCES_KEY, DEFAULT_SWIPE_PREFERENCES)
     ))
     const { t } = useTranslation(undefined, { useSuspense: false })
-    const topCardRef = useRef(null)
+    const tr = useBilingualText()
     const preloadedAssetUrlsRef = useRef(new Set())
     const modeInitializedRef = useRef(false)
 
@@ -162,9 +165,10 @@ function StudentSwipe() {
         writeStorageJSON(STUDENT_SWIPE_PREFERENCES_KEY, swipePreferences)
     }, [swipePreferences])
 
+    // Preload next upcoming company logos
     useEffect(() => {
         if (!hasMoreOffers) return
-        const queuedOffers = offers.slice(currentIndex + 1, currentIndex + 3)
+        const queuedOffers = offers.slice(currentIndex + 1, currentIndex + 4)
 
         queuedOffers.forEach((offer) => {
             const assetUrl = offer?.companyLogo
@@ -301,8 +305,10 @@ function StudentSwipe() {
         }
     }, [paywall, mode, setMode, clearPaywall, isPremiumEnabled, requirePremium])
 
-    const handleSwipe = (direction) => {
-        if (!currentOffer) return
+    const handleSwipe = (direction, swipedOffer = currentOffer) => {
+        const offerToSwipe = swipedOffer || currentOffer
+        if (!offerToSwipe) return
+
         if (mode === 'standard' && !canUsePremiumMode && dailySwipeUsage?.reached) {
             openPremiumUpsell('daily_limit', {
                 used: dailySwipeUsage?.used ?? null,
@@ -311,7 +317,6 @@ function StudentSwipe() {
             return
         }
 
-        const offerToSwipe = currentOffer
         const isExternal = offerToSwipe.isExternal === true
         setSwipeHistory((prev) => [...prev, { offer: offerToSwipe, direction }])
         setCurrentIndex((prev) => prev + 1)
@@ -333,24 +338,24 @@ function StudentSwipe() {
 
                 if (direction === 'left') {
                     setToastIsExternal(false)
-                    setToastTitle(t('studentSwipe.toasts.notInterested'))
+                    setToastTitle(t('studentSwipe.toasts.notInterested', 'Not interested'))
                     setToastVariant('rejected')
                     setShowToast(true)
                 } else if (direction === 'right' || direction === 'super') {
                     if (isExternal && swipeResult?.externalMatchSaved) {
-                        const sourceWebsite = swipeResult?.sourceWebsite
+                        const website = swipeResult?.sourceWebsite
                             || offerToSwipe.sourceWebsite
-                            || t('matches.externalSourceFallback')
+                            || t('matches.externalSourceFallback', 'External Website')
                         setToastIsExternal(true)
-                        setToastTitle(t('studentSwipe.toasts.externalSaved', { source: sourceWebsite }))
+                        setToastTitle(t('studentSwipe.toasts.externalSaved', { source: website }))
                         setToastVariant('application')
                     } else if (direction === 'super') {
                         setToastIsExternal(false)
-                        setToastTitle(t('studentSwipe.toasts.addedToFavorites'))
+                        setToastTitle(t('studentSwipe.toasts.addedToFavorites', 'Added to favorites'))
                         setToastVariant('favorites')
                     } else {
                         setToastIsExternal(false)
-                        setToastTitle(t('studentSwipe.toasts.applicationSent'))
+                        setToastTitle(t('studentSwipe.toasts.applicationSent', 'Application was sent!'))
                         setToastVariant('application')
                     }
                     setShowToast(true)
@@ -367,9 +372,9 @@ function StudentSwipe() {
     }
 
     const handleUndo = () => {
-        if (swipeHistory.length === 0) return
-        setSwipeHistory(swipeHistory.slice(0, -1))
-        setCurrentIndex(currentIndex - 1)
+        if (swipeHistory.length === 0 || currentIndex <= 0) return
+        setSwipeHistory((prev) => prev.slice(0, -1))
+        setCurrentIndex((prev) => Math.max(0, prev - 1))
     }
 
     const handleViewDetails = (offer) => {
@@ -378,31 +383,46 @@ function StudentSwipe() {
 
     if (loading) {
         return (
-            <div className="swipe-page loading">
-                <Loader className="animate-spin text-primary" size={48} />
-                <p>{t('studentSwipe.loading.findingBestJobs')}</p>
+            <div className="vertical-feed-page loading">
+                <div className="feed-loading-hero">
+                    <Logo size="default" animated={true} />
+                    <div className="feed-loading-spinner-wrap">
+                        <Loader className="animate-spin text-primary" size={32} />
+                        <p>{t('studentSwipe.loading.findingBestJobs', 'Finding the best jobs for you...')}</p>
+                    </div>
+                </div>
+                <StudentBottomNav />
             </div>
         )
     }
 
     if (error) {
         return (
-            <div className="swipe-page error">
-                <div className="glass-card">
-                    <h3 className="text-red-500">{t('studentSwipe.error.title')}</h3>
+            <div className="vertical-feed-page error">
+                <div className="glass-card error-card">
+                    <h3 className="text-red-500">{t('studentSwipe.error.title', 'Oops! Something went wrong.')}</h3>
                     <p>{error}</p>
-                    <button className="btn btn-primary mt-4" onClick={() => refresh()}>{t('studentSwipe.error.tryAgain')}</button>
+                    <button className="btn btn-primary mt-4" onClick={() => refresh()}>
+                        {t('studentSwipe.error.tryAgain', 'Try Again')}
+                    </button>
                 </div>
+                <StudentBottomNav />
             </div>
         )
     }
 
     return (
-        <div className="swipe-page">
-            <div className="swipe-container">
-                {showDiscoveryControls && (
-                    <div className="stack-mode-panel">
-                        <div className="offer-discovery-toolbar">
+        <div className="vertical-feed-page">
+            {/* Top Discovery Controls Floating Bar */}
+            <header className="feed-top-bar" aria-label="Discovery controls header">
+                <div className="feed-top-bar__inner">
+                    <div className="feed-top-bar__brand">
+                        <Logo size="small" showText={false} />
+                        <span className="feed-brand-title">MatchOp</span>
+                    </div>
+
+                    {showDiscoveryControls && (
+                        <div className="feed-top-bar__scope">
                             <OfferScopeToggle
                                 activeScope={activeScope}
                                 isPremium={canUsePremiumMode}
@@ -410,113 +430,104 @@ function StudentSwipe() {
                                 onChange={handleScopeChange}
                                 premiumEnabled={isPremiumEnabled}
                             />
-                            <PreferencesButton
-                                onClick={handleOpenPreferences}
-                                disabled={loading}
-                            />
                         </div>
+                    )}
 
-                        {notice && (
-                            <div className="stack-mode-notice">
-                                {notice}
-                            </div>
-                        )}
+                    <div className="feed-top-bar__actions">
+                        <PreferencesButton
+                            onClick={handleOpenPreferences}
+                            disabled={loading}
+                        />
+                    </div>
+                </div>
+
+                {notice && (
+                    <div className="feed-notice-banner" role="status">
+                        {notice}
                     </div>
                 )}
+            </header>
 
+            {/* Opportunity Feed Stage or End-of-Feed Empty State */}
+            <main className="feed-stage-container">
                 {hasMoreOffers ? (
-                    <>
-                        <div className="cards-stack">
-                            {offers.slice(currentIndex, currentIndex + 2).reverse().map((offer, index) => (
-                                <SwipeCard
-                                    key={offer.id}
-                                    offer={offer}
-                                    onSwipe={handleSwipe}
-                                    onViewDetails={handleViewDetails}
-                                    isTop={index === offers.slice(currentIndex, currentIndex + 2).length - 1}
-                                    ref={index === offers.slice(currentIndex, currentIndex + 2).length - 1 ? topCardRef : null}
-                                />
-                            ))}
-                        </div>
-
-                        <div className="swipe-actions">
-                            <button
-                                className="action-btn undo"
-                                onClick={handleUndo}
-                                disabled={swipeHistory.length === 0}
-                            >
-                                <RotateCcw size={24} />
-                            </button>
-                            <button
-                                className="action-btn pass"
-                                onClick={() => {
-                                    if (topCardRef.current) topCardRef.current.triggerSwipe('left')
-                                    else handleSwipe('left')
-                                }}
-                            >
-                                <X size={32} />
-                            </button>
-                            <button
-                                className="action-btn super-like"
-                                onClick={() => {
-                                    if (topCardRef.current) topCardRef.current.triggerSwipe('super')
-                                    else handleSwipe('super')
-                                }}
-                            >
-                                <Star size={24} />
-                            </button>
-                            <button
-                                className="action-btn like"
-                                onClick={() => {
-                                    if (topCardRef.current) topCardRef.current.triggerSwipe('right')
-                                    else handleSwipe('right')
-                                }}
-                            >
-                                <Heart size={32} />
-                            </button>
-                        </div>
-                    </>
+                    <VerticalOpportunityFeed
+                        offers={offers}
+                        currentIndex={currentIndex}
+                        canUndo={swipeHistory.length > 0}
+                        onSwipe={handleSwipe}
+                        onUndo={handleUndo}
+                        onViewDetails={handleViewDetails}
+                    />
                 ) : (
-                    <div className="no-more-offers glass-card hover-lift">
-                        {isLocalEmptyState ? (
-                            <>
-                                <div className="empty-icon" aria-hidden="true"><Globe2 size={42} /></div>
-                                <h2>{t('studentSwipe.empty.noOffersNearbyTitle')}</h2>
-                                <p>{t('studentSwipe.empty.noOffersNearbyBody')}</p>
-                                {isPremiumEnabled && (
-                                    <div className="no-offers-actions">
+                    <div className="feed-empty-state-screen">
+                        <div className="feed-empty-state-card glass-card">
+                            <div className="feed-empty-icon-glow">
+                                <Sparkles size={40} className="empty-sparkle-icon" />
+                            </div>
+
+                            {isLocalEmptyState ? (
+                                <>
+                                    <h2>{t('studentSwipe.empty.noOffersNearbyTitle', 'No offers nearby.')}</h2>
+                                    <p>{t('studentSwipe.empty.noOffersNearbyBody', 'Try updating your discovery preferences or switch to Global mode.')}</p>
+                                    <div className="feed-empty-actions">
+                                        {isPremiumEnabled && (
+                                            <button
+                                                type="button"
+                                                className="btn btn-primary"
+                                                onClick={() => handleScopeChange('global')}
+                                            >
+                                                <Globe2 size={16} />
+                                                {t('studentSwipe.empty.switchToGlobal', 'Switch to Global')}
+                                            </button>
+                                        )}
+                                        <button
+                                            type="button"
+                                            className="btn btn-secondary"
+                                            onClick={handleOpenPreferences}
+                                        >
+                                            <SlidersHorizontal size={16} />
+                                            {t('studentSwipe.empty.adjustPreferences', 'Adjust preferences')}
+                                        </button>
+                                    </div>
+                                </>
+                            ) : (
+                                <>
+                                    <h2>{t('swipe.allCaughtUp', 'You’ve reached the end')}</h2>
+                                    <p>{t('swipe.noMoreOffers', 'New opportunities are added regularly. Refresh or adjust filters to discover more.')}</p>
+                                    <div className="feed-empty-actions">
                                         <button
                                             type="button"
                                             className="btn btn-primary"
-                                            onClick={() => handleScopeChange('global')}
+                                            onClick={() => {
+                                                setCurrentIndex(0)
+                                                setSwipeHistory([])
+                                                refresh()
+                                            }}
                                         >
-                                            <Globe2 size={16} />
-                                            {t('studentSwipe.empty.switchToGlobal')}
+                                            <RotateCcw size={16} />
+                                            {t('studentSwipe.empty.refreshJobs', 'Refresh Jobs')}
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="btn btn-secondary"
+                                            onClick={handleOpenPreferences}
+                                        >
+                                            <SlidersHorizontal size={16} />
+                                            {t('studentSwipe.empty.adjustPreferences', 'Adjust preferences')}
                                         </button>
                                     </div>
-                                )}
-                            </>
-                        ) : (
-                            <>
-                                <div className="empty-icon" aria-hidden="true"><Star size={42} /></div>
-                                <h2>{t('swipe.allCaughtUp')}</h2>
-                                <p>{t('swipe.noMoreOffers')}</p>
-                                <button
-                                    className="btn btn-primary"
-                                    onClick={() => {
-                                        setCurrentIndex(0)
-                                        setSwipeHistory([])
-                                        refresh()
-                                    }}
-                                >
-                                    {t('studentSwipe.empty.refreshJobs')} <RotateCcw size={18} className="ml-2" />
-                                </button>
-                            </>
-                        )}
+                                </>
+                            )}
+                        </div>
                     </div>
                 )}
-            </div>
+            </main>
 
+            {/* Persistent Product Bottom Navigation */}
+            <StudentBottomNav />
+
+            {/* Modals & Toasts */}
             <PreferencesDrawerOrModal
                 isOpen={showPreferencesModal}
                 preferences={swipePreferences}

@@ -98,7 +98,7 @@ function CompanyLogin() {
     return (
         <div className="auth-page">
             <div className="auth-container login-container">
-                <div className="auth-visual" style={{ background: 'linear-gradient(135deg, #1976d2 0%, #0d47a1 100%)' }}>
+                <div className="auth-visual">
                     <div className="visual-content">
                         <div className="visual-icon animate-float">
                             <Building2 size={64} />

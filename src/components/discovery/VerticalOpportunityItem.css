@@ -1,0 +1,631 @@
+/* ===================================
+   VERTICAL OPPORTUNITY ITEM - FULL SCREEN STYLING
+   Cinematic, modern, high-contrast, theme-aware
+   ================================ */
+
+.vertical-opportunity-item {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+    user-select: none;
+    background: var(--bg-main);
+    box-sizing: border-box;
+}
+
+/* Atmospheric Visual Background */
+.opportunity-atmosphere {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.opportunity-atmosphere__ambient {
+    position: absolute;
+    inset: -20%;
+    filter: blur(80px);
+    opacity: 0.85;
+    transition: background var(--duration-slow) var(--ease-smooth);
+}
+
+.opportunity-atmosphere__logo-backdrop {
+    position: absolute;
+    top: 5%;
+    left: 50%;
+    transform: translateX(-50%) scale(1.6);
+    width: 320px;
+    height: 320px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    filter: blur(55px) saturate(1.4);
+    opacity: 0.22;
+    transition: opacity var(--duration-normal) var(--ease-smooth);
+}
+
+[data-theme='dark'] .opportunity-atmosphere__logo-backdrop {
+    opacity: 0.35;
+    filter: blur(65px) saturate(1.6);
+}
+
+.opportunity-atmosphere__fallback-mesh {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 30%, rgba(59, 130, 246, 0.15), transparent 70%);
+}
+
+.opportunity-atmosphere__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        180deg,
+        rgba(248, 250, 252, 0.72) 0%,
+        rgba(248, 250, 252, 0.85) 45%,
+        rgba(248, 250, 252, 0.98) 100%
+    );
+    backdrop-filter: blur(28px);
+    -webkit-backdrop-filter: blur(28px);
+}
+
+[data-theme='dark'] .opportunity-atmosphere__overlay {
+    background: linear-gradient(
+        180deg,
+        rgba(10, 10, 11, 0.72) 0%,
+        rgba(10, 10, 11, 0.88) 45%,
+        rgba(10, 10, 11, 0.98) 100%
+    );
+    backdrop-filter: blur(32px);
+    -webkit-backdrop-filter: blur(32px);
+}
+
+.opportunity-atmosphere__vignette {
+    position: absolute;
+    inset: 0;
+    box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme='dark'] .opportunity-atmosphere__vignette {
+    box-shadow: inset 0 0 120px rgba(0, 0, 0, 0.4);
+}
+
+/* Gesture Dismiss Active Badge (Visible during upward drag) */
+.opportunity-gesture-dismiss {
+    position: absolute;
+    top: 22%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity var(--duration-fast) ease-out;
+}
+
+.opportunity-gesture-dismiss__badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.4rem;
+    background: rgba(239, 68, 68, 0.85);
+    backdrop-filter: blur(16px);
+    color: #ffffff;
+    font-size: 0.9rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    border-radius: var(--radius-pill);
+    box-shadow: 0 8px 32px rgba(239, 68, 68, 0.45), 0 0 0 2px rgba(255, 255, 255, 0.3);
+    transform: scale(0.95);
+    transition: all var(--duration-fast) var(--ease-spring);
+}
+
+.opportunity-gesture-dismiss__badge.is-activated {
+    transform: scale(1.1);
+    background: #ef4444;
+    box-shadow: 0 12px 40px rgba(239, 68, 68, 0.7), 0 0 0 3px #ffffff;
+}
+
+/* Viewport Content Container */
+.opportunity-viewport-content {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 620px;
+    height: 100%;
+    margin: 0 auto;
+    padding: clamp(0.75rem, 2vw, 1.25rem) clamp(1rem, 3.5vw, 1.75rem);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-sizing: border-box;
+}
+
+/* Header Cluster */
+.opportunity-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding-top: 0.25rem;
+}
+
+.opportunity-header__badges {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.opportunity-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.65rem;
+    border-radius: var(--radius-pill);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    backdrop-filter: blur(12px);
+    box-shadow: var(--shadow-sm);
+}
+
+.badge-match {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.18), rgba(167, 139, 250, 0.22));
+    border: 1px solid color-mix(in srgb, var(--primary) 45%, transparent);
+    color: var(--primary);
+}
+
+[data-theme='dark'] .badge-match {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.28), rgba(167, 139, 250, 0.32));
+    color: #93c5fd;
+}
+
+.badge-icon-sparkle {
+    color: var(--primary);
+    animation: sparkle-glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes sparkle-glow {
+    0% { transform: scale(0.9); opacity: 0.8; }
+    100% { transform: scale(1.15); opacity: 1; }
+}
+
+.badge-exclusive {
+    background: rgba(251, 191, 36, 0.16);
+    border: 1px solid rgba(245, 158, 11, 0.4);
+    color: #d97706;
+}
+
+[data-theme='dark'] .badge-exclusive {
+    color: #fbbf24;
+}
+
+.badge-leak {
+    background: rgba(167, 139, 250, 0.16);
+    border: 1px solid rgba(167, 139, 250, 0.4);
+    color: #7c3aed;
+}
+
+[data-theme='dark'] .badge-leak {
+    color: #c4b5fd;
+}
+
+.badge-bounty {
+    background: rgba(34, 197, 94, 0.16);
+    border: 1px solid rgba(34, 197, 94, 0.4);
+    color: #16a34a;
+}
+
+[data-theme='dark'] .badge-bounty {
+    color: #4ade80;
+}
+
+.badge-external {
+    background: rgba(100, 116, 139, 0.14);
+    border: 1px solid rgba(100, 116, 139, 0.3);
+    color: var(--text-secondary);
+}
+
+/* Company Identity Card */
+.opportunity-company-card {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.7rem 0.9rem;
+    background: var(--glass-surface);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+}
+
+[data-theme='dark'] .opportunity-company-card {
+    background: rgba(28, 28, 33, 0.7);
+}
+
+.opportunity-company-logo {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-lg);
+    background: var(--surface-muted);
+    border: 1px solid var(--glass-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+    box-shadow: var(--shadow-sm);
+}
+
+.opportunity-company-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.opportunity-company-initial {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--primary);
+}
+
+.opportunity-company-details {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.opportunity-company-title-row {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.opportunity-company-name {
+    margin: 0;
+    font-size: 0.98rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.opportunity-type-pill {
+    align-self: flex-start;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--primary);
+    background: color-mix(in srgb, var(--primary) 12%, transparent);
+    padding: 0.15rem 0.5rem;
+    border-radius: var(--radius-pill);
+}
+
+.opportunity-info-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--border-default);
+    background: var(--surface-soft);
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--duration-fast) var(--ease-smooth);
+    touch-action: manipulation;
+}
+
+.opportunity-info-btn:hover {
+    color: var(--text-primary);
+    border-color: var(--primary);
+    background: color-mix(in srgb, var(--primary) 10%, var(--surface-soft));
+    transform: scale(1.05);
+}
+
+/* Body / Role details */
+.opportunity-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.85rem;
+    padding: 0.5rem 0;
+}
+
+.opportunity-title {
+    margin: 0;
+    font-size: clamp(1.45rem, 4.2vw, 2.1rem);
+    font-weight: 800;
+    line-height: 1.18;
+    color: var(--text-primary);
+    letter-spacing: -0.025em;
+}
+
+/* Metadata chips */
+.opportunity-meta-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+}
+
+.meta-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.75rem;
+    border-radius: var(--radius-pill);
+    background: var(--glass-surface);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    box-shadow: var(--shadow-sm);
+}
+
+.meta-chip--highlight {
+    color: var(--accent-teal);
+    border-color: color-mix(in srgb, var(--accent-teal) 36%, var(--glass-border));
+    background: color-mix(in srgb, var(--accent-teal) 8%, var(--glass-surface));
+}
+
+[data-theme='dark'] .meta-chip--highlight {
+    color: #2dd4bf;
+}
+
+/* Description Accordion */
+.opportunity-description-box {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding: 0.85rem 1rem;
+    background: var(--glass-surface);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+}
+
+[data-theme='dark'] .opportunity-description-box {
+    background: rgba(28, 28, 33, 0.6);
+}
+
+.opportunity-description {
+    margin: 0;
+    font-size: clamp(0.85rem, 2vw, 0.95rem);
+    line-height: 1.55;
+    color: var(--text-secondary);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    transition: all var(--duration-normal) var(--ease-smooth);
+}
+
+.opportunity-description.is-expanded {
+    display: block;
+    -webkit-line-clamp: unset;
+    max-height: 180px;
+    overflow-y: auto;
+    padding-right: 0.35rem;
+}
+
+.opportunity-expand-toggle {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.2rem 0;
+    border: none;
+    background: transparent;
+    color: var(--primary);
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity var(--duration-fast);
+}
+
+.opportunity-expand-toggle:hover {
+    opacity: 0.8;
+}
+
+/* Key Skills */
+.opportunity-skills-cluster {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+}
+
+.opportunity-skill-pill {
+    padding: 0.3rem 0.65rem;
+    border-radius: var(--radius-pill);
+    background: var(--surface-muted);
+    border: 1px solid var(--border-default);
+    color: var(--text-primary);
+    font-size: 0.74rem;
+    font-weight: 600;
+    transition: all var(--duration-fast);
+}
+
+.opportunity-skill-pill.more {
+    color: var(--text-muted);
+}
+
+/* Primary Action Bar */
+.opportunity-actions-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: clamp(0.5rem, 2vw, 0.85rem);
+    padding-bottom: clamp(5.2rem, 11dvh, 6.4rem); /* Leave space for floating bottom nav */
+    padding-top: 0.5rem;
+}
+
+/* Base Action Buttons */
+.action-btn-undo {
+    width: 48px;
+    height: 54px;
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border-default);
+    background: var(--glass-surface);
+    backdrop-filter: blur(16px);
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--duration-fast) var(--ease-smooth);
+    touch-action: manipulation;
+    flex-shrink: 0;
+}
+
+.action-btn-undo:hover:not(:disabled) {
+    color: var(--text-primary);
+    border-color: var(--text-primary);
+    transform: scale(1.05);
+}
+
+.action-btn-undo:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+/* Ignore Button with dynamic fill progress */
+.action-btn-ignore {
+    position: relative;
+    flex: 1;
+    min-height: 54px;
+    border-radius: var(--radius-xl);
+    border: 2px solid var(--accent-red);
+    background: var(--glass-surface);
+    backdrop-filter: blur(16px);
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition: border-color var(--duration-fast), transform var(--duration-fast), box-shadow var(--duration-fast);
+    touch-action: manipulation;
+}
+
+.action-btn-ignore__fill {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--accent-red);
+    opacity: 0.22;
+    transition: height 0.08s ease-out;
+    pointer-events: none;
+}
+
+.action-btn-ignore.is-active-fill .action-btn-ignore__fill {
+    opacity: 1;
+    height: 100% !important;
+}
+
+.action-btn-ignore.is-active-fill {
+    background: var(--accent-red);
+    border-color: #ffffff;
+    box-shadow: 0 8px 30px rgba(239, 68, 68, 0.5);
+    transform: scale(1.03);
+}
+
+.action-btn-ignore__content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    height: 100%;
+    color: var(--accent-red);
+    font-weight: 800;
+    font-size: 0.92rem;
+    letter-spacing: 0.03em;
+    transition: color var(--duration-fast);
+}
+
+.action-btn-ignore.is-active-fill .action-btn-ignore__content {
+    color: #ffffff;
+}
+
+.action-btn-ignore:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--accent-red) 12%, var(--glass-surface));
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.25);
+}
+
+/* Apply Button - Primary Brand Styling */
+.action-btn-apply {
+    position: relative;
+    flex: 1.35;
+    min-height: 54px;
+    border-radius: var(--radius-xl);
+    border: none;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    box-shadow: 0 6px 24px rgba(59, 130, 246, 0.4), 0 2px 6px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    overflow: hidden;
+    transition: all var(--duration-fast) var(--ease-spring);
+    touch-action: manipulation;
+}
+
+.action-btn-apply__content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    height: 100%;
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 0.96rem;
+    letter-spacing: 0.03em;
+}
+
+.action-btn-apply:hover:not(:disabled) {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 10px 32px rgba(59, 130, 246, 0.55);
+    background: linear-gradient(135deg, #60a5fa 0%, #2563eb 100%);
+}
+
+.action-btn-apply:active:not(:disabled) {
+    transform: translateY(1px) scale(0.98);
+}
+
+.action-btn-apply--external {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+}
+
+/* Desktop Polish */
+@media (min-width: 768px) {
+    .opportunity-viewport-content {
+        padding-top: 1rem;
+        padding-bottom: 0.5rem;
+    }
+
+    .opportunity-title {
+        font-size: 2.25rem;
+    }
+
+    .action-btn-undo {
+        width: 54px;
+        min-height: 58px;
+    }
+
+    .action-btn-ignore,
+    .action-btn-apply {
+        min-height: 58px;
+    }
+
+    .action-btn-ignore__content,
+    .action-btn-apply__content {
+        font-size: 1rem;
+    }
+}

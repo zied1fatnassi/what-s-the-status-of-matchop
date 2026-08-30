@@ -1,0 +1,11 @@
+- generic [ref=f5e3]:
+  - navigation [ref=f5e4]:
+    - generic [ref=f5e5]:
+      - link "Go to Discover" [ref=f5e6] [cursor=pointer]:
+        - /url: /
+        - generic [ref=f5e7]: MatchOp
+      - generic [ref=f5e14]:
+        - button "Change language" [ref=f5e16] [cursor=pointer]:
+          - generic [ref=f5e20]: EN
+        - button "Switch to dark mode" [ref=f5e23] [cursor=pointer]
+  - main [ref=f5e26]

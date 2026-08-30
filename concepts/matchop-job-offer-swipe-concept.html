@@ -1,0 +1,675 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MatchOp Job Offer Swipe Concept</title>
+  <style>
+    :root {
+      --primary: #3b82f6;
+      --primary-dark: #2563eb;
+      --primary-glow: rgba(59, 130, 246, 0.22);
+      --accent-teal: #14b8a6;
+      --accent-rose: #fb7185;
+      --accent-red: #ef4444;
+      --bento-bg: #f8fafc;
+      --bento-card: #ffffff;
+      --bento-card-hover: #f1f5f9;
+      --glass-surface: rgba(255, 255, 255, 0.88);
+      --glass-border: rgba(15, 23, 42, 0.09);
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-tertiary: #64748b;
+      --text-muted: #94a3b8;
+      --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+      --shadow-md: 0 8px 20px rgba(15, 23, 42, 0.08);
+      --shadow-lg: 0 18px 48px rgba(15, 23, 42, 0.14);
+      --radius-lg: 1rem;
+      --radius-xl: 1.25rem;
+      --radius-2xl: 1.5rem;
+      --radius-3xl: 1.875rem;
+      --radius-pill: 9999px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: Inter, "Plus Jakarta Sans", "Segoe UI", Arial, sans-serif;
+      background:
+        radial-gradient(circle at 18% 14%, rgba(59, 130, 246, 0.16), transparent 30%),
+        radial-gradient(circle at 85% 18%, rgba(20, 184, 166, 0.12), transparent 28%),
+        linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+      color: var(--text-primary);
+      overflow: hidden;
+    }
+
+    .canvas {
+      width: 1600px;
+      height: 1000px;
+      display: grid;
+      grid-template-columns: 1fr 430px 1fr;
+      align-items: center;
+      gap: 88px;
+      padding: 64px 96px;
+    }
+
+    .story {
+      justify-self: end;
+      width: 430px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 44px;
+    }
+
+    .logo-icon {
+      position: relative;
+      width: 58px;
+      height: 58px;
+    }
+
+    .logo-icon span {
+      position: absolute;
+      width: 43px;
+      height: 43px;
+      border-radius: 14px;
+    }
+
+    .logo-icon .one {
+      left: 0;
+      top: 0;
+      background: linear-gradient(135deg, #1565c0, #1976d2);
+      transform: rotate(-15deg);
+    }
+
+    .logo-icon .two {
+      right: 0;
+      top: 8px;
+      background: linear-gradient(135deg, #2196f3, #64b5f6);
+      transform: rotate(15deg);
+    }
+
+    .logo-icon .diamond {
+      left: 22px;
+      top: 22px;
+      width: 14px;
+      height: 14px;
+      border-radius: 3px;
+      background: linear-gradient(135deg, #90caf9, #e3f2fd);
+      transform: rotate(45deg);
+    }
+
+    .brand-name {
+      display: block;
+      font-size: 30px;
+      line-height: 1;
+      font-weight: 700;
+      letter-spacing: 0;
+    }
+
+    .tagline {
+      display: block;
+      margin-top: 5px;
+      color: var(--text-secondary);
+      font-size: 13px;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      font-size: 58px;
+      line-height: 1.02;
+      letter-spacing: 0;
+      max-width: 410px;
+      margin-bottom: 22px;
+    }
+
+    .story p {
+      color: var(--text-secondary);
+      font-size: 20px;
+      line-height: 1.55;
+      max-width: 390px;
+    }
+
+    .gesture-note {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 34px;
+      padding: 12px 16px;
+      border: 1px solid rgba(59, 130, 246, 0.18);
+      border-radius: var(--radius-pill);
+      background: rgba(255, 255, 255, 0.72);
+      color: var(--primary-dark);
+      font-weight: 700;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .phone {
+      position: relative;
+      width: 430px;
+      height: 880px;
+      justify-self: center;
+      border-radius: 46px;
+      padding: 20px;
+      background: linear-gradient(180deg, #182133, #05070b);
+      box-shadow: 0 38px 80px rgba(15, 23, 42, 0.28);
+    }
+
+    .phone::before {
+      content: "";
+      position: absolute;
+      top: 14px;
+      left: 50%;
+      width: 118px;
+      height: 28px;
+      border-radius: var(--radius-pill);
+      background: #06070a;
+      transform: translateX(-50%);
+      z-index: 5;
+    }
+
+    .screen {
+      position: relative;
+      height: 100%;
+      border-radius: 34px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 22% 10%, rgba(59, 130, 246, 0.2), transparent 30%),
+        linear-gradient(180deg, #f8fafc 0%, #eef4fb 100%);
+    }
+
+    .topbar {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 46px 24px 14px;
+    }
+
+    .mini-logo {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: 0;
+    }
+
+    .mini-mark {
+      position: relative;
+      width: 32px;
+      height: 32px;
+    }
+
+    .mini-mark::before,
+    .mini-mark::after {
+      content: "";
+      position: absolute;
+      width: 23px;
+      height: 23px;
+      border-radius: 8px;
+    }
+
+    .mini-mark::before {
+      top: 0;
+      left: 0;
+      background: #1976d2;
+      transform: rotate(-15deg);
+    }
+
+    .mini-mark::after {
+      top: 5px;
+      right: 0;
+      background: #64b5f6;
+      transform: rotate(15deg);
+    }
+
+    .counter {
+      padding: 7px 11px;
+      border-radius: var(--radius-pill);
+      background: rgba(255, 255, 255, 0.76);
+      border: 1px solid var(--glass-border);
+      color: var(--text-tertiary);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .section-title {
+      position: relative;
+      z-index: 10;
+      padding: 0 24px 16px;
+      font-size: 29px;
+      line-height: 1.08;
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    .stack {
+      position: relative;
+      height: 634px;
+      margin: 0 18px;
+    }
+
+    .offer-card {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 596px;
+      border-radius: var(--radius-3xl);
+      overflow: hidden;
+      background: var(--glass-surface);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--shadow-lg);
+      backdrop-filter: blur(18px);
+    }
+
+    .offer-card.next {
+      top: 62px;
+      transform: scale(0.93);
+      opacity: 0.72;
+      filter: saturate(0.92);
+      box-shadow: var(--shadow-md);
+    }
+
+    .offer-card.current {
+      top: -62px;
+      transform: translateY(-62px) rotate(-2deg);
+      z-index: 3;
+    }
+
+    .company-bg {
+      position: relative;
+      height: 214px;
+      overflow: hidden;
+      background:
+        linear-gradient(135deg, rgba(22, 101, 192, 0.94), rgba(20, 184, 166, 0.8)),
+        linear-gradient(45deg, #e2e8f0, #ffffff);
+    }
+
+    .company-bg::before {
+      content: "NX";
+      position: absolute;
+      right: -20px;
+      top: 8px;
+      color: rgba(255, 255, 255, 0.2);
+      font-size: 128px;
+      font-weight: 900;
+      letter-spacing: -10px;
+    }
+
+    .company-bg::after {
+      content: "";
+      position: absolute;
+      left: -32px;
+      bottom: -60px;
+      width: 190px;
+      height: 190px;
+      border-radius: 48px;
+      transform: rotate(24deg);
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .offer-card.next .company-bg {
+      background:
+        linear-gradient(135deg, rgba(167, 139, 250, 0.92), rgba(59, 130, 246, 0.82)),
+        linear-gradient(45deg, #e2e8f0, #ffffff);
+    }
+
+    .offer-card.next .company-bg::before {
+      content: "LD";
+    }
+
+    .match-badge {
+      position: absolute;
+      top: 18px;
+      left: 18px;
+      padding: 7px 12px;
+      border-radius: var(--radius-pill);
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--accent-teal);
+      border: 1px solid rgba(20, 184, 166, 0.34);
+      font-size: 12px;
+      font-weight: 900;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .logo-tile {
+      position: absolute;
+      left: 22px;
+      bottom: -34px;
+      width: 68px;
+      height: 68px;
+      border-radius: 20px;
+      display: grid;
+      place-items: center;
+      background: rgba(255, 255, 255, 0.95);
+      color: var(--primary-dark);
+      border: 1px solid rgba(255, 255, 255, 0.68);
+      box-shadow: var(--shadow-md);
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    .card-content {
+      padding: 48px 24px 22px;
+    }
+
+    .company-name {
+      color: var(--text-secondary);
+      font-size: 14px;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    .job-title {
+      color: var(--text-primary);
+      font-size: 31px;
+      line-height: 1.08;
+      letter-spacing: 0;
+      font-weight: 900;
+      margin-bottom: 7px;
+    }
+
+    .description {
+      color: var(--text-secondary);
+      font-size: 15px;
+      line-height: 1.52;
+      margin-bottom: 18px;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .meta {
+      min-height: 48px;
+      padding: 10px 12px;
+      border-radius: 16px;
+      background: rgba(248, 250, 252, 0.9);
+      border: 1px solid var(--glass-border);
+    }
+
+    .meta small {
+      display: block;
+      color: var(--text-muted);
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      margin-bottom: 2px;
+    }
+
+    .meta strong {
+      display: block;
+      color: var(--text-primary);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      padding: 7px 10px;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(59, 130, 246, 0.15);
+      background: rgba(59, 130, 246, 0.08);
+      color: var(--primary-dark);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .ignore-stamp {
+      position: absolute;
+      top: 92px;
+      right: 22px;
+      z-index: 6;
+      padding: 7px 16px;
+      border: 4px solid var(--accent-rose);
+      border-radius: 14px;
+      color: var(--accent-rose);
+      background: rgba(255, 255, 255, 0.84);
+      font-size: 31px;
+      line-height: 1;
+      font-weight: 950;
+      letter-spacing: 0;
+      transform: rotate(13deg);
+      box-shadow: var(--shadow-md);
+    }
+
+    .actions {
+      position: absolute;
+      left: 26px;
+      right: 26px;
+      bottom: 24px;
+      z-index: 12;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .action {
+      height: 58px;
+      border: 2px solid;
+      border-radius: var(--radius-pill);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      font-size: 15px;
+      font-weight: 900;
+      background: rgba(255, 255, 255, 0.92);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .action.ignore {
+      border-color: var(--accent-rose);
+      background: var(--accent-rose);
+      color: #ffffff;
+      box-shadow: 0 12px 24px rgba(251, 113, 133, 0.28);
+    }
+
+    .action.apply {
+      border-color: var(--accent-teal);
+      color: var(--accent-teal);
+    }
+
+    .swipe-arrow {
+      position: absolute;
+      left: 50%;
+      top: 162px;
+      z-index: 8;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: var(--primary-dark);
+      font-weight: 900;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    .arrow-line {
+      width: 3px;
+      height: 72px;
+      border-radius: var(--radius-pill);
+      background: linear-gradient(180deg, transparent, var(--primary));
+      position: relative;
+    }
+
+    .arrow-line::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 18px;
+      height: 18px;
+      border-left: 3px solid var(--primary);
+      border-top: 3px solid var(--primary);
+      transform: translateX(-50%) rotate(45deg);
+      border-radius: 2px;
+    }
+
+    .side-panel {
+      width: 408px;
+      align-self: center;
+    }
+
+    .panel-card {
+      background: rgba(255, 255, 255, 0.76);
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      border-radius: var(--radius-2xl);
+      padding: 24px;
+      box-shadow: var(--shadow-md);
+      backdrop-filter: blur(16px);
+    }
+
+    .panel-card h2 {
+      font-size: 25px;
+      line-height: 1.18;
+      letter-spacing: 0;
+      margin-bottom: 16px;
+    }
+
+    .flow-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .flow-item {
+      display: grid;
+      grid-template-columns: 34px 1fr;
+      gap: 12px;
+      align-items: start;
+      color: var(--text-secondary);
+      font-size: 15px;
+      line-height: 1.45;
+    }
+
+    .flow-item span {
+      width: 34px;
+      height: 34px;
+      border-radius: 13px;
+      display: grid;
+      place-items: center;
+      background: rgba(59, 130, 246, 0.1);
+      color: var(--primary-dark);
+      font-weight: 900;
+    }
+  </style>
+</head>
+<body>
+  <main class="canvas" aria-label="MatchOp job offer swipe concept">
+    <section class="story">
+      <div class="logo" aria-label="MatchOp">
+        <div class="logo-icon">
+          <span class="one"></span>
+          <span class="two"></span>
+          <span class="diamond"></span>
+        </div>
+        <div>
+          <span class="brand-name">MatchOp</span>
+          <span class="tagline">Match the Opportunity</span>
+        </div>
+      </div>
+      <h1>Job offers become the first screen.</h1>
+      <p>Students land directly on a full-screen offer card: big role title, company name, description, and a branded company backdrop.</p>
+      <div class="gesture-note">Swipe up to ignore and reveal the next offer</div>
+    </section>
+
+    <section class="phone" aria-label="Mobile app preview">
+      <div class="screen">
+        <header class="topbar">
+          <div class="mini-logo"><span class="mini-mark"></span>MatchOp</div>
+          <div class="counter">12 offers</div>
+        </header>
+        <div class="section-title">Job Offers</div>
+        <div class="swipe-arrow">
+          <div class="arrow-line"></div>
+          Ignore
+        </div>
+        <div class="stack">
+          <article class="offer-card next">
+            <div class="company-bg">
+              <div class="match-badge">89% match</div>
+              <div class="logo-tile">LD</div>
+            </div>
+            <div class="card-content">
+              <div class="job-title">Junior Product Designer</div>
+              <div class="company-name">LaunchDesk</div>
+              <p class="description">Create polished flows for a fast-moving SaaS team while pairing with senior product and engineering mentors.</p>
+              <div class="meta-grid">
+                <div class="meta"><small>Location</small><strong>Tunis / Hybrid</strong></div>
+                <div class="meta"><small>Type</small><strong>Internship</strong></div>
+              </div>
+              <div class="tags">
+                <span class="tag">Figma</span>
+                <span class="tag">UX</span>
+                <span class="tag">Research</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="offer-card current">
+            <div class="ignore-stamp">IGNORE</div>
+            <div class="company-bg">
+              <div class="match-badge">94% match</div>
+              <div class="logo-tile">NX</div>
+            </div>
+            <div class="card-content">
+              <div class="job-title">Frontend Engineering Intern</div>
+              <div class="company-name">NexaCloud Labs</div>
+              <p class="description">Build React dashboards, refine reusable components, and ship production features with a product-focused engineering team.</p>
+              <div class="meta-grid">
+                <div class="meta"><small>Location</small><strong>Remote</strong></div>
+                <div class="meta"><small>Salary</small><strong>900 TND/mo</strong></div>
+                <div class="meta"><small>Duration</small><strong>6 months</strong></div>
+                <div class="meta"><small>Start</small><strong>October</strong></div>
+              </div>
+              <div class="tags">
+                <span class="tag">React</span>
+                <span class="tag">TypeScript</span>
+                <span class="tag">UI Systems</span>
+              </div>
+            </div>
+          </article>
+        </div>
+        <div class="actions">
+          <div class="action ignore">X Ignore</div>
+          <div class="action apply">Apply</div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="side-panel">
+      <div class="panel-card">
+        <h2>Concept behavior</h2>
+        <div class="flow-list">
+          <div class="flow-item"><span>1</span><div>Offer cards are vertical and branded by each company.</div></div>
+          <div class="flow-item"><span>2</span><div>Apply stays available as the positive action at the bottom.</div></div>
+          <div class="flow-item"><span>3</span><div>Swiping up fills Ignore, stamps the card, and brings the next offer forward.</div></div>
+        </div>
+      </div>
+    </aside>
+  </main>
+</body>
+</html>

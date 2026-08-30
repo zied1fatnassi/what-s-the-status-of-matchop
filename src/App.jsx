@@ -221,6 +221,7 @@ function App() {
   }
 
   const isLanding = location.pathname === ROOT_ROUTE
+  const isFeedRoute = location.pathname === '/student/swipe' || location.pathname === '/student/offers' || location.pathname === '/offers'
 
   return (
     <>
@@ -242,8 +243,8 @@ function App() {
         onUpgrade={handleUpgrade}
       />
 
-      <div className={isLanding ? 'app-wrapper app-wrapper--landing' : 'app-wrapper'}>
-        <Navbar isLanding={isLanding} />
+      <div className={isLanding ? 'app-wrapper app-wrapper--landing' : isFeedRoute ? 'app-wrapper app-wrapper--feed' : 'app-wrapper'}>
+        {!isFeedRoute && <Navbar isLanding={isLanding} />}
         {showVercelTelemetry && (
           <>
             <SpeedInsights />
@@ -251,7 +252,7 @@ function App() {
           </>
         )}
 
-        <main className={isLanding ? 'app-main app-main--landing' : 'app-main'}>
+        <main className={isLanding ? 'app-main app-main--landing' : isFeedRoute ? 'app-main app-main--feed' : 'app-main'}>
           <Suspense fallback={<RouteLoadingFallback />}>
             <Routes>
               {/* Landing */}
@@ -327,9 +328,11 @@ function App() {
           </Suspense>
         </main>
 
-        <Suspense fallback={<div className="footer-placeholder" aria-hidden="true" />}>
-          <Footer />
-        </Suspense>
+        {!isFeedRoute && (
+          <Suspense fallback={<div className="footer-placeholder" aria-hidden="true" />}>
+            <Footer />
+          </Suspense>
+        )}
       </div>
     </>
   )

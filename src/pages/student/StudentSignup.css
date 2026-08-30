@@ -1,48 +1,41 @@
 /* ===================================
-   AUTH PAGES - MOBILE FIRST
+   AUTH PAGES - MOBILE FIRST & THEME-AWARE
    ================================ */
 
 .auth-page {
     min-height: 100dvh;
-    /* MOBILE FIRST: Smaller top padding on mobile */
-    padding-top: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: var(--space-4);
+    padding: clamp(1rem, 4vw, 2.5rem);
+    background: var(--bento-bg);
 }
 
-@media (min-width: 768px) {
-    .auth-page {
-        padding-top: 0;
-        padding: var(--space-6);
-    }
-}
-
-/* Auth Container - MOBILE FIRST: Single column on mobile */
+/* Auth Container - Single column mobile, 2-column desktop */
 .auth-container {
     display: flex;
     flex-direction: column;
     max-width: 100%;
     width: 100%;
-    background: var(--glass-surface, rgba(255, 255, 255, 0.8));
-    backdrop-filter: blur(20px);
-    border: 1px solid var(--glass-border);
-    border-radius: var(--radius-xl);
+    background: var(--bento-card);
+    border: 1px solid var(--bento-card-border);
+    border-radius: var(--radius-2xl);
     overflow: hidden;
-    box-shadow: var(--glass-shadow, var(--shadow-lg));
+    box-shadow: var(--shadow-xl);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
 }
 
 @media (min-width: 768px) {
     .auth-container {
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        max-width: 1000px;
-        border-radius: var(--radius-2xl);
+        grid-template-columns: 1fr 1.4fr;
+        max-width: 1020px;
+        min-height: 540px;
     }
 }
 
-/* Auth Visual - MOBILE: Hidden */
+/* Auth Visual Banner (Left Side) */
 .auth-visual {
     display: none;
 }
@@ -50,17 +43,29 @@
 @media (min-width: 768px) {
     .auth-visual {
         display: flex;
-        background: linear-gradient(135deg, var(--primary) 0%, var(--accent-purple) 100%);
-        padding: var(--space-10);
+        background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 50%, var(--accent-purple) 100%);
+        padding: clamp(2rem, 4vw, 3.5rem);
         align-items: center;
         justify-content: center;
-        color: white;
+        color: #ffffff;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .auth-visual::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.18) 0%, transparent 65%);
+        pointer-events: none;
     }
 }
 
 .visual-content {
     text-align: center;
-    color: white;
+    color: #ffffff;
+    position: relative;
+    z-index: 1;
 }
 
 .visual-icon {
@@ -68,38 +73,47 @@
     height: 80px;
     margin: 0 auto var(--space-4);
     background: rgba(255, 255, 255, 0.2);
-    border-radius: var(--radius-xl);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: var(--radius-2xl);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
+    color: #ffffff;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 }
 
 @media (min-width: 768px) {
     .visual-icon {
-        width: 100px;
-        height: 100px;
+        width: 90px;
+        height: 90px;
         margin: 0 auto var(--space-6);
     }
 }
 
 .visual-content h2 {
-    font-size: clamp(1.5rem, 4vw, 2rem);
+    font-size: clamp(1.5rem, 3.5vw, 2.1rem);
     font-weight: 700;
     margin-bottom: var(--space-3);
-    color: white;
+    color: #ffffff;
+    letter-spacing: -0.02em;
 }
 
 .visual-content p {
-    font-size: 1rem;
-    opacity: 0.9;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    opacity: 0.92;
     margin-bottom: var(--space-6);
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba(255, 255, 255, 0.95);
+    max-width: 32ch;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 @media (min-width: 768px) {
     .visual-content p {
-        font-size: 1.1rem;
+        font-size: 1rem;
         margin-bottom: var(--space-8);
     }
 }
@@ -109,46 +123,44 @@
     flex-direction: column;
     gap: var(--space-3);
     text-align: left;
+    max-width: 280px;
+    margin: 0 auto;
 }
 
 .visual-feature {
     display: flex;
     align-items: center;
-    gap: var(--space-3);
-    font-size: 1rem;
-    color: white;
+    gap: 0.65rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.95);
 }
 
-/* Auth Form Container - MOBILE FIRST */
+/* Auth Form Container (Right Side) */
 .auth-form-container {
-    padding: var(--space-4);
-}
-
-@media (min-width: 768px) {
-    .auth-form-container {
-        padding: var(--space-10);
-    }
+    padding: clamp(1.5rem, 4vw, 3rem);
+    background: var(--bento-card);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .auth-header {
-    margin-bottom: var(--space-4);
-}
-
-@media (min-width: 768px) {
-    .auth-header {
-        margin-bottom: var(--space-8);
-    }
+    margin-bottom: var(--space-6);
 }
 
 .auth-header h1 {
-    font-size: clamp(1.5rem, 4vw, 2rem);
+    font-size: clamp(1.5rem, 3.5vw, 2rem);
     font-weight: 700;
     margin-bottom: var(--space-2);
     color: var(--text-primary);
+    letter-spacing: -0.02em;
 }
 
 .auth-header p {
     color: var(--text-secondary);
+    font-size: 0.92rem;
+    margin-bottom: 0;
 }
 
 .auth-header a {
@@ -160,44 +172,49 @@
     text-decoration: underline;
 }
 
+/* Stepper Indicator */
 .progress-steps {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: var(--space-4);
-    margin-bottom: var(--space-8);
+    gap: var(--space-3);
+    margin-bottom: var(--space-6);
 }
 
 .progress-step {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--space-2);
+    gap: 0.35rem;
 }
 
 .step-dot {
     width: 36px;
     height: 36px;
     border-radius: var(--radius-full);
-    background: var(--bg-main);
-    border: 2px solid var(--glass-border);
+    background: var(--surface-soft);
+    border: 2px solid var(--border-default);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 600;
-    transition: all 0.2s;
+    font-weight: 700;
+    font-size: 0.88rem;
+    transition: all var(--duration-normal) var(--ease-in-out);
     color: var(--text-muted);
 }
 
 .progress-step.active .step-dot {
     background: var(--primary);
     border-color: var(--primary);
-    color: white;
+    color: #ffffff;
+    box-shadow: 0 0 12px var(--primary-glow);
 }
 
 .progress-step span {
-    font-size: 0.8rem;
+    font-size: 0.78rem;
+    font-weight: 500;
     color: var(--text-muted);
+    transition: color var(--duration-fast);
 }
 
 .progress-step.active span {
@@ -207,15 +224,16 @@
 
 .progress-line {
     flex: 1;
-    max-width: 80px;
+    max-width: 60px;
     height: 2px;
-    background: var(--glass-border);
+    background: var(--border-default);
+    border-radius: 2px;
 }
 
 .auth-form {
     display: flex;
     flex-direction: column;
-    gap: var(--space-4);
+    gap: 1.15rem;
 }
 
 .input-with-icon {
@@ -225,18 +243,30 @@
 
 .input-icon {
     position: absolute;
-    left: var(--space-4);
+    left: 1rem;
     top: 50%;
     transform: translateY(-50%);
     color: var(--text-muted);
     z-index: 10;
+    pointer-events: none;
+    transition: color var(--duration-fast);
+}
+
+.input-with-icon:focus-within .input-icon {
+    color: var(--primary);
 }
 
 .input-with-icon .input {
-    padding-left: calc(var(--space-4) + 28px);
+    padding-left: 2.85rem;
     background: var(--input-bg);
     color: var(--text-primary);
-    border-color: var(--input-border);
+    border: 1px solid var(--input-border);
+    border-radius: var(--radius-xl);
+}
+
+.input-with-icon .input:focus {
+    background: var(--input-focus-bg);
+    border-color: var(--primary);
 }
 
 .w-full {
@@ -244,30 +274,29 @@
 }
 
 .auth-terms {
-    margin-top: var(--space-4);
-    font-size: 0.8rem;
+    margin-top: var(--space-5);
+    font-size: 0.82rem;
     color: var(--text-muted);
     text-align: center;
-}
-
-@media (min-width: 768px) {
-    .auth-terms {
-        margin-top: var(--space-6);
-        font-size: 0.85rem;
-    }
+    line-height: 1.5;
 }
 
 .auth-terms a {
     color: var(--primary);
+    font-weight: 500;
+}
+
+.auth-terms a:hover {
+    text-decoration: underline;
 }
 
 .student-signup-referral-card {
     margin-bottom: var(--space-4);
-    border: 1px solid color-mix(in srgb, var(--accent-amber) 45%, var(--border));
+    border: 1px solid color-mix(in srgb, var(--accent-amber) 40%, var(--border-default));
     border-radius: var(--radius-lg);
-    background: color-mix(in srgb, var(--accent-amber) 10%, var(--surface-2));
+    background: color-mix(in srgb, var(--accent-amber) 10%, var(--surface-soft));
     color: var(--text-primary);
-    padding: 0.75rem;
+    padding: 0.85rem 1rem;
 }
 
 .student-signup-referral-card-header {
@@ -279,37 +308,39 @@
 
 .student-signup-referral-card h2 {
     margin: 0;
-    font-size: 0.95rem;
+    font-size: 0.92rem;
 }
 
 .student-signup-referral-card p {
-    margin: 0.35rem 0 0;
+    margin: 0.3rem 0 0;
     color: var(--text-secondary);
     font-size: 0.82rem;
 }
 
 .student-signup-referral-dismiss {
-    border: 1px solid var(--border);
+    border: 1px solid var(--border-default);
     border-radius: var(--radius-full);
-    background: var(--surface);
+    background: var(--surface-elevated);
     color: var(--text-secondary);
-    width: 28px;
-    height: 28px;
+    width: 26px;
+    height: 26px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    transition: all 0.2s ease;
 }
 
 .student-signup-referral-dismiss:hover {
     color: var(--text-primary);
+    border-color: var(--text-primary);
 }
 
 .student-signup-referral-applied {
     margin: 0;
-    border: 1px solid color-mix(in srgb, var(--accent-teal) 40%, var(--border));
+    border: 1px solid color-mix(in srgb, var(--accent-teal) 40%, var(--border-default));
     border-radius: var(--radius-md);
-    background: color-mix(in srgb, var(--accent-teal) 10%, var(--surface-2));
+    background: color-mix(in srgb, var(--accent-teal) 10%, var(--surface-soft));
     color: var(--text-primary);
     font-size: 0.83rem;
     padding: 0.6rem 0.75rem;
@@ -317,10 +348,10 @@
 
 .student-signup-followup-card {
     margin-top: var(--space-4);
-    border: 1px solid color-mix(in srgb, var(--accent-teal) 45%, var(--border));
+    border: 1px solid color-mix(in srgb, var(--accent-teal) 40%, var(--border-default));
     border-radius: var(--radius-lg);
-    background: color-mix(in srgb, var(--accent-teal) 10%, var(--surface-2));
-    padding: var(--space-3);
+    background: color-mix(in srgb, var(--accent-teal) 10%, var(--surface-soft));
+    padding: var(--space-4);
 }
 
 .student-signup-followup-card h3 {
@@ -344,36 +375,38 @@
 
 .student-signup-followup-actions .btn {
     flex: 1;
-    min-width: 150px;
+    min-width: 140px;
     justify-content: center;
 }
 
-/* Legacy media query - Now handled with mobile-first above */
-
-/* Auth Error */
+/* Auth Error Alert */
 .auth-error {
-    padding: var(--space-3) var(--space-4);
+    padding: 0.75rem 1rem;
     background: rgba(239, 68, 68, 0.1);
-    border: 1px solid rgba(239, 68, 68, 0.2);
+    border: 1px solid rgba(239, 68, 68, 0.25);
     border-radius: var(--radius-lg);
     color: var(--accent-red);
-    font-size: 0.9rem;
+    font-size: 0.88rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     margin-bottom: var(--space-4);
 }
 
-/* Forgot Password */
+/* Forgot Password Link */
 .forgot-password {
     text-align: right;
-    margin-top: calc(-1 * var(--space-2));
+    margin-top: -0.25rem;
 }
 
 .forgot-password a {
     font-size: 0.85rem;
-    color: var(--text-muted);
+    color: var(--primary);
+    font-weight: 500;
 }
 
 .forgot-password a:hover {
-    color: var(--primary);
+    text-decoration: underline;
 }
 
 .login-container {
