@@ -37,17 +37,18 @@ if (isSupabaseConfigMissing) {
 } else {
   root.render(
     <StrictMode>
-      <BrowserRouter>
-        <AuthProvider>
-          <ApplicationProvider>
-            <ThemeProvider>
-              <ErrorBoundary fallbackMessage="The app encountered an unexpected error. Please reload.">
+      <ErrorBoundary fallbackMessage="The app encountered an unexpected error. Please reload.">
+        <BrowserRouter>
+          <AuthProvider>
+            <ApplicationProvider>
+              <ThemeProvider>
                 <App />
-              </ErrorBoundary>
-            </ThemeProvider>
-          </ApplicationProvider>
-        </AuthProvider>
-      </BrowserRouter>
+              </ThemeProvider>
+            </ApplicationProvider>
+          </AuthProvider>
+        </BrowserRouter>
+      </ErrorBoundary>
     </StrictMode>,
   )
 }
+

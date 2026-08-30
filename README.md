@@ -11,6 +11,7 @@
 - **Swipe-to-match** — Students browse and swipe on opportunities; mutual interest creates a match.
 - **Real-time chat** — Matched students and companies can message instantly via Supabase Realtime.
 - **AI-powered matching** — Semantic vector matching ranks opportunities by profile relevance (via Edge Functions).
+- **External Job Aggregation** — A dedicated Scrapling + Groq AI scraper automatically ingests opportunities from third-party ATS platforms.
 - **Company dashboard** — Post offers, review intros, manage candidates, and track matches.
 - **Admin panel** — User management, analytics, reports, offer moderation, payment oversight, and platform settings.
 - **Premium tier** — Gated features with upgrade modals, waitlist mode, and D17 mobile-payment checkout.
@@ -27,6 +28,7 @@
 |---|---|
 | Frontend | React 19, React Router 7, Framer Motion |
 | Backend | Supabase (Postgres, Auth, Realtime, Storage, Edge Functions) |
+| Data Ingestion (Scraper) | Python 3.11+, Scrapling, Groq API, httpx |
 | Build | Vite 7 |
 | Styling | Vanilla CSS, Google Fonts (Inter) |
 | Charts | Chart.js + react-chartjs-2 |
@@ -45,6 +47,7 @@
 
 - Node.js 18+ (tested on Node 24)
 - npm 9+
+- Python 3.11+ (if running the external scraper locally)
 - A Supabase project (URL + anon key)
 
 ---
@@ -93,6 +96,7 @@ cp .env.example .env
 | `OPENROUTER_API_KEY` | AI provider key for Edge Functions |
 | `HF_API_KEY` | HuggingFace API key for embeddings |
 | `SUPABASE_SERVICE_ROLE_KEY` | Privileged access for server-side operations |
+| `GROQ_API_KEY` | Groq API key for the Scraper's AI extraction |
 
 ### 3. Install & Run
 
@@ -170,6 +174,11 @@ MATCHOP/
 ├── database/                    # Manual SQL scripts (canonical RLS, schema, seeds)
 ├── docs/                        # Operational docs (email setup, premium discovery, security)
 ├── public/                      # Static assets (favicon, team photos)
+├── scraper/                     # Python-based External Job Scraper subsystem
+│   ├── matchop_scraper/         # Scraper source code (scrapling + Groq AI)
+│   ├── config/                  # Seed URLs (greenhouse, lever, workable)
+│   ├── docker/                  # Docker cron deployment setup
+│   └── pyproject.toml           # Scraper dependencies
 ├── .github/workflows/           # CI/CD workflows
 ├── Dockerfile                   # Docker dev environment (Node 22)
 ├── vercel.json                  # Vercel deploy config (SPA rewrites + security headers)
@@ -206,6 +215,21 @@ The backend logic runs as 15 Deno/TypeScript Edge Functions:
 
 ---
 
+## External Job Scraper Subsystem
+
+In addition to companies manually posting offers, MatchOp utilizes a dedicated Python scraper (in the `scraper/` directory) to continuously ingest job postings from third-party ATS platforms (Greenhouse, Lever, Workable).
+
+**Pipeline Flow:**
+1. **Scrapling** fetches seed pages based on configurations in `scraper/config/seeds.yml`.
+2. ATS-specific scrapers discover and parse job pages.
+3. **Groq AI** extracts structured fields (skills, experience, summary).
+4. The pipeline cleans titles, locations, and salaries, then deduplicates by URL and content hash.
+5. Jobs are upserted into the `external_jobs` table in Supabase via the Service Role key.
+
+See [`scraper/README.md`](scraper/README.md) for detailed local setup and running instructions.
+
+---
+
 ## Database
 
 This repo contains two SQL sources:
@@ -233,6 +257,12 @@ This repo contains two SQL sources:
 docker build -t matchop .
 docker run -p 5173:5173 matchop
 ```
+
+### Scraper Deployment
+
+The scraper runs autonomously via two supported methods:
+1. **GitHub Actions**: A cron job defined in `.github/workflows/external-job-scraper.yml` runs every 4 hours.
+2. **Docker Cron**: Located in `scraper/docker-compose.cron.yml` for isolated containerized scheduling.
 
 ---
 
@@ -296,6 +326,7 @@ docker run -p 5173:5173 matchop
 | Document | Description |
 |---|---|
 | [`PROJECT_MAP.md`](PROJECT_MAP.md) | Architecture overview, folder map, and data flow |
+| [`scraper/README.md`](scraper/README.md) | External job scraper architecture and runbook |
 | [`HANDOFF.md`](HANDOFF.md) | Production handoff: routes, env, deploy, and QA behaviors |
 | [`CLEANUP_REPORT.md`](CLEANUP_REPORT.md) | Cleanup pass: removed files, rationale, and risks |
 | [`24H_DB_HANDOFF_REPORT.md`](24H_DB_HANDOFF_REPORT.md) | Database handoff: schema findings and repair plan |

@@ -16,10 +16,20 @@
  * @module cookieStorage
  */
 
+function isHttps() {
+    try {
+        return typeof window !== 'undefined' && window.location?.protocol === 'https:'
+    } catch {
+        return false
+    }
+}
+
 const COOKIE_OPTIONS = {
     path: '/',
     sameSite: 'Strict',
-    secure: window.location.protocol === 'https:',
+    get secure() {
+        return isHttps()
+    },
     // Max age: 7 days (Supabase refresh tokens last longer, but we rotate)
     maxAge: 7 * 24 * 60 * 60,
 }
@@ -66,12 +76,17 @@ function serializeOptions(options) {
  * @returns {string|null}
  */
 function getCookie(name) {
-    const cookies = document.cookie.split(';')
-    for (const cookie of cookies) {
-        const [cookieName, ...cookieValueParts] = cookie.trim().split('=')
-        if (cookieName === name) {
-            return decodeCookieValue(cookieValueParts.join('='))
+    try {
+        if (typeof document === 'undefined' || !document.cookie) return null
+        const cookies = document.cookie.split(';')
+        for (const cookie of cookies) {
+            const [cookieName, ...cookieValueParts] = cookie.trim().split('=')
+            if (cookieName === name) {
+                return decodeCookieValue(cookieValueParts.join('='))
+            }
         }
+    } catch {
+        return null
     }
     return null
 }
@@ -83,8 +98,13 @@ function getCookie(name) {
  * @param {object} options
  */
 function setCookie(name, value, options = COOKIE_OPTIONS) {
-    const cookieString = `${name}=${encodeCookieValue(value)}; ${serializeOptions(options)}`
-    document.cookie = cookieString
+    try {
+        if (typeof document === 'undefined') return
+        const cookieString = `${name}=${encodeCookieValue(value)}; ${serializeOptions(options)}`
+        document.cookie = cookieString
+    } catch (err) {
+        console.warn('[CookieStorage] setCookie failed:', err?.message)
+    }
 }
 
 /**
@@ -92,52 +112,69 @@ function setCookie(name, value, options = COOKIE_OPTIONS) {
  * @param {string} name
  */
 function deleteCookie(name) {
-    document.cookie = `${name}=; path=/; max-age=0; SameSite=Strict`
+    try {
+        if (typeof document === 'undefined') return
+        document.cookie = `${name}=; path=/; max-age=0; SameSite=Strict`
+    } catch {
+        // Ignore cookie deletion errors
+    }
 }
 
 /**
- * Supabase-compatible storage adapter using cookies.
+ * Supabase-compatible storage adapter using cookies with localStorage fallback.
  * 
  * Implements the { getItem, setItem, removeItem } interface
  * required by @supabase/supabase-js auth config.
  */
 export const cookieStorage = {
     /**
-     * Retrieve a session value from cookies
+     * Retrieve a session value from cookies or localStorage
      * @param {string} key - The storage key (e.g., 'matchop-auth-token')
      * @returns {string|null}
      */
     getItem(key) {
         try {
-            return getCookie(key)
+            const cookieVal = getCookie(key)
+            if (cookieVal) return cookieVal
+
+            if (typeof localStorage !== 'undefined') {
+                return localStorage.getItem(key)
+            }
+            return null
         } catch (err) {
-            console.warn('[CookieStorage] getItem failed:', err.message)
+            console.warn('[CookieStorage] getItem failed:', err?.message)
             return null
         }
     },
 
     /**
-     * Store a session value in a cookie
+     * Store a session value in a cookie and localStorage for redundancy
      * @param {string} key
      * @param {string} value - JSON-stringified session data from Supabase
      */
     setItem(key, value) {
         try {
             setCookie(key, value, COOKIE_OPTIONS)
+            if (typeof localStorage !== 'undefined') {
+                localStorage.setItem(key, value)
+            }
         } catch (err) {
-            console.warn('[CookieStorage] setItem failed:', err.message)
+            console.warn('[CookieStorage] setItem failed:', err?.message)
         }
     },
 
     /**
-     * Remove a session cookie
+     * Remove a session cookie and localStorage entry
      * @param {string} key
      */
     removeItem(key) {
         try {
             deleteCookie(key)
+            if (typeof localStorage !== 'undefined') {
+                localStorage.removeItem(key)
+            }
         } catch (err) {
-            console.warn('[CookieStorage] removeItem failed:', err.message)
+            console.warn('[CookieStorage] removeItem failed:', err?.message)
         }
     },
 }
