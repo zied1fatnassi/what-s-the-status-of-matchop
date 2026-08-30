@@ -108,7 +108,7 @@ function StudentSwipe() {
     } = useJobOffers()
     const { openPremiumUpsell } = useApplications()
     const { newMatch, clearMatch } = useMatchListener()
-    const { user, isLoading: authLoading } = useAuth()
+    const { user: _user, isLoading: authLoading } = useAuth()
     const { isPremium, requirePremium } = usePremiumGate({
         source: 'student_swipe',
         premiumEnabled: isPremiumEnabled

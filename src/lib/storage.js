@@ -40,7 +40,7 @@ function validateFile(file, allowedMimes, allowedExts, maxSize) {
  * @param {string} name
  * @returns {string}
  */
-function sanitizeFilename(name) {
+export function sanitizeFilename(name) {
     return name.replace(/[^a-zA-Z0-9._-]/g, '_').replace(/\.{2,}/g, '.')
 }
 

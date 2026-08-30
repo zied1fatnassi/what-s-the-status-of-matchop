@@ -321,7 +321,6 @@ function StudentExternalMatches() {
                             const sourceLabel = match.source_website || t('matches.externalSourceFallback')
                             const isProcessing = processingIds.has(match.id)
                             const manualTrackingTooltip = t('matches.externalTrackingTooltip')
-                            const followUpDate = new Date(Date.now() + FOLLOW_UP_DELAY_MS).toISOString()
                             const priorityBadgeLabel = getPriorityBadgeLabel(match.priorityLevel, t)
 
                             return (
@@ -427,7 +426,7 @@ function StudentExternalMatches() {
                                                 type="button"
                                                 className="btn btn-secondary btn-sm"
                                                 onClick={() => handleExternalMatchAction(match.id, (externalMatchId) => (
-                                                    setFollowUpDate(externalMatchId, followUpDate)
+                                                    setFollowUpDate(externalMatchId, new Date(Date.now() + FOLLOW_UP_DELAY_MS).toISOString())
                                                 ))}
                                                 disabled={isProcessing}
                                             >
