@@ -68,7 +68,7 @@
         },
         "cta": {
             "title": "Rejoignez le mouvement.",
-            "subtitle": "Swipez vers votre reussite."
+            "subtitle": "Trouvez votre prochaine opportunité avec MatchOp."
         }
     },
     "contactPage": {
@@ -118,7 +118,7 @@
                 "body": "MatchOp est une plateforme de mise en relation professionnelle qui connecte les etudiants et jeunes diplomes avec des entreprises en recherche de talents. Notre service comprend :",
                 "items": {
                     "profile": "Creation et gestion de profil",
-                    "discovery": "Decouverte d'opportunites via le swipe",
+                    "discovery": "Découverte d'opportunités dans votre flux",
                     "matching": "Mise en relation entre etudiants et entreprises",
                     "messaging": "Messagerie directe entre profils apparies"
                 }
@@ -205,7 +205,7 @@
                     "deviceBrowser": "Informations sur l'appareil et le navigateur",
                     "ipLocation": "Adresse IP et donnees de localisation",
                     "pagesFeatures": "Pages visitees et fonctionnalites utilisees",
-                    "swipeHistory": "Preferences de swipe et historique de matchs"
+                    "swipeHistory": "Préférences de découverte et historique de matchs"
                 }
             },
             "usage": {
@@ -341,7 +341,7 @@
     },
     "landing": {
         "badge": "L'Avenir du Recrutement",
-        "heroTitle": "Swipez vers",
+        "heroTitle": "Trouvez votre voie vers",
         "heroHighlight": "Votre Carrière de Rêve",
         "heroSubtitle": "Connectez étudiants et entreprises grâce à une expérience de matching intuitive. Trouvez le stage parfait ou découvrez des talents exceptionnels.",
         "ctaStudent": "Je suis Étudiant",
@@ -352,8 +352,8 @@
         "howItWorks": "Comment fonctionne MatchOp",
         "step1Title": "Créez Votre Profil",
         "step1Desc": "Construisez un profil attractif présentant vos compétences, expériences et ce que vous recherchez.",
-        "step2Title": "Découvrez & Postulez",
-        "step2Desc": "Parcourez les opportunités sélectionnées, consultez les scores de compatibilité IA, et postulez en un clic.",
+        "step2Title": "Explorez & Exprimez votre intérêt",
+        "step2Desc": "Parcourez les opportunités recommandées chaque jour par l'IA dans votre flux. Exprimez votre intérêt et connectez-vous avec les recruteurs.",
         "step3Title": "Connectez & Discutez",
         "step3Desc": "En cas d'intérêt mutuel, démarrez une conversation et franchissez l'étape suivante de votre carrière.",
         "forStudents": "Pour les Étudiants",
@@ -556,7 +556,7 @@
         "benefitsDesc": "Sélectionnez les avantages que vous offrez aux employés",
         "links": "Liens",
         "socialLinks": "Réseaux Sociaux",
-        "saveAndStart": "Enregistrer & Commencer à Swiper",
+        "saveAndStart": "Enregistrer & Commencer à explorer",
         "saveAndPost": "Enregistrer & Publier Votre Première Offre"
     },
     "swipe": {
@@ -571,7 +571,7 @@
         "companyInterested": "{company} est intéressée par votre profil !",
         "candidateInterested": "{name} est intéressé(e) par votre offre !",
         "sendMessage": "Envoyer un Message",
-        "keepSwiping": "Continuer à Swiper"
+        "keepSwiping": "Continuer à explorer"
     },
     "matches": {
         "yourMatches": "Vos matchs",
@@ -645,7 +645,7 @@
         "externalTrackingTooltip": "Cette offre est externe. Vous suivez votre candidature manuellement.",
         "externalEmptyStates": {
             "savedTitle": "Aucun match externe sauvegarde",
-            "savedDescription": "Swipez a droite sur des opportunites externes pour les sauvegarder ici.",
+            "savedDescription": "Exprimez votre intérêt ou sauvegardez des opportunités depuis votre flux pour les suivre ici.",
             "appliedTitle": "Aucune candidature suivie pour le moment",
             "appliedDescription": "Marquez les offres sauvegardees comme postulees pour suivre les entretiens et les resultats ici.",
             "archivedTitle": "Aucune offre externe archivee",
@@ -815,7 +815,7 @@
             "totalOffers": "Total offres",
             "activeOffers": "Offres actives",
             "closedOffers": "Offres fermees",
-            "rightSwipes": "Swipes droite",
+            "rightSwipes": "Candidatures reçues",
             "pendingIntros": "Intros en attente",
             "acceptedIntros": "Intros acceptees",
             "matches": "Matchs",
@@ -831,7 +831,7 @@
             "status": "Statut",
             "location": "Lieu",
             "created": "Cree le",
-            "rightSwipes": "Swipes droite",
+            "rightSwipes": "Candidatures reçues",
             "matches": "Matchs",
             "matchRate": "Taux de match",
             "actions": "Actions"
@@ -941,7 +941,7 @@
         "reasons": {
             "premium_discovery_controls": {
                 "title": "Debloquez les opportunites globales",
-                "subtitle": "Passez a Premium pour la portee globale, des matchs plus rapides, des swipes illimites et des preferences avancees."
+                "subtitle": "Passez à Premium pour la portée globale, des matchs plus rapides, une découverte illimitée et des préférences avancées."
             },
             "global_discovery": {
                 "title": "Les opportunites globales sont Premium",
@@ -952,20 +952,21 @@
                 "subtitle": "Passez a Premium pour debloquer les recommandations personnalisees."
             },
             "daily_limit": {
-                "title": "Limite quotidienne de swipes atteinte",
-                "subtitle": "Passez a Premium pour des swipes illimites et plus de matchs."
+                "title": "Limite quotidienne de découverte atteinte",
+                "subtitle": "Passez à Premium pour une découverte illimitée et plus de matchs."
             },
             "daily_swipe_limit": {
-                "title": "Limite quotidienne de swipes atteinte",
-                "subtitle": "Vous avez atteint la limite standard de swipes aujourd'hui."
+                "title": "Limite quotidienne de découverte atteinte",
+                "subtitle": "Vous avez atteint la limite standard de découverte aujourd'hui."
             },
             "generic": {
                 "title": "Passez a Premium",
-                "subtitle": "Debloquez l'experience complete de swipe."
+                "subtitle": "Débloquez l'expérience complète de découverte."
             }
         },
         "features": {
-            "unlimitedSwipes": "Swipes illimites",
+            "unlimitedSwipes": "Découverte quotidienne illimitée",
+            "unlimitedDiscovery": "Découverte quotidienne illimitée",
             "globalReach": "Portee globale",
             "fasterMatches": "Matchs plus rapides",
             "advancedPreferences": "Preferences avancees et controle de localisation",
@@ -995,11 +996,12 @@
         "benefitsTitle": "Ce que vous debloquez",
         "faqTitle": "FAQ",
         "upgradeAction": "Mettre a niveau",
-        "backToSwipe": "Retour au swipe",
+        "backToSwipe": "Retour au flux",
+        "backToFeed": "Retour au flux",
         "headlines": {
             "global_discovery": "Debloquez les opportunites internationales",
-            "daily_limit": "Debloquez les swipes illimites",
-            "daily_swipe_limit": "Debloquez les swipes illimites",
+            "daily_limit": "Débloquez la découverte illimitée",
+            "daily_swipe_limit": "Débloquez la découverte illimitée",
             "personalized_mode": "Debloquez les matchs personnalises",
             "expired": "Renouvelez votre acces Premium",
             "default": "Mise a niveau Premium"
@@ -1011,7 +1013,7 @@
             },
             "accountAndMatches": {
                 "question": "Mon compte et mes matchs seront-ils conserves ?",
-                "answer": "Oui. Votre profil, vos swipes et vos matchs restent inchanges. Premium ajoute des fonctions de decouverte."
+                "answer": "Oui. Votre profil, votre historique et vos matchs restent inchangés. Premium ajoute des fonctions de découverte."
             },
             "switchPlans": {
                 "question": "Puis-je changer de plan plus tard ?",
@@ -1019,7 +1021,7 @@
             },
             "whatIncludes": {
                 "question": "Que comprend Premium ?",
-                "answer": "Premium debloque les opportunites globales, le matching personnalise et les swipes illimites."
+                "answer": "Premium débloque les opportunités globales, le matching personnalisé et une découverte illimitée."
             }
         },
         "toasts": {
@@ -1530,7 +1532,7 @@
             "features": {
                 "globalReach": "Portee globale",
                 "fasterMatches": "Matchs plus rapides",
-                "unlimitedSwipes": "Swipes illimites"
+                "unlimitedSwipes": "Découverte illimitée"
             }
         },
         "empty": {
@@ -1601,8 +1603,8 @@
         "personalizedUnavailableNotice": "La pile personnalisee est indisponible pour le moment. Opportunites standard affichees.",
         "loadOffersFailed": "Impossible de charger les opportunites",
         "notAuthenticated": "Non authentifie",
-        "dailyLimitReached": "Limite quotidienne de swipes atteinte",
-        "recordSwipeFailed": "Echec de l'enregistrement du swipe",
+        "dailyLimitReached": "Limite quotidienne de découverte atteinte",
+        "recordSwipeFailed": "Échec de l'enregistrement de l'action",
         "saveExternalMatchFailed": "Impossible de sauvegarder l'opportunite externe"
     },
     "missingConfig": {

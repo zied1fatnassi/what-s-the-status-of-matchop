@@ -13,10 +13,10 @@ function StudentBottomNav({ unreadMatches = 0, unreadMessages = 0 }) {
     const navItems = [
         {
             id: 'discover',
-            to: '/student/swipe',
+            to: '/student/feed',
             icon: Compass,
             label: t('nav.discover', 'Discover'),
-            isActive: isPathActive(['/student/swipe', '/student/offers', '/offers']),
+            isActive: isPathActive(['/student/feed', '/student/swipe', '/student/discovery', '/student/offers', '/offers']),
         },
         {
             id: 'matches',

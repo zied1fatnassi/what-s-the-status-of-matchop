@@ -227,8 +227,8 @@ function Premium() {
                     <button type="button" className="btn btn-primary" onClick={handleCheckoutStart}>
                         {t('premium.upgradeAction')}
                     </button>
-                    <Link to="/student/swipe" className="btn btn-secondary">
-                        {t('premium.backToSwipe')}
+                    <Link to="/student/feed" className="btn btn-secondary">
+                        {t('premium.backToFeed', t('premium.backToSwipe', 'Back to Feed'))}
                     </Link>
                 </div>
             </div>

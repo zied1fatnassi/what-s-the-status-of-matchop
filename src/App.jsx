@@ -221,7 +221,7 @@ function App() {
   }
 
   const isLanding = location.pathname === ROOT_ROUTE
-  const isFeedRoute = location.pathname === '/student/swipe' || location.pathname === '/student/offers' || location.pathname === '/offers'
+  const isFeedRoute = location.pathname === '/student/feed' || location.pathname === '/student/swipe' || location.pathname === '/student/discovery' || location.pathname === '/student/offers' || location.pathname === '/offers'
 
   return (
     <>
@@ -289,14 +289,16 @@ function App() {
               <Route path="student/login" element={<PublicRoute><StudentLogin /></PublicRoute>} />
 
               <Route path="student/profile" element={<ProtectedRoute requiredType="student"><StudentProfile /></ProtectedRoute>} />
-              <Route path="student/swipe" element={<ProtectedRoute requiredType="student"><StudentSwipe /></ProtectedRoute>} />
+              <Route path="student/feed" element={<ProtectedRoute requiredType="student"><StudentSwipe /></ProtectedRoute>} />
+              <Route path="student/swipe" element={<Navigate to="/student/feed" replace />} />
+              <Route path="student/discovery" element={<Navigate to="/student/feed" replace />} />
+              <Route path="student/offers" element={<Navigate to="/student/feed" replace />} />
+              <Route path="offers" element={<Navigate to="/student/feed" replace />} />
               <Route path="student/matches" element={<ProtectedRoute requiredType="student"><StudentMatches /></ProtectedRoute>} />
               <Route path="student/external-matches" element={<ProtectedRoute requiredType="student"><StudentExternalMatches /></ProtectedRoute>} />
               <Route path="student/chat/:matchId" element={<ProtectedRoute requiredType="student"><StudentChat /></ProtectedRoute>} />
               <Route path="/student/referrals" element={<ProtectedRoute requiredType="student"><Referrals /></ProtectedRoute>} />
               <Route path="student/notifications" element={<ProtectedRoute requiredType="student"><NotificationCenter scope="student" /></ProtectedRoute>} />
-              <Route path="student/offers" element={<Navigate to="/student/swipe" replace />} />
-              <Route path="offers" element={<Navigate to="/student/swipe" replace />} />
 
               {/* Company */}
               <Route path="company/signup" element={<PublicRoute><CompanySignup /></PublicRoute>} />

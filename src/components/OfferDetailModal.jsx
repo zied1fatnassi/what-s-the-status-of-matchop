@@ -6,7 +6,7 @@ import { useBilingualText } from '../lib/useBilingualText'
 import './OfferDetailModal.css'
 
 /**
- * Modal showing full job offer details when clicking on a swipe card
+ * Modal showing full job offer details when viewing an opportunity
  */
 function OfferDetailModal({ offer, onClose, onApply }) {
     const tr = useBilingualText()

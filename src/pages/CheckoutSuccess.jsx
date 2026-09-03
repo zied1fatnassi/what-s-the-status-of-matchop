@@ -63,7 +63,7 @@ function CheckoutSuccess() {
                         <RefreshCw size={14} className={isRefreshing ? 'is-spinning' : ''} />
                         {isRefreshing ? t('checkoutSuccess.refreshing') : t('checkoutSuccess.refresh')}
                     </button>
-                    <Link to="/student/swipe" className="btn btn-primary">
+                    <Link to="/student/feed" className="btn btn-primary">
                         {t('checkoutSuccess.backToDiscovery')}
                     </Link>
                 </div>

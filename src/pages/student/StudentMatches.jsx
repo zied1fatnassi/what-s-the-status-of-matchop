@@ -127,7 +127,7 @@ function StudentMatches() {
                         </div>
                         <h2>{t('matches.noMatchesYet')}</h2>
                         <p>{t('matches.keepSwipingTip')}</p>
-                        <Link to="/student/swipe" className="btn btn-primary">
+                        <Link to="/student/feed" className="btn btn-primary">
                             {t('matches.startSwiping')}
                         </Link>
                     </div>

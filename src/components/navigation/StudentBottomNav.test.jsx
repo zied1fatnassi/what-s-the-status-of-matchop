@@ -12,7 +12,7 @@ vi.mock('react-i18next', () => ({
 describe('StudentBottomNav', () => {
     it('renders all four primary student product tabs', () => {
         render(
-            <MemoryRouter initialEntries={['/student/swipe']}>
+            <MemoryRouter initialEntries={['/student/feed']}>
                 <StudentBottomNav unreadMatches={2} unreadMessages={0} />
             </MemoryRouter>
         )
@@ -23,7 +23,7 @@ describe('StudentBottomNav', () => {
         const profileLink = screen.getByRole('link', { name: 'Profile' })
 
         expect(discoverLink).toBeInTheDocument()
-        expect(discoverLink).toHaveAttribute('href', '/student/swipe')
+        expect(discoverLink).toHaveAttribute('href', '/student/feed')
         expect(discoverLink).toHaveClass('is-active')
 
         expect(matchesLink).toBeInTheDocument()

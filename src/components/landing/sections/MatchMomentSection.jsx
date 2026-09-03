@@ -89,7 +89,7 @@ export function MatchMomentSection() {
                 </div>
                 <span className="match-entity__status-badge">
                   <CheckCircle size={13} />
-                  <span>{tr('Swiped Right', 'A liké')}</span>
+                  <span>{tr('Applied', 'A postulé')}</span>
                 </span>
               </div>
             </motion.div>

@@ -23,7 +23,7 @@ function AdminRouteHarness() {
                         </AdminRoute>
                     )}
                 />
-                <Route path="/student/swipe" element={<div>Student Swipe Page</div>} />
+                <Route path="/student/feed" element={<div>Student Feed Page</div>} />
                 <Route path="/company/intros" element={<div>Company Candidates Page</div>} />
                 <Route path="/student/login" element={<div>Student Login Page</div>} />
             </Routes>
@@ -68,7 +68,7 @@ describe('AdminRoute', () => {
             root.render(<AdminRouteHarness />)
         })
 
-        expect(container.textContent).toContain('Student Swipe Page')
+        expect(container.textContent).toContain('Student Feed Page')
         expect(container.textContent).not.toContain('Admin Payments Page')
     })
 

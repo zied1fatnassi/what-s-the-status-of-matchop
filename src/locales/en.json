@@ -68,7 +68,7 @@
         },
         "cta": {
             "title": "Join the movement.",
-            "subtitle": "Swipe your way to success."
+            "subtitle": "Find your next career move with MatchOp."
         }
     },
     "contactPage": {
@@ -118,7 +118,7 @@
                 "body": "MatchOp is a job matching platform that connects students and recent graduates with companies seeking talent. Our service includes:",
                 "items": {
                     "profile": "Profile creation and management",
-                    "discovery": "Job opportunity discovery through swiping",
+                    "discovery": "Job opportunity discovery through your feed",
                     "matching": "Matching between students and companies",
                     "messaging": "Direct messaging between matched parties"
                 }
@@ -205,7 +205,7 @@
                     "deviceBrowser": "Device and browser information",
                     "ipLocation": "IP address and location data",
                     "pagesFeatures": "Pages visited and features used",
-                    "swipeHistory": "Swiping preferences and match history"
+                    "swipeHistory": "Discovery preferences and match history"
                 }
             },
             "usage": {
@@ -341,7 +341,7 @@
     },
     "landing": {
         "badge": "The Future of Recruitment",
-        "heroTitle": "Swipe Your Way to",
+        "heroTitle": "Match Your Opportunity",
         "heroHighlight": "Your Dream Career",
         "heroSubtitle": "Connect students with top companies through an intuitive matching experience. Find your perfect internship or discover exceptional talent.",
         "ctaStudent": "I'm a Student",
@@ -355,8 +355,8 @@
         "howItWorks": "How MatchOp Works",
         "step1Title": "Create Your Profile",
         "step1Desc": "Build a compelling profile showcasing your skills, experience, and what you're looking for.",
-        "step2Title": "Discover & Apply",
-        "step2Desc": "Scroll through curated opportunities, review AI match scores, and apply or save in one click.",
+        "step2Title": "Explore & Express Interest",
+        "step2Desc": "Browse high-fit opportunities curated daily by AI in your feed. Express interest on roles you love; companies review and accept intros.",
         "step3Title": "Connect & Chat",
         "step3Desc": "When there's mutual interest, start a conversation and take the next step in your career.",
         "forStudents": "For Students",
@@ -622,7 +622,7 @@
         "benefitsDesc": "Select the benefits you offer to employees",
         "links": "Links",
         "socialLinks": "Social Links",
-        "saveAndStart": "Save & Start Swiping",
+        "saveAndStart": "Save & Start Exploring",
         "saveAndPost": "Save & Post Your First Job"
     },
     "swipe": {
@@ -637,7 +637,7 @@
         "companyInterested": "{company} is interested in your profile!",
         "candidateInterested": "{name} is interested in your offer!",
         "sendMessage": "Send a Message",
-        "keepSwiping": "Keep Swiping"
+        "keepSwiping": "Keep Exploring"
     },
     "matches": {
         "yourMatches": "Your Matches",
@@ -711,7 +711,7 @@
         "externalTrackingTooltip": "This job is external. You are tracking your application manually.",
         "externalEmptyStates": {
             "savedTitle": "No saved external matches",
-            "savedDescription": "Swipe right on external opportunities to save them here.",
+            "savedDescription": "Express interest or save opportunities from your feed to track them here.",
             "appliedTitle": "No tracked applications yet",
             "appliedDescription": "Mark saved jobs as applied to track interviews and outcomes here.",
             "archivedTitle": "No archived external jobs",
@@ -881,7 +881,7 @@
             "totalOffers": "Total offers",
             "activeOffers": "Active offers",
             "closedOffers": "Closed offers",
-            "rightSwipes": "Right swipes",
+            "rightSwipes": "Applications",
             "pendingIntros": "Pending intros",
             "acceptedIntros": "Accepted intros",
             "matches": "Matches",
@@ -897,7 +897,7 @@
             "status": "Status",
             "location": "Location",
             "created": "Created",
-            "rightSwipes": "Right swipes",
+            "rightSwipes": "Applications",
             "matches": "Matches",
             "matchRate": "Match rate",
             "actions": "Actions"
@@ -1007,7 +1007,7 @@
         "reasons": {
             "premium_discovery_controls": {
                 "title": "Unlock Global Opportunities",
-                "subtitle": "Upgrade to access global reach, faster matches, unlimited swipes, and advanced preferences."
+                "subtitle": "Upgrade to access global reach, faster matches, unlimited discovery, and advanced preferences."
             },
             "global_discovery": {
                 "title": "Global opportunities are Premium",
@@ -1018,20 +1018,21 @@
                 "subtitle": "Upgrade to unlock personalized recommendations."
             },
             "daily_limit": {
-                "title": "Daily swipe limit reached",
-                "subtitle": "Upgrade for unlimited swipes and more matches."
+                "title": "Daily discovery limit reached",
+                "subtitle": "Upgrade for unlimited discovery and more matches."
             },
             "daily_swipe_limit": {
-                "title": "Daily swipe limit reached",
-                "subtitle": "You have reached today's standard swipe limit."
+                "title": "Daily discovery limit reached",
+                "subtitle": "You have reached today's standard discovery limit."
             },
             "generic": {
                 "title": "Upgrade to Premium",
-                "subtitle": "Unlock the full swipe experience."
+                "subtitle": "Unlock the full discovery experience."
             }
         },
         "features": {
-            "unlimitedSwipes": "Unlimited swipes",
+            "unlimitedSwipes": "Unlimited daily discovery",
+            "unlimitedDiscovery": "Unlimited daily discovery",
             "globalReach": "Global reach",
             "fasterMatches": "Faster matches",
             "advancedPreferences": "Advanced preferences and location controls",
@@ -1061,11 +1062,12 @@
         "benefitsTitle": "What you unlock",
         "faqTitle": "FAQ",
         "upgradeAction": "Upgrade",
-        "backToSwipe": "Back to swipe",
+        "backToSwipe": "Back to Feed",
+        "backToFeed": "Back to Feed",
         "headlines": {
             "global_discovery": "Unlock international opportunities",
-            "daily_limit": "Unlock unlimited swipes",
-            "daily_swipe_limit": "Unlock unlimited swipes",
+            "daily_limit": "Unlock unlimited discovery",
+            "daily_swipe_limit": "Unlock unlimited discovery",
             "personalized_mode": "Unlock personalized matches",
             "expired": "Renew your Premium access",
             "default": "Premium upgrade"
@@ -1077,7 +1079,7 @@
             },
             "accountAndMatches": {
                 "question": "Will my account and matches remain?",
-                "answer": "Yes. Your profile, swipes, and matches stay the same. Premium unlocks additional discovery features."
+                "answer": "Yes. Your profile, discovery history, and matches stay the same. Premium unlocks additional discovery features."
             },
             "switchPlans": {
                 "question": "Can I switch plans later?",
@@ -1085,7 +1087,7 @@
             },
             "whatIncludes": {
                 "question": "What does Premium include?",
-                "answer": "Premium unlocks global opportunities, personalized matching, and unlimited swipe capacity."
+                "answer": "Premium unlocks global opportunities, personalized matching, and unlimited discovery capacity."
             }
         },
         "toasts": {
@@ -1596,7 +1598,7 @@
             "features": {
                 "globalReach": "Global reach",
                 "fasterMatches": "Faster matches",
-                "unlimitedSwipes": "Unlimited swipes"
+                "unlimitedSwipes": "Unlimited discovery"
             }
         },
         "empty": {
@@ -1667,8 +1669,8 @@
         "personalizedUnavailableNotice": "Personalized stack is currently unavailable. Showing standard opportunities.",
         "loadOffersFailed": "Failed to load opportunities",
         "notAuthenticated": "Not authenticated",
-        "dailyLimitReached": "Daily swipe limit reached",
-        "recordSwipeFailed": "Failed to record swipe",
+        "dailyLimitReached": "Daily discovery limit reached",
+        "recordSwipeFailed": "Failed to record action",
         "saveExternalMatchFailed": "Failed to save external opportunity"
     },
     "missingConfig": {

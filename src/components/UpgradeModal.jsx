@@ -74,7 +74,7 @@ const FOCUSABLE_SELECTOR = [
 ].join(', ')
 
 function featureIconForKey(key) {
-    if (key.includes('unlimitedSwipes')) return InfinityIcon
+    if (key.includes('unlimitedSwipes') || key.includes('unlimitedDiscovery')) return InfinityIcon
     if (key.includes('globalReach')) return Globe2
     if (key.includes('advancedPreferences')) return SlidersHorizontal
     return Sparkles

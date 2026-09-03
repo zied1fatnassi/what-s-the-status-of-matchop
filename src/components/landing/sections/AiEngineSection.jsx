@@ -187,8 +187,8 @@ export function AiEngineSection() {
                 <Sparkles size={14} className="ai-role-verdict__icon" />
                 <span>
                   {calculatedScore >= 90
-                    ? tr('High Compatibility: Prioritized in swipe stack', 'Forte compatibilité : Priorisé dans la file de découverte')
-                    : tr('Good Fit: Recommended for discovery stack', 'Bon profil : Recommandé pour votre pile')}
+                    ? tr('High Compatibility: Prioritized in your discovery feed', 'Forte compatibilité : Priorisé dans votre flux de découverte')
+                    : tr('Good Fit: Recommended for your discovery feed', 'Bon profil : Recommandé pour votre flux')}
                 </span>
               </div>
             </div>

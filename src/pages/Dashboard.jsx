@@ -86,7 +86,7 @@ function Dashboard() {
     }
 
     if (isStudent || metadataType === 'student') {
-        return <Navigate to="/student/swipe" replace />
+        return <Navigate to="/student/feed" replace />
     }
 
     // Avoid role assumptions while profile is still hydrating.

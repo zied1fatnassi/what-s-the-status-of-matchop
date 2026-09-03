@@ -3,7 +3,7 @@ import { HeroSection } from '../components/landing/sections/HeroSection'
 import { ProblemSection } from '../components/landing/sections/ProblemSection'
 import { IdeaSection } from '../components/landing/sections/IdeaSection'
 import { AiEngineSection } from '../components/landing/sections/AiEngineSection'
-import { DiscoverySwipeSection } from '../components/landing/sections/DiscoverySwipeSection'
+import { DiscoveryFeedSection } from '../components/landing/sections/DiscoveryFeedSection'
 import { MatchMomentSection } from '../components/landing/sections/MatchMomentSection'
 import { ChatConnectionSection } from '../components/landing/sections/ChatConnectionSection'
 import { DualValueSection } from '../components/landing/sections/DualValueSection'
@@ -38,8 +38,8 @@ function Landing() {
       {/* 4. AI Matching Engine: Vector Similarity & Live Dynamic Score Demo */}
       <AiEngineSection />
 
-      {/* 5. Discovery & Swipe: Real MatchOp Opportunity Card Stack Demo */}
-      <DiscoverySwipeSection />
+      {/* 5. Discovery Feed: Real MatchOp Vertical Opportunity Stream Demo */}
+      <DiscoveryFeedSection />
 
       {/* 6. The Match Moment: Cinematic Candidate + Company Convergence */}
       <MatchMomentSection />

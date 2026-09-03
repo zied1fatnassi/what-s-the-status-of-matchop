@@ -47,8 +47,8 @@ export function DualValueSection() {
       icon: CheckCircle2,
       title: tr('Pre-Screened High-Intent Candidates', 'Candidats pré-qualifiés & engagés'),
       desc: tr(
-        'Stop sorting through 500 random PDF resumes. Every candidate in your intro inbox has passed stack compatibility and actively swiped right on your role.',
-        'Ne perdez plus de temps sur 500 CV non ciblés. Chaque profil dans vos intros a validé sa compatibilité et son intérêt pour votre poste.'
+        'Stop sorting through 500 random PDF resumes. Every candidate in your intro inbox has passed stack compatibility and actively expressed interest and applied to your role.',
+        'Ne perdez plus de temps sur 500 CV non ciblés. Chaque profil dans vos intros a validé sa compatibilité et a activement postulé à votre poste.'
       ),
       highlight: tr('10x higher response rate', 'Taux de réponse x10'),
     },
@@ -56,8 +56,8 @@ export function DualValueSection() {
       icon: Clock,
       title: tr('Accelerated 48h Time-to-Interview', 'Délai d’entretien réduit à 48h'),
       desc: tr(
-        'Review candidates in a fast, Tinder-style inbox. Accept intros in one tap and immediately coordinate technical chats.',
-        'Consultez les candidats en un clin d’œil. Acceptez les intros d’un simple clic et lancez les entretiens techniques.'
+        'Review candidates in a streamlined, high-efficiency candidate stream. Accept intros in one tap and immediately coordinate technical chats.',
+        'Consultez les candidats dans un flux fluide et efficace. Acceptez les intros d’un simple clic et lancez les entretiens techniques.'
       ),
       highlight: tr('4-5x faster time-to-hire', 'Recrutement 4 à 5x plus rapide'),
     },

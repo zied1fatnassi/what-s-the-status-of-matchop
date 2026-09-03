@@ -54,7 +54,7 @@ export function ProblemSection() {
       icon: RefreshCcw,
       title: tr('Instant Direct Chat & Intros', 'Chat direct & Intros instantanées'),
       desc: tr(
-        'A mutual right swipe instantly opens direct encrypted chat with hiring managers. Schedule interviews and close offers in days, not months.',
+        'A mutual match instantly opens direct encrypted chat with hiring managers. Schedule interviews and close offers in days, not months.',
         'Un match bilatéral ouvre immédiatement la discussion directe avec les recruteurs. Recrutez en quelques jours.'
       ),
     },

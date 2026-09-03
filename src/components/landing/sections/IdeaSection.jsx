@@ -25,11 +25,11 @@ export function IdeaSection() {
     {
       step: '02',
       icon: HeartHandshake,
-      title: t('landing.step2Title', 'Swipe & Mutual Match'),
+      title: t('landing.step2Title', 'Explore & Express Interest'),
       subtitle: tr('Intentional Discovery', 'Découverte intentionnelle'),
       desc: t(
         'landing.step2Desc',
-        'Browse high-fit opportunities curated daily by AI. Swipe right on roles you love; companies review and accept intros.'
+        'Browse high-fit opportunities curated daily by AI in your feed. Express interest on roles you love; companies review and accept intros.'
       ),
       tag: tr('Bilateral Interest', 'Intérêt bilatéral'),
       accentColor: 'var(--accent-teal)',

@@ -66,8 +66,8 @@ function MatchToast({ match, onClose }) {
 
                 <p className="toast-message">
                     {tr(
-                        'You both swiped right! Start chatting now.',
-                        'Vous avez tous les deux swipe a droite ! Commencez la conversation.'
+                        "It's a mutual match! Start chatting now.",
+                        "C'est un match mutuel ! Commencez la conversation."
                     )}
                 </p>
 
@@ -76,7 +76,7 @@ function MatchToast({ match, onClose }) {
                         className="btn btn-secondary"
                         onClick={onClose}
                     >
-                        {tr('Keep Swiping', 'Continuer a swiper')}
+                        {tr('Keep Exploring', 'Continuer à explorer')}
                     </button>
                     <Link
                         to={`/student/chat/${match.id}`}

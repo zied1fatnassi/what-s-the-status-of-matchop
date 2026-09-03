@@ -71,7 +71,7 @@ vi.mock('react-i18next', () => ({
                 'matches.insights.conversion': 'Conversion',
                 'matches.followUpSummary': 'You have {{count}} applications to follow up',
                 'matches.externalEmptyStates.savedTitle': 'No saved external matches',
-                'matches.externalEmptyStates.savedDescription': 'Swipe right on external opportunities to save them here.',
+                'matches.externalEmptyStates.savedDescription': 'Express interest or save opportunities from your feed to track them here.',
                 'matches.externalEmptyStates.appliedTitle': 'No tracked applications yet',
                 'matches.externalEmptyStates.appliedDescription': 'Mark saved jobs as applied to track interviews and outcomes here.',
                 'matches.externalEmptyStates.archivedTitle': 'No archived external jobs',

@@ -156,7 +156,7 @@ function MatchModal({ match, onClose, userType }) {
                             {tr('Send a Message', 'Envoyer un message')}
                         </Link>
                         <button className="btn btn-secondary" onClick={onClose}>
-                            {tr('Keep Swiping', 'Continuer a swiper')}
+                            {tr('Keep Exploring', 'Continuer à explorer')}
                         </button>
                     </div>
                 </div>

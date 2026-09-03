@@ -100,7 +100,7 @@ export function ProtectedRoute({ children, requiredType = null }) {
     }
 
     if (requiredType === 'company' && !isCompany && !metadataSaysCompany) {
-        return <Navigate to="/student/swipe" replace />
+        return <Navigate to="/student/feed" replace />
     }
 
     // Authenticated and correct type - render children
@@ -127,7 +127,7 @@ export function PublicRoute({ children }) {
         const isCompanyType = isCompany || typeFromMetadata === 'company'
 
         if (isStudentType) {
-            return <Navigate to="/student/swipe" replace />
+            return <Navigate to="/student/feed" replace />
         }
 
         if (isCompanyType) {
@@ -178,7 +178,7 @@ export function AdminRoute({ children }) {
     if (!isAdmin) {
         // Not an admin - redirect to appropriate dashboard
         if (isStudent || userTypeFromMetadata === 'student') {
-            return <Navigate to="/student/swipe" replace />
+            return <Navigate to="/student/feed" replace />
         }
         if (isCompany || userTypeFromMetadata === 'company') {
             return <Navigate to="/company/intros" replace />

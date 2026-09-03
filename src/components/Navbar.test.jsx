@@ -78,7 +78,7 @@ vi.mock('./Logo', () => ({
 
 import Navbar from './Navbar'
 
-function renderNavbar({ path = '/student/swipe', role = 'student' } = {}) {
+function renderNavbar({ path = '/student/feed', role = 'student' } = {}) {
     const baseUser = {
         id: `${role}-1`,
         email: `${role}@matchop.test`,
@@ -123,7 +123,7 @@ describe('Navbar desktop IA', () => {
     })
 
     it('shows only Discover and Matches as student primary links', () => {
-        const { container } = renderNavbar({ role: 'student', path: '/student/swipe' })
+        const { container } = renderNavbar({ role: 'student', path: '/student/feed' })
         const primary = container.querySelector('.navbar-primary')
 
         expect(primary).toBeTruthy()
@@ -134,7 +134,7 @@ describe('Navbar desktop IA', () => {
     })
 
     it('shows student profile menu with secondary items', () => {
-        renderNavbar({ role: 'student', path: '/student/swipe' })
+        renderNavbar({ role: 'student', path: '/student/feed' })
 
         const trigger = screen.getByRole('button', { name: 'Open profile menu' })
         fireEvent.click(trigger)
@@ -178,7 +178,7 @@ describe('Navbar desktop IA', () => {
     })
 
     it('supports Enter to open and Escape to close profile menu with focus return', async () => {
-        renderNavbar({ role: 'student', path: '/student/swipe' })
+        renderNavbar({ role: 'student', path: '/student/feed' })
 
         const trigger = screen.getByRole('button', { name: 'Open profile menu' })
         trigger.focus()
@@ -199,7 +199,7 @@ describe('Navbar desktop IA', () => {
 
     it('renders notifications badge with unread count', async () => {
         mockUnreadCount = 5
-        const { container } = renderNavbar({ role: 'student', path: '/student/swipe' })
+        const { container } = renderNavbar({ role: 'student', path: '/student/feed' })
 
         await waitFor(() => {
             const badge = container.querySelector('.navbar-notification-badge--utility')
@@ -211,7 +211,7 @@ describe('Navbar desktop IA', () => {
     })
 
     it('does not render duplicate desktop logout button outside profile menu', () => {
-        const { container } = renderNavbar({ role: 'student', path: '/student/swipe' })
+        const { container } = renderNavbar({ role: 'student', path: '/student/feed' })
 
         expect(container.querySelector('.logout-btn--desktop')).toBeNull()
     })

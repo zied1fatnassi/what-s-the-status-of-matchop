@@ -116,10 +116,10 @@ function Navbar({ isLanding = false }) {
     const studentPrimaryLinks = [
         {
             id: 'discover',
-            to: '/student/swipe',
+            to: '/student/feed',
             icon: <Home size={18} />,
             label: t('nav.discover'),
-            isActive: isPathMatch(['/student/swipe', '/student/offers']) || location.pathname === '/offers',
+            isActive: isPathMatch(['/student/feed', '/student/swipe', '/student/discovery', '/student/offers']) || location.pathname === '/offers',
         },
         {
             id: 'matches',
@@ -387,7 +387,7 @@ function Navbar({ isLanding = false }) {
         : guestMobileLinks
 
     const logoTarget = hasSession
-        ? (isCompany ? '/company/intros' : isStudent ? '/student/swipe' : '/discovery')
+        ? (isCompany ? '/company/intros' : isStudent ? '/student/feed' : '/discovery')
         : '/'
 
     useEffect(() => {

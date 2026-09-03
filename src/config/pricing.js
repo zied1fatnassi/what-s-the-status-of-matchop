@@ -18,7 +18,7 @@ export const PLANS = {
 }
 
 export const PREMIUM_FEATURES = [
-    'Unlimited swipes',
+    'Unlimited daily discovery',
     'Global opportunity discovery',
     'Personalized recommendations',
     'Faster matching momentum',

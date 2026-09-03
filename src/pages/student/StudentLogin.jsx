@@ -80,7 +80,7 @@ function StudentLogin() {
             }
 
             if (data?.user) {
-                navigate('/student/swipe', { replace: true })
+                navigate('/student/feed', { replace: true })
             }
         } catch (err) {
             setError(getLocalizedAuthError(err))
