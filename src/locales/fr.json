@@ -349,11 +349,11 @@
         "statsStudents": "Beta etudiants",
         "statsCompanies": "Beta entreprises",
         "statsMatches": "Lancement plateforme",
-        "howItWorks": "Comment fonctionne Matchop",
+        "howItWorks": "Comment fonctionne MatchOp",
         "step1Title": "Créez Votre Profil",
         "step1Desc": "Construisez un profil attractif présentant vos compétences, expériences et ce que vous recherchez.",
-        "step2Title": "Swipez & Matchez",
-        "step2Desc": "Parcourez les opportunités et swipez à droite sur celles qui vous intéressent. C'est aussi simple !",
+        "step2Title": "Découvrez & Postulez",
+        "step2Desc": "Parcourez les opportunités sélectionnées, consultez les scores de compatibilité IA, et postulez en un clic.",
         "step3Title": "Connectez & Discutez",
         "step3Desc": "En cas d'intérêt mutuel, démarrez une conversation et franchissez l'étape suivante de votre carrière.",
         "forStudents": "Pour les Étudiants",
@@ -428,10 +428,109 @@
                 "resendSending": "Envoi...",
                 "resendIn": "Renvoyer dans {{seconds}}s",
                 "resendSuccess": "Email de verification renvoye.",
-                "resendError": "Echec du renvoi. Veuillez reessayer plus tard."
+                "resendError": "Echec du renvoi. Veuillez reessayer plus tard.",
+                "resendRateLimit": "Trop de requetes. Veuillez patienter une minute avant de redemander un email."
             },
             "errors": {
                 "completeAllFields": "Veuillez completer tous les champs (Universite, Specialite, Annee de diplomation)."
+            }
+        },
+        "companySignup": {
+            "visualTitle": "Trouvez les Meilleurs Talents",
+            "visualSubtitle": "Connectez-vous avec des etudiants et diplomes motives et prets a s'investir",
+            "features": {
+                "preQualifiedCandidates": "Candidats pre-qualifies",
+                "reducedTimeToHire": "Recrutement accelere",
+                "directMessaging": "Messagerie directe"
+            },
+            "title": "Compte Entreprise",
+            "alreadyRegistered": "Deja inscrit ?",
+            "signIn": "Se connecter",
+            "steps": {
+                "account": "Compte",
+                "company": "Entreprise"
+            },
+            "companyNameLabel": "Nom de l'entreprise",
+            "companyNamePlaceholder": "Sofrecom Tunisie, Vermeg",
+            "workEmailLabel": "Email professionnel",
+            "workEmailPlaceholder": "rh@sofrecom.tn",
+            "passwordLabel": "Mot de passe",
+            "passwordPlaceholder": "Creez un mot de passe fort",
+            "passwordStrengthHint": "Min. 8 caracteres avec majuscule, minuscule, chiffre et caractere special",
+            "passwordStrengthLabels": {
+                "weak": "Faible",
+                "fair": "Moyen",
+                "good": "Bon",
+                "strong": "Fort"
+            },
+            "websiteOptionalLabel": "Site web (optionnel)",
+            "websitePlaceholder": "https://sofrecom.tn",
+            "industryLabel": "Secteur d'activite",
+            "industryPlaceholder": "Selectionnez un secteur",
+            "industries": {
+                "technology": "Technologie",
+                "finance": "Finance",
+                "healthcare": "Sante",
+                "education": "Education",
+                "retail": "Commerce",
+                "manufacturing": "Industrie",
+                "consulting": "Conseil",
+                "other": "Autre"
+            },
+            "sizeLabel": "Taille de l'entreprise",
+            "sizePlaceholder": "Selectionnez une taille",
+            "companySizes": {
+                "size1to10": "1-10 employes",
+                "size11to50": "11-50 employes",
+                "size51to200": "51-200 employes",
+                "size201to500": "201-500 employes",
+                "size500plus": "500+ employes"
+            },
+            "buttons": {
+                "continue": "Continuer",
+                "createAccount": "Creer un compte",
+                "creatingAccount": "Creation du compte...",
+                "back": "Retour"
+            },
+            "verification": {
+                "visualTitle": "Verifiez votre boite mail",
+                "visualSubtitle": "Nous avons envoye un lien de verification a votre adresse",
+                "title": "Verifiez votre email",
+                "sentTo": "Nous avons envoye un email de verification a :",
+                "spamHint": "Verifiez votre dossier spam/courrier indesirable, l'email peut y arriver.",
+                "arrivalHint": "L'email peut prendre jusqu'a 2 minutes pour arriver.",
+                "preauthorizedHint": "Toujours rien ? L'email par defaut Supabase fonctionne seulement pour les adresses pre-autorisees.",
+                "setupHintPrefix": "Executez",
+                "setupHintMiddle": "dans l'editeur SQL Supabase, ou configurez un SMTP personnalise - voir",
+                "goToLogin": "Aller a la connexion",
+                "resendButton": "Renvoyer l'email de verification",
+                "resendSending": "Envoi...",
+                "resendIn": "Renvoyer dans {{seconds}}s",
+                "resendSuccess": "Email de verification renvoye !",
+                "resendError": "Echec du renvoi. Veuillez reessayer plus tard.",
+                "resendRateLimit": "Trop de requetes. Veuillez patienter une minute avant de redemander un email."
+            },
+            "errors": {
+                "companyNameRequired": "Le nom de l'entreprise est obligatoire.",
+                "companyNameMinLength": "Le nom de l'entreprise doit contenir au moins 2 caracteres.",
+                "companyNameMaxLength": "Le nom de l'entreprise doit contenir moins de 100 caracteres.",
+                "emailRequired": "L'adresse email est obligatoire.",
+                "invalidEmail": "Veuillez entrer une adresse email valide.",
+                "passwordRequired": "Le mot de passe est obligatoire.",
+                "passwordMinLength": "Le mot de passe doit contenir au moins 8 caracteres.",
+                "passwordUppercase": "Le mot de passe doit contenir au moins une majuscule.",
+                "passwordLowercase": "Le mot de passe doit contenir au moins une minuscule.",
+                "passwordNumber": "Le mot de passe doit contenir au moins un chiffre.",
+                "passwordSpecial": "Le mot de passe doit contenir au moins un caractere special.",
+                "completeRequiredFields": "Veuillez renseigner tous les champs obligatoires.",
+                "invalidCredentials": "Email ou mot de passe invalide. Veuillez reessayer.",
+                "emailNotConfirmed": "Veuillez verifier votre email avant de vous connecter.",
+                "userAlreadyExists": "Un compte avec cet email existe deja. Connectez-vous plutot.",
+                "weakPassword": "Le mot de passe ne respecte pas les exigences de securite.",
+                "tooManyAttempts": "Trop de tentatives. Veuillez patienter avant de reessayer.",
+                "emailSendError": "Impossible d'envoyer l'email de confirmation. Verifiez vos parametres SMTP Supabase ou executez database/auto_confirm_emails.sql.",
+                "signupDisabled": "Les inscriptions sont temporairement desactivees.",
+                "generic": "Une erreur est survenue lors de l'inscription. Veuillez reessayer."
             }
         }
     },
@@ -492,9 +591,9 @@
         "noMatchesYet": "Pas encore de matchs",
         "noExternalMatchesYet": "Pas encore de matchs externes",
         "companyEmptyDesc": "Quand vous matchez avec des candidats, ils apparaitront ici !",
-        "externalEmptyDesc": "Swipez a droite sur des opportunites externes pour les sauvegarder ici.",
-        "keepSwipingTip": "Continuez a swiper pour trouver votre opportunite parfaite !",
-        "startSwiping": "Commencer a swiper",
+        "externalEmptyDesc": "Postulez ou sauvegardez des opportunites externes depuis le fil de decouverte pour les suivre ici.",
+        "keepSwipingTip": "Continuez a explorer le fil pour trouver votre opportunite parfaite !",
+        "startSwiping": "Explorer les opportunites",
         "viewCandidates": "Voir les candidats",
         "startConversation": "Demarrez la conversation !",
         "applyOn": "Postuler sur {{source}}",

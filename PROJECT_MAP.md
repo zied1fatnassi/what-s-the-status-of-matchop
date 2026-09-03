@@ -1,4 +1,4 @@
-﻿# PROJECT_MAP
+# PROJECT_MAP
 
 ## High-Level Architecture
 
@@ -6,6 +6,7 @@ MatchOp is a single-package Vite + React SPA that uses Supabase as its backend p
 
 - Frontend: React 19 app (routing, views, hooks, UI)
 - Backend services: Supabase Postgres + Auth + Realtime + Storage + Edge Functions
+- Data Ingestion: Python 3.11+ Scrapling + Groq AI scraper for external job aggregation
 - Deployment target: Vercel (SPA rewrite + security headers via `vercel.json`)
 
 There is no separate Node/Express backend in this repository.
@@ -17,10 +18,17 @@ There is no separate Node/Express backend in this repository.
   - `main.jsx` bootstraps providers/router.
   - `App.jsx` defines route tree and lazy-loaded pages.
   - `components/` shared UI components.
+    - `discovery/` — `VerticalOpportunityFeed.jsx`, `VerticalOpportunityItem.jsx` (core vertical scrolling feed).
+    - `landing/` — Landing page sections and motion primitives.
+    - `navigation/` — `StudentBottomNav.jsx` and app navigation.
+    - `offers/` — `OfferScopeToggle`, `PreferencesButton`, `PreferencesDrawerOrModal`.
+    - `forms/` — Reusable form components (location selector, etc.).
   - `pages/` route-level screens (`student/`, `company/`, `admin/`, `legal/`).
   - `hooks/` data and feature hooks (offers, matches, messages, profile, etc.).
   - `context/` app-wide providers (`AuthContext`, `ApplicationContext`, `ThemeContext`).
   - `lib/` infrastructure helpers (Supabase client wrapper, validation, storage, i18n, etc.).
+  - `features/` feature modules (conversations).
+  - `config/` app configuration (pricing).
   - `data/` static suggestion datasets.
   - `locales/` i18n dictionaries.
 
@@ -41,7 +49,13 @@ There is no separate Node/Express backend in this repository.
   - Includes canonical RLS script and major schema/feature SQL.
 
 - `docs/`
-  - Additional operational docs (e.g., email setup).
+  - System documentation under `docs/system/`.
+  - Additional operational docs (email setup, premium discovery, security).
+  - Project preview screenshots under `docs/assets/screenshots/`.
+
+- `scraper/`
+  - Python-based external job scraper subsystem.
+  - `matchop_scraper/` source code, `config/` seed URLs, `docker/` cron deployment.
 
 ## Key Entry Points
 
@@ -54,6 +68,22 @@ There is no separate Node/Express backend in this repository.
 - Mobile test config: `playwright.mobile.config.js`
 - Vercel runtime config: `vercel.json`
 - Edge middleware: `middleware.js`
+
+## Discovery Architecture
+
+The student discovery feed is assembled by `src/hooks/useJobOffers.js` and rendered through:
+
+1. **Page**: `src/pages/student/StudentSwipe.jsx` — orchestrates the feed, scope toggle, preferences, empty/loading/error states, and swipe actions.
+2. **Feed Component**: `src/components/discovery/VerticalOpportunityFeed.jsx` — manages vertical scroll/drag/keyboard navigation with Framer Motion spring transitions.
+3. **Card Component**: `src/components/discovery/VerticalOpportunityItem.jsx` — renders individual opportunity cards with ambient backgrounds, match scores, skill tags, and action buttons (Apply, Ignore, Undo, Details).
+4. **Scope Toggle**: `src/components/offers/OfferScopeToggle.jsx` — switches between local (standard) and global (premium) discovery scopes.
+5. **Preferences**: `src/components/offers/PreferencesDrawerOrModal.jsx` — client-side filters for location, type, category, and radius.
+
+### Feed Modes
+- **V2 (swipe-stack)**: Server-ranked feed via `swipe-stack` edge function.
+- **Legacy fallback**: `get-matched-jobs` + direct table reads + client-side merge.
+
+Both modes serve a unified feed combining internal `offers` and external `external_jobs`.
 
 ## Frontend ↔ Backend (Supabase) Data Flow
 

@@ -18,7 +18,6 @@ import { useMatchListener } from '../../hooks/useMatchListener'
 import { usePremiumGate } from '../../hooks/usePremiumGate'
 import { isLimitReachedCode } from '../../lib/swipeLimit'
 import { readStorageJSON, writeStorageJSON } from '../../lib/localStorageState'
-import { useBilingualText } from '../../lib/useBilingualText'
 import './StudentSwipe.css'
 
 const DISCOVERY_SCOPE_STORAGE_KEY = 'matchop_discovery_scope'
@@ -132,7 +131,6 @@ function StudentSwipe() {
         readStorageJSON(STUDENT_SWIPE_PREFERENCES_KEY, DEFAULT_SWIPE_PREFERENCES)
     ))
     const { t } = useTranslation(undefined, { useSuspense: false })
-    const tr = useBilingualText()
     const preloadedAssetUrlsRef = useRef(new Set())
     const modeInitializedRef = useRef(false)
 
@@ -559,6 +557,10 @@ function StudentSwipe() {
                 <OfferDetailModal
                     offer={selectedOffer}
                     onClose={() => setSelectedOffer(null)}
+                    onApply={(offer) => {
+                        setSelectedOffer(null)
+                        handleSwipe('right', offer)
+                    }}
                 />
             )}
 

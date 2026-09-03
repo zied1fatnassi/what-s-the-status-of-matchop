@@ -44,19 +44,7 @@ vi.mock('../../lib/premiumEntitlements', () => ({
     })
 }))
 
-vi.mock('../../components/SwipeCard', async () => {
-    const React = await import('react')
-    return {
-        default: React.forwardRef(({ offer }, _ref) => {
-            void _ref
-            return (
-                <div data-testid={`swipe-card-${offer.id}`}>
-                    {offer.title}
-                </div>
-            )
-        })
-    }
-})
+
 
 vi.mock('../../components/MatchModal', () => ({
     default: () => null

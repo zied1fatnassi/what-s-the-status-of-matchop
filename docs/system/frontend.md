@@ -97,7 +97,8 @@ Important modules:
 Reusable interface components.
 
 Important discovery components:
-- `SwipeCard.jsx`
+- `discovery/VerticalOpportunityFeed.jsx`
+- `discovery/VerticalOpportunityItem.jsx`
 - `OfferDetailModal.jsx`
 - `MatchModal.jsx`
 - `ApplicationToast.jsx`
@@ -196,19 +197,24 @@ Note:
 - there is no generic `useProfile` hook in the current codebase
 - `useStudentProfile` is the active student-profile hook, and company profile logic is page-local in `CompanyProfile.jsx`
 
-## Swipe UI Stack
+## Discovery Feed UI Stack
 
 ### Primary page
 - `src/pages/student/StudentSwipe.jsx`
 
-### Main card component
-- `src/components/SwipeCard.jsx`
+### Main feed & card components
+- `src/components/discovery/VerticalOpportunityFeed.jsx`
+- `src/components/discovery/VerticalOpportunityItem.jsx`
 
-What `SwipeCard` handles:
-- current top card rendering
-- drag and swipe gestures
-- source badges for external jobs
-- imperative swipe triggers for action buttons
+What the Vertical Discovery components handle:
+- TikTok/Reels-style single-opportunity vertical stage
+- Vertical drag gestures (drag up to pass, drag down to undo)
+- Mouse wheel navigation with debounce
+- Keyboard shortcuts (Arrow Up/Down, A to apply, X to pass)
+- Framer Motion spring-based slide transitions
+- Dynamic ambient background glow based on company color
+- Rich card rendering: match score pill, company logo, salary & location badges, skill tags, and action buttons (Undo, Pass, Save, Apply, Details)
+- Source badges for external jobs (`isExternal`)
 
 ### Supporting modals and toasts
 - `OfferDetailModal.jsx` for full job details

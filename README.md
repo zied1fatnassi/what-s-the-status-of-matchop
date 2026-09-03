@@ -1,6 +1,6 @@
 # MatchOp — Match Your Opportunity
 
-> Connect students with top companies through an AI-powered, swipe-based matching experience.
+> AI-powered vertical opportunity discovery feed connecting students with curated internships, jobs, and external ATS opportunities.
 
 **Live:** [matchop.vercel.app](https://matchop.vercel.app/)
 
@@ -8,17 +8,17 @@
 
 ## Features
 
-- **Swipe-to-match** — Students browse and swipe on opportunities; mutual interest creates a match.
-- **Real-time chat** — Matched students and companies can message instantly via Supabase Realtime.
-- **AI-powered matching** — Semantic vector matching ranks opportunities by profile relevance (via Edge Functions).
-- **External Job Aggregation** — A dedicated Scrapling + Groq AI scraper automatically ingests opportunities from third-party ATS platforms.
-- **Company dashboard** — Post offers, review intros, manage candidates, and track matches.
-- **Admin panel** — User management, analytics, reports, offer moderation, payment oversight, and platform settings.
-- **Premium tier** — Gated features with upgrade modals, waitlist mode, and D17 mobile-payment checkout.
-- **Referral system** — Students earn rewards by sharing referral codes and tracking invite progress.
-- **Internationalization** — Full English and French translations via i18next.
-- **Dark mode** — Theme toggle with system-preference detection.
-- **Legal pages** — Terms of Service, Privacy Policy, and Cookie Policy.
+- **Vertical Opportunity Discovery Feed** — Students scroll through AI-ranked opportunities with instant apply, save, and pass actions. Supports both native MatchOp offers and external scraped jobs with discovery scope filtering.
+- **AI Semantic Matching** — Vector-based scoring ranks opportunities by profile relevance using Supabase Edge Functions and HuggingFace embeddings.
+- **External Job Aggregation** — A dedicated Scrapling + Groq AI scraper continuously ingests opportunities from third-party ATS platforms (Greenhouse, Lever, Workable).
+- **Real-time Chat** — Matched students and companies message instantly via Supabase Realtime channels.
+- **Company Dashboard** — Post offers, review candidate intros, manage matches, and track hiring pipeline.
+- **Admin Moderation & Analytics** — User management, offer moderation, platform analytics, reports, payment oversight, and settings.
+- **Premium Tier & Payments** — Gated features with upgrade modals, D17 mobile payment, Konnect, and Stripe checkout flows.
+- **Referral System** — Students earn rewards by sharing referral codes and tracking invite progress.
+- **Multi-language Support (i18n)** — Full English and French translations via i18next.
+- **Dark Mode** — Theme toggle with system-preference detection.
+- **Legal Pages** — Terms of Service, Privacy Policy, and Cookie Policy.
 
 ---
 
@@ -83,11 +83,15 @@ cp .env.example .env
 | `VITE_E2E_MOCK_MODE` | `false` | Enable mock mode for E2E testing |
 | `VITE_PREMIUM_ENABLED` | — | Enable premium features |
 | `VITE_PREMIUM_WAITLIST_MODE` | — | Show waitlist instead of direct purchase |
-| `VITE_SWIPE_STACK_V2` | `false` | Enable V2 swipe stack algorithm |
-| `VITE_STANDARD_DAILY_SWIPE_LIMIT` | `20` | Daily swipe limit for standard users |
+| `VITE_SWIPE_STACK_V2` | `false` | Enable V2 swipe stack (server-ranked feed) |
+| `VITE_STANDARD_DAILY_SWIPE_LIMIT` | `20` | Daily action limit for standard users |
 | `VITE_DEBUG_WEBVITALS` | `false` | Log Web Vitals to console |
 | `VITE_DEBUG_AUTH` | — | Verbose auth logging |
 | `VITE_DEBUG_SAFE_LOGGER` | — | Enable safe logger debug output |
+| `VITE_DEBUG_OFFERS` | — | Enable offers debug logging |
+| `VITE_DEBUG_MATCHES` | — | Enable match listener debug logging |
+| `VITE_PAYMENTS_PROVIDER` | — | Payment provider override (`stripe`) |
+| `VITE_ENABLE_VERCEL_ANALYTICS` | — | Force-enable Vercel analytics in non-Vercel hosts |
 
 **Server-side secrets** (set in Supabase or CI, never prefixed with `VITE_`):
 
@@ -136,9 +140,16 @@ MATCHOP/
 ├── src/
 │   ├── main.jsx                 # App bootstrap (providers + router)
 │   ├── App.jsx                  # Route tree + lazy-loaded pages
-│   ├── components/              # Shared UI (Navbar, SwipeCard, Modals, etc.)
+│   ├── components/
+│   │   ├── discovery/           # VerticalOpportunityFeed, VerticalOpportunityItem
+│   │   ├── landing/             # Landing page sections and motion components
+│   │   ├── navigation/          # StudentBottomNav, app navigation
+│   │   ├── offers/              # OfferScopeToggle, PreferencesButton, PreferencesDrawerOrModal
+│   │   ├── forms/               # Shared form components (FormLocationSelector)
+│   │   ├── student/             # Student-specific UI components
+│   │   └── *.jsx                # Shared UI (Navbar, Modals, Toasts, Logo, ErrorBoundary)
 │   ├── pages/
-│   │   ├── student/             # Student views (swipe, matches, chat, profile, referrals)
+│   │   ├── student/             # Student views (discovery feed, matches, chat, profile, referrals)
 │   │   ├── company/             # Company views (intros, matches, offers, chat, profile)
 │   │   ├── admin/               # Admin panel (dashboard, users, analytics, payments)
 │   │   ├── legal/               # Terms, Privacy, Cookies
@@ -161,7 +172,7 @@ MATCHOP/
 │   │   ├── suggest-icebreakers/     # AI conversation starters
 │   │   ├── generate-pdf/            # PDF generation
 │   │   ├── record-swipe/            # Server-side swipe recording
-│   │   ├── swipe-stack/             # Swipe stack API
+│   │   ├── swipe-stack/             # Ranked discovery feed API
 │   │   ├── create-d17-payment-request/  # D17 payment integration
 │   │   ├── admin-review-payment/    # Admin payment review
 │   │   ├── grant-premium-dev/       # Dev-mode premium granting
@@ -172,13 +183,19 @@ MATCHOP/
 │   ├── manual/                  # Operator runbooks
 │   └── config.toml              # Supabase project config
 ├── database/                    # Manual SQL scripts (canonical RLS, schema, seeds)
-├── docs/                        # Operational docs (email setup, premium discovery, security)
-├── public/                      # Static assets (favicon, team photos)
+├── docs/
+│   ├── system/                  # System documentation (architecture, discovery, data flows, etc.)
+│   ├── assets/screenshots/      # Project preview screenshots
+│   ├── EMAIL_SETUP.md           # Email provider configuration
+│   ├── PREMIUM_MATCHING_DISCOVERY.md  # Premium feature architecture
+│   └── SECURITY_SUPABASE_ADVISOR_REMEDIATION.md  # Security audit notes
+├── public/                      # Static assets (favicon, team photos, character images)
 ├── scraper/                     # Python-based External Job Scraper subsystem
 │   ├── matchop_scraper/         # Scraper source code (scrapling + Groq AI)
 │   ├── config/                  # Seed URLs (greenhouse, lever, workable)
 │   ├── docker/                  # Docker cron deployment setup
 │   └── pyproject.toml           # Scraper dependencies
+├── tests/mobile/                # Playwright mobile visual regression tests
 ├── .github/workflows/           # CI/CD workflows
 ├── Dockerfile                   # Docker dev environment (Node 22)
 ├── vercel.json                  # Vercel deploy config (SPA rewrites + security headers)
@@ -204,7 +221,7 @@ The backend logic runs as 15 Deno/TypeScript Edge Functions:
 | `ai-profile-polisher` | Enhance student profile content |
 | `suggest-icebreakers` | Generate conversation starters for matches |
 | `record-swipe` | Server-side swipe event recording |
-| `swipe-stack` | Serve the next swipe stack |
+| `swipe-stack` | Serve the ranked discovery feed |
 | `generate-pdf` | Generate PDF exports |
 | `create-d17-payment-request` | D17 mobile payment integration |
 | `admin-review-payment` | Admin payment approval/rejection |
@@ -276,6 +293,8 @@ The scraper runs autonomously via two supported methods:
 | `/forgot-password` | Password recovery |
 | `/reset-password` | Password reset |
 | `/auth/callback` | OAuth callback |
+| `/about` | About page |
+| `/contact` | Contact page |
 | `/legal/terms` | Terms of Service |
 | `/legal/privacy` | Privacy Policy |
 | `/legal/cookies` | Cookie Policy |
@@ -285,8 +304,9 @@ The scraper runs autonomously via two supported methods:
 |---|---|
 | `/student/signup` | Student registration |
 | `/student/login` | Student login |
-| `/student/swipe` | Swipe through opportunities |
+| `/student/swipe` | Vertical opportunity discovery feed |
 | `/student/matches` | View matches |
+| `/student/external-matches` | External opportunity tracker |
 | `/student/chat/:matchId` | Chat with a matched company |
 | `/student/referrals` | Referral program dashboard |
 | `/student/notifications` | Notification center |
@@ -304,6 +324,7 @@ The scraper runs autonomously via two supported methods:
 | `/company/chat/:matchId` | Chat with a matched student |
 | `/company/profile` | Company profile editor |
 | `/company/post-offer` | Create a new offer |
+| `/company/offers` | Manage posted offers |
 | `/company/notifications` | Notification center |
 | `/company/archived` | Archived intros/matches |
 
@@ -327,12 +348,10 @@ The scraper runs autonomously via two supported methods:
 |---|---|
 | [`PROJECT_MAP.md`](PROJECT_MAP.md) | Architecture overview, folder map, and data flow |
 | [`scraper/README.md`](scraper/README.md) | External job scraper architecture and runbook |
-| [`HANDOFF.md`](HANDOFF.md) | Production handoff: routes, env, deploy, and QA behaviors |
-| [`CLEANUP_REPORT.md`](CLEANUP_REPORT.md) | Cleanup pass: removed files, rationale, and risks |
-| [`24H_DB_HANDOFF_REPORT.md`](24H_DB_HANDOFF_REPORT.md) | Database handoff: schema findings and repair plan |
 | [`docs/EMAIL_SETUP.md`](docs/EMAIL_SETUP.md) | Email provider configuration |
 | [`docs/PREMIUM_MATCHING_DISCOVERY.md`](docs/PREMIUM_MATCHING_DISCOVERY.md) | Premium feature architecture deep-dive |
 | [`docs/SECURITY_SUPABASE_ADVISOR_REMEDIATION.md`](docs/SECURITY_SUPABASE_ADVISOR_REMEDIATION.md) | Security audit remediation notes |
+| [`docs/system/`](docs/system/) | System documentation (architecture, discovery, chat, data flows, etc.) |
 
 ---
 

@@ -225,10 +225,7 @@ export function useStudentProfile() {
                 if (textForEmbedding.length > 20) {
                     supabase.functions.invoke('generate-embedding', {
                         body: { text: textForEmbedding, type: 'student', id: user.id }
-                    }).then(({ error }) => {
-                        if (error) console.warn('[Embedding] Failed:', error)
-                        else console.log('[Embedding] Generated successfully')
-                    })
+                    }).catch(() => {})
                 }
             }
 

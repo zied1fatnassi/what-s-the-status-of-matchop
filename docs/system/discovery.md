@@ -137,12 +137,14 @@ When `VITE_SWIPE_STACK_V2 !== true`, `useJobOffers` falls back to:
 - `src/components/offers/PreferencesButton.jsx`
 - `src/components/offers/PreferencesDrawerOrModal.jsx`
 
-### Card rendering
-- `src/components/SwipeCard.jsx`
-- `src/components/OfferDetailModal.jsx`
+### Discovery feed & Card rendering
+- `src/components/discovery/VerticalOpportunityFeed.jsx` (vertical gesture handling, wheel & drag events, keyboard shortcuts, Framer Motion spring transitions)
+- `src/components/discovery/VerticalOpportunityItem.jsx` (opportunity card with ambient glow, tags, match score, quick actions)
+- `src/components/OfferDetailModal.jsx` (expanded opportunity view)
+- `src/components/MatchModal.jsx` (match celebration)
 
 ### UX states
-- loading, empty state, toast notifications, and match modal all live in the student swipe screen
+- loading, empty state, toast notifications, undo, and match modal all live in the student discovery feed screen (`StudentSwipe.jsx`)
 
 ## Fallbacks and Failure Modes
 - if the student profile is missing, the feed shows a “profile preparing” message

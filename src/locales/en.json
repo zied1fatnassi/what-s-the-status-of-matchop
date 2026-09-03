@@ -352,11 +352,11 @@
         "statsCompanies": "Company Beta",
         "statsMatchesValue": "Dec 2025",
         "statsMatches": "Platform Launch",
-        "howItWorks": "How Matchop Works",
+        "howItWorks": "How MatchOp Works",
         "step1Title": "Create Your Profile",
         "step1Desc": "Build a compelling profile showcasing your skills, experience, and what you're looking for.",
-        "step2Title": "Swipe & Match",
-        "step2Desc": "Browse through opportunities and swipe right on ones that interest you. It's that simple!",
+        "step2Title": "Discover & Apply",
+        "step2Desc": "Scroll through curated opportunities, review AI match scores, and apply or save in one click.",
         "step3Title": "Connect & Chat",
         "step3Desc": "When there's mutual interest, start a conversation and take the next step in your career.",
         "forStudents": "For Students",
@@ -451,7 +451,8 @@
                 "resendSending": "Sending...",
                 "resendIn": "Resend in {{seconds}}s",
                 "resendSuccess": "Verification email resent.",
-                "resendError": "Failed to resend. Please try again later."
+                "resendError": "Failed to resend. Please try again later.",
+                "resendRateLimit": "Too many requests. Please wait a minute before requesting another email."
             },
             "errors": {
                 "nameRequired": "Name is required.",
@@ -572,7 +573,8 @@
                 "resendSending": "Sending...",
                 "resendIn": "Resend in {{seconds}}s",
                 "resendSuccess": "Verification email resent!",
-                "resendError": "Failed to resend. Please try again later."
+                "resendError": "Failed to resend. Please try again later.",
+                "resendRateLimit": "Too many requests. Please wait a minute before requesting another email."
             },
             "errors": {
                 "companyNameRequired": "Company name is required.",
@@ -592,6 +594,7 @@
                 "userAlreadyExists": "An account with this email already exists.",
                 "weakPassword": "Password is too weak. Please choose a stronger password.",
                 "tooManyAttempts": "Too many attempts. Please wait a moment and try again.",
+                "emailSendError": "Unable to send confirmation email. Check your Supabase SMTP settings or run database/auto_confirm_emails.sql for local testing.",
                 "signupDisabled": "Sign up is currently disabled. Please contact support.",
                 "generic": "Unable to create account. Please try again."
             }
@@ -654,9 +657,9 @@
         "noMatchesYet": "No matches yet",
         "noExternalMatchesYet": "No external matches yet",
         "companyEmptyDesc": "When you match with candidates, they'll appear here!",
-        "externalEmptyDesc": "Swipe right on external opportunities to save them here.",
-        "keepSwipingTip": "Keep swiping to find your perfect opportunity!",
-        "startSwiping": "Start Swiping",
+        "externalEmptyDesc": "Apply or save external opportunities from the discovery feed to track them here.",
+        "keepSwipingTip": "Keep exploring the feed to find your perfect opportunity!",
+        "startSwiping": "Explore Opportunities",
         "viewCandidates": "View Candidates",
         "startConversation": "Start the conversation!",
         "applyOn": "Apply on {{source}}",

@@ -1,5 +1,4 @@
 import { useState, useMemo } from 'react'
-import { motion } from 'framer-motion'
 import {
     MapPin,
     Briefcase,
@@ -12,11 +11,9 @@ import {
     Coins,
     RotateCcw,
     Info,
-    Check,
     X,
     ChevronDown,
     ChevronUp,
-    Building2,
     Send
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'

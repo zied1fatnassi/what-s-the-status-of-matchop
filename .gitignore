@@ -123,6 +123,7 @@ dist
 # Editor directories and files
 .idea
 .vscode
+.obsidian/
 *.suo
 *.ntvs*
 *.njsproj
@@ -133,6 +134,7 @@ dist
 playwright-report
 test-results
 /output/
+.playwright-mcp/
 
 # OS
 .DS_Store

@@ -230,60 +230,82 @@ export function AuthProvider({ children }) {
 
                 let { data, error } = await loadProfile()
 
-                // If profile doesn't exist, try to create it from user metadata
-                if (error?.code === 'PGRST116' || error?.code === 'PROFILE_NOT_FOUND') {
-                    const { data: { user } } = await supabase.auth.getUser()
-                    if (user?.user_metadata) {
-                        const { type, name, website, sector } = user.user_metadata
-                        if (type && name) {
-                            debugLog('[Auth] Profile not found, creating from user metadata...')
-                            const { error: insertError } = await supabase
+                // Self-healing check: if profile is missing or incomplete (empty user_profiles or missing role row)
+                const needsSelfHealing = !data ||
+                    error?.code === 'PGRST116' ||
+                    error?.code === 'PROFILE_NOT_FOUND' ||
+                    !Array.isArray(data?.user_profiles) ||
+                    data.user_profiles.length === 0 ||
+                    (!data?.students && !data?.companies)
+
+                if (needsSelfHealing) {
+                    try {
+                        const { data: userData } = await supabase.auth.getUser()
+                        const currentUser = userData?.user
+                        const userMeta = currentUser?.user_metadata || {}
+                        const detectedType = userMeta.type || (currentUser?.app_metadata?.role === 'admin' ? 'admin' : 'student')
+                        const detectedName = userMeta.name || userMeta.display_name || userMeta.company_name || currentUser?.email?.split('@')[0] || 'User'
+
+                        debugLog('[Auth] Self-healing profile for user:', userId, { detectedType, detectedName })
+
+                        // 1. Ensure profiles base row
+                        await supabase
+                            .from('profiles')
+                            .upsert({
+                                id: userId,
+                                email: currentUser?.email || '',
+                                type: detectedType,
+                                name: detectedName
+                            }, { onConflict: 'id' })
+
+                        // 2. Ensure user_profiles row
+                        const { data: upData } = await supabase
+                            .from('user_profiles')
+                            .upsert({
+                                id: userId,
+                                user_id: userId,
+                                profile_type: detectedType,
+                                is_default: true
+                            }, { onConflict: 'id' })
+                            .select()
+                            .maybeSingle()
+
+                        // 3. Link active_profile_id
+                        if (upData?.id) {
+                            await supabase
                                 .from('profiles')
-                                .insert({
-                                    id: userId,
-                                    email: user.email
-                                })
-
-                            if (!insertError) {
-                                // Create user_profiles row
-                                const { data: upData } = await supabase.from('user_profiles').insert({
-                                    id: userId,
-                                    user_id: userId,
-                                    profile_type: type,
-                                    is_default: true
-                                }).select().single()
-
-                                // Set active_profile_id
-                                if (upData) {
-                                    await supabase.from('profiles').update({
-                                        active_profile_id: upData.id
-                                    }).eq('id', userId)
-                                }
-
-                                // Also create type-specific profile
-                                if (type === 'student') {
-                                    await supabase.from('students').insert({
-                                        id: userId,
-                                        display_name: name || 'Student',
-                                        location: '',
-                                        skills: []
-                                    })
-                                } else if (type === 'company') {
-                                    await supabase.from('companies').insert({
-                                        id: userId,
-                                        company_name: name || 'Company',
-                                        industry: sector || '',
-                                        description: '',
-                                        website: website || null
-                                    })
-                                }
-
-                                // Fetch the newly created profile
-                                const result = await loadProfile()
-                                data = result.data
-                                error = result.error
-                            }
+                                .update({ active_profile_id: upData.id })
+                                .eq('id', userId)
                         }
+
+                        // 4. Ensure role-specific row
+                        if (detectedType === 'student') {
+                            await supabase
+                                .from('students')
+                                .upsert({
+                                    id: userId,
+                                    display_name: detectedName,
+                                    location: userMeta.location || '',
+                                    skills: userMeta.skills || []
+                                }, { onConflict: 'id' })
+                        } else if (detectedType === 'company') {
+                            await supabase
+                                .from('companies')
+                                .upsert({
+                                    id: userId,
+                                    company_name: detectedName,
+                                    industry: userMeta.sector || userMeta.industry || '',
+                                    description: userMeta.description || '',
+                                    website: userMeta.website || null
+                                }, { onConflict: 'id' })
+                        }
+
+                        // Reload hydrated profile
+                        const reloaded = await loadProfile()
+                        data = reloaded.data
+                        error = reloaded.error
+                    } catch (healErr) {
+                        debugLog('[Auth] Self-healing encountered non-fatal error:', healErr)
                     }
                 }
                 return { data, error }
@@ -338,8 +360,8 @@ export function AuthProvider({ children }) {
     /**
      * Sign up a new user with Supabase Auth
      * Creates profile and type-specific data after signup
-     * NOTE: If email verification is required, profile creation is deferred
-     * until the user verifies their email and gets a valid session.
+     * NOTE: If email verification is required, DB trigger automatically provisions
+     * the profile rows, and fetchProfile self-heals any missing data upon confirmation.
      * @param {string} email 
      * @param {string} password 
      * @param {string} userType - 'student' or 'company'
@@ -370,22 +392,42 @@ export function AuthProvider({ children }) {
         setAuthError(null)
 
         try {
-            const metadata = { type: userType, name: userData.name || 'User' }
-            if (userType === 'student' && typeof userData.referralCode === 'string' && userData.referralCode.trim()) {
-                metadata.referral_code = userData.referralCode.trim().toUpperCase()
+            const metadata = {
+                type: userType,
+                name: userData.name || (userType === 'company' ? 'Company' : 'Student'),
+                display_name: userData.name || 'User'
             }
+
+            if (userType === 'student') {
+                if (userData.university) metadata.university = userData.university
+                if (userData.major) metadata.major = userData.major
+                if (userData.graduationYear) {
+                    metadata.graduationYear = userData.graduationYear
+                    metadata.graduation_year = userData.graduationYear
+                }
+                if (typeof userData.referralCode === 'string' && userData.referralCode.trim()) {
+                    metadata.referral_code = userData.referralCode.trim().toUpperCase()
+                }
+            }
+
             if (userType === 'company') {
+                metadata.company_name = userData.name || 'Company'
                 metadata.website = userData.website || null
                 metadata.sector = userData.sector || null
+                metadata.industry = userData.sector || null
                 metadata.size = userData.size || null
             }
+
+            const redirectUrl = typeof window !== 'undefined'
+                ? `${window.location.origin}/auth/callback`
+                : 'http://localhost:5173/auth/callback'
 
             const { data, error } = await supabase.auth.signUp({
                 email,
                 password,
                 options: {
                     data: metadata,
-                    emailRedirectTo: `${window.location.origin}/auth/callback`
+                    emailRedirectTo: redirectUrl
                 }
             })
 
@@ -403,58 +445,77 @@ export function AuthProvider({ children }) {
                 throw alreadyRegisteredError
             }
 
-            // Email verification is required — user was created but needs to confirm
+            // If session is missing (e.g. email confirmation disabled in project but session not attached),
+            // attempt immediate sign-in to grant direct access.
+            if (data.user && !data.session) {
+                try {
+                    const { data: signInData } = await supabase.auth.signInWithPassword({
+                        email,
+                        password
+                    })
+                    if (signInData?.session) {
+                        data.session = signInData.session
+                        data.user = signInData.user || data.user
+                    }
+                } catch (signInErr) {
+                    debugLog('Immediate sign-in attempt after signup encountered error:', signInErr)
+                }
+            }
+
             const needsEmailVerification = data.user && !data.session
 
-            // Only create profile if we have a session (no email verification required)
-            // Otherwise, profile will be created when user verifies email and fetchProfile runs
+            // When immediate session exists, perform immediate client-side upserts and state hydration
             if (data.user && data.session) {
                 try {
-                    const { error: profileError } = await supabase.from('profiles').insert({
+                    await supabase.from('profiles').upsert({
                         id: data.user.id,
-                        email: email
-                    })
+                        email: email,
+                        type: userType,
+                        name: metadata.name
+                    }, { onConflict: 'id' })
 
-                    if (profileError && !profileError.message.includes('duplicate')) {
-                        safeLogError('[Auth] profile creation error', { error: profileError })
-                    }
-
-                    // Create user_profiles row (profile type link)
-                    const { data: upData } = await supabase.from('user_profiles').insert({
+                    const { data: upData } = await supabase.from('user_profiles').upsert({
                         id: data.user.id,
                         user_id: data.user.id,
                         profile_type: userType,
                         is_default: true
-                    }).select().single()
+                    }, { onConflict: 'id' }).select().maybeSingle()
 
-                    // Set active_profile_id
                     if (upData) {
                         await supabase.from('profiles').update({
                             active_profile_id: upData.id
                         }).eq('id', data.user.id)
                     }
 
-                    // Create type-specific profile
                     if (userType === 'student') {
-                        await supabase.from('students').insert({
+                        await supabase.from('students').upsert({
                             id: data.user.id,
                             display_name: userData.name || 'Student',
+                            university: userData.university || null,
+                            major: userData.major || null,
+                            graduation_year: userData.graduationYear ? parseInt(userData.graduationYear, 10) : null,
                             location: userData.location || '',
                             skills: userData.skills || []
-                        })
+                        }, { onConflict: 'id' })
                     } else if (userType === 'company') {
-                        await supabase.from('companies').insert({
+                        await supabase.from('companies').upsert({
                             id: data.user.id,
                             company_name: userData.name || 'Company',
                             industry: userData.sector || '',
                             description: userData.description || '',
-                            website: userData.website || null
-                        })
+                            website: userData.website || null,
+                            size: userData.size || null
+                        }, { onConflict: 'id' })
                     }
                 } catch (profileErr) {
-                    // Profile creation failed, but signup succeeded
-                    // Profile will be auto-created on next login via fetchProfile
-                    debugLog('Profile creation failed, will retry on login:', profileErr)
+                    debugLog('Immediate profile creation encountered non-fatal error:', profileErr)
+                }
+
+                setUser(data.user)
+                try {
+                    await fetchProfile(data.user.id, data.user)
+                } catch (fetchErr) {
+                    debugLog('Initial profile fetch non-fatal error:', fetchErr)
                 }
             }
 
@@ -462,7 +523,7 @@ export function AuthProvider({ children }) {
         } catch (err) {
             return { data: null, error: err, needsEmailVerification: false }
         }
-    }, [])
+    }, [fetchProfile])
 
     /**
      * Sign in with email and password
@@ -570,15 +631,23 @@ export function AuthProvider({ children }) {
         }
 
         try {
+            const redirectUrl = typeof window !== 'undefined'
+                ? `${window.location.origin}/auth/callback`
+                : 'http://localhost:5173/auth/callback'
+
             const { error } = await supabase.auth.resend({
                 type: 'signup',
                 email,
                 options: {
-                    emailRedirectTo: `${window.location.origin}/auth/callback`
+                    emailRedirectTo: redirectUrl
                 }
             })
+            if (error) {
+                safeLogError('[Auth] resendVerificationEmail failed', { error })
+            }
             return { error }
         } catch (err) {
+            safeLogError('[Auth] resendVerificationEmail crashed', { error: err })
             return { error: err }
         }
     }, [])

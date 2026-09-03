@@ -45,13 +45,13 @@ Student opens /student/swipe
        get-matched-jobs
        + direct offers query
        + external_jobs_public query
-  -> StudentSwipe applies local browser filters
-  -> SwipeCard renders cards
+  -> StudentSwipe applies local browser filters (scope toggle, preferences)
+  -> VerticalOpportunityFeed & VerticalOpportunityItem render vertical feed
 ```
 
-## 4. Student Swipe Flow
+## 4. Student Action / Swipe Flow
 ```text
-Student swipes left or right on internal offer
+Student applies (right-swipe / apply button / A key) or passes (left-swipe / pass button / X key / drag up) on internal offer
   -> useJobOffers.swipe()
   -> record-swipe edge function
   -> record_student_swipe_with_limit RPC
@@ -60,11 +60,11 @@ Student swipes left or right on internal offer
 ```
 
 Special case:
-- right swipe on internal offer also triggers intro creation
+- apply (right-swipe) on internal offer also triggers intro creation
 
 ## 5. Intro Creation
 ```text
-Student right-swipes internal offer
+Student applies (right-swipe) to internal offer
   -> useJobOffers calls create_intro_from_swipe
   -> DB validates offer
   -> DB calculates match score
@@ -136,11 +136,11 @@ Realtime:
 Scrapling-powered Python scraper
   -> Scrapling fetches ATS pages (Greenhouse, Lever, Workable)
   -> Groq AI extracts structured fields (skills, experience, summary)
-  -> Normaliser cleans titles, locations, companies, salaries
-  -> Pipeline deduplicates by URL/source_job_id/content_hash
+  -> normalisation (title, location, company, salary cleaning)
+  -> deduplication by URL/source_job_id/content_hash
   -> external_jobs upsert
   -> swipe-stack or external_jobs_public read
-  -> SwipeCard renders external badge
+  -> VerticalOpportunityItem renders external badge & source
   -> OfferDetailModal "Visit Website"
   -> browser opens original_url
 ```

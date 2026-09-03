@@ -77,14 +77,49 @@ export function useMessages(matchId) {
                     filter: `match_id=eq.${matchId}`
                 },
                 (payload) => {
-                    setMessages(prev => [...prev, payload.new])
-                    if (payload?.new?.sender_id !== user?.id && notificationScope) {
+                    const incoming = payload.new
+                    if (!incoming) return
+
+                    setMessages((prev) => {
+                        // Avoid duplicates if already present
+                        if (prev.some((m) => m.id === incoming.id)) {
+                            return prev
+                        }
+                        // Replace pending optimistic message if one matches
+                        const optimisticIndex = prev.findIndex(
+                            (m) => m.isOptimistic && m.sender_id === incoming.sender_id && m.content === incoming.content
+                        )
+                        if (optimisticIndex !== -1) {
+                            const next = [...prev]
+                            next[optimisticIndex] = incoming
+                            return next
+                        }
+                        return [...prev, incoming]
+                    })
+
+                    if (incoming.sender_id !== user?.id && notificationScope) {
                         addNotification(notificationScope, {
                             title: 'New intro',
                             body: 'You received a new message intro.',
                             read: false,
                         })
                     }
+                }
+            )
+            .on(
+                'postgres_changes',
+                {
+                    event: 'UPDATE',
+                    schema: 'public',
+                    table: 'messages',
+                    filter: `match_id=eq.${matchId}`
+                },
+                (payload) => {
+                    const updated = payload.new
+                    if (!updated) return
+                    setMessages((prev) =>
+                        prev.map((m) => (m.id === updated.id ? { ...m, ...updated } : m))
+                    )
                 }
             )
             .subscribe()
@@ -115,6 +150,21 @@ export function useMessages(matchId) {
             }
         }
 
+        // Optimistic temporary message
+        const tempId = `temp-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
+        const optimisticMessage = {
+            id: tempId,
+            match_id: matchId,
+            sender_id: user.id,
+            content: cleanContent,
+            created_at: new Date().toISOString(),
+            is_read: false,
+            isOptimistic: true
+        }
+
+        // Immediately update UI so user sees message with 0ms latency
+        setMessages((prev) => [...prev, optimisticMessage])
+
         try {
             const newMessage = {
                 match_id: matchId,
@@ -130,8 +180,16 @@ export function useMessages(matchId) {
 
             if (sendError) {
                 safeLogError('[useMessages] send failed', { error: sendError })
+                // Roll back optimistic message on failure
+                setMessages((prev) => prev.filter((m) => m.id !== tempId))
                 return { error: sendError.message || 'Failed to send message' }
             }
+
+            // Replace optimistic placeholder with real persisted record
+            setMessages((prev) => {
+                const filtered = prev.filter((m) => m.id !== tempId && m.id !== data.id)
+                return [...filtered, data]
+            })
 
             if (notificationScope) {
                 addNotification(notificationScope, {
@@ -143,9 +201,10 @@ export function useMessages(matchId) {
 
             return { error: null, data }
         } catch (err) {
+            setMessages((prev) => prev.filter((m) => m.id !== tempId))
             return { error: err.message }
         }
-    }, [matchId, user?.id])
+    }, [matchId, user?.id, notificationScope])
 
     const markAsRead = useCallback(async () => {
         if (!matchId || !user?.id) return

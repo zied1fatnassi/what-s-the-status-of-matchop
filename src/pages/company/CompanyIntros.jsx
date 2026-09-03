@@ -1,20 +1,44 @@
 import { useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Users, Loader, AlertCircle, RefreshCw, MapPin, Clock3, MessageCircle, Archive, XCircle, Star, FolderArchive } from 'lucide-react'
+import {
+    Users,
+    Loader,
+    AlertCircle,
+    RefreshCw,
+    MapPin,
+    Clock3,
+    MessageCircle,
+    Archive,
+    XCircle,
+    Star,
+    FolderArchive,
+    UserCheck,
+    Check
+} from 'lucide-react'
 import { useIntros } from '../../hooks/useIntros'
+import { useAuth } from '../../context/AuthContext'
 import { supabase } from '../../lib/supabase'
+import { CandidateProfileModal } from '../../features/conversations/CandidateProfileModal'
+import { RejectionModal } from '../../components/RejectionModal'
 import './CompanyIntros.css'
 
 function CompanyIntros() {
     const navigate = useNavigate()
     const { t } = useTranslation()
-    const { intros, loading, error, stats, acceptIntro, declineIntro, refresh } = useIntros('pending')
+    const { user } = useAuth()
+    const [activeTab, setActiveTab] = useState('all')
+    const { intros, loading, error, stats, acceptIntro, declineIntro, refresh } = useIntros(activeTab)
     const [processingIds, setProcessingIds] = useState(() => new Set())
     const [actionError, setActionError] = useState('')
+    const [selectedStudentId, setSelectedStudentId] = useState(null)
+    const [rejectingIntro, setRejectingIntro] = useState(null)
+    const [isRejecting, setIsRejecting] = useState(false)
     const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
-    const pendingCount = useMemo(() => stats?.pending ?? intros.length, [stats?.pending, intros.length])
+    const pendingCount = useMemo(() => stats?.pending ?? 0, [stats?.pending])
+    const acceptedCount = useMemo(() => stats?.accepted ?? 0, [stats?.accepted])
+    const totalActiveCount = useMemo(() => pendingCount + acceptedCount, [pendingCount, acceptedCount])
 
     const startProcessing = (introId) => {
         setProcessingIds((prev) => {
@@ -68,20 +92,36 @@ function CompanyIntros() {
         return null
     }
 
-    const handleMessage = async (intro) => {
+    const handleAccept = async (intro) => {
         setActionError('')
         startProcessing(intro.id)
         try {
             const { error: actionErrorMessage } = await acceptIntro(intro.id)
+            if (actionErrorMessage) {
+                setActionError(actionErrorMessage)
+                return
+            }
+            refresh()
+        } catch (err) {
+            setActionError(err?.message || t('common.error'))
+        } finally {
+            stopProcessing(intro.id)
+        }
+    }
+
+    const handleMessage = async (intro) => {
+        setActionError('')
+        startProcessing(intro.id)
+        try {
+            // If intro was still pending, accept it first
+            if (intro.status === 'pending') {
+                await acceptIntro(intro.id)
+            }
+
             const matchId = await findCreatedMatchId(intro)
 
             if (matchId) {
                 navigate(`/company/chat/${matchId}`)
-                return
-            }
-
-            if (actionErrorMessage) {
-                setActionError(actionErrorMessage)
                 return
             }
 
@@ -108,22 +148,58 @@ function CompanyIntros() {
         }
     }
 
-    const handleReject = async (intro) => {
+    const handleConfirmRejectIntro = async (rejectionText) => {
+        if (!rejectingIntro || !user?.id) return
+        setIsRejecting(true)
         setActionError('')
-        startProcessing(intro.id)
+
         try {
-            const result = await declineIntro(intro.id)
-            if (result?.error) {
-                setActionError(result.error)
+            // 1. Find or create a match record to hold the chat message
+            let matchId = await findCreatedMatchId(rejectingIntro)
+            if (!matchId) {
+                const { data: newMatch } = await supabase
+                    .from('matches')
+                    .insert({
+                        company_id: user.id,
+                        student_id: rejectingIntro.studentId,
+                        offer_id: rejectingIntro.offerId,
+                        status: 'archived',
+                        matched_at: new Date().toISOString()
+                    })
+                    .select('id')
+                    .maybeSingle()
+                matchId = newMatch?.id
+            } else {
+                await supabase
+                    .from('matches')
+                    .update({ status: 'archived' })
+                    .eq('id', matchId)
             }
+
+            // 2. Send polite rejection message in messages table
+            if (matchId) {
+                await supabase
+                    .from('messages')
+                    .insert({
+                        match_id: matchId,
+                        sender_id: user.id,
+                        content: rejectionText
+                    })
+            }
+
+            // 3. Update intro status to declined
+            await declineIntro(rejectingIntro.id)
+            setRejectingIntro(null)
+            refresh()
         } catch (err) {
+            console.error('[CompanyIntros] rejection error:', err)
             setActionError(err?.message || t('common.error'))
         } finally {
-            stopProcessing(intro.id)
+            setIsRejecting(false)
         }
     }
 
-    if (loading) {
+    if (loading && intros.length === 0) {
         return (
             <div className="intros-page">
                 <div className="container">
@@ -136,7 +212,7 @@ function CompanyIntros() {
         )
     }
 
-    if (error) {
+    if (error && intros.length === 0) {
         return (
             <div className="intros-page">
                 <div className="container">
@@ -167,8 +243,7 @@ function CompanyIntros() {
                     </div>
 
                     <div className="intros-header-actions">
-                        <span className="pending-pill">{t('companyWorkflow.newCandidates.pendingCount', { count: pendingCount })}</span>
-                        <button className="btn btn-secondary btn-sm" onClick={refresh}>
+                        <button className="btn btn-secondary btn-sm" onClick={refresh} title={t('companyWorkflow.newCandidates.actions.refresh')}>
                             <RefreshCw size={16} />
                             {t('companyWorkflow.newCandidates.actions.refresh')}
                         </button>
@@ -177,6 +252,40 @@ function CompanyIntros() {
                             {t('nav.archived')}
                         </Link>
                     </div>
+                </div>
+
+                {/* Filter tabs: Tous, En attente, Acceptes */}
+                <div className="intros-tabs" role="tablist" aria-label="Filtrer les candidats">
+                    <button
+                        type="button"
+                        role="tab"
+                        aria-selected={activeTab === 'all'}
+                        className={`intros-tab ${activeTab === 'all' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('all')}
+                    >
+                        <span>Tous les candidats</span>
+                        <span className="intros-tab-count">{totalActiveCount}</span>
+                    </button>
+                    <button
+                        type="button"
+                        role="tab"
+                        aria-selected={activeTab === 'pending'}
+                        className={`intros-tab ${activeTab === 'pending' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('pending')}
+                    >
+                        <span>En attente</span>
+                        {pendingCount > 0 && <span className="intros-tab-count highlight">{pendingCount}</span>}
+                    </button>
+                    <button
+                        type="button"
+                        role="tab"
+                        aria-selected={activeTab === 'accepted'}
+                        className={`intros-tab ${activeTab === 'accepted' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('accepted')}
+                    >
+                        <span>Acceptés</span>
+                        <span className="intros-tab-count">{acceptedCount}</span>
+                    </button>
                 </div>
 
                 {actionError && (
@@ -201,6 +310,8 @@ function CompanyIntros() {
                     <div className="intros-grid">
                         {intros.map((intro) => {
                             const isProcessing = processingIds.has(intro.id)
+                            const isAccepted = intro.status === 'accepted'
+                            const isPending = intro.status === 'pending'
 
                             return (
                                 <article
@@ -221,6 +332,23 @@ function CompanyIntros() {
                                         </div>
                                     </div>
 
+                                    {/* Status Pill */}
+                                    {isAccepted && (
+                                        <span className="intro-status-pill intro-status-pill--accepted">
+                                            <Check size={12} /> {t('common.accepted', 'Accepté')}
+                                        </span>
+                                    )}
+                                    {isPending && (
+                                        <span className="intro-status-pill intro-status-pill--pending">
+                                            {t('common.pendingDecision', 'En attente')}
+                                        </span>
+                                    )}
+                                    {intro.status === 'declined' && (
+                                        <span className="intro-status-pill intro-status-pill--declined">
+                                            {t('common.declined', 'Refusé')}
+                                        </span>
+                                    )}
+
                                     <div className="intro-info">
                                         <h3>{intro.studentName || t('companyWorkflow.common.unknownCandidate')}</h3>
                                         <p className="intro-offer">{t('companyWorkflow.newCandidates.meta.forOffer', { offer: intro.offerTitle || t('companyWorkflow.common.unknownOffer') })}</p>
@@ -230,7 +358,7 @@ function CompanyIntros() {
                                                 {intro.studentLocation}
                                             </p>
                                         )}
-                                        {intro.timeRemaining && intro.timeRemaining !== 'Unknown' && (
+                                        {intro.timeRemaining && intro.timeRemaining !== 'Unknown' && isPending && (
                                             <p className="intro-expiry">
                                                 <Clock3 size={14} />
                                                 {t('companyWorkflow.newCandidates.meta.expiresIn', { time: intro.timeRemaining })}
@@ -252,36 +380,68 @@ function CompanyIntros() {
                                     {intro.studentBio && <p className="intro-bio">{intro.studentBio}</p>}
 
                                     <div className="intro-actions">
-                                        <button
-                                            type="button"
-                                            className="btn btn-primary btn-sm"
-                                            onClick={() => handleMessage(intro)}
-                                            disabled={isProcessing}
-                                            aria-label={`${t('companyWorkflow.newCandidates.actions.message')} ${intro.studentName}`}
-                                        >
-                                            <MessageCircle size={16} />
-                                            {t('companyWorkflow.newCandidates.actions.message')}
-                                        </button>
+                                        {/* 1. Voir le profil — Always available */}
                                         <button
                                             type="button"
                                             className="btn btn-secondary btn-sm"
-                                            onClick={() => handleArchive(intro)}
+                                            onClick={() => setSelectedStudentId(intro.studentId)}
                                             disabled={isProcessing}
-                                            aria-label={`${t('companyWorkflow.newCandidates.actions.archive')} ${intro.studentName}`}
+                                            aria-label={`${t('common.viewProfile', 'Voir le profil')} ${intro.studentName}`}
                                         >
-                                            <Archive size={16} />
-                                            {t('companyWorkflow.newCandidates.actions.archive')}
+                                            <UserCheck size={16} />
+                                            <span>{t('common.viewProfile', 'Voir le profil')}</span>
                                         </button>
-                                        <button
-                                            type="button"
-                                            className="btn btn-danger btn-sm"
-                                            onClick={() => handleReject(intro)}
-                                            disabled={isProcessing}
-                                            aria-label={`${t('companyWorkflow.newCandidates.actions.reject')} ${intro.studentName}`}
-                                        >
-                                            <XCircle size={16} />
-                                            {t('companyWorkflow.newCandidates.actions.reject')}
-                                        </button>
+
+                                        {/* 2. When Pending: Accepter and Rejeter. No messaging before accept! */}
+                                        {isPending && (
+                                            <>
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-primary btn-sm"
+                                                    onClick={() => handleAccept(intro)}
+                                                    disabled={isProcessing}
+                                                    aria-label={`Accepter ${intro.studentName}`}
+                                                >
+                                                    <Check size={16} />
+                                                    <span>{t('common.accept', 'Accepter')}</span>
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-danger btn-sm"
+                                                    onClick={() => setRejectingIntro(intro)}
+                                                    disabled={isProcessing}
+                                                    aria-label={`${t('companyWorkflow.newCandidates.actions.reject')} ${intro.studentName}`}
+                                                >
+                                                    <XCircle size={16} />
+                                                    <span>{t('companyWorkflow.newCandidates.actions.reject')}</span>
+                                                </button>
+                                            </>
+                                        )}
+
+                                        {/* 3. When Accepted: Can message the candidate directly */}
+                                        {isAccepted && (
+                                            <>
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-primary btn-sm"
+                                                    onClick={() => handleMessage(intro)}
+                                                    disabled={isProcessing}
+                                                    aria-label={`${t('companyWorkflow.newCandidates.actions.message')} ${intro.studentName}`}
+                                                >
+                                                    <MessageCircle size={16} />
+                                                    <span>{t('companyWorkflow.newCandidates.actions.message')}</span>
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-secondary btn-sm"
+                                                    onClick={() => handleArchive(intro)}
+                                                    disabled={isProcessing}
+                                                    aria-label={`${t('companyWorkflow.newCandidates.actions.archive')} ${intro.studentName}`}
+                                                >
+                                                    <Archive size={16} />
+                                                </button>
+                                            </>
+                                        )}
                                     </div>
                                 </article>
                             )
@@ -289,6 +449,26 @@ function CompanyIntros() {
                     </div>
                 )}
             </div>
+
+            {/* Candidate Public Profile & CV Modal */}
+            {selectedStudentId && (
+                <CandidateProfileModal
+                    studentId={selectedStudentId}
+                    isOpen={Boolean(selectedStudentId)}
+                    onClose={() => setSelectedStudentId(null)}
+                />
+            )}
+
+            {/* Polite Rejection Modal */}
+            {rejectingIntro && (
+                <RejectionModal
+                    isOpen={Boolean(rejectingIntro)}
+                    candidateName={rejectingIntro.studentName || 'le candidat'}
+                    onClose={() => setRejectingIntro(null)}
+                    onConfirm={handleConfirmRejectIntro}
+                    isSubmitting={isRejecting}
+                />
+            )}
         </div>
     )
 }

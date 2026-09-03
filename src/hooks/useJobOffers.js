@@ -123,6 +123,8 @@ function isMissingExternalMatchesTableError(error) {
 }
 
 function logOffersDebugSummary(nextOffers) {
+    if (!isOffersDebugEnabled) return
+
     const normalizedOffers = Array.isArray(nextOffers) ? nextOffers : []
     const externalCount = normalizedOffers.filter((offer) => offer?.isExternal === true).length
 

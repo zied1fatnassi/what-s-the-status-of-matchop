@@ -8,7 +8,7 @@ import './OfferDetailModal.css'
 /**
  * Modal showing full job offer details when clicking on a swipe card
  */
-function OfferDetailModal({ offer, onClose }) {
+function OfferDetailModal({ offer, onClose, onApply }) {
     const tr = useBilingualText()
     const [showReport, setShowReport] = useState(false)
 
@@ -135,12 +135,22 @@ function OfferDetailModal({ offer, onClose }) {
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="btn btn-primary"
+                                onClick={() => {
+                                    onApply?.(offer)
+                                }}
                             >
                                 <Briefcase size={18} />
                                 {tr('Visit Website', 'Visiter le site')}
                             </a>
                         ) : (
-                            <button className="btn btn-primary">
+                            <button
+                                type="button"
+                                className="btn btn-primary"
+                                onClick={() => {
+                                    onApply?.(offer)
+                                    onClose()
+                                }}
+                            >
                                 <Briefcase size={18} />
                                 {tr('Apply Now', 'Postuler maintenant')}
                             </button>

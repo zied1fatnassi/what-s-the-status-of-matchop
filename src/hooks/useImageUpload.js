@@ -60,7 +60,7 @@ export function useImageUpload(userId, bucket = 'avatars') {
                     `${userId}/avatar.gif`
                 ])
             } catch {
-                console.log('No old avatars to delete')
+                // No old avatars to remove
             }
 
             // Upload new avatar

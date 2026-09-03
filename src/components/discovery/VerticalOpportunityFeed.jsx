@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
-import { ChevronUp, ChevronDown, Sparkles } from 'lucide-react'
-import { useTranslation } from 'react-i18next'
+import { ChevronUp, ChevronDown } from 'lucide-react'
 import VerticalOpportunityItem from './VerticalOpportunityItem'
 import { useBilingualText } from '../../lib/useBilingualText'
 import './VerticalOpportunityFeed.css'
@@ -18,7 +17,7 @@ function VerticalOpportunityFeed({
     onUndo,
     onViewDetails
 }) {
-    const { t } = useTranslation()
+    void motion
     const tr = useBilingualText()
     const shouldReduceMotion = useReducedMotion()
 
@@ -165,8 +164,8 @@ function VerticalOpportunityFeed({
     if (!currentOffer) return null
 
     // Compute progress dots for discovery session
-    const progressTotal = Math.min(10, Math.max(1, totalOffers))
-    const progressActive = Math.min(progressTotal - 1, currentIndex % progressTotal)
+    const totalDots = Math.min(7, Math.max(1, totalOffers))
+    const activeDotIndex = totalDots > 0 ? currentIndex % totalDots : 0
 
     return (
         <div className="vertical-opportunity-feed" ref={containerRef}>
@@ -184,10 +183,10 @@ function VerticalOpportunityFeed({
                 </button>
 
                 <div className="feed-progress-indicator" aria-hidden="true">
-                    {Array.from({ length: Math.min(7, totalOffers) }).map((_, idx) => (
+                    {Array.from({ length: totalDots }).map((_, idx) => (
                         <span
                             key={idx}
-                            className={`feed-progress-dot ${idx === (currentIndex % 7) ? 'is-active' : ''}`}
+                            className={`feed-progress-dot ${idx === activeDotIndex ? 'is-active' : ''}`}
                         />
                     ))}
                 </div>

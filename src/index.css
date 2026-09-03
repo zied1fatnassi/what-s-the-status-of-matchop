@@ -79,6 +79,12 @@
   --safe-left: env(safe-area-inset-left, 0px);
   --safe-right: env(safe-area-inset-right, 0px);
   --page-x-padding: clamp(0.75rem, 2.5vw, 1.5rem);
+  --content-max-width: 1280px;
+  --feed-max-width: 620px;
+  --touch-target-min: 44px;
+  --breakpoint-mobile-max: 767px;
+  --breakpoint-tablet-min: 768px;
+  --breakpoint-desktop-min: 1200px;
 }
 
 /* ===================================

@@ -7,7 +7,15 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    {
+      name: 'watch-src-explicitly',
+      configureServer(server) {
+        server.watcher.add(path.resolve(__dirname, 'src'))
+      }
+    }
+  ],
 
   build: {
     // Target modern browsers for smaller bundles
@@ -59,8 +67,21 @@ export default defineConfig({
 
   // Server configuration for development
   server: {
-    // Enable HMR
+    host: true,
     hmr: true,
+    watch: {
+      usePolling: true,
+      interval: 300,
+      ignored: (filePath) => {
+        if (!filePath) return false
+        const normalized = filePath.replace(/\\/g, '/')
+        if (normalized.includes('/node_modules/')) return true
+        if (normalized.includes('/.git/objects/')) return true
+        if (normalized.includes('/.git/refs/')) return true
+        if (normalized.includes('/dist/')) return true
+        return false
+      }
+    },
     fs: {
       allow: [__dirname],
       deny: ['.env', '.env.*', '*.{crt,pem}'],

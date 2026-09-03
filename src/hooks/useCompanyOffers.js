@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
+import { safeLogWarn } from '../lib/logger'
 
 const DAY_MS = 24 * 60 * 60 * 1000
 const TREND_WINDOW_DAYS = 30
@@ -307,9 +308,15 @@ export function useCompanyOffers() {
                         .in('offer_id', offerIds)
                 ])
 
-                if (swipesResult.error) throw swipesResult.error
-                if (introsResult.error) throw introsResult.error
-                if (matchesResult.error) throw matchesResult.error
+                if (swipesResult.error) {
+                    safeLogWarn('[useCompanyOffers] swipes query warning:', { error: swipesResult.error })
+                }
+                if (introsResult.error) {
+                    safeLogWarn('[useCompanyOffers] intros query warning:', { error: introsResult.error })
+                }
+                if (matchesResult.error) {
+                    safeLogWarn('[useCompanyOffers] matches query warning:', { error: matchesResult.error })
+                }
 
                 swipes = swipesResult.data || []
                 intros = introsResult.data || []

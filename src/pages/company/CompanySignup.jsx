@@ -18,6 +18,9 @@ const AUTH_ERROR_TRANSLATION_MAP = {
     user_already_exists: 'auth.companySignup.errors.userAlreadyExists',
     weak_password: 'auth.companySignup.errors.weakPassword',
     over_request_rate_limit: 'auth.companySignup.errors.tooManyAttempts',
+    over_email_send_rate_limit: 'auth.companySignup.errors.tooManyAttempts',
+    'confirmation email': 'auth.companySignup.errors.emailSendError',
+    'error sending confirmation email': 'auth.companySignup.errors.emailSendError',
     signup_disabled: 'auth.companySignup.errors.signupDisabled',
 }
 
@@ -197,12 +200,20 @@ function CompanySignup() {
 
     const strengthInfo = getPasswordStrengthInfo(passwordStrength.strength)
 
+    const [resendCustomError, setResendCustomError] = useState('')
+
     const handleResendEmail = async () => {
         if (resendCooldown > 0 || resendStatus === 'sending') return
         setResendStatus('sending')
+        setResendCustomError('')
         try {
             const { error: resendError } = await resendVerificationEmail(formData.email)
             if (resendError) {
+                const isRateLimit = String(resendError.message || resendError.code || '').toLowerCase().includes('rate') || resendError.status === 429
+                setResendCustomError(isRateLimit
+                    ? t('auth.companySignup.verification.resendRateLimit')
+                    : t('auth.companySignup.verification.resendError')
+                )
                 setResendStatus('error')
             } else {
                 setResendStatus('sent')
@@ -217,7 +228,12 @@ function CompanySignup() {
                     })
                 }, 1000)
             }
-        } catch {
+        } catch (err) {
+            const isRateLimit = String(err?.message || '').toLowerCase().includes('rate')
+            setResendCustomError(isRateLimit
+                ? t('auth.companySignup.verification.resendRateLimit')
+                : t('auth.companySignup.verification.resendError')
+            )
             setResendStatus('error')
         }
     }
@@ -280,7 +296,7 @@ function CompanySignup() {
                                 )}
                                 {resendStatus === 'error' && (
                                     <p style={{ color: 'var(--error)', fontSize: '0.85rem', textAlign: 'center' }}>
-                                        {t('auth.companySignup.verification.resendError')}
+                                        {resendCustomError || t('auth.companySignup.verification.resendError')}
                                     </p>
                                 )}
                             </div>

@@ -198,12 +198,20 @@ function StudentSignup() {
         }
     }
 
+    const [resendCustomError, setResendCustomError] = useState('')
+
     const handleResendEmail = async () => {
         if (resendCooldown > 0 || resendStatus === 'sending') return
         setResendStatus('sending')
+        setResendCustomError('')
         try {
             const { error: resendError } = await resendVerificationEmail(formData.email)
             if (resendError) {
+                const isRateLimit = String(resendError.message || resendError.code || '').toLowerCase().includes('rate') || resendError.status === 429
+                setResendCustomError(isRateLimit
+                    ? t('auth.studentSignup.verification.resendRateLimit')
+                    : t('auth.studentSignup.verification.resendError')
+                )
                 setResendStatus('error')
             } else {
                 setResendStatus('sent')
@@ -218,7 +226,12 @@ function StudentSignup() {
                     })
                 }, 1000)
             }
-        } catch {
+        } catch (err) {
+            const isRateLimit = String(err?.message || '').toLowerCase().includes('rate')
+            setResendCustomError(isRateLimit
+                ? t('auth.studentSignup.verification.resendRateLimit')
+                : t('auth.studentSignup.verification.resendError')
+            )
             setResendStatus('error')
         }
     }
@@ -278,7 +291,7 @@ function StudentSignup() {
                             <p className="student-auth-feedback success">{t('auth.studentSignup.verification.resendSuccess')}</p>
                         )}
                         {resendStatus === 'error' && (
-                            <p className="student-auth-feedback error">{t('auth.studentSignup.verification.resendError')}</p>
+                            <p className="student-auth-feedback error">{resendCustomError || t('auth.studentSignup.verification.resendError')}</p>
                         )}
                     </div>
                     {showInviteFollowup && (

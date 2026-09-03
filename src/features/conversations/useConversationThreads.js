@@ -29,8 +29,8 @@ function buildParticipant(match, role) {
 
     return {
         id: match?.student_id || null,
-        name: match?.profiles?.name || match?.students?.display_name || FALLBACK_NAMES.student,
-        avatarUrl: match?.profiles?.avatar_url || null
+        name: match?.students?.display_name || FALLBACK_NAMES.student,
+        avatarUrl: match?.students?.avatar_url || null
     }
 }
 
@@ -44,7 +44,9 @@ function toThread(match, role, latestMessage, unreadCount) {
         lastActivityAt: latestMessage?.created_at || match?.matched_at || match?.created_at || null,
         unreadCount: unreadCount || 0,
         archived: match?.status === 'archived',
-        status: match?.status || 'active'
+        status: match?.status || 'active',
+        studentId: match?.student_id || null,
+        companyId: match?.company_id || null
     }
 }
 
@@ -93,11 +95,7 @@ export function useConversationThreads(role = 'student') {
                     ),
                     students:student_id (
                         id,
-                        display_name
-                    ),
-                    profiles:student_id (
-                        id,
-                        name,
+                        display_name,
                         avatar_url
                     )
                 `)

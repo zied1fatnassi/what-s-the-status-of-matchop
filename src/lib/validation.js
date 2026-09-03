@@ -146,8 +146,11 @@ export function getAuthErrorMessage(error) {
         'invalid_login_credentials': 'Invalid email or password. Please try again.',
         'email_address_invalid': 'Please enter a valid email address.',
         'weak_password': 'Password is too weak. Please choose a stronger password.',
-        'user_already_exists': 'An account with this email already exists.',
+        'user_already_exists': 'An account with this email already exists. Please sign in instead.',
         'over_request_rate_limit': 'Too many attempts. Please wait a moment and try again.',
+        'over_email_send_rate_limit': 'Email rate limit reached. Please wait a few minutes before trying again.',
+        'confirmation email': 'Unable to send confirmation email. Check your Supabase SMTP settings or run database/auto_confirm_emails.sql for local testing.',
+        'error sending confirmation email': 'Unable to send confirmation email. Check your Supabase SMTP settings or run database/auto_confirm_emails.sql for local testing.',
         'signup_disabled': 'Sign up is currently disabled. Please contact support.',
     }
 

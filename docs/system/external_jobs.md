@@ -51,14 +51,12 @@ It then merges the two lists in the client.
 ### Direct external job hook
 `useExternalJobs.js` provides a separate paginated reader for `external_jobs_public`, although the current main student experience is the swipe feed.
 
-## UI Rendering
-
-### Card rendering
-`src/components/SwipeCard.jsx`
+### Feed and card rendering
+`src/components/discovery/VerticalOpportunityItem.jsx` (within `VerticalOpportunityFeed.jsx`)
 
 Behavior:
 - displays an external source badge when `offer.isExternal === true`
-- can show `sourceWebsite` on the card
+- shows `sourceWebsite` badge and custom external apply CTA on the card
 
 ### Detail modal
 `src/components/OfferDetailModal.jsx`

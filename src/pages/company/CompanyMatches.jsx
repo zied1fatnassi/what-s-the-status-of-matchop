@@ -1,17 +1,26 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { MessageCircle, GraduationCap, Loader, AlertCircle, RefreshCw, Users, Archive, XCircle } from 'lucide-react'
+import { GraduationCap, Loader, AlertCircle, RefreshCw, Users, Archive, XCircle, UserCheck, Check } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useMatches } from '../../hooks/useMatches'
+import { useAuth } from '../../context/AuthContext'
+import { supabase } from '../../lib/supabase'
+import { CandidateProfileModal } from '../../features/conversations/CandidateProfileModal'
+import { RejectionModal } from '../../components/RejectionModal'
 import './CompanyMatches.css'
 
 function CompanyMatches() {
     const { t, i18n } = useTranslation()
-    const { matches, loading, error, refresh, archiveMatch } = useMatches()
+    const { user } = useAuth()
+    const { matches, loading, error, refresh } = useMatches()
     const [processingIds, setProcessingIds] = useState(() => new Set())
+    const [selectedStudentId, setSelectedStudentId] = useState(null)
+    const [rejectingMatch, setRejectingMatch] = useState(null)
+    const [isRejecting, setIsRejecting] = useState(false)
 
+    // Initial triage matches (not yet accepted and not archived)
     const activeMatches = useMemo(
-        () => matches.filter((match) => match.status !== 'archived'),
+        () => matches.filter((match) => match.status === 'matched' || match.status === 'pending'),
         [matches]
     )
 
@@ -31,16 +40,86 @@ function CompanyMatches() {
         })
     }
 
-    const handleArchive = async (matchId) => {
-        markProcessing(matchId)
-        await archiveMatch(matchId)
-        unmarkProcessing(matchId)
+    const handleAccept = async (match) => {
+        markProcessing(match.id)
+        try {
+            // 1. Mark match as accepted
+            await supabase
+                .from('matches')
+                .update({ status: 'accepted' })
+                .eq('id', match.id)
+
+            // 2. Ensure intro is created or updated as accepted so it appears in /company/candidates
+            if (match.student_id && user?.id) {
+                const { data: existingIntro } = await supabase
+                    .from('intros')
+                    .select('id')
+                    .eq('company_id', user.id)
+                    .eq('student_id', match.student_id)
+                    .maybeSingle()
+
+                if (existingIntro) {
+                    await supabase
+                        .from('intros')
+                        .update({ status: 'accepted' })
+                        .eq('id', existingIntro.id)
+                } else {
+                    await supabase
+                        .from('intros')
+                        .insert({
+                            company_id: user.id,
+                            student_id: match.student_id,
+                            offer_id: match.offer_id,
+                            status: 'accepted'
+                        })
+                }
+            }
+
+            // 3. Refresh matches: candidate moves from Matchs triage to Candidats
+            refresh()
+        } catch (err) {
+            console.error('[CompanyMatches] accept failed:', err)
+        } finally {
+            unmarkProcessing(match.id)
+        }
     }
 
-    const handleReject = async (matchId) => {
-        markProcessing(matchId)
-        await archiveMatch(matchId)
-        unmarkProcessing(matchId)
+    const handleConfirmReject = async (rejectionText) => {
+        if (!rejectingMatch || !user?.id) return
+        setIsRejecting(true)
+
+        try {
+            // 1. Send polite rejection message to the candidate in chat
+            await supabase
+                .from('messages')
+                .insert({
+                    match_id: rejectingMatch.id,
+                    sender_id: user.id,
+                    content: rejectionText
+                })
+
+            // 2. Update match status to archived
+            await supabase
+                .from('matches')
+                .update({ status: 'archived' })
+                .eq('id', rejectingMatch.id)
+
+            // 3. Update intro status to declined if it exists
+            if (rejectingMatch.student_id) {
+                await supabase
+                    .from('intros')
+                    .update({ status: 'declined' })
+                    .eq('company_id', user.id)
+                    .eq('student_id', rejectingMatch.student_id)
+            }
+
+            setRejectingMatch(null)
+            refresh()
+        } catch (err) {
+            console.error('[CompanyMatches] reject failed:', err)
+        } finally {
+            setIsRejecting(false)
+        }
     }
 
     if (loading) {
@@ -147,46 +226,39 @@ function CompanyMatches() {
                                                     <span>{studentSkills.slice(0, 4).join(', ')}</span>
                                                 </p>
                                             )}
-
-                                            {match.last_message ? (
-                                                <p className="company-match-last-message">{match.last_message}</p>
-                                            ) : (
-                                                <p className="company-match-last-message muted">
-                                                    <MessageCircle size={14} />
-                                                    {t('matches.startConversation')}
-                                                </p>
-                                            )}
                                         </div>
                                     </div>
 
+                                    {/* Action buttons: Voir le profil, Accepter, Rejeter. No Message button before accepting! */}
                                     <div className="company-match-actions">
-                                        <Link
-                                            to={`/company/chat/${match.id}`}
-                                            className="btn btn-primary btn-sm"
-                                            aria-label={`${t('companyWorkflow.matches.actions.message')} ${studentName}`}
-                                        >
-                                            <MessageCircle size={16} />
-                                            {t('companyWorkflow.matches.actions.message')}
-                                        </Link>
                                         <button
                                             type="button"
                                             className="btn btn-secondary btn-sm"
-                                            onClick={() => handleArchive(match.id)}
-                                            disabled={isProcessing}
-                                            aria-label={`${t('companyWorkflow.matches.actions.archive')} ${studentName}`}
+                                            onClick={() => setSelectedStudentId(match.student_id)}
+                                            aria-label={`${t('common.viewProfile', 'Voir le profil')} ${studentName}`}
                                         >
-                                            <Archive size={16} />
-                                            {t('companyWorkflow.matches.actions.archive')}
+                                            <UserCheck size={16} />
+                                            <span>{t('common.viewProfile', 'Voir le profil')}</span>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="btn btn-primary btn-sm"
+                                            onClick={() => handleAccept(match)}
+                                            disabled={isProcessing}
+                                            aria-label={`Accepter ${studentName}`}
+                                        >
+                                            <Check size={16} />
+                                            <span>{t('common.accept', 'Accepter')}</span>
                                         </button>
                                         <button
                                             type="button"
                                             className="btn btn-danger btn-sm"
-                                            onClick={() => handleReject(match.id)}
+                                            onClick={() => setRejectingMatch(match)}
                                             disabled={isProcessing}
                                             aria-label={`${t('companyWorkflow.matches.actions.reject')} ${studentName}`}
                                         >
                                             <XCircle size={16} />
-                                            {t('companyWorkflow.matches.actions.reject')}
+                                            <span>{t('companyWorkflow.matches.actions.reject')}</span>
                                         </button>
                                     </div>
                                 </article>
@@ -195,6 +267,26 @@ function CompanyMatches() {
                     </div>
                 )}
             </div>
+
+            {/* Candidate Public Profile & CV Modal */}
+            {selectedStudentId && (
+                <CandidateProfileModal
+                    studentId={selectedStudentId}
+                    isOpen={Boolean(selectedStudentId)}
+                    onClose={() => setSelectedStudentId(null)}
+                />
+            )}
+
+            {/* Polite Rejection Modal */}
+            {rejectingMatch && (
+                <RejectionModal
+                    isOpen={Boolean(rejectingMatch)}
+                    candidateName={rejectingMatch.students?.display_name || 'le candidat'}
+                    onClose={() => setRejectingMatch(null)}
+                    onConfirm={handleConfirmReject}
+                    isSubmitting={isRejecting}
+                />
+            )}
         </div>
     )
 }

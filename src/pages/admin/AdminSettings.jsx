@@ -35,7 +35,7 @@ export default function AdminSettings() {
                 setSettings(data.settings || settings)
             }
         } catch {
-            console.log('No settings found, using defaults')
+            // No settings found in app_settings table, using fallback defaults
         } finally {
             setLoading(false)
         }

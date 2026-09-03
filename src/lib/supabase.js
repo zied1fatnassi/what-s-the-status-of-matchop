@@ -777,6 +777,58 @@ function createMockSupabase() {
                     }
                 }
 
+                if (name === 'swipe-stack') {
+                    return {
+                        data: {
+                            items: [
+                                {
+                                    id: 'mock-offer-1',
+                                    title: 'Full Stack React & Node Developer',
+                                    company: 'TechCorp Innovations',
+                                    location: 'Remote · Paris, France',
+                                    department: 'Engineering',
+                                    salary: '45,000€ - 55,000€',
+                                    duration: 'Full-time',
+                                    type: 'full-time',
+                                    description: 'Build scalable web applications using React and modern cloud architectures.',
+                                    skills: ['React', 'JavaScript', 'Node.js', 'PostgreSQL'],
+                                    companyVerified: true,
+                                    matchScore: 0.94,
+                                    isExternal: false
+                                },
+                                {
+                                    id: 'mock-offer-2',
+                                    title: 'Frontend UI/UX Engineer',
+                                    company: 'DesignStudio Labs',
+                                    location: 'London, UK',
+                                    department: 'Product Design',
+                                    salary: '50,000£ - 65,000£',
+                                    duration: 'Full-time',
+                                    type: 'full-time',
+                                    description: 'Craft beautiful, high performance web applications with modern design systems.',
+                                    skills: ['CSS', 'React', 'Framer Motion', 'Figma'],
+                                    companyVerified: true,
+                                    matchScore: 0.88,
+                                    isExternal: false
+                                }
+                            ],
+                            next_cursor: null,
+                            meta: {
+                                effective_plan: 'standard',
+                                daily_usage: {
+                                    allowed: true,
+                                    code: 'OK',
+                                    daily_count: 0,
+                                    limit_count: 20,
+                                    remaining: 20,
+                                    reached: false
+                                }
+                            }
+                        },
+                        error: null
+                    }
+                }
+
                 if (name === 'record-swipe') {
                     return {
                         data: {

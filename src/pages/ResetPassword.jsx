@@ -109,7 +109,7 @@ function ResetPassword() {
 
         checkToken()
         return () => { active = false }
-    }, [location.state])
+    }, [location.state, tr])
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -126,7 +126,7 @@ function ResetPassword() {
         // Validate password client-side
         const passwordValidation = validatePassword(password)
         if (!passwordValidation.valid) {
-            setError(passwordValidation.error)
+            setError(passwordValidation.errors?.[0] || tr('Invalid password', 'Mot de passe invalide'))
             return
         }
 

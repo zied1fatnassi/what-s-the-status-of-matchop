@@ -157,13 +157,18 @@ export function useIntros(statusFilter = 'pending') {
             .eq('company_id', user.id)
 
         if (!updateError) {
-            setIntros(prev => prev.filter(i => i.id !== introId))
-            // Invalidate caches
+            setIntros(prev => {
+                if (statusFilter === 'pending') {
+                    return prev.filter(i => i.id !== introId)
+                }
+                return prev.map(i => i.id === introId ? { ...i, status: 'accepted' } : i)
+            })
             introsCacheMap.clear()
+            fetchStats()
         }
 
         return { error: updateError?.message || null }
-    }, [user])
+    }, [user, statusFilter, fetchStats])
 
     // Decline a single intro (silent — student sees "pending" → eventually "expired")
     const declineIntro = useCallback(async (introId) => {
@@ -176,12 +181,18 @@ export function useIntros(statusFilter = 'pending') {
             .eq('company_id', user.id)
 
         if (!updateError) {
-            setIntros(prev => prev.filter(i => i.id !== introId))
+            setIntros(prev => {
+                if (statusFilter === 'pending') {
+                    return prev.filter(i => i.id !== introId)
+                }
+                return prev.map(i => i.id === introId ? { ...i, status: 'declined' } : i)
+            })
             introsCacheMap.clear()
+            fetchStats()
         }
 
         return { error: updateError?.message || null }
-    }, [user])
+    }, [user, statusFilter, fetchStats])
 
     // Batch accept multiple intros
     const batchAccept = useCallback(async (introIds) => {
