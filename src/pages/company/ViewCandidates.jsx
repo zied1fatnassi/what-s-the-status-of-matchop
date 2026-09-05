@@ -29,7 +29,7 @@ function ViewCandidates() {
     const navigate = useNavigate()
     const { items, loading, error, refresh } = useCompanyClosedItems()
     const [typeFilter, setTypeFilter] = useState('all')
-    const [selectedStudentId, setSelectedStudentId] = useState(null)
+    const [selectedCandidate, setSelectedCandidate] = useState(null)
     const [processingIds, setProcessingIds] = useState(() => new Set())
     const [deletingItem, setDeletingItem] = useState(null)
     const [isDeleting, setIsDeleting] = useState(false)
@@ -325,7 +325,7 @@ function ViewCandidates() {
                                             <button
                                                 type="button"
                                                 className="btn btn-secondary btn-sm"
-                                                onClick={() => setSelectedStudentId(item.studentId)}
+                                                onClick={() => setSelectedCandidate({ studentId: item.studentId, offerId: item.offerId })}
                                                 disabled={isProcessing}
                                                 aria-label={`Voir le profil de ${item.candidateName}`}
                                             >
@@ -378,11 +378,12 @@ function ViewCandidates() {
             </div>
 
             {/* Candidate Public Profile Modal */}
-            {selectedStudentId && (
+            {selectedCandidate && (
                 <CandidateProfileModal
-                    studentId={selectedStudentId}
-                    isOpen={Boolean(selectedStudentId)}
-                    onClose={() => setSelectedStudentId(null)}
+                    studentId={selectedCandidate.studentId}
+                    offerId={selectedCandidate.offerId}
+                    isOpen={Boolean(selectedCandidate)}
+                    onClose={() => setSelectedCandidate(null)}
                 />
             )}
 

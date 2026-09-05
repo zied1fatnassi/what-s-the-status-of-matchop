@@ -62,6 +62,22 @@ vi.mock('../../components/MatchToast', () => ({
     default: () => null
 }))
 
+vi.mock('../../components/discovery/AICVPersonalizationModal', () => ({
+    default: ({ isOpen, onConfirmSend }) => {
+        if (!isOpen) return null
+        return (
+            <div data-testid="ai-cv-modal">
+                <button
+                    data-testid="confirm-send-cv"
+                    onClick={() => onConfirmSend('personalized/test/cv.pdf')}
+                >
+                    Send CV
+                </button>
+            </div>
+        )
+    }
+}))
+
 import StudentSwipe from './StudentSwipe'
 
 function renderSwipe() {
@@ -111,6 +127,9 @@ describe('StudentSwipe swipe flow', () => {
         expect(likeButton).not.toBeNull()
 
         fireEvent.click(likeButton)
+
+        const confirmBtn = await screen.findByTestId('confirm-send-cv')
+        fireEvent.click(confirmBtn)
 
         expect(swipeMock).toHaveBeenCalledTimes(1)
 

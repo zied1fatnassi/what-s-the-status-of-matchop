@@ -31,7 +31,7 @@ function CompanyIntros() {
     const { intros, loading, error, stats, acceptIntro, declineIntro, refresh } = useIntros(activeTab)
     const [processingIds, setProcessingIds] = useState(() => new Set())
     const [actionError, setActionError] = useState('')
-    const [selectedStudentId, setSelectedStudentId] = useState(null)
+    const [selectedCandidate, setSelectedCandidate] = useState(null)
     const [rejectingIntro, setRejectingIntro] = useState(null)
     const [isRejecting, setIsRejecting] = useState(false)
     const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
@@ -384,7 +384,7 @@ function CompanyIntros() {
                                         <button
                                             type="button"
                                             className="btn btn-secondary btn-sm"
-                                            onClick={() => setSelectedStudentId(intro.studentId)}
+                                            onClick={() => setSelectedCandidate({ studentId: intro.studentId, offerId: intro.offerId })}
                                             disabled={isProcessing}
                                             aria-label={`${t('common.viewProfile', 'Voir le profil')} ${intro.studentName}`}
                                         >
@@ -451,11 +451,12 @@ function CompanyIntros() {
             </div>
 
             {/* Candidate Public Profile & CV Modal */}
-            {selectedStudentId && (
+            {selectedCandidate && (
                 <CandidateProfileModal
-                    studentId={selectedStudentId}
-                    isOpen={Boolean(selectedStudentId)}
-                    onClose={() => setSelectedStudentId(null)}
+                    studentId={selectedCandidate.studentId}
+                    offerId={selectedCandidate.offerId}
+                    isOpen={Boolean(selectedCandidate)}
+                    onClose={() => setSelectedCandidate(null)}
                 />
             )}
 

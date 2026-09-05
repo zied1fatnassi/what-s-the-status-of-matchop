@@ -73,8 +73,8 @@ export function TextReveal({
         viewport={{ once, margin: '-30px' }}
       >
         {words.map((word, idx) => {
-          const cleanWord = word.replace(/[^a-zA-Z0-9]/g, '').toLowerCase()
-          const isSerif = serifWords.some(sw => sw.toLowerCase() === cleanWord)
+          const cleanWord = word.replace(/[^\p{L}\p{N}]/gu, '').toLowerCase()
+          const isSerif = serifWords.some(sw => sw.replace(/[^\p{L}\p{N}]/gu, '').toLowerCase() === cleanWord)
           return (
             <span key={idx} className="kinetic-word-slot">
               <motion.span

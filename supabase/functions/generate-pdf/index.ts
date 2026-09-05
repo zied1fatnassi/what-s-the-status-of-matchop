@@ -1,9 +1,10 @@
 // ─── generate-pdf Edge Function ──────────────────────────────────────
 // Generates a branded, searchable PDF CV for a student profile.
-// Accepts: POST { profile_id, profile_type }
-// Returns: { url: signedUrl (15 min) }
-// Security: Public endpoint (anyone can generate a PDF for a public profile).
-//           Uses service_role to fetch data and upload to Storage.
+// Accepts: POST { profile_id, profile_type, offer_id, tailored_cv }
+// Returns: { url: signedUrl, storage_path: string, success: true }
+// Supports:
+//   - 'student-cv': standard profile export -> pdf-exports bucket
+//   - 'personalized-cv': offer-tailored CV -> cvs bucket (personalized/${studentId}/${offerId}/cv.pdf)
 // ─────────────────────────────────────────────────────────────────────
 
 // @deno-types="https://esm.sh/v135/@types/react@18.2.0/index.d.ts"
@@ -60,17 +61,21 @@ serve(async (req) => {
 
     try {
         // ── 1. Parse Input ──
-        const { profile_id, profile_type } = await req.json()
+        const { profile_id, profile_type, offer_id, tailored_cv } = await req.json()
 
         if (!profile_id) {
             return errorResponse('Missing required field: profile_id', 400, origin)
         }
 
-        // Default to student-cv; future: company-report, etc.
-        const pdfType = profile_type || 'student-cv'
+        // Default to student-cv
+        const pdfType = profile_type || (tailored_cv ? 'personalized-cv' : 'student-cv')
 
-        if (pdfType !== 'student-cv') {
-            return errorResponse(`Unsupported profile_type: "${pdfType}". Only "student-cv" is currently supported.`, 400, origin)
+        if (pdfType !== 'student-cv' && pdfType !== 'personalized-cv') {
+            return errorResponse(`Unsupported profile_type: "${pdfType}". Supported: "student-cv", "personalized-cv".`, 400, origin)
+        }
+
+        if (pdfType === 'personalized-cv' && !offer_id) {
+            return errorResponse('Missing required field for personalized-cv: offer_id', 400, origin)
         }
 
         // ── 2. Create Service-Role Client (bypasses RLS for data fetch + upload) ──
@@ -133,9 +138,35 @@ serve(async (req) => {
                 .order('issue_date', { ascending: false }),
         ])
 
-        const experiences = experiencesRes.data || []
+        const baseExperiences = experiencesRes.data || []
         const education = educationRes.data || []
         const certifications = certificationsRes.data || []
+
+        // Apply tailored overrides if generating personalized CV
+        const studentToRender = { ...student }
+        let experiencesToRender = baseExperiences
+
+        if (pdfType === 'personalized-cv' && tailored_cv) {
+            if (tailored_cv.headline) {
+                studentToRender.headline = tailored_cv.headline
+            }
+            if (tailored_cv.summary) {
+                studentToRender.bio = tailored_cv.summary
+            }
+            if (Array.isArray(tailored_cv.highlighted_skills) && tailored_cv.highlighted_skills.length > 0) {
+                studentToRender.skills = tailored_cv.highlighted_skills
+            }
+            if (Array.isArray(tailored_cv.experiences) && tailored_cv.experiences.length > 0) {
+                experiencesToRender = tailored_cv.experiences.map((exp: any) => ({
+                    job_title: exp.job_title || 'Poste',
+                    company: exp.company || 'Entreprise',
+                    start_date: exp.start_date || '',
+                    end_date: exp.end_date || '',
+                    is_current: Boolean(exp.is_current),
+                    description: exp.description || ''
+                }))
+            }
+        }
 
         // ── 5. Render PDF ──
         const generatedAt = new Date().toLocaleDateString('en-GB', {
@@ -144,32 +175,33 @@ serve(async (req) => {
             year: 'numeric',
         })
 
-        console.log(`[generate-pdf] Rendering PDF for ${student.display_name} (${profile_id})`)
+        console.log(`[generate-pdf] Rendering PDF (${pdfType}) for ${student.display_name} (${profile_id})`)
 
         const pdfBuffer = await renderToBuffer(
             React.createElement(StudentCV, {
-                profile: student,
+                profile: studentToRender,
                 email: profile.email,
-                experiences,
+                experiences: experiencesToRender,
                 education,
                 certifications,
                 generatedAt,
             })
         )
 
-        // Convert to Uint8Array for Storage upload
         const pdfBytes = new Uint8Array(pdfBuffer)
 
-        // ── 6. Upload to Supabase Storage ──
-        const storagePath = `profiles/${profile_id}/cv.pdf`
+        // ── 6. Storage Destination ──
+        const targetBucket = pdfType === 'personalized-cv' ? 'cvs' : 'pdf-exports'
+        const storagePath = pdfType === 'personalized-cv'
+            ? `personalized/${profile_id}/${offer_id}/cv.pdf`
+            : `profiles/${profile_id}/cv.pdf`
 
-        // Upsert: overwrite existing CV
         const { error: uploadError } = await supabase.storage
-            .from('pdf-exports')
+            .from(targetBucket)
             .upload(storagePath, pdfBytes, {
                 contentType: 'application/pdf',
-                cacheControl: '300', // 5 min cache
-                upsert: true,        // Overwrite previous version
+                cacheControl: '300',
+                upsert: true,
             })
 
         if (uploadError) {
@@ -177,24 +209,26 @@ serve(async (req) => {
             return errorResponse(`Failed to upload PDF: ${uploadError.message}`, 500, origin)
         }
 
-        // ── 7. Create Signed URL (15 minutes) ──
+        // ── 7. Create Signed URL (3600 seconds = 1 hour) ──
         const { data: signedUrlData, error: signedUrlError } = await supabase.storage
-            .from('pdf-exports')
-            .createSignedUrl(storagePath, 900) // 900 seconds = 15 minutes
+            .from(targetBucket)
+            .createSignedUrl(storagePath, 3600)
 
         if (signedUrlError || !signedUrlData?.signedUrl) {
             console.error('Signed URL error:', signedUrlError)
             return errorResponse('Failed to create download link', 500, origin)
         }
 
-        console.log(`[generate-pdf] ✅ PDF generated and uploaded for ${profile_id}`)
+        console.log(`[generate-pdf] ✅ PDF generated and uploaded to ${targetBucket}/${storagePath}`)
 
         // ── 8. Return ──
         return jsonResponse({
             success: true,
             url: signedUrlData.signedUrl,
-            expires_in: 900,
+            signed_url: signedUrlData.signedUrl,
+            storage_path: storagePath,
             path: storagePath,
+            expires_in: 3600,
             profile_name: student.display_name,
         }, 200, origin)
 

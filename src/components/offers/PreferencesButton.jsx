@@ -13,9 +13,10 @@ function PreferencesButton({ onClick, disabled = false }) {
             onClick={onClick}
             disabled={disabled}
             aria-label={t('studentSwipe.controls.preferencesAria')}
+            title={t('studentSwipe.controls.preferences')}
         >
-            <SlidersHorizontal size={16} aria-hidden="true" />
-            <span>{t('studentSwipe.controls.preferences')}</span>
+            <SlidersHorizontal size={15} aria-hidden="true" />
+            <span className="offer-preferences-button-text">{t('studentSwipe.controls.preferences')}</span>
         </button>
     )
 }

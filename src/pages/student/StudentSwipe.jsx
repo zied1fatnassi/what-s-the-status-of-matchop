@@ -10,6 +10,7 @@ import MatchToast from '../../components/MatchToast'
 import OfferScopeToggle from '../../components/offers/OfferScopeToggle'
 import PreferencesButton from '../../components/offers/PreferencesButton'
 import PreferencesDrawerOrModal from '../../components/offers/PreferencesDrawerOrModal'
+import AICVPersonalizationModal from '../../components/discovery/AICVPersonalizationModal'
 import Logo from '../../components/Logo'
 import { useAuth } from '../../context/AuthContext'
 import { useApplications } from '../../context/ApplicationContext'
@@ -127,6 +128,7 @@ function StudentSwipe() {
     const [toastTitle, setToastTitle] = useState('')
     const [toastVariant, setToastVariant] = useState('application')
     const [showPreferencesModal, setShowPreferencesModal] = useState(false)
+    const [personalizationOffer, setPersonalizationOffer] = useState(null)
     const [swipePreferences, setSwipePreferences] = useState(() => normalizeSwipePreferences(
         readStorageJSON(STUDENT_SWIPE_PREFERENCES_KEY, DEFAULT_SWIPE_PREFERENCES)
     ))
@@ -316,6 +318,13 @@ function StudentSwipe() {
         }
 
         const isExternal = offerToSwipe.isExternal === true
+
+        // INTERCEPT: Internal offer + right/super swipe -> Open Personalization Modal
+        if ((direction === 'right' || direction === 'super') && !isExternal) {
+            setPersonalizationOffer(offerToSwipe)
+            return
+        }
+
         setSwipeHistory((prev) => [...prev, { offer: offerToSwipe, direction }])
         setCurrentIndex((prev) => prev + 1)
 
@@ -367,6 +376,43 @@ function StudentSwipe() {
             .catch((swipeError) => {
                 console.error('[StudentSwipe] swipe request failed', swipeError)
             })
+    }
+
+    const handleSendPersonalizedApplication = async (personalizedCvUrl) => {
+        const targetOffer = personalizationOffer
+        setPersonalizationOffer(null)
+        if (!targetOffer) return
+
+        setSwipeHistory((prev) => [...prev, { offer: targetOffer, direction: 'right' }])
+        setCurrentIndex((prev) => prev + 1)
+
+        try {
+            const swipeResult = await swipe(targetOffer, 'right', { personalizedCvUrl })
+            if (isLimitReachedCode(swipeResult?.code)) {
+                openPremiumUpsell('daily_limit', {
+                    used: swipeResult?.usage?.used ?? dailySwipeUsage?.used ?? null,
+                    limit: swipeResult?.usage?.limit ?? dailySwipeUsage?.limit ?? null
+                })
+                return
+            }
+
+            if (swipeResult?.error) {
+                console.error('[StudentSwipe] personalized swipe failed', swipeResult.error)
+                return
+            }
+
+            setToastIsExternal(false)
+            setToastTitle(t('studentSwipe.toasts.applicationSent', 'Application was sent!'))
+            setToastVariant('application')
+            setShowToast(true)
+
+            if (targetOffer.hasMatched) {
+                setMatchedOffer(targetOffer)
+                setTimeout(() => setShowMatch(true), 500)
+            }
+        } catch (swipeError) {
+            console.error('[StudentSwipe] personalized swipe request failed', swipeError)
+        }
     }
 
     const handleUndo = () => {
@@ -568,6 +614,15 @@ function StudentSwipe() {
                 <MatchToast
                     match={newMatch}
                     onClose={clearMatch}
+                />
+            )}
+
+            {personalizationOffer && (
+                <AICVPersonalizationModal
+                    isOpen={Boolean(personalizationOffer)}
+                    offer={personalizationOffer}
+                    onClose={() => setPersonalizationOffer(null)}
+                    onConfirmSend={handleSendPersonalizedApplication}
                 />
             )}
         </div>

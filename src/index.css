@@ -3,18 +3,9 @@
    Premium Dark/Light Theme with Robust Switching
    ================================ */
 
-@font-face {
-  font-family: 'Inter Fallback';
-  src: local('Segoe UI');
-  ascent-override: 90%;
-  descent-override: 22%;
-  line-gap-override: 0%;
-  size-adjust: 107%;
-}
-
 :root {
-  /* --- TYPOGRAPHY (Fixa Editorial & Modern Sans) --- */
-  --font-sans: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  /* --- TYPOGRAPHY (Instrument Sans UI/Body + Instrument Serif Display) --- */
+  --font-sans: 'Instrument Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-serif: 'Instrument Serif', Georgia, serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
@@ -287,7 +278,7 @@ html {
 }
 
 body {
-  font-family: 'Inter', 'Inter Fallback', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: var(--font-sans);
   background: var(--bento-bg);
   color: var(--text-primary);
   line-height: 1.6;
@@ -319,6 +310,7 @@ body.overlay-open {
 
 /* --- Typography --- */
 h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-sans);
   color: var(--text-primary);
   line-height: 1.2;
   font-weight: 700;
@@ -531,6 +523,7 @@ textarea {
   gap: var(--space-2);
   padding: var(--space-3) var(--space-6);
   border-radius: var(--radius-pill);
+  font-family: var(--font-sans);
   font-weight: 600;
   font-size: 0.95rem;
   cursor: pointer;
@@ -950,6 +943,14 @@ textarea {
    ============================================================ */
 
 /* Typography */
+.font-sans { font-family: var(--font-sans); }
+.font-serif { font-family: var(--font-serif); }
+.font-serif-accent {
+  font-family: var(--font-serif) !important;
+  font-style: italic !important;
+  font-weight: 400 !important;
+  letter-spacing: -0.01em;
+}
 .text-primary { color: var(--text-primary); }
 .text-muted { color: var(--text-muted); }
 .text-xs { font-size: 0.75rem; line-height: 1rem; }
@@ -962,6 +963,7 @@ textarea {
 .text-4xl { font-size: 2.25rem; line-height: 2.5rem; }
 .text-5xl { font-size: 3rem; line-height: 1; }
 .text-6xl { font-size: 3.75rem; line-height: 1; }
+.font-normal { font-weight: 400; }
 .font-medium { font-weight: 500; }
 .font-semibold { font-weight: 600; }
 .font-bold { font-weight: 700; }

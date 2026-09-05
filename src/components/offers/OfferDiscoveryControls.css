@@ -8,42 +8,55 @@
 
 .offer-scope-toggle {
     flex: 1;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-1);
-    padding: var(--space-1);
-    border: 1px solid var(--bento-card-border-subtle);
-    border-radius: var(--radius-lg);
-    background: var(--bento-card);
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 3px;
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-pill);
+    background: var(--surface-muted);
+}
+
+[data-theme='dark'] .offer-scope-toggle {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.08);
 }
 
 .offer-scope-toggle-btn {
-    border: 1px solid transparent;
+    border: none;
     background: transparent;
     color: var(--text-secondary);
-    border-radius: var(--radius-md);
-    min-height: 48px;
-    padding: 0.5rem 0.6rem;
-    font-size: 0.8rem;
+    border-radius: var(--radius-pill);
+    min-height: 32px;
+    padding: 0.25rem 0.65rem;
+    font-size: 0.78rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all var(--duration-fast) var(--ease-in-out);
-    display: grid;
-    gap: 0.15rem;
-    justify-items: center;
+    transition: all var(--duration-fast) var(--ease-smooth);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    white-space: nowrap;
 }
 
 .offer-scope-toggle-btn:hover:not(:disabled),
 .offer-scope-toggle-btn:focus-visible {
-    border-color: color-mix(in srgb, var(--primary) 36%, var(--border));
     color: var(--text-primary);
     outline: none;
 }
 
 .offer-scope-toggle-btn.active {
-    border-color: color-mix(in srgb, var(--primary) 58%, var(--border));
+    background: var(--surface);
     color: var(--text-primary);
-    background: color-mix(in srgb, var(--primary) 12%, transparent);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+    font-weight: 700;
+}
+
+[data-theme='dark'] .offer-scope-toggle-btn.active {
+    background: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .offer-scope-toggle-btn.locked {
@@ -51,7 +64,7 @@
 }
 
 .offer-scope-toggle-btn:disabled {
-    opacity: 0.7;
+    opacity: 0.6;
     cursor: not-allowed;
 }
 
@@ -62,32 +75,42 @@
 }
 
 .offer-scope-toggle-badge {
-    padding: 0.1rem 0.45rem;
+    padding: 1px 6px;
     border-radius: var(--radius-pill);
-    font-size: 0.68rem;
+    font-size: 0.62rem;
+    font-weight: 700;
     line-height: 1.35;
-    border: 1px solid transparent;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
 }
 
 .offer-scope-toggle-badge-free {
-    border-color: color-mix(in srgb, var(--accent-teal) 44%, var(--border));
-    color: var(--accent-teal);
-    background: color-mix(in srgb, var(--accent-teal) 12%, transparent);
+    color: #059669;
+    background: rgba(16, 185, 129, 0.12);
+}
+
+[data-theme='dark'] .offer-scope-toggle-badge-free {
+    color: #34d399;
+    background: rgba(52, 211, 153, 0.18);
 }
 
 .offer-scope-toggle-badge-premium {
-    border-color: color-mix(in srgb, var(--primary) 46%, var(--border));
-    color: var(--primary);
-    background: color-mix(in srgb, var(--primary) 12%, transparent);
+    color: #2563eb;
+    background: rgba(59, 130, 246, 0.12);
+}
+
+[data-theme='dark'] .offer-scope-toggle-badge-premium {
+    color: #93c5fd;
+    background: rgba(96, 165, 250, 0.22);
 }
 
 .offer-preferences-button {
-    border: 1px solid var(--bento-card-border-subtle);
-    background: var(--bento-card);
-    border-radius: var(--radius-lg);
-    color: var(--text-primary);
-    padding: 0.55rem 0.75rem;
-    min-width: 110px;
+    border: 1px solid var(--glass-border);
+    background: var(--surface-muted);
+    border-radius: var(--radius-pill);
+    color: var(--text-secondary);
+    padding: 0.35rem 0.75rem;
+    min-height: 32px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -95,18 +118,24 @@
     font-size: 0.78rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all var(--duration-fast) var(--ease-in-out);
+    transition: all var(--duration-fast) var(--ease-smooth);
+}
+
+[data-theme='dark'] .offer-preferences-button {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.08);
 }
 
 .offer-preferences-button:hover:not(:disabled),
 .offer-preferences-button:focus-visible {
-    border-color: color-mix(in srgb, var(--primary) 46%, var(--border));
-    background: color-mix(in srgb, var(--primary) 10%, var(--surface));
+    color: var(--text-primary);
+    border-color: var(--primary);
+    background: color-mix(in srgb, var(--primary) 10%, var(--surface-muted));
     outline: none;
 }
 
 .offer-preferences-button:disabled {
-    opacity: 0.7;
+    opacity: 0.6;
     cursor: not-allowed;
 }
 

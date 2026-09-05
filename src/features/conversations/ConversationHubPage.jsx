@@ -570,6 +570,7 @@ function ConversationHubPage({ role = 'student', baseRoute, backTo }) {
             {candidateStudentId && (
                 <CandidateProfileModal
                     studentId={candidateStudentId}
+                    offerId={selectedThread?.offerId}
                     isOpen={showProfileModal}
                     onClose={() => setShowProfileModal(false)}
                 />

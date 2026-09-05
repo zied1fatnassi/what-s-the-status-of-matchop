@@ -14,7 +14,7 @@ function CompanyMatches() {
     const { user } = useAuth()
     const { matches, loading, error, refresh } = useMatches()
     const [processingIds, setProcessingIds] = useState(() => new Set())
-    const [selectedStudentId, setSelectedStudentId] = useState(null)
+    const [selectedCandidate, setSelectedCandidate] = useState(null)
     const [rejectingMatch, setRejectingMatch] = useState(null)
     const [isRejecting, setIsRejecting] = useState(false)
 
@@ -234,7 +234,7 @@ function CompanyMatches() {
                                         <button
                                             type="button"
                                             className="btn btn-secondary btn-sm"
-                                            onClick={() => setSelectedStudentId(match.student_id)}
+                                            onClick={() => setSelectedCandidate({ studentId: match.student_id, offerId: match.offer_id })}
                                             aria-label={`${t('common.viewProfile', 'Voir le profil')} ${studentName}`}
                                         >
                                             <UserCheck size={16} />
@@ -269,11 +269,12 @@ function CompanyMatches() {
             </div>
 
             {/* Candidate Public Profile & CV Modal */}
-            {selectedStudentId && (
+            {selectedCandidate && (
                 <CandidateProfileModal
-                    studentId={selectedStudentId}
-                    isOpen={Boolean(selectedStudentId)}
-                    onClose={() => setSelectedStudentId(null)}
+                    studentId={selectedCandidate.studentId}
+                    offerId={selectedCandidate.offerId}
+                    isOpen={Boolean(selectedCandidate)}
+                    onClose={() => setSelectedCandidate(null)}
                 />
             )}
 

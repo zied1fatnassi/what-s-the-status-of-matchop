@@ -51,7 +51,7 @@ function Logo({ size = 'default', showText = true, animated = false, className =
                 <div className="logo-text">
                     <span className="brand-name">MatchOp</span>
                     {size !== 'small' && (
-                        <span className="tagline">{tr('Match the Opportunity', "Reliez talent et opportunite")}</span>
+                        <span className="tagline">{tr('Match the Opportunity', "Match avec l'opportunité")}</span>
                     )}
                 </div>
             )}

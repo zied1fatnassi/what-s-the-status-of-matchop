@@ -18,7 +18,7 @@ import './Landing.css'
  */
 function Landing() {
   useEffect(() => {
-    document.title = 'MatchOp — Match Your Opportunity | AI Career Discovery'
+    document.title = 'MatchOp — Match the Opportunity | AI Career Discovery'
   }, [])
 
   return (

@@ -2,7 +2,7 @@
   "name": "matchop",
   "private": true,
   "version": "1.0.0",
-  "description": "MatchOp - Match Your Opportunity | Student-Company matching platform",
+  "description": "MatchOp - Match the Opportunity | Student-Company matching platform",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -22,6 +22,7 @@
     "framer-motion": "^12.23.26",
     "i18next": "^23.16.8",
     "lucide-react": "^0.561.0",
+    "mammoth": "^1.12.2",
     "react": "^19.2.0",
     "react-chartjs-2": "^5.3.1",
     "react-dom": "^19.2.0",

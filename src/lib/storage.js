@@ -116,6 +116,49 @@ export async function uploadCV(userId, file) {
 }
 
 /**
+ * Upload student's master original DOCX CV to Supabase Storage (private cvs bucket)
+ * @param {string} userId - User/Student ID
+ * @param {File} file - DOCX file
+ * @returns {Promise<string>} Storage path (e.g. `${userId}/original_cv.docx`)
+ */
+export async function uploadStudentDocx(userId, file) {
+    if (!file || !(file instanceof File)) {
+        throw new Error('Invalid file object')
+    }
+    const ext = (file.name.split('.').pop() || '').toLowerCase()
+    if (ext !== 'docx') {
+        throw new Error('Only .docx files are accepted for CV personalization')
+    }
+    if (file.size > MAX_CV_SIZE) {
+        throw new Error(`File too large. Maximum size is ${Math.round(MAX_CV_SIZE / 1024 / 1024)}MB`)
+    }
+
+    const filePath = `${userId}/original_cv.docx`
+    const { error } = await supabase.storage
+        .from('cvs')
+        .upload(filePath, file, {
+            upsert: true,
+            contentType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        })
+
+    if (error) {
+        // Fallback for RLS environments
+        const fallbackPath = `${userId}/original_cv-${Date.now()}.docx`
+        const { error: retryError } = await supabase.storage
+            .from('cvs')
+            .upload(fallbackPath, file, {
+                upsert: false,
+                contentType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+            })
+        if (retryError) throw error
+        return fallbackPath
+    }
+
+    return filePath
+}
+
+
+/**
  * Get a signed URL for a CV file (private bucket)
  * @param {string} cvPath - File path in the cvs bucket
  * @param {number} expiresIn - Expiry time in seconds (default 1 hour)

@@ -49,9 +49,9 @@ export function HeroSection() {
               className="landing-hero__title-line"
               delay={0.3}
               stagger={0.05}
-              serifWords={['Opportunity', 'Opportunité', 'Match']}
+              serifWords={['Match']}
             >
-              {t('landing.heroTitle', 'Match Your Opportunity')}
+              {t('landing.heroTitle', 'Match the Opportunity')}
             </TextReveal>
           </h1>
           <p className="landing-hero__highlight-statement">

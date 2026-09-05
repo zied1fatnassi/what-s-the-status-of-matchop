@@ -90,6 +90,7 @@ export function useIntros(statusFilter = 'pending') {
                 status: intro.status,
                 createdAt: intro.created_at,
                 expiresAt: intro.expires_at,
+                personalizedCvUrl: intro.personalized_cv_url || null,
                 // Time remaining in human-readable format
                 timeRemaining: getTimeRemaining(intro.expires_at)
             }))

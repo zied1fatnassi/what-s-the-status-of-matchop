@@ -1,4 +1,4 @@
-# MatchOp — Match Your Opportunity
+# MatchOp — Match the Opportunity
 
 > AI-powered vertical opportunity discovery feed connecting students with curated internships, jobs, and external ATS opportunities.
 

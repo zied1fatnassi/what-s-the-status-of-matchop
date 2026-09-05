@@ -253,6 +253,72 @@
     font-style: italic;
 }
 
+/* Personalized CV Banner Variant */
+.candidate-cv-banner--personalized {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(168, 85, 247, 0.05));
+    border: 1px solid rgba(99, 102, 241, 0.25);
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.candidate-cv-badge-row {
+    margin-bottom: 0.5rem;
+}
+
+.candidate-cv-ai-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0.65rem;
+    border-radius: 20px;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(168, 85, 247, 0.15));
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    color: #6366f1;
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+}
+
+.candidate-cv-icon--personalized {
+    color: #6366f1;
+}
+
+.candidate-cv-actions-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    flex-wrap: wrap;
+}
+
+.candidate-cv-btn--personalized {
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.candidate-cv-btn--personalized:hover {
+    background: linear-gradient(135deg, #4f46e5, #4338ca);
+    box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+}
+
+.candidate-cv-link-original {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: color 0.15s ease;
+}
+
+.candidate-cv-link-original:hover {
+    color: var(--text-primary);
+}
+
 /* Sections */
 .candidate-section {
     display: flex;

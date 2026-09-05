@@ -3,7 +3,19 @@ const E2E_ROLE_STORAGE_KEY = 'matchop:e2eRole'
 const VALID_E2E_ROLES = new Set(['guest', 'student', 'company', 'admin'])
 
 export function isE2EMockModeEnabled() {
-    return import.meta.env.VITE_E2E_MOCK_MODE === 'true'
+    if (import.meta.env.VITE_E2E_MOCK_MODE === 'true') return true
+    if (import.meta.env.DEV && typeof window !== 'undefined') {
+        const search = window.location.search
+        if (search && search.includes(E2E_ROLE_PARAM)) {
+            const role = new URLSearchParams(search).get(E2E_ROLE_PARAM)
+            if (VALID_E2E_ROLES.has(role)) {
+                window.sessionStorage.setItem(E2E_ROLE_STORAGE_KEY, role)
+                return true
+            }
+        }
+        if (window.sessionStorage.getItem(E2E_ROLE_STORAGE_KEY)) return true
+    }
+    return false
 }
 
 function getRoleFromQuery(search) {

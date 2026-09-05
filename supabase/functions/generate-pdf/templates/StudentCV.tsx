@@ -471,7 +471,7 @@ export function StudentCV({
                     <View style={s.footerBrand}>
                         <MatchOpLogo />
                         <Text style={s.footerLogo}>MatchOp</Text>
-                        <Text style={s.footerText}> — Match Your Opportunity</Text>
+                        <Text style={s.footerText}> — Match the Opportunity</Text>
                     </View>
                     <Text style={s.footerText}>Generated {generatedAt}</Text>
                 </View>

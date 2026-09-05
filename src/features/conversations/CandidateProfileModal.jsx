@@ -19,7 +19,7 @@ import { supabase } from '../../lib/supabase'
 import { getSignedCVUrl } from '../../lib/storage'
 import './CandidateProfileModal.css'
 
-export function CandidateProfileModal({ studentId, isOpen, onClose }) {
+export function CandidateProfileModal({ studentId, offerId = null, isOpen, onClose }) {
     const [loading, setLoading] = useState(true)
     const [profile, setProfile] = useState(null)
     const [experiences, setExperiences] = useState([])
@@ -28,6 +28,9 @@ export function CandidateProfileModal({ studentId, isOpen, onClose }) {
     const [projects, setProjects] = useState([])
     const [signedCvUrl, setSignedCvUrl] = useState(null)
     const [cvLoading, setCvLoading] = useState(false)
+    const [signedPersonalizedCvUrl, setSignedPersonalizedCvUrl] = useState(null)
+    const [personalizedCvLoading, setPersonalizedCvLoading] = useState(false)
+    const [hasPersonalizedCv, setHasPersonalizedCv] = useState(false)
 
     useEffect(() => {
         if (!isOpen || !studentId) {
@@ -37,6 +40,8 @@ export function CandidateProfileModal({ studentId, isOpen, onClose }) {
             setLanguages([])
             setProjects([])
             setSignedCvUrl(null)
+            setSignedPersonalizedCvUrl(null)
+            setHasPersonalizedCv(false)
             return
         }
 
@@ -82,6 +87,31 @@ export function CandidateProfileModal({ studentId, isOpen, onClose }) {
                     .select('*')
                     .eq('student_id', studentId)
 
+                // 6. Check for personalized CV if offerId is provided
+                let personalizedPath = null
+                if (offerId) {
+                    const { data: introRow } = await supabase
+                        .from('intros')
+                        .select('personalized_cv_url')
+                        .eq('student_id', studentId)
+                        .eq('offer_id', offerId)
+                        .maybeSingle()
+
+                    if (introRow?.personalized_cv_url) {
+                        personalizedPath = introRow.personalized_cv_url
+                    } else {
+                        const { data: matchRow } = await supabase
+                            .from('matches')
+                            .select('personalized_cv_url')
+                            .eq('student_id', studentId)
+                            .eq('offer_id', offerId)
+                            .maybeSingle()
+                        if (matchRow?.personalized_cv_url) {
+                            personalizedPath = matchRow.personalized_cv_url
+                        }
+                    }
+                }
+
                 if (isMounted) {
                     setProfile(studentData || null)
                     setExperiences(expData || [])
@@ -89,10 +119,28 @@ export function CandidateProfileModal({ studentId, isOpen, onClose }) {
                     setLanguages(langData || [])
                     setProjects(projData || [])
 
-                    // Resolve CV signed URL if available
-                    if (studentData?.cv_url) {
+                    // Resolve personalized CV signed URL if found
+                    if (personalizedPath) {
+                        setHasPersonalizedCv(true)
+                        setPersonalizedCvLoading(true)
+                        getSignedCVUrl(personalizedPath)
+                            .then((url) => {
+                                if (isMounted) setSignedPersonalizedCvUrl(url)
+                            })
+                            .catch((err) => console.warn('[CandidateProfileModal] Personalized CV error:', err))
+                            .finally(() => {
+                                if (isMounted) setPersonalizedCvLoading(false)
+                            })
+                    } else {
+                        setHasPersonalizedCv(false)
+                        setSignedPersonalizedCvUrl(null)
+                    }
+
+                    // Resolve original CV signed URL if available (cv_url or original_docx_url)
+                    const originalCv = studentData?.cv_url || studentData?.original_docx_url
+                    if (originalCv) {
                         setCvLoading(true)
-                        getSignedCVUrl(studentData.cv_url)
+                        getSignedCVUrl(originalCv)
                             .then((url) => {
                                 if (isMounted) setSignedCvUrl(url)
                             })
@@ -121,7 +169,7 @@ export function CandidateProfileModal({ studentId, isOpen, onClose }) {
             isMounted = false
             window.removeEventListener('keydown', handleKeyDown)
         }
-    }, [isOpen, studentId, onClose])
+    }, [isOpen, studentId, offerId, onClose])
 
     if (!isOpen) return null
 
@@ -193,39 +241,93 @@ export function CandidateProfileModal({ studentId, isOpen, onClose }) {
                         </div>
 
                         {/* CV Highlight Action Card */}
-                        <div className="candidate-cv-banner">
-                            <div className="candidate-cv-banner__info">
-                                <FileText size={28} className="candidate-cv-icon" />
-                                <div>
-                                    <h4>Curriculum Vitae</h4>
-                                    <p>
-                                        {profile.cv_url
-                                            ? 'Le candidat a mis à disposition son CV officiel'
-                                            : "Aucun fichier CV n'a été déposé pour l'instant"}
-                                    </p>
+                        {hasPersonalizedCv ? (
+                            <div className="candidate-cv-banner candidate-cv-banner--personalized">
+                                <div className="candidate-cv-badge-row">
+                                    <span className="candidate-cv-ai-badge">
+                                        <Sparkles size={13} /> CV Personnalisé par IA pour cette offre
+                                    </span>
+                                </div>
+
+                                <div className="candidate-cv-banner__info">
+                                    <FileText size={28} className="candidate-cv-icon candidate-cv-icon--personalized" />
+                                    <div>
+                                        <h4>Curriculum Vitae Ciblé</h4>
+                                        <p>
+                                            Ce CV a été valorisé par l&apos;IA pour correspondre aux exigences clés de votre offre.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="candidate-cv-actions-row">
+                                    {signedPersonalizedCvUrl ? (
+                                        <a
+                                            href={signedPersonalizedCvUrl}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="candidate-cv-btn candidate-cv-btn--personalized"
+                                        >
+                                            <Download size={16} />
+                                            <span>Consulter le CV ciblé (PDF)</span>
+                                            <ExternalLink size={14} />
+                                        </a>
+                                    ) : personalizedCvLoading ? (
+                                        <div className="candidate-cv-loading">
+                                            <Loader2 size={16} className="animate-spin" />
+                                            <span>Génération du lien sécurisé...</span>
+                                        </div>
+                                    ) : (
+                                        <span className="candidate-cv-none">Lien non disponible</span>
+                                    )}
+
+                                    {signedCvUrl && (
+                                        <a
+                                            href={signedCvUrl}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="candidate-cv-link-original"
+                                        >
+                                            <span>Voir le CV original</span>
+                                            <ExternalLink size={12} />
+                                        </a>
+                                    )}
                                 </div>
                             </div>
-
-                            {signedCvUrl ? (
-                                <a
-                                    href={signedCvUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="candidate-cv-btn"
-                                >
-                                    <Download size={16} />
-                                    <span>Consulter le CV (PDF)</span>
-                                    <ExternalLink size={14} />
-                                </a>
-                            ) : cvLoading ? (
-                                <div className="candidate-cv-loading">
-                                    <Loader2 size={16} className="animate-spin" />
-                                    <span>Génération du lien...</span>
+                        ) : (
+                            <div className="candidate-cv-banner">
+                                <div className="candidate-cv-banner__info">
+                                    <FileText size={28} className="candidate-cv-icon" />
+                                    <div>
+                                        <h4>Curriculum Vitae</h4>
+                                        <p>
+                                            {profile.cv_url || profile.original_docx_url
+                                                ? 'Le candidat a mis à disposition son CV officiel'
+                                                : "Aucun fichier CV n'a été déposé pour l'instant"}
+                                        </p>
+                                    </div>
                                 </div>
-                            ) : (
-                                <span className="candidate-cv-none">Non disponible</span>
-                            )}
-                        </div>
+
+                                {signedCvUrl ? (
+                                    <a
+                                        href={signedCvUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="candidate-cv-btn"
+                                    >
+                                        <Download size={16} />
+                                        <span>Consulter le CV (PDF)</span>
+                                        <ExternalLink size={14} />
+                                    </a>
+                                ) : cvLoading ? (
+                                    <div className="candidate-cv-loading">
+                                        <Loader2 size={16} className="animate-spin" />
+                                        <span>Génération du lien...</span>
+                                    </div>
+                                ) : (
+                                    <span className="candidate-cv-none">Non disponible</span>
+                                )}
+                            </div>
+                        )}
 
                         {/* Bio Section */}
                         {profile.bio && (

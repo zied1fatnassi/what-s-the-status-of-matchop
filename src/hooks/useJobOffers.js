@@ -578,7 +578,7 @@ export function useJobOffers() {
         fetchOffers()
     }, [fetchOffers])
 
-    const swipe = useCallback(async (offerOrId, direction) => {
+    const swipe = useCallback(async (offerOrId, direction, { personalizedCvUrl = null } = {}) => {
         if (!user?.id) return { error: t('useJobOffers.notAuthenticated') }
 
         const offer = offerOrId && typeof offerOrId === 'object'
@@ -688,7 +688,9 @@ export function useJobOffers() {
             const { data: introResult, error: introError } = await supabase
                 .rpc('create_intro_from_swipe', {
                     p_student_id: user.id,
-                    p_offer_id: offerId
+                    p_offer_id: offerId,
+                    p_icebreaker: null,
+                    p_personalized_cv_url: personalizedCvUrl
                 })
 
             if (introError) {

@@ -48,9 +48,11 @@ function createMockProfile(mockUser) {
 }
 
 export function AuthProvider({ children }) {
-    const [user, setUser] = useState(null)
-    const [profile, setProfile] = useState(null)
-    const [isLoading, setIsLoading] = useState(true)
+    const isMock = isE2EMockModeEnabled()
+    const initialMockUser = isMock ? getE2EMockUser() : null
+    const [user, setUser] = useState(initialMockUser)
+    const [profile, setProfile] = useState(() => createMockProfile(initialMockUser))
+    const [isLoading, setIsLoading] = useState(!initialMockUser)
     const [authError, setAuthError] = useState(null)
     const inFlightProfileFetchRef = useRef(new Map())
     const lastProfileFetchRef = useRef({ userId: null, timestamp: 0 })
@@ -66,7 +68,7 @@ export function AuthProvider({ children }) {
     }, [])
 
     useEffect(() => {
-        if (isE2EMockMode) {
+        if (isE2EMockModeEnabled()) {
             syncMockAuthState()
             return undefined
         }
