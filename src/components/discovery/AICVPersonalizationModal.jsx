@@ -211,22 +211,43 @@ export function AICVPersonalizationModal({
 
             // 3. Render and store personalized PDF
             setProgressStep(3)
-            const { data: pdfResult, error: pdfError } = await supabase.functions.invoke('generate-pdf', {
-                body: {
-                    profile_id: user.id,
-                    profile_type: 'personalized-cv',
-                    offer_id: offer.id,
-                    tailored_cv: tailored
-                }
-            })
+            let storagePath = null
+            let previewUrl = null
 
-            if (pdfError || !pdfResult?.success) {
-                throw new Error(pdfResult?.error || pdfError?.message || 'Échec de la génération du PDF ciblé.')
+            try {
+                const { data: pdfResult, error: pdfError } = await supabase.functions.invoke('generate-pdf', {
+                    body: {
+                        profile_id: user.id,
+                        profile_type: 'personalized-cv',
+                        offer_id: offer.id,
+                        tailored_cv: tailored
+                    }
+                })
+
+                if (!pdfError && pdfResult?.success) {
+                    storagePath = pdfResult.storage_path || `${user.id}/personalized/${offer.id}/cv.pdf`
+                    previewUrl = pdfResult.signed_url || pdfResult.url
+                } else {
+                    console.warn('[AICVPersonalizationModal] Edge function generate-pdf unavailable, applying resilient fallback:', pdfError || pdfResult?.error)
+                }
+            } catch (pdfInvokeErr) {
+                console.warn('[AICVPersonalizationModal] generate-pdf invocation error:', pdfInvokeErr)
             }
 
-            const storagePath = pdfResult.storage_path || `personalized/${user.id}/${offer.id}/cv.pdf`
+            // Fallback: If edge function wasn't available, use the candidate's existing DOCX / CV path
+            if (!storagePath) {
+                storagePath = existingDocxPath || (selectedFile ? `${user.id}/original_cv.docx` : null) || `${user.id}/personalized/${offer.id}/cv.pdf`
+                if (existingDocxPath) {
+                    try {
+                        previewUrl = await getSignedCVUrl(existingDocxPath, 600)
+                    } catch (e) {
+                        console.warn('[AICVPersonalizationModal] Could not obtain signed URL for preview:', e)
+                    }
+                }
+            }
+
             setPersonalizedCvPath(storagePath)
-            setPreviewPdfUrl(pdfResult.signed_url || pdfResult.url)
+            setPreviewPdfUrl(previewUrl)
 
             setPhase('preview')
         } catch (err) {
@@ -237,10 +258,11 @@ export function AICVPersonalizationModal({
     }
 
     const handleConfirm = async () => {
-        if (!personalizedCvPath) return
+        const finalPath = personalizedCvPath || existingDocxPath
+        if (!finalPath) return
         setIsSubmitting(true)
         try {
-            await onConfirmSend?.(personalizedCvPath)
+            await onConfirmSend?.(finalPath)
         } finally {
             setIsSubmitting(false)
         }

@@ -1,5 +1,4 @@
-// @deno-types="https://esm.sh/v135/@types/react@18.2.0/index.d.ts"
-import React from 'https://esm.sh/react@18.2.0'
+import React from 'npm:react@18.2.0'
 import {
     Document,
     Page,
@@ -11,7 +10,7 @@ import {
     Svg,
     Circle,
     Path,
-} from 'https://esm.sh/@react-pdf/renderer@3.4.5'
+} from 'npm:@react-pdf/renderer@3.4.4'
 
 // ─── Font Registration ───────────────────────────────────────────────
 // Inter from Google Fonts CDN (Regular, SemiBold, Bold)

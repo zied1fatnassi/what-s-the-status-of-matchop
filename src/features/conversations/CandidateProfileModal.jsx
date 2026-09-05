@@ -271,6 +271,17 @@ export function CandidateProfileModal({ studentId, offerId = null, isOpen, onClo
                                             <span>Consulter le CV ciblé (PDF)</span>
                                             <ExternalLink size={14} />
                                         </a>
+                                    ) : signedCvUrl ? (
+                                        <a
+                                            href={signedCvUrl}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="candidate-cv-btn candidate-cv-btn--personalized"
+                                        >
+                                            <Download size={16} />
+                                            <span>Consulter le CV du candidat</span>
+                                            <ExternalLink size={14} />
+                                        </a>
                                     ) : personalizedCvLoading ? (
                                         <div className="candidate-cv-loading">
                                             <Loader2 size={16} className="animate-spin" />
@@ -280,7 +291,7 @@ export function CandidateProfileModal({ studentId, offerId = null, isOpen, onClo
                                         <span className="candidate-cv-none">Lien non disponible</span>
                                     )}
 
-                                    {signedCvUrl && (
+                                    {signedPersonalizedCvUrl && signedCvUrl && (
                                         <a
                                             href={signedCvUrl}
                                             target="_blank"

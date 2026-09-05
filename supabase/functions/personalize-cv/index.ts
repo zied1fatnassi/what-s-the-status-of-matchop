@@ -143,12 +143,37 @@ serve(async (req) => {
         const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!
         const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 
+        const token = authHeader.replace(/^Bearer\s+/i, '').trim()
+        let callerId: string | null = null
+
+        // Try fetching user from auth token
         const userClient = createClient(supabaseUrl, supabaseAnonKey, {
             global: { headers: { Authorization: authHeader } }
         })
+        const { data: { user } } = await userClient.auth.getUser()
 
-        const { data: { user }, error: authError } = await userClient.auth.getUser()
-        if (authError || !user) {
+        if (user) {
+            callerId = user.id
+        } else {
+            // Check if caller is service_role
+            try {
+                if (token === supabaseServiceKey) {
+                    callerId = 'service_role'
+                } else {
+                    const parts = token.split('.')
+                    if (parts.length === 3) {
+                        const payload = JSON.parse(atob(parts[1]))
+                        if (payload.role === 'service_role') {
+                            callerId = 'service_role'
+                        }
+                    }
+                }
+            } catch (_) {
+                // Ignore parse errors
+            }
+        }
+
+        if (!callerId) {
             return errorResponse('Invalid or expired authentication token', 401, origin)
         }
 
@@ -158,7 +183,7 @@ serve(async (req) => {
         // ── 2. Parse Body ──
         const { offer_id, cv_text, student_id } = await req.json()
 
-        const targetStudentId = student_id || user.id
+        const targetStudentId = callerId === 'service_role' ? (student_id || callerId) : callerId
         if (!offer_id) {
             return errorResponse('Missing required field: offer_id', 400, origin)
         }

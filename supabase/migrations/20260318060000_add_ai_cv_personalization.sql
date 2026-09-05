@@ -37,6 +37,9 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- 3. Update create_intro_from_swipe to accept personalized_cv_url
+DROP FUNCTION IF EXISTS create_intro_from_swipe(UUID, UUID, TEXT);
+DROP FUNCTION IF EXISTS create_intro_from_swipe(UUID, UUID, TEXT, TEXT);
+
 CREATE OR REPLACE FUNCTION create_intro_from_swipe(
     p_student_id UUID,
     p_offer_id UUID,
@@ -129,3 +132,65 @@ BEGIN
     LIMIT p_limit OFFSET p_offset;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+GRANT EXECUTE ON FUNCTION create_intro_from_swipe(UUID, UUID, TEXT, TEXT) TO authenticated, anon, service_role;
+GRANT EXECUTE ON FUNCTION get_company_intros(UUID, TEXT, INT, INT) TO authenticated, anon, service_role;
+
+-- 5. Storage policies for bucket 'cvs' to allow access to candidate original & personalized CVs
+DROP POLICY IF EXISTS "cvs_select_matched_company" ON storage.objects;
+DROP POLICY IF EXISTS "cvs_select_candidate_company" ON storage.objects;
+
+CREATE POLICY "cvs_select_candidate_company"
+ON storage.objects FOR SELECT
+TO authenticated
+USING (
+    bucket_id = 'cvs'
+    AND (
+        -- Standard path: {student_id}/...
+        EXISTS (
+            SELECT 1 FROM public.matches AS m
+            WHERE m.company_id = auth.uid()
+              AND m.student_id::text = (storage.foldername(name))[1]
+        )
+        OR
+        EXISTS (
+            SELECT 1 FROM public.intros AS i
+            WHERE i.company_id = auth.uid()
+              AND i.student_id::text = (storage.foldername(name))[1]
+        )
+        OR
+        -- Legacy path: personalized/{student_id}/...
+        (
+            (storage.foldername(name))[1] = 'personalized'
+            AND (
+                EXISTS (
+                    SELECT 1 FROM public.matches AS m
+                    WHERE m.company_id = auth.uid()
+                      AND m.student_id::text = (storage.foldername(name))[2]
+                )
+                OR
+                EXISTS (
+                    SELECT 1 FROM public.intros AS i
+                    WHERE i.company_id = auth.uid()
+                      AND i.student_id::text = (storage.foldername(name))[2]
+                )
+            )
+        )
+    )
+);
+
+-- Update student self-access policy to cover personalized subfolders
+DROP POLICY IF EXISTS "cvs_select_own" ON storage.objects;
+CREATE POLICY "cvs_select_own"
+ON storage.objects FOR SELECT
+TO authenticated
+USING (
+    bucket_id = 'cvs'
+    AND (
+        (storage.foldername(name))[1] = auth.uid()::text
+        OR (
+            (storage.foldername(name))[1] = 'personalized'
+            AND (storage.foldername(name))[2] = auth.uid()::text
+        )
+    )
+);

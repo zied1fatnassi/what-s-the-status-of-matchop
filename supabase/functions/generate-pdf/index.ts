@@ -8,8 +8,8 @@
 // ─────────────────────────────────────────────────────────────────────
 
 // @deno-types="https://esm.sh/v135/@types/react@18.2.0/index.d.ts"
-import React from 'https://esm.sh/react@18.2.0'
-import { renderToBuffer } from 'https://esm.sh/@react-pdf/renderer@3.4.5'
+import React from 'npm:react@18.2.0'
+import { renderToBuffer } from 'npm:@react-pdf/renderer@3.4.4'
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import { StudentCV } from './templates/StudentCV.tsx'
@@ -100,21 +100,15 @@ serve(async (req) => {
             return errorResponse('Profile not found', 404, origin)
         }
 
-        // Verify this is a student profile
-        const userType = profile.type || profile.role
-        if (userType !== 'student') {
-            return errorResponse('PDF generation is currently only supported for student profiles', 400, origin)
-        }
-
         const { data: student, error: studentError } = await supabase
             .from('students')
-            .select('display_name, bio, location, skills, avatar_url, headline, linkedin_url, github_url, portfolio_url, behance_url')
+            .select('display_name, bio, location, skills, avatar_url, headline')
             .eq('id', profile_id)
             .single()
 
         if (studentError || !student) {
             console.error('Student fetch error:', studentError)
-            return errorResponse('Student profile data not found', 404, origin)
+            return errorResponse('PDF generation is only available for registered student profiles', 404, origin)
         }
 
         // ── 4. Fetch Related Data (experiences, education, certifications) ──
@@ -193,7 +187,7 @@ serve(async (req) => {
         // ── 6. Storage Destination ──
         const targetBucket = pdfType === 'personalized-cv' ? 'cvs' : 'pdf-exports'
         const storagePath = pdfType === 'personalized-cv'
-            ? `personalized/${profile_id}/${offer_id}/cv.pdf`
+            ? `${profile_id}/personalized/${offer_id}/cv.pdf`
             : `profiles/${profile_id}/cv.pdf`
 
         const { error: uploadError } = await supabase.storage
