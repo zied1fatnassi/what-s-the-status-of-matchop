@@ -1,45 +1,56 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import {
     INBOUND_REFERRAL_CODE_KEY,
-    INBOUND_REFERRAL_SEEN_AT_KEY,
     MY_REFERRAL_CODE_KEY,
-    migrateLegacySelfReferralCode,
+    buildReferralCodeFromUserId,
+    buildReferralInviteLink,
+    isValidReferralCode,
+    normalizeReferralCode,
     resolveMyReferralCode,
 } from './referrals'
 
-describe('referrals storage migration', () => {
+describe('referrals utilities & identity safety', () => {
     beforeEach(() => {
         localStorage.clear()
     })
 
-    it('migrates legacy self code from inbound key in authenticated context', () => {
-        localStorage.setItem(INBOUND_REFERRAL_CODE_KEY, 'MOP-ABCDEF12')
-
-        const migrated = migrateLegacySelfReferralCode('user-1')
-
-        expect(migrated).toBe('MOP-ABCDEF12')
-        expect(localStorage.getItem(MY_REFERRAL_CODE_KEY)).toBe('MOP-ABCDEF12')
-        expect(localStorage.getItem(INBOUND_REFERRAL_CODE_KEY)).toBeNull()
-    })
-
-    it('does not migrate inbound attribution when seen timestamp exists', () => {
-        localStorage.setItem(INBOUND_REFERRAL_CODE_KEY, 'MOP-ABCDEF12')
-        localStorage.setItem(INBOUND_REFERRAL_SEEN_AT_KEY, '2026-02-27T10:00:00.000Z')
-
-        const migrated = migrateLegacySelfReferralCode('user-1')
-
-        expect(migrated).toBe('')
+    it('returns empty string and does not bleed identity when caller is unauthenticated (null userId)', () => {
+        const code = resolveMyReferralCode(null)
+        expect(code).toBe('')
         expect(localStorage.getItem(MY_REFERRAL_CODE_KEY)).toBeNull()
-        expect(localStorage.getItem(INBOUND_REFERRAL_CODE_KEY)).toBe('MOP-ABCDEF12')
     })
 
-    it('resolveMyReferralCode keeps existing self code and avoids collisions', () => {
-        localStorage.setItem(MY_REFERRAL_CODE_KEY, 'MOP-KEEPME99')
-        localStorage.setItem(INBOUND_REFERRAL_CODE_KEY, 'MOP-OTHER111')
+    it('returns deterministic referral code for authenticated user when not cached', () => {
+        const code = resolveMyReferralCode('abcdef12-3456-7890-abcd-ef1234567890')
+        expect(code).toBe('MOP-ABCDEF12')
+        expect(isValidReferralCode(code)).toBe(true)
+        expect(localStorage.getItem(MY_REFERRAL_CODE_KEY)).toBe('MOP-ABCDEF12')
+    })
 
-        const code = resolveMyReferralCode('user-2')
+    it('reads cached referral code if valid', () => {
+        localStorage.setItem(MY_REFERRAL_CODE_KEY, 'MOP-VALID123')
+        const code = resolveMyReferralCode('user-999')
+        expect(code).toBe('MOP-VALID123')
+    })
 
-        expect(code).toBe('MOP-KEEPME99')
-        expect(localStorage.getItem(MY_REFERRAL_CODE_KEY)).toBe('MOP-KEEPME99')
+    it('does not bleed inbound referral code into user identity', () => {
+        localStorage.setItem(INBOUND_REFERRAL_CODE_KEY, 'MOP-FRIEND11')
+        const code = resolveMyReferralCode(null)
+        expect(code).toBe('')
+        expect(localStorage.getItem(MY_REFERRAL_CODE_KEY)).toBeNull()
+        expect(localStorage.getItem(INBOUND_REFERRAL_CODE_KEY)).toBe('MOP-FRIEND11')
+    })
+
+    it('builds invite link formatted for student signup', () => {
+        const link = buildReferralInviteLink('MOP-ABCDEF12', 'https://matchop.tn')
+        expect(link).toBe('https://matchop.tn/student/signup?ref=MOP-ABCDEF12')
+    })
+
+    it('normalizes and validates referral codes strictly', () => {
+        expect(normalizeReferralCode('  mop-abcdef12  ')).toBe('MOP-ABCDEF12')
+        expect(isValidReferralCode('MOP-ABCDEF12')).toBe(true)
+        expect(isValidReferralCode('MOP-SHORT')).toBe(false)
+        expect(isValidReferralCode('INVALID-CODE')).toBe(false)
+        expect(isValidReferralCode('')).toBe(false)
     })
 })

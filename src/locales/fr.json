@@ -1624,5 +1624,70 @@
         "exclusive": "Exclusivité MatchOp",
         "leak": "Fuite Interne",
         "bounty": "Prime"
+    },
+    "referrals": {
+        "title": "Inviter des amis",
+        "subtitle": "Partagez votre code de parrainage et votre lien d'invitation pour débloquer des récompenses.",
+        "labels": {
+            "referralCode": "Votre code de parrainage",
+            "inviteLink": "Votre lien d'invitation",
+            "share": "Partager avec vos amis",
+            "loadingCode": "Chargement du code...",
+            "loadingLink": "Le lien apparaîtra dès que votre code sera prêt.",
+            "pendingInvites": "{{count}} invitation(s) en attente de vérification d'e-mail"
+        },
+        "actions": {
+            "copyCode": "Copier le code",
+            "copyLink": "Copier le lien",
+            "shareWhatsApp": "Partager sur WhatsApp",
+            "shareEmail": "Partager par e-mail"
+        },
+        "share": {
+            "whatsappTemplate": "Rejoins-moi sur MatchOp avec le code {{code}}. Inscris-toi ici : {{link}}",
+            "emailSubject": "Rejoins-moi sur MatchOp",
+            "emailBody": "Utilise mon code de parrainage {{code}} pour rejoindre MatchOp.\n\nInscris-toi ici : {{link}}"
+        },
+        "rewards": {
+            "title": "Récompenses",
+            "body": "Invitez 3 amis qui vérifient leur compte et débloquez 7 jours de MatchOp Premium."
+        },
+        "progress": {
+            "current": "{{invites}}/{{goal}} invitations",
+            "stepsLabel": "Étapes de progression du parrainage",
+            "steps": {
+                "inviteSent": "1 ami inscrit",
+                "signedUp": "2 amis inscrits",
+                "verified": "3 amis vérifiés"
+            },
+            "neverUpdated": "Aucune invitation pour l'instant",
+            "lastUpdated": "Mis à jour le {{timestamp}}"
+        },
+        "rewardUnlock": {
+            "claimAction": "Réclamer la récompense",
+            "claiming": "Réclamation...",
+            "claimedTitle": "Récompense réclamée",
+            "claimedSubtitle": "7 jours de MatchOp Premium activés.",
+            "claimedToast": "Récompense réclamée ! MatchOp Premium débloqué pour 7 jours."
+        },
+        "toast": {
+            "copyCodeSuccess": "Code de parrainage copié.",
+            "copyLinkSuccess": "Lien d'invitation copié.",
+            "copyFailed": "Impossible de copier pour le moment. Veuillez réessayer."
+        },
+        "signupApplied": "Le code de parrainage {{ref}} a été appliqué à votre inscription.",
+        "signupFlow": {
+            "invitedTitle": "Vous avez été invité par un ami",
+            "invitedSubtitle": "Complétez votre inscription pour débloquer votre avantage.",
+            "dismissAria": "Fermer la bannière de parrainage",
+            "followupTitle": "Invitez vos amis vous aussi",
+            "followupSubtitle": "Partagez votre lien d'invitation pour débloquer 7 jours de Premium.",
+            "openReferrals": "Ouvrir les parrainages",
+            "copyInviteLink": "Copier le lien d'invitation"
+        },
+        "errors": {
+            "claimFailed": "Échec de la réclamation. Veuillez réessayer.",
+            "notEligible": "Vous devez avoir 3 invitations qualifiées pour réclamer cette récompense.",
+            "selfReferral": "Vous ne pouvez pas vous auto-parrainer."
+        }
     }
 }

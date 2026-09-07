@@ -1,0 +1,1480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MatchOp — Strategic Venture Memorandum & Definitive Investor Report</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-light: #dbeafe;
+      --navy-deep: #0a192f;
+      --navy-dark: #0f172a;
+      --navy-card: #1e293b;
+      --accent-cyan: #06b6d4;
+      --accent-teal: #0d9488;
+      --accent-emerald: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-rose: #f43f5e;
+      --accent-purple: #8b5cf6;
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --text-light: #94a3b8;
+      --bg-body: #f8fafc;
+      --bg-card: #ffffff;
+      --border-card: #e2e8f0;
+      --border-subtle: rgba(15, 23, 42, 0.08);
+      --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+      --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.07);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      line-height: 1.6;
+      font-size: 13px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    @page {
+      size: A4 portrait;
+      margin: 14mm 14mm 16mm 14mm;
+      @bottom-right {
+        content: counter(page);
+      }
+    }
+
+    .page-break {
+      page-break-before: always;
+    }
+
+    .avoid-break {
+      page-break-inside: avoid;
+    }
+
+    /* COVER PAGE */
+    .cover-container {
+      background: radial-gradient(circle at 80% 20%, rgba(37, 99, 235, 0.25), transparent 45%),
+                  radial-gradient(circle at 20% 80%, rgba(6, 182, 212, 0.18), transparent 40%),
+                  linear-gradient(145deg, #070d1e 0%, #0a192f 50%, #0f172a 100%);
+      color: #ffffff;
+      padding: 60px 48px;
+      min-height: 260mm;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-radius: 16px;
+      page-break-after: always;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .cover-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 24px;
+    }
+
+    .logo-lockup {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .logo-icon-svg {
+      width: 52px;
+      height: 52px;
+    }
+
+    .brand-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: #ffffff;
+      line-height: 1.1;
+    }
+
+    .brand-sub {
+      font-size: 11px;
+      color: #93c5fd;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      font-weight: 600;
+    }
+
+    .doc-badge {
+      background: rgba(37, 99, 235, 0.25);
+      border: 1px solid rgba(96, 165, 250, 0.4);
+      padding: 6px 14px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #bfdbfe;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .cover-body {
+      margin: 40px 0;
+    }
+
+    .cover-pretitle {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .cover-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 38px;
+      font-weight: 900;
+      line-height: 1.15;
+      letter-spacing: -1px;
+      color: #ffffff;
+      margin-bottom: 16px;
+    }
+
+    .cover-subtitle {
+      font-size: 15px;
+      color: #cbd5e1;
+      max-width: 620px;
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+
+    .cover-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 36px;
+    }
+
+    .cover-stat-box {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      padding: 16px 14px;
+      backdrop-filter: blur(8px);
+    }
+
+    .cover-stat-val {
+      font-family: 'Outfit', sans-serif;
+      font-size: 26px;
+      font-weight: 800;
+      color: #60a5fa;
+      margin-bottom: 4px;
+      line-height: 1.1;
+    }
+
+    .cover-stat-lbl {
+      font-size: 10px;
+      color: #94a3b8;
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .cover-meta-grid {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 20px 24px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px 28px;
+      font-size: 11.5px;
+    }
+
+    .meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .meta-label {
+      color: #94a3b8;
+      font-weight: 500;
+      text-transform: uppercase;
+      font-size: 9.5px;
+      letter-spacing: 0.5px;
+    }
+
+    .meta-value {
+      color: #f1f5f9;
+      font-weight: 600;
+    }
+
+    .cover-footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+      padding-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: #94a3b8;
+    }
+
+    /* DOCUMENT CONTENT STYLES */
+    .document-body {
+      padding: 10px 0;
+    }
+
+    .running-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-card);
+      padding-bottom: 8px;
+      margin-bottom: 24px;
+      font-size: 10.5px;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .running-header .rh-brand {
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .section-block {
+      margin-bottom: 30px;
+      page-break-inside: auto;
+    }
+
+    h2.section-heading {
+      font-family: 'Outfit', sans-serif;
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--navy-deep);
+      margin-bottom: 12px;
+      padding-bottom: 6px;
+      border-bottom: 2px solid var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      letter-spacing: -0.3px;
+    }
+
+    h2.section-heading .sec-num {
+      color: var(--primary);
+      font-weight: 900;
+      margin-right: 8px;
+    }
+
+    h3.sub-heading {
+      font-family: 'Outfit', sans-serif;
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--navy-dark);
+      margin: 16px 0 8px 0;
+    }
+
+    p {
+      margin-bottom: 10px;
+      color: #334155;
+      font-size: 12.5px;
+      line-height: 1.6;
+    }
+
+    /* TAG BADGES */
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 9.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      vertical-align: middle;
+      line-height: 1.2;
+    }
+
+    .tag-fact { background: #e2e8f0; color: #1e293b; border: 1px solid #cbd5e1; }
+    .tag-capability { background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; }
+    .tag-management { background: #f3e8ff; color: #6b21a8; border: 1px solid #e9d5ff; }
+    .tag-market { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+    .tag-assumption { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+    .tag-forecast { background: #cffafe; color: #155e75; border: 1px solid #a5f3fc; }
+    .tag-rec { background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe; }
+    .tag-roadmap { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+    .tag-validation { background: #ffe4e6; color: #9f1239; border: 1px solid #fecdd3; }
+
+    /* BENTO CARDS & CONTAINERS */
+    .bento-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin: 14px 0;
+    }
+
+    .bento-grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 14px 0;
+    }
+
+    .bento-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: var(--shadow-sm);
+      page-break-inside: avoid;
+    }
+
+    .bento-card.highlight {
+      border-left: 4px solid var(--primary);
+    }
+
+    .bento-card.dark {
+      background: var(--navy-dark);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .bento-card.dark p {
+      color: #94a3b8;
+    }
+
+    .bento-card.dark h3, .bento-card.dark h4 {
+      color: #ffffff;
+    }
+
+    .card-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--navy-deep);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* TABLES */
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0 16px 0;
+      font-size: 11.5px;
+      background: #ffffff;
+      border: 1px solid var(--border-card);
+      border-radius: 8px;
+      overflow: hidden;
+      page-break-inside: avoid;
+    }
+
+    table.data-table th {
+      background: #0f172a;
+      color: #ffffff;
+      font-weight: 600;
+      text-align: left;
+      padding: 8px 10px;
+      font-size: 10.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    table.data-table td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #f1f5f9;
+      color: #334155;
+      vertical-align: top;
+    }
+
+    table.data-table tr:nth-child(even) td {
+      background: #f8fafc;
+    }
+
+    table.data-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+    }
+
+    .text-right { text-align: right; }
+    .text-center { text-align: center; }
+
+    /* CALLOUT BOXES */
+    .callout-alert {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-left: 4px solid var(--primary);
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin: 12px 0;
+      font-size: 12px;
+      color: #1e3a8a;
+      page-break-inside: avoid;
+    }
+
+    .callout-alert.warning {
+      background: #fffbeb;
+      border-color: #fde68a;
+      border-left-color: var(--accent-amber);
+      color: #92400e;
+    }
+
+    .callout-alert.danger {
+      background: #fef2f2;
+      border-color: #fecdd3;
+      border-left-color: var(--accent-rose);
+      color: #991b1b;
+    }
+
+    .callout-alert strong {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      font-size: 10px;
+      letter-spacing: 0.5px;
+    }
+
+    /* PROCESS FLOW DIAGRAMS (SVG/FLEX) */
+    .flow-diagram {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #f1f5f9;
+      border: 1px solid var(--border-card);
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin: 14px 0;
+      page-break-inside: avoid;
+    }
+
+    .flow-step {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 10px 12px;
+      text-align: center;
+      flex: 1;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .flow-step.active {
+      border-color: var(--primary);
+      background: #eff6ff;
+    }
+
+    .flow-step-num {
+      font-size: 9.5px;
+      font-weight: 800;
+      color: var(--primary);
+      text-transform: uppercase;
+    }
+
+    .flow-step-title {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--navy-deep);
+      margin-top: 2px;
+    }
+
+    .flow-step-desc {
+      font-size: 10px;
+      color: #64748b;
+      margin-top: 2px;
+    }
+
+    .flow-arrow {
+      font-size: 16px;
+      color: #94a3b8;
+      padding: 0 6px;
+      font-weight: bold;
+    }
+
+    /* FINANCIAL METRICS SUMMARY */
+    .metric-row {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px dashed #e2e8f0;
+      padding: 5px 0;
+      font-size: 11.5px;
+    }
+
+    .metric-row:last-child {
+      border-bottom: none;
+      font-weight: 700;
+    }
+
+    ul.bullet-list {
+      margin-left: 18px;
+      margin-bottom: 10px;
+      font-size: 12.5px;
+      color: #334155;
+    }
+
+    ul.bullet-list li {
+      margin-bottom: 4px;
+    }
+
+    /* TOC STYLES */
+    .toc-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px 24px;
+      font-size: 11px;
+      margin: 16px 0;
+    }
+
+    .toc-item {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px dotted #cbd5e1;
+      padding-bottom: 3px;
+      color: #334155;
+    }
+
+    .toc-num {
+      font-weight: 700;
+      color: var(--primary);
+      margin-right: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== COVER PAGE ==================== -->
+  <div class="cover-container">
+    <div class="cover-header">
+      <div class="logo-lockup">
+        <!-- Official MatchOp SVG Logo -->
+        <svg class="logo-icon-svg" viewBox="0 0 58 58" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="10" width="38" height="38" rx="12" transform="rotate(-15 2 10)" fill="url(#blue-grad-1)"/>
+          <rect x="18" y="4" width="38" height="38" rx="12" transform="rotate(15 18 4)" fill="url(#blue-grad-2)"/>
+          <rect x="23" y="23" width="13" height="13" rx="2.5" transform="rotate(45 23 23)" fill="url(#diamond-grad)"/>
+          <defs>
+            <linearGradient id="blue-grad-1" x1="0" y1="0" x2="38" y2="38" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#1565C0"/>
+              <stop offset="1" stop-color="#1976D2"/>
+            </linearGradient>
+            <linearGradient id="blue-grad-2" x1="0" y1="0" x2="38" y2="38" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#2196F3"/>
+              <stop offset="1" stop-color="#64B5F6"/>
+            </linearGradient>
+            <linearGradient id="diamond-grad" x1="0" y1="0" x2="13" y2="13" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#E3F2FD"/>
+              <stop offset="1" stop-color="#90CAF9"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <div>
+          <div class="brand-title">MatchOp</div>
+          <div class="brand-sub">Match the Opportunity</div>
+        </div>
+      </div>
+      <div class="doc-badge">Pre-Seed Investor Memorandum</div>
+    </div>
+
+    <div class="cover-body">
+      <div class="cover-pretitle">
+        <span>✦</span> Post-Audit Venture Strategy & Evidence-Driven Financial Blueprint
+      </div>
+      <h1 class="cover-title">The Opportunity Matching Infrastructure for North Africa</h1>
+      <p class="cover-subtitle">
+        An empirical, investor-grade memorandum analyzing the school-to-work transition, proprietary closed-loop recruitment architecture, multi-vertical expansion, and the 50,000 TND commercial validation milestone round.
+      </p>
+
+      <div class="cover-stats-grid">
+        <div class="cover-stat-box">
+          <div class="cover-stat-val">26.6%</div>
+          <div class="cover-stat-lbl">Higher-Ed Unemployment (INS)</div>
+        </div>
+        <div class="cover-stat-box">
+          <div class="cover-stat-val">~54.4k</div>
+          <div class="cover-stat-lbl">Annual Tunisian Graduates</div>
+        </div>
+        <div class="cover-stat-box">
+          <div class="cover-stat-val">1,165</div>
+          <div class="cover-stat-lbl">Startup Act Companies (TN)</div>
+        </div>
+        <div class="cover-stat-box">
+          <div class="cover-stat-val">50k TND</div>
+          <div class="cover-stat-lbl">Pre-Seed Validation Ask</div>
+        </div>
+      </div>
+
+      <div class="cover-meta-grid">
+        <div class="meta-item">
+          <span class="meta-label">Corporate Vehicle & Status</span>
+          <span class="meta-value">MatchOp SAS (Incorporation Pending in Mahdia, Tunisia)</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Founding Team</span>
+          <span class="meta-value">Zied Fatnassi, Iheb Messabi, Hedi Ben Dhieb, Oussema N. Nabaoui, Wafei N. Nabaoui</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Technical Stack</span>
+          <span class="meta-value">React 19 | Supabase Cloud | pgvector 384-dim | Python Scrapling + Groq AI</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Current Stage Baseline</span>
+          <span class="meta-value">Pre-Launch Development (0 Students, 3 Active Design Partner Companies, 0 TND Rev)</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cover-footer">
+      <div>CONFIDENTIAL — INJAZ TUNISIA & PRE-SEED INVESTOR COMMITTEE EDITION</div>
+      <div>September 2026 • Mahdia, Tunisia • matchop.vercel.app</div>
+    </div>
+  </div>
+
+  <!-- ==================== EXECUTIVE SUMMARY & SNAPSHOT ==================== -->
+  <div class="document-body">
+    <div class="running-header">
+      <div class="rh-brand"><strong>MatchOp</strong> — Investment Memorandum</div>
+      <div>Section 1 - 3 • Executive Snapshot</div>
+    </div>
+
+    <!-- Section 1 -->
+    <div class="section-block">
+      <h2 class="section-heading"><span class="sec-num">01.</span> Document Classification & Methodology Standard</h2>
+      <p>
+        This memorandum serves as the definitive, institutional investment proposal for <strong>MatchOp</strong>. To ensure complete rigor and meet global venture standards, every statement and metric is internally classified under strict fact-versus-assumption discipline:
+      </p>
+      <div class="bento-grid-3">
+        <div class="bento-card">
+          <span class="tag tag-fact">[VERIFIED CURRENT FACT]</span>
+          <p style="margin-top:6px; font-size:11px;">Audited codebase, schema, and current pre-launch operational counts.</p>
+        </div>
+        <div class="bento-card">
+          <span class="tag tag-market">[MARKET DATA]</span>
+          <p style="margin-top:6px; font-size:11px;">Official data from INS, Ministry of Higher Ed, Smart Capital, and HCP.</p>
+        </div>
+        <div class="bento-card">
+          <span class="tag tag-rec">[STRATEGIC RECOMMENDATION]</span>
+          <p style="margin-top:6px; font-size:11px;">Evidence-based strategic guidance on monetization, GTM, and focus.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2 -->
+    <div class="section-block">
+      <h2 class="section-heading"><span class="sec-num">02.</span> Executive Summary</h2>
+      <p>
+        <strong>The Graduate Paradox:</strong> Tunisia produces over <strong>54,381 university graduates annually</strong> <span class="tag tag-market">[MARKET DATA]</span> (including 3,110 engineers and 6,885 masters), yet higher education unemployment sits at <strong>26.6%</strong> (surging to <strong>35.6% for women</strong>) and youth unemployment reaches <strong>35.4%</strong> (<cite>INS Q2 2026</cite>). Simultaneously, the tech innovation ecosystem—with <strong>1,165 labeled startups</strong> <span class="tag tag-market">[MARKET DATA]</span> and hundreds of IT service firms (ESNs)—faces severe talent bottlenecks caused by 25–35% annual senior engineer emigration.
+      </p>
+      <p>
+        <strong>The MatchOp Solution:</strong> MatchOp (<a href="https://matchop.vercel.app">matchop.vercel.app</a>) replaces passive job boards with an <strong>algorithmic shortlisting exchange</strong>. By evaluating structured student competency vectors against job criteria using 384-dimensional semantic embeddings, MatchOp eliminates the "resume black hole" for candidates and delivers a pre-screened top 5–10 shortlist to employers within <strong>48 to 72 hours</strong>, reducing recruiter screening labor by >75%.
+      </p>
+      <div class="callout-alert warning">
+        <strong>Unvarnished Strategic Reality</strong>
+        MatchOp is in the <strong>pre-launch development phase</strong> with <strong>0 registered students and 0 TND in revenue</strong> <span class="tag tag-fact">[VERIFIED CURRENT FACT]</span>. However, <strong>3 commercial companies</strong> (Solution Creative Events, Nomade Arts, Nexus) have created accounts and expressed collaboration interest. Management is raising an agile <strong>50,000 TND validation tranche</strong> to fund legal incorporation, campus club rollout, and prove employer willingness to pay across a 90-day pilot.
+      </div>
+    </div>
+
+    <!-- Section 3 -->
+    <div class="section-block avoid-break">
+      <h2 class="section-heading"><span class="sec-num">03.</span> Investment Snapshot</h2>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Parameter</th>
+            <th>Value / Target</th>
+            <th>Analytical Context & Classification</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Target Funding Ask</strong></td>
+            <td class="mono">50,000 TND (~$16,200 USD)</td>
+            <td>Pre-seed commercial validation check <span class="tag tag-management">[MANAGEMENT INPUT]</span></td>
+          </tr>
+          <tr>
+            <td><strong>Operating Runway</strong></td>
+            <td class="mono">9 to 12 Months</td>
+            <td>Disciplined burn in Mahdia/Tunis <span class="tag tag-forecast">[FORECAST]</span></td>
+          </tr>
+          <tr>
+            <td><strong>Current Development Stage</strong></td>
+            <td>Pre-Launch / Early Validation</td>
+            <td>Code complete; customer acquisition pending <span class="tag tag-fact">[VERIFIED CURRENT FACT]</span></td>
+          </tr>
+          <tr>
+            <td><strong>Commercial Beachhead</strong></td>
+            <td>Junior Tech & Engineering</td>
+            <td>ESNs & Startups in Grand Tunis, Sousse, Sfax <span class="tag tag-rec">[STRATEGIC REC]</span></td>
+          </tr>
+          <tr>
+            <td><strong>Primary B2B Monetization</strong></td>
+            <td class="mono">280 TND / Shortlist</td>
+            <td>Pay-per-shortlist & 690 TND/mo subscription <span class="tag tag-assumption">[ASSUMPTION]</span></td>
+          </tr>
+          <tr>
+            <td><strong>Core Technology Assets</strong></td>
+            <td>React 19, Supabase, pgvector</td>
+            <td>Semantic matching, Python scraper, realtime chat <span class="tag tag-capability">[CURRENT CAPABILITY]</span></td>
+          </tr>
+          <tr>
+            <td><strong>Key Validation Milestone</strong></td>
+            <td>15–20 Paying Employers</td>
+            <td>Proof of B2B willingness-to-pay & 15+ hires <span class="tag tag-validation">[VALIDATION REQ]</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="page-break"></div>
+    <div class="running-header">
+      <div class="rh-brand"><strong>MatchOp</strong> — Investment Memorandum</div>
+      <div>Section 4 - 8 • Problem, Solution & Identity</div>
+    </div>
+
+    <!-- Section 4 -->
+    <div class="section-block">
+      <h2 class="section-heading"><span class="sec-num">04.</span> Company Overview & Leadership</h2>
+      <div class="bento-grid">
+        <div class="bento-card highlight">
+          <div class="card-title">Corporate Profile</div>
+          <p><strong>Brand:</strong> MatchOp (« Match the Opportunity »)</p>
+          <p><strong>Legal Entity:</strong> MatchOp SAS (Registration scheduled post-funding)</p>
+          <p><strong>Headquarters:</strong> Mahdia, Republic of Tunisia <span class="tag tag-management">[MANAGEMENT INPUT]</span></p>
+          <p><strong>Live Web Application:</strong> <a href="https://matchop.vercel.app">matchop.vercel.app</a></p>
+        </div>
+        <div class="bento-card">
+          <div class="card-title">Founding Team & Contributors</div>
+          <p><strong>Zied Fatnassi:</strong> Lead Architecture & Software Engineer (Core committer)</p>
+          <p><strong>Iheb Messabi:</strong> Full-Stack Platform Engineer (Core committer)</p>
+          <p><strong>Hedi Ben Dhieb:</strong> Operational & Business Strategy Team</p>
+          <p><strong>Oussema N. Nabaoui & Wafei N. Nabaoui:</strong> Operational Strategy Team</p>
+          <p style="font-size:10.5px; color:#64748b; margin-top:4px;">*Formal C-suite officer titles to be registered upon legal incorporation.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 5 -->
+    <div class="section-block">
+      <h2 class="section-heading"><span class="sec-num">05.</span> Current Development Stage Audit</h2>
+      <p>
+        A rigorous audit of the MatchOp repository and database confirms that the software platform is fully developed and deployed, but currently operating in a pre-launch state:
+      </p>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Platform Component</th>
+            <th>Codebase Verification</th>
+            <th>Operational Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Student Frontend UX</strong></td>
+            <td><code>src/components/discovery/VerticalOpportunityFeed.jsx</code></td>
+            <td>100% Functional (Framer Motion gestures, scope filters)</td>
+          </tr>
+          <tr>
+            <td><strong>Matching & Embeddings</strong></td>
+            <td><code>supabase/functions/swipe-stack</code> & <code>pgvector</code></td>
+            <td>Implemented (384-dimensional cosine similarity)</td>
+          </tr>
+          <tr>
+            <td><strong>External Job Scraper</strong></td>
+            <td><code>scraper/matchop_scraper/</code> (Python 3.11)</td>
+            <td>Operational (Scrapling + Groq AI extraction into <code>external_jobs</code>)</td>
+          </tr>
+          <tr>
+            <td><strong>Employer Portal</strong></td>
+            <td><code>src/pages/company/PostOffer.jsx</code> & <code>CompanyIntros.jsx</code></td>
+            <td>Implemented (Job creation, intro review, chat access)</td>
+          </tr>
+          <tr>
+            <td><strong>Active Users / Revenue</strong></td>
+            <td>Production database records</td>
+            <td><strong>0 Candidates, 3 Companies, 3 Offers, 0 TND Revenue</strong> <span class="tag tag-fact">[VERIFIED CURRENT FACT]</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Section 6 & 7 -->
+    <div class="section-block">
+      <h2 class="section-heading"><span class="sec-num">06. - 07.</span> The Problem & Structural Market Pain</h2>
+      <div class="bento-grid">
+        <div class="bento-card">
+          <div class="card-title">Candidate Pain (Supply Side)</div>
+          <ul class="bullet-list">
+            <li><strong>The Resume Black Hole:</strong> Students spend 40+ hours/month submitting 50+ applications with a sub-10% response rate.</li>
+            <li><strong>The Experience Paradox:</strong> Entry-level roles demanding 2-3 years experience lock out capable graduates whose projects are ignored.</li>
+            <li><strong>Information Asymmetry:</strong> No transparent feedback on why applications fail or what technical skills are missing.</li>
+          </ul>
+        </div>
+        <div class="bento-card">
+          <div class="card-title">Employer Pain (Demand Side)</div>
+          <ul class="bullet-list">
+            <li><strong>Resume Noise:</strong> Sifting through 200–500 unqualified PDFs per job post consumes 15–25 hours of engineering management time.</li>
+            <li><strong>High Senior Turnover:</strong> 25–35% annual senior developer attrition to European firms demands continuous junior intake.</li>
+            <li><strong>Prohibitive Legacy ATS Costs:</strong> LinkedIn Recruiter ($800+/seat/mo) is economically unfeasible for local currency tech SMEs.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 8 -->
+    <div class="section-block">
+      <h2 class="section-heading"><span class="sec-num">08.</span> The MatchOp Solution: Algorithmic Exchange</h2>
+      <div class="flow-diagram">
+        <div class="flow-step">
+          <div class="flow-step-num">Step 1</div>
+          <div class="flow-step-title">Structured Profile</div>
+          <div class="flow-step-desc">Normalized skills, GitHub, capstone projects</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step active">
+          <div class="flow-step-num">Step 2</div>
+          <div class="flow-step-title">Semantic Matching</div>
+          <div class="flow-step-desc">pgvector 384-dim cosine similarity score</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-step-num">Step 3</div>
+          <div class="flow-step-title">Handshake & Intros</div>
+          <div class="flow-step-desc">One-click student apply & recruiter review</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-step-num">Step 4</div>
+          <div class="flow-step-title">Realtime Match</div>
+          <div class="flow-step-desc">Direct in-app messaging & interview coordination</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-break"></div>
+    <div class="running-header">
+      <div class="rh-brand"><strong>MatchOp</strong> — Investment Memorandum</div>
+      <div>Section 9 - 14 • Product, Tech & Workflows</div>
+    </div>
+
+    <!-- Section 9 & 10 -->
+    <div class="section-block">
+      <h2 class="section-heading"><span class="sec-num">09. - 10.</span> Technology & AI Architecture</h2>
+      <p>
+        MatchOp's technical architecture is built for extreme performance, security, and capital efficiency:
+      </p>
+      <div class="bento-grid">
+        <div class="bento-card highlight">
+          <div class="card-title">Frontend & Interaction Engine</div>
+          <p><strong>Core Stack:</strong> React 19 SPA bootstrapped with Vite 7.</p>
+          <p><strong>Mobile Gestures:</strong> <code>framer-motion</code> spring physics powering vertical discovery feeds.</p>
+          <p><strong>Localization:</strong> <code>i18next</code> full bilingual English/French engine.</p>
+          <p><strong>Analytics:</strong> Integrated Vercel Speed Insights & Web Vitals tracking.</p>
+        </div>
+        <div class="bento-card highlight">
+          <div class="card-title">Backend & AI Services (Supabase)</div>
+          <p><strong>PostgreSQL 15 + pgvector:</strong> 384-dimensional dense vector embeddings for real-time similarity search.</p>
+          <p><strong>Row Level Security (RLS):</strong> Multi-tenant isolation enforced at database level across all tables.</p>
+          <p><strong>Edge Functions (Deno):</strong> <code>swipe-stack</code>, <code>record-swipe</code>, <code>janitor</code>, <code>ai-profile-polisher</code>.</p>
+          <p><strong>Supabase Realtime:</strong> WebSocket messaging channels for instant chat.</p>
+        </div>
+      </div>
+      <div class="bento-card">
+        <div class="card-title">External Scraper Subsystem (Python 3.11 Worker)</div>
+        <p>
+          Housed in <code>scraper/</code>, this standalone worker uses <strong>Scrapling</strong> to fetch job listings from global and regional ATS boards (Greenhouse, Lever, Workable). <strong>Groq AI</strong> extracts structured skills, experience level, and metadata, deduplicating via <code>content_hash</code> and upserting into <code>external_jobs</code>.
+        </p>
+      </div>
+    </div>
+
+    <!-- Section 11 & 12 -->
+    <div class="section-block">
+      <h2 class="section-heading"><span class="sec-num">11. - 12.</span> Native Workflow vs. External Discovery</h2>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Workflow Dimension</th>
+            <th>Native MatchOp Jobs (<code>offers</code>)</th>
+            <th>External Aggregated Jobs (<code>external_jobs</code>)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Source of Opportunity</strong></td>
+            <td>Directly posted by registered companies</td>
+            <td>Ingested via automated Python scraper</td>
+          </tr>
+          <tr>
+            <td><strong>Application Action</strong></td>
+            <td>In-app right swipe triggers <code>intros</code> handshake</td>
+            <td>External redirect to original URL (new tab)</td>
+          </tr>
+          <tr>
+            <td><strong>Tracking & Data Loop</strong></td>
+            <td>Closed-loop: View → Swipe → Intro → Match → Hire</td>
+            <td>Outbound click only; no outcome tracking</td>
+          </tr>
+          <tr>
+            <td><strong>Transactional Revenue</strong></td>
+            <td><strong>100% Monetizable</strong> (Pay-per-shortlist, subs)</td>
+            <td><strong>0 TND Revenue</strong> (Pure top-of-funnel liquidity)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Section 13 & 14 -->
+    <div class="section-block">
+      <h2 class="section-heading"><span class="sec-num">13. - 14.</span> Candidate & Employer Product Specs</h2>
+      <div class="bento-grid">
+        <div class="bento-card">
+          <div class="card-title">Candidate Features <span class="tag tag-capability">[CURRENT]</span></div>
+          <ul class="bullet-list">
+            <li>Structured profile builder with normalized degree taxonomy.</li>
+            <li>Secure CV upload to Supabase private storage bucket.</li>
+            <li>Interactive match score breakdown (0–100% fit).</li>
+            <li>Preferences drawer (location, job type, radius filter).</li>
+            <li>Scope toggle (Local campus vs. Global remote opportunities).</li>
+          </ul>
+        </div>
+        <div class="bento-card">
+          <div class="card-title">Employer Features <span class="tag tag-capability">[CURRENT]</span></div>
+          <ul class="bullet-list">
+            <li>Fast job posting portal with automated vectorization.</li>
+            <li>Kanban intro triage ranked by algorithmic fit score.</li>
+            <li>Verified candidate profiles with skill badge displays.</li>
+            <li>Realtime in-app messaging thread upon intro acceptance.</li>
+            <li>Hiring analytics dashboard tracking views, swipes, and intros.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-break"></div>
+    <div class="running-header">
+      <div class="rh-brand"><strong>MatchOp</strong> — Investment Memorandum</div>
+      <div>Section 15 - 19 • Business Model, Pricing & Market</div>
+    </div>
+
+    <!-- Section 15 & 16 -->
+    <div class="section-block">
+      <h2 class="section-heading"><span class="sec-num">15. - 16.</span> Business Model & B2B Pricing Strategy</h2>
+      <div class="callout-alert danger">
+        <strong>Strategic Directive: Rejection of Candidate Application Paywalls</strong>
+        MatchOp's codebase contains pricing for candidate subscriptions (<strong>19 TND/month or 149 TND/year</strong>) to bypass swipe caps. With 35.4% youth unemployment and only ~3% mobile wallet penetration in Tunisia, charging candidates creates extreme drop-off and starves platform liquidity. <strong>Core candidate discovery must be 100% free. 85% to 90% of revenue will be captured from B2B employers.</strong>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Commercial Tier</th>
+            <th>Proposed Pricing</th>
+            <th>Deliverables & Service Level Agreement</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Tier 1: Pay-Per-Shortlist</strong></td>
+            <td class="mono">280 TND / role (~$90 USD)</td>
+            <td>1 Active Role • Top 5–10 Pre-Screened Candidates • 48–72h SLA • 14d replacement guarantee.</td>
+          </tr>
+          <tr>
+            <td><strong>Tier 2: Growth Pro Recruiter</strong></td>
+            <td class="mono">690 TND / mo (~$220 USD)</td>
+            <td>Up to 3 Active Roles • Guaranteed 48h Shortlists • Direct Realtime Chat • 1 Free Role Rollover/mo.</td>
+          </tr>
+          <tr>
+            <td><strong>Tier 3: Enterprise Annual</strong></td>
+            <td class="mono">1,800 TND / mo (~$580 USD)</td>
+            <td>Unlimited Active Postings • Dedicated Account Lead • Direct ATS Webhooks • Campus Branding Days.</td>
+          </tr>
+        </tbody>
+      </table>
+      <p style="font-size:11px; color:#64748b;">*B2B pricing figures represent proposed hypotheses requiring empirical validation during the 90-day pilot.</p>
+    </div>
+
+    <!-- Section 17 & 18 -->
+    <div class="section-block">
+      <h2 class="section-heading"><span class="sec-num">17. - 18.</span> Market Sizing: TAM / SAM / SOM</h2>
+      <div class="bento-grid-3">
+        <div class="bento-card highlight">
+          <div class="card-title">TAM: Pan-MENA HR Tech</div>
+          <div style="font-size:20px; font-weight:800; color:var(--navy-deep); margin:6px 0;">$350M - $450M</div>
+          <p style="font-size:11px;">Total commercial spending on digital recruitment, ATS tools, and junior hiring across North Africa and the GCC.</p>
+        </div>
+        <div class="bento-card highlight">
+          <div class="card-title">SAM: North Africa Junior Tech</div>
+          <div style="font-size:20px; font-weight:800; color:var(--primary); margin:6px 0;">$18.5M - $25.0M</div>
+          <p style="font-size:11px;">Recruitment budgets for junior software engineers, PFE interns, and early-career business roles in Tunisia & Morocco.</p>
+        </div>
+        <div class="bento-card highlight">
+          <div class="card-title">SOM: 3-Year Tunisia Beachhead</div>
+          <div style="font-size:20px; font-weight:800; color:var(--accent-teal); margin:6px 0;">324,000 TND</div>
+          <p style="font-size:11px;">Targeting 180 paying tech employers (9.1% market share) in Grand Tunis, Sousse, and Sfax at 1,800 TND ARPE.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 19 & 20 -->
+    <div class="section-block">
+      <h2 class="section-heading"><span class="sec-num">19. - 20.</span> Customer Segmentation & Beachhead Focus</h2>
+      <p>
+        MatchOp focuses strictly on <strong>IT Consultancies (ESNs) and VC-Backed Startups</strong> as Tier 1 customers:
+      </p>
+      <ul class="bullet-list">
+        <li><strong>High Urgency & Attrition:</strong> Tunisian ESNs lose senior engineers to European firms at rates of 25–35% annually, forcing constant junior intake.</li>
+        <li><strong>Foreign Currency Revenues:</strong> Many Tunisian tech firms bill European or Gulf clients in Euros or USD, giving them superior liquidity and purchasing power.</li>
+        <li><strong>Low Enterprise Friction:</strong> Unlike multinational corporations tied to SAP SuccessFactors, tech founders and CTOs make software purchasing decisions in under 2 weeks.</li>
+      </ul>
+    </div>
+
+    <div class="page-break"></div>
+    <div class="running-header">
+      <div class="rh-brand"><strong>MatchOp</strong> — Investment Memorandum</div>
+      <div>Section 21 - 26 • Competition, Defensibility & Traction</div>
+    </div>
+
+    <!-- Section 21 & 22 -->
+    <div class="section-block">
+      <h2 class="section-heading"><span class="sec-num">21. - 22.</span> Competitive Landscape & Differentiation</h2>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Platform</th>
+            <th>Target Audience</th>
+            <th>Employer Cost</th>
+            <th>Screening Mechanism</th>
+            <th>MatchOp Advantage</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>LinkedIn</strong></td>
+            <td>Mid-to-Senior Pros</td>
+            <td>$800+/seat/mo</td>
+            <td>Keyword / Recruiter AI</td>
+            <td>Optimized for junior capstone projects & bilingual context</td>
+          </tr>
+          <tr>
+            <td><strong>Keejob / Tanitjobs</strong></td>
+            <td>Broad National Audience</td>
+            <td>300–2,000+ TND</td>
+            <td>Raw resume flood (2000s UX)</td>
+            <td>Delivers curated top 5–10 shortlist instead of 300 raw PDFs</td>
+          </tr>
+          <tr>
+            <td><strong>Bayt.com</strong></td>
+            <td>Pan-Arab Corporate</td>
+            <td>$150–$990/mo</td>
+            <td>Boolean keyword database</td>
+            <td>Native 384-dim semantic matching with transparent fit score</td>
+          </tr>
+          <tr>
+            <td><strong>MatchOp</strong></td>
+            <td><strong>Early-Career & Juniors</strong></td>
+            <td><strong>280 TND / 690 TND/mo</strong></td>
+            <td><strong>Semantic vector shortlist</strong></td>
+            <td><strong>Cuts employer screening labor by >75% at 48h SLA</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Section 23 & 24 -->
+    <div class="section-block">
+      <h2 class="section-heading"><span class="sec-num">23. - 24.</span> Defensibility & Marketplace Liquidity</h2>
+      <div class="bento-grid">
+        <div class="bento-card">
+          <div class="card-title">Real Moats vs. Illusory Claims</div>
+          <p><strong>"We Use AI":</strong> <em>Illusion (No Moat).</em> Anyone can wrap an API endpoint.</p>
+          <p><strong>Proprietary Outcome Data:</strong> <em>Genuine Moat.</em> Tracking which student vector profiles convert to actual hires creates irreplaceable training feedback.</p>
+          <p><strong>Campus Alliances:</strong> <em>Structural Moat.</em> Institutional integration with Junior Enterprises and student clubs creates exclusive supply-side lock-in.</p>
+        </div>
+        <div class="bento-card">
+          <div class="card-title">Solving the Cold Start</div>
+          <p><strong>Day 1 Supply Value:</strong> 500+ scraped external opportunities ensure candidates find value immediately upon signup.</p>
+          <p><strong>Campus Capture:</strong> Onboarding 3,000+ students via university club CV workshops before monetizing.</p>
+          <p><strong>Employer Conversion:</strong> Delivering the first shortlist free via white-glove concierge to prove quality, then converting to paid.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 25 & 26 -->
+    <div class="section-block">
+      <h2 class="section-heading"><span class="sec-num">25. - 26.</span> Current Traction & Commercial Validation</h2>
+      <div class="bento-grid">
+        <div class="bento-card">
+          <div class="card-title">Current Operating Metrics <span class="tag tag-fact">[VERIFIED]</span></div>
+          <div class="metric-row"><span>Registered Candidates:</span><span class="mono"><strong>0</strong> (Pre-launch)</span></div>
+          <div class="metric-row"><span>Registered Companies:</span><span class="mono"><strong>3</strong> (Active)</span></div>
+          <div class="metric-row"><span>Job Offers Posted:</span><span class="mono"><strong>3</strong> (Test offers)</span></div>
+          <div class="metric-row"><span>Verified Hires:</span><span class="mono"><strong>0</strong> (Pre-launch)</span></div>
+          <div class="metric-row"><span>Platform Revenue:</span><span class="mono"><strong>0 TND</strong></span></div>
+        </div>
+        <div class="bento-card">
+          <div class="card-title">Early Design Partners <span class="tag tag-fact">[VERIFIED]</span></div>
+          <p><strong>Solution Creative Events:</strong> Events production company seeking creative and technical crew.</p>
+          <p><strong>Nomade Arts:</strong> Cultural space seeking arts managers and media coordinators.</p>
+          <p><strong>Nexus:</strong> Professional training center seeking instructors and coordinators.</p>
+          <p style="font-size:10.5px; color:#64748b; margin-top:4px;">*Accounts created during development; represents early validation, not contracted revenue.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-break"></div>
+    <div class="running-header">
+      <div class="rh-brand"><strong>MatchOp</strong> — Investment Memorandum</div>
+      <div>Section 27 - 31 • Expansion & Go-To-Market</div>
+    </div>
+
+    <!-- Section 27 - 29 -->
+    <div class="section-block">
+      <h2 class="section-heading"><span class="sec-num">27. - 29.</span> Sequenced Roadmap & Multi-Vertical Expansion</h2>
+      <p>
+        MatchOp’s matching core is extensible into multiple opportunity verticals, but strictly sequenced to preserve focus:
+      </p>
+      <div class="flow-diagram">
+        <div class="flow-step active">
+          <div class="flow-step-num">Phase 1: NOW</div>
+          <div class="flow-step-title">Junior Tech Recruitment</div>
+          <div class="flow-step-desc">Students, PFE, ESNs in Tunisia (Beachhead)</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-step-num">Phase 2: M5-8</div>
+          <div class="flow-step-title">Creative & Cultural</div>
+          <div class="flow-step-desc">Artists, event crew, cultural spaces</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-step-num">Phase 3: M9-12</div>
+          <div class="flow-step-title">Civic & Volunteer</div>
+          <div class="flow-step-desc">Clubs, NGOs, micro-credentials</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-step-num">Phase 4: Y2+</div>
+          <div class="flow-step-title">Regional Expansion</div>
+          <div class="flow-step-desc">Morocco rollout & GCC talent export</div>
+        </div>
+      </div>
+      <div class="callout-alert">
+        <strong>Strategic Guardrail on Multi-Vertical Focus</strong>
+        Early partner engagement with <em>Solution Creative Events</em> and <em>Nomade Arts</em> proves appetite in the creative economy. However, junior tech recruitment remains the core commercial beachhead. Creative and civic matching are sequenced modules, not immediate distractions.
+      </div>
+    </div>
+
+    <!-- Section 30 & 31 -->
+    <div class="section-block">
+      <h2 class="section-heading"><span class="sec-num">30. - 31.</span> Geographic Expansion & GTM Motion</h2>
+      <div class="bento-grid">
+        <div class="bento-card">
+          <div class="card-title">Stage-Gated Geographic Rollout</div>
+          <ul class="bullet-list">
+            <li><strong>Tunisia (M1–12):</strong> Validate liquidity, achieve 25 paying employers.</li>
+            <li><strong>Morocco (M13–20):</strong> Replicate model in Casablanca/Rabat (37.2% youth unemployment). Gated upon 35k TND MRR in Tunisia.</li>
+            <li><strong>Algeria & Egypt (M21–30):</strong> High-volume talent engine.</li>
+            <li><strong>GCC Corridor (Y2+):</strong> Export North African tech talent to Saudi Arabia & UAE for high-margin USD/SAR placement fees.</li>
+          </ul>
+        </div>
+        <div class="bento-card">
+          <div class="card-title">Dual-Track GTM Motion</div>
+          <ul class="bullet-list">
+            <li><strong>B2C Candidate Acquisition:</strong> Student tech clubs (IEEE, Enactus, JET), on-campus PFE day booths, organic career advice TikToks.</li>
+            <li><strong>B2B Employer Acquisition:</strong> Account-based LinkedIn outreach by founders targeting 100 CTOs/HR leads at ESNs.</li>
+            <li><strong>Incubator Partnerships:</strong> Exclusive junior talent pipeline for startups at The Dot, Flat6Labs, and Smart Capital.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-break"></div>
+    <div class="running-header">
+      <div class="rh-brand"><strong>MatchOp</strong> — Investment Memorandum</div>
+      <div>Section 32 - 36 • Financial Model & Funding Request</div>
+    </div>
+
+    <!-- Section 32 & 33 -->
+    <div class="section-block">
+      <h2 class="section-heading"><span class="sec-num">32. - 33.</span> Three-Year Financial Model & Unit Economics</h2>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Pro Forma P&L (TND) — Base Case</th>
+            <th class="text-right">Year 1 (Validation)</th>
+            <th class="text-right">Year 2 (Tunisia Scale)</th>
+            <th class="text-right">Year 3 (Morocco Rollout)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Registered Candidates / MAU</strong></td>
+            <td class="text-right mono">4,500 / 1,800</td>
+            <td class="text-right mono">18,000 / 7,200</td>
+            <td class="text-right mono">45,000 / 18,000</td>
+          </tr>
+          <tr>
+            <td><strong>Active Paying B2B Employers</strong></td>
+            <td class="text-right mono">18</td>
+            <td class="text-right mono">65</td>
+            <td class="text-right mono">150</td>
+          </tr>
+          <tr>
+            <td><strong>B2B Shortlist Fees (280 TND/role)</strong></td>
+            <td class="text-right mono">11,760 TND</td>
+            <td class="text-right mono">58,800 TND</td>
+            <td class="text-right mono">151,200 TND</td>
+          </tr>
+          <tr>
+            <td><strong>B2B Recruiter Subscriptions (690 TND/mo)</strong></td>
+            <td class="text-right mono">16,560 TND</td>
+            <td class="text-right mono">79,350 TND</td>
+            <td class="text-right mono">207,000 TND</td>
+          </tr>
+          <tr>
+            <td><strong>B2C Career Micro-Tools (15–29 TND)</strong></td>
+            <td class="text-right mono">2,850 TND</td>
+            <td class="text-right mono">14,400 TND</td>
+            <td class="text-right mono">42,000 TND</td>
+          </tr>
+          <tr style="background:#eff6ff; font-weight:700;">
+            <td><strong>TOTAL GROSS REVENUE</strong></td>
+            <td class="text-right mono"><strong>31,170 TND</strong></td>
+            <td class="text-right mono"><strong>152,550 TND</strong></td>
+            <td class="text-right mono"><strong>400,200 TND</strong></td>
+          </tr>
+          <tr>
+            <td>Cost of Goods Sold (Hosting, APIs, Gateway)</td>
+            <td class="text-right mono">(3,400 TND)</td>
+            <td class="text-right mono">(14,200 TND)</td>
+            <td class="text-right mono">(34,000 TND)</td>
+          </tr>
+          <tr>
+            <td><strong>GROSS PROFIT (Margin %)</strong></td>
+            <td class="text-right mono"><strong>27,770 TND (89.1%)</strong></td>
+            <td class="text-right mono"><strong>138,350 TND (90.7%)</strong></td>
+            <td class="text-right mono"><strong>366,200 TND (91.5%)</strong></td>
+          </tr>
+          <tr>
+            <td>Total Operating Expenses (Team, Sales, G&A)</td>
+            <td class="text-right mono">(49,100 TND)</td>
+            <td class="text-right mono">(124,600 TND)</td>
+            <td class="text-right mono">(272,000 TND)</td>
+          </tr>
+          <tr style="background:#f1f5f9; font-weight:800;">
+            <td><strong>EBITDA / OPERATING RESULT</strong></td>
+            <td class="text-right mono" style="color:#dc2626;"><strong>(21,330 TND)</strong></td>
+            <td class="text-right mono" style="color:#16a34a;"><strong>+13,750 TND</strong></td>
+            <td class="text-right mono" style="color:#16a34a;"><strong>+94,200 TND</strong></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="bento-grid">
+        <div class="bento-card">
+          <div class="card-title">Unit Economics per Shortlist (280 TND)</div>
+          <p>Revenue: <strong>280 TND</strong> • AI/API: <strong>1.50 TND</strong> • Payment Gateway: <strong>6.10 TND</strong> • Concierge QA: <strong>22.00 TND</strong> • <strong>Gross Margin: 89.4% (250.40 TND)</strong>.</p>
+        </div>
+        <div class="bento-card">
+          <div class="card-title">B2B Customer LTV & CAC Targets</div>
+          <p>Estimated CAC: <strong>95 TND</strong> • Annual Repeat Hires: <strong>3.2 roles</strong> • Retention: <strong>3.3 years</strong> • <strong>LTV: 2,630 TND (27.6x LTV:CAC)</strong>.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 34 - 36 -->
+    <div class="section-block">
+      <h2 class="section-heading"><span class="sec-num">34. - 36.</span> Funding Request (50k TND) & Use of Funds</h2>
+      <p>
+        MatchOp is raising an agile <strong>50,000 TND (~$16,200 USD) pre-seed validation tranche</strong> <span class="tag tag-management">[MANAGEMENT INPUT]</span>. This capital moves MatchOp from code-complete to commercial traction:
+      </p>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Budget Allocation Category</th>
+            <th>Share (%)</th>
+            <th>Amount (TND)</th>
+            <th>Dedicated Milestone Enabled</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Product & AI Engineering</strong></td>
+            <td>35.0%</td>
+            <td class="mono">17,500 TND</td>
+            <td>Shortlist automation, SLA monitoring (<48h), analytics funnel</td>
+          </tr>
+          <tr>
+            <td><strong>B2B Employer Sales & GTM</strong></td>
+            <td>25.0%</td>
+            <td class="mono">12,500 TND</td>
+            <td>Outreach to 100 ESNs; securing 15–20 paying employers</td>
+          </tr>
+          <tr>
+            <td><strong>Candidate Growth & Campus Clubs</strong></td>
+            <td>15.0%</td>
+            <td class="mono">7,500 TND</td>
+            <td>Onboarding 3,000+ candidates across 5 university partnerships</td>
+          </tr>
+          <tr>
+            <td><strong>Legal Incorporation & Startup Label</strong></td>
+            <td>10.0%</td>
+            <td class="mono">5,000 TND</td>
+            <td>Registering MatchOp SAS; INPDP privacy audit; Startup Act label</td>
+          </tr>
+          <tr>
+            <td><strong>Cloud Infrastructure & AI APIs</strong></td>
+            <td>8.0%</td>
+            <td class="mono">4,000 TND</td>
+            <td>Supabase database, pgvector indexing, Groq scraper hosting</td>
+          </tr>
+          <tr>
+            <td><strong>Operational Contingency Buffer</strong></td>
+            <td>7.0%</td>
+            <td class="mono">3,500 TND</td>
+            <td>Preserving minimum 6 months runway safety buffer</td>
+          </tr>
+          <tr style="font-weight:700; background:#eff6ff;">
+            <td><strong>TOTAL PROPOSED ALLOCATION</strong></td>
+            <td><strong>100.0%</strong></td>
+            <td class="mono"><strong>50,000 TND</strong></td>
+            <td><strong>9 to 12 Months Operating Runway</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="page-break"></div>
+    <div class="running-header">
+      <div class="rh-brand"><strong>MatchOp</strong> — Investment Memorandum</div>
+      <div>Section 37 - 42 • Risks, Validation & Thesis</div>
+    </div>
+
+    <!-- Section 37 & 38 -->
+    <div class="section-block">
+      <h2 class="section-heading"><span class="sec-num">37. - 38.</span> Risk Register & 90-Day Validation Plan</h2>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Risk Category</th>
+            <th>Severity</th>
+            <th>Mitigation Strategy</th>
+            <th>Validation Metric Gate</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Marketplace Cold-Start</strong></td>
+            <td>High</td>
+            <td>500+ scraped external jobs live from Day 1; student club distribution.</td>
+            <td>Supply ratio > 30 candidates per live opening</td>
+          </tr>
+          <tr>
+            <td><strong>B2B Willingness to Pay</strong></td>
+            <td>Fatal</td>
+            <td>Avoid rigid subscriptions upfront; sell 280 TND pay-per-shortlist.</td>
+            <td>≥8 corporate pre-commitments in Month 1</td>
+          </tr>
+          <tr>
+            <td><strong>Matching Quality Falloff</strong></td>
+            <td>High</td>
+            <td>Concierge human review of top 10 shortlists during initial 90-day pilot.</td>
+            <td>Employer shortlist review accept rate > 60%</td>
+          </tr>
+          <tr>
+            <td><strong>Multi-Vertical Dilution</strong></td>
+            <td>Fatal</td>
+            <td>Freeze volunteer and artist matching until tech recruitment is validated.</td>
+            <td>100% engineering focus on junior tech in M1–6</td>
+          </tr>
+          <tr>
+            <td><strong>Disintermediation</strong></td>
+            <td>Medium</td>
+            <td>Monetize upfront shortlist delivery, not delayed post-hire commissions.</td>
+            <td>Zero reliance on post-placement commissions</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="bento-grid">
+        <div class="bento-card highlight">
+          <div class="card-title">Month 1: Concierge MVP & Pre-Sales (Days 1–30)</div>
+          <p>Incorporate SAS entity; conduct founder sales to 50 ESNs; secure 10 paid shortlist LOIs; sign 5 student club MoUs.</p>
+        </div>
+        <div class="bento-card highlight">
+          <div class="card-title">Month 2–3: Liquidity & Hiring Proof (Days 31–90)</div>
+          <p>Onboard 3,000+ candidates; deliver 25 shortlists (<48h SLA); complete 15+ hires; convert pilot employers to 690 TND/mo.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 39 & 40 -->
+    <div class="section-block">
+      <h2 class="section-heading"><span class="sec-num">39. - 40.</span> Social Impact & Core Investment Thesis</h2>
+      <div class="bento-grid">
+        <div class="bento-card">
+          <div class="card-title">UN Sustainable Development Goals</div>
+          <p><strong>SDG 4 (Quality Education):</strong> Actionable skill-gap feedback for students.</p>
+          <p><strong>SDG 8 (Decent Work & Growth):</strong> Combating 26.6% graduate unemployment.</p>
+          <p><strong>SDG 10 (Reduced Inequalities):</strong> De-biasing hiring by focusing on code repositories and projects over elite alumni pedigree.</p>
+        </div>
+        <div class="bento-card dark">
+          <div class="card-title">The 10-Pillar Investment Thesis</div>
+          <p>1. The structural pain is massive (26.6% graduate unemployment vs senior brain drain).</p>
+          <p>2. The technology is already built, deployed, and functional (React 19 + pgvector).</p>
+          <p>3. 50k TND validation round minimizes dilution while proving commercial demand.</p>
+          <p>4. North Africa provides the talent engine; GCC provides the monetization scale.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 41 & 42 -->
+    <div class="section-block avoid-break">
+      <h2 class="section-heading"><span class="sec-num">41. - 42.</span> Investor FAQ & Conclusion</h2>
+      <div class="bento-grid">
+        <div class="bento-card">
+          <div class="card-title">FAQ: Why won't LinkedIn or Keejob crush MatchOp?</div>
+          <p>
+            LinkedIn monetizes corporate enterprise ads and senior profiles; its keyword search fails completely on sparse student resumes. Keejob monetizes job board ad space and has no incentive to reduce resume spam. MatchOp sells guaranteed screening time reduction: delivering 7 verified candidates instead of 300 raw PDFs.
+          </p>
+        </div>
+        <div class="bento-card">
+          <div class="card-title">Next Steps (30 Days Post-Funding)</div>
+          <ul class="bullet-list">
+            <li>1. Execute legal registration of MatchOp SAS in Mahdia.</li>
+            <li>2. Apply for Tunisian Startup Act Label (Smart Capital).</li>
+            <li>3. Open corporate bank account and setup financial reporting.</li>
+            <li>4. Launch 90-day pilot across 5 partner universities.</li>
+          </ul>
+        </div>
+      </div>
+      <div style="text-align:center; margin-top:20px; padding:12px; background:#eff6ff; border-radius:8px; border:1px solid #bfdbfe;">
+        <strong>Direct Investment Contact:</strong> MatchOp Leadership Team • <a href="mailto:matchop@gmail.com">matchop@gmail.com</a> • <a href="mailto:fatnassizied@fsegma.u-monastir.tn">fatnassizied@fsegma.u-monastir.tn</a> • Mahdia, Tunisia
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>

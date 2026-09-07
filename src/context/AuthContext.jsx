@@ -509,6 +509,15 @@ export function AuthProvider({ children }) {
                             size: userData.size || null
                         }, { onConflict: 'id' })
                     }
+                    if (metadata.referral_code) {
+                        try {
+                            await supabase.rpc('attribute_referral', {
+                                p_referral_code: metadata.referral_code
+                            })
+                        } catch (refErr) {
+                            debugLog('attribute_referral encountered non-fatal error:', refErr)
+                        }
+                    }
                 } catch (profileErr) {
                     debugLog('Immediate profile creation encountered non-fatal error:', profileErr)
                 }

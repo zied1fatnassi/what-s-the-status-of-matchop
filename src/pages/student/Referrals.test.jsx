@@ -4,55 +4,22 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const trackMock = vi.fn()
 const writeTextMock = vi.fn()
+const fetchProfileMock = vi.fn()
 
-vi.mock('react-i18next', () => ({
-    useTranslation: () => ({
-        t: (key, options = {}) => {
-            const dictionary = {
-                'referrals.title': 'Refer friends',
-                'referrals.subtitle': 'Share your referral code and invite link to unlock rewards.',
-                'referrals.labels.referralCode': 'Your referral code',
-                'referrals.labels.inviteLink': 'Your invite link',
-                'referrals.labels.share': 'Share with friends',
-                'referrals.labels.loadingCode': 'Generating referral code...',
-                'referrals.labels.loadingLink': 'Invite link will appear once your code is ready.',
-                'referrals.actions.copyCode': 'Copy code',
-                'referrals.actions.copyLink': 'Copy link',
-                'referrals.actions.shareWhatsApp': 'Share on WhatsApp',
-                'referrals.actions.shareEmail': 'Share by Email',
-                'referrals.actions.increaseInvite': '+ Invite',
-                'referrals.actions.decreaseInvite': '- Invite',
-                'referrals.share.whatsappTemplate': 'Join me on MatchOp with code {{code}}. Sign up here: {{link}}',
-                'referrals.share.emailSubject': 'Join me on MatchOp',
-                'referrals.share.emailBody': 'Use my referral code {{code}} to join MatchOp.\n\nSign up here: {{link}}',
-                'referrals.rewards.title': 'Rewards',
-                'referrals.rewards.body': 'Invite 3 friends and unlock 7 days Premium.',
-                'referrals.progress.current': '{{invites}}/{{goal}} invites',
-                'referrals.progress.hint': 'Demo progress is saved locally on this device.',
-                'referrals.rewardUnlock.claimAction': 'Claim reward',
-                'referrals.rewardUnlock.claimedTitle': 'Reward claimed',
-                'referrals.rewardUnlock.claimedSubtitle': 'Premium teaser unlocked (Preview).',
-                'referrals.rewardUnlock.claimedToast': 'Reward claimed.',
-                'referrals.rewardUnlock.previewNote': 'Preview: referral progress is simulated until backend verification.',
-                'referrals.toast.copyCodeSuccess': 'Referral code copied.',
-                'referrals.toast.copyLinkSuccess': 'Invite link copied.',
-                'referrals.toast.copyFailed': 'Unable to copy right now. Please try again.'
-            }
+const getReferralDashboardMock = vi.fn()
+const claimReferralRewardMock = vi.fn()
 
-            let resolved = dictionary[key] || key
-            Object.entries(options).forEach(([optionKey, value]) => {
-                resolved = resolved.replace(`{{${optionKey}}}`, String(value))
-            })
-            return resolved
-        }
-    })
+vi.mock('../../lib/referralService', () => ({
+    getReferralDashboard: (...args) => getReferralDashboardMock(...args),
+    claimReferralReward: (...args) => claimReferralRewardMock(...args)
 }))
 
 vi.mock('../../context/AuthContext', () => ({
     useAuth: () => ({
         user: {
             id: 'abcdef12-1234-4567-8abc-1234567890ef'
-        }
+        },
+        fetchProfile: fetchProfileMock
     })
 }))
 
@@ -62,26 +29,48 @@ vi.mock('../../lib/analytics', () => ({
 
 import Referrals from './Referrals'
 
-describe('Referrals', () => {
+describe('Referrals (Server-Authoritative)', () => {
     beforeEach(() => {
-        localStorage.clear()
         trackMock.mockReset()
         writeTextMock.mockReset()
         writeTextMock.mockResolvedValue(undefined)
+        fetchProfileMock.mockReset()
+        getReferralDashboardMock.mockReset()
+        claimReferralRewardMock.mockReset()
+
         Object.defineProperty(navigator, 'clipboard', {
             value: { writeText: writeTextMock },
             configurable: true
         })
+
+        // Default mock dashboard state
+        getReferralDashboardMock.mockResolvedValue({
+            ok: true,
+            referralCode: 'MOP-ABCDEF12',
+            totalReferrals: 1,
+            qualifyingReferrals: 1,
+            pendingReferrals: 0,
+            requiredReferrals: 3,
+            rewardDays: 7,
+            milestoneStatus: 'in_progress',
+            isEligible: false,
+            isClaimed: false,
+            claimedAt: null,
+            premium: {
+                isPremium: false,
+                premiumExpiresAt: null
+            }
+        })
     })
 
-    it('renders deterministic code and invite link', async () => {
+    it('renders server-provided referral code and invite link', async () => {
         render(
             <MemoryRouter>
                 <Referrals />
             </MemoryRouter>
         )
 
-        expect(screen.getByTestId('referral-code-value')).toHaveTextContent('MOP-ABCDEF12')
+        expect(await screen.findByTestId('referral-code-value')).toHaveTextContent('MOP-ABCDEF12')
         expect(screen.getByTestId('referral-link-value'))
             .toHaveTextContent(`${window.location.origin}/student/signup?ref=MOP-ABCDEF12`)
 
@@ -97,8 +86,11 @@ describe('Referrals', () => {
             </MemoryRouter>
         )
 
-        fireEvent.click(screen.getByTestId('copy-code-button'))
-        fireEvent.click(screen.getByTestId('copy-link-button'))
+        const copyCodeBtn = await screen.findByTestId('copy-code-button')
+        fireEvent.click(copyCodeBtn)
+
+        const copyLinkBtn = screen.getByTestId('copy-link-button')
+        fireEvent.click(copyLinkBtn)
 
         await waitFor(() => {
             expect(writeTextMock).toHaveBeenCalledWith('MOP-ABCDEF12')
@@ -109,31 +101,45 @@ describe('Referrals', () => {
         expect(trackMock).toHaveBeenCalledWith('referral_copied', { type: 'link' })
     })
 
-    it('shows claim button at 3/3 progress and persists claimed state', async () => {
-        localStorage.setItem('matchop_referral_progress', JSON.stringify({
-            invites: 3,
-            lastUpdated: '2026-02-27T10:00:00.000Z'
-        }))
-
+    it('shows progress and does not render claim button when under goal', async () => {
         render(
             <MemoryRouter>
                 <Referrals />
             </MemoryRouter>
         )
 
-        const claimButton = screen.getByTestId('claim-reward-button')
-        fireEvent.click(claimButton)
-
-        expect(localStorage.getItem('matchop_referral_reward_claimed')).toBe('true')
-        expect(screen.getByTestId('reward-claimed-state')).toBeInTheDocument()
+        expect(await screen.findByText(/1\/3/i)).toBeInTheDocument()
+        expect(screen.queryByTestId('claim-reward-button')).not.toBeInTheDocument()
+        expect(screen.queryByTestId('reward-claimed-state')).not.toBeInTheDocument()
     })
 
-    it('keeps reward claimed state across reloads', () => {
-        localStorage.setItem('matchop_referral_progress', JSON.stringify({
-            invites: 3,
-            lastUpdated: '2026-02-27T10:00:00.000Z'
-        }))
-        localStorage.setItem('matchop_referral_reward_claimed', 'true')
+    it('shows claim button when server reports 3 qualifying referrals and claims successfully', async () => {
+        getReferralDashboardMock.mockResolvedValue({
+            ok: true,
+            referralCode: 'MOP-ABCDEF12',
+            totalReferrals: 3,
+            qualifyingReferrals: 3,
+            pendingReferrals: 0,
+            requiredReferrals: 3,
+            rewardDays: 7,
+            milestoneStatus: 'eligible',
+            isEligible: true,
+            isClaimed: false,
+            claimedAt: null,
+            premium: {
+                isPremium: false,
+                premiumExpiresAt: null
+            }
+        })
+
+        claimReferralRewardMock.mockResolvedValue({
+            ok: true,
+            alreadyClaimed: false,
+            status: 'claimed',
+            rewardDays: 7,
+            premiumExpiresAt: '2026-03-25T10:00:00.000Z',
+            isPremium: true
+        })
 
         render(
             <MemoryRouter>
@@ -141,7 +147,44 @@ describe('Referrals', () => {
             </MemoryRouter>
         )
 
-        expect(screen.getByTestId('reward-claimed-state')).toBeInTheDocument()
+        const claimButton = await screen.findByTestId('claim-reward-button')
+        expect(claimButton).toBeInTheDocument()
+
+        fireEvent.click(claimButton)
+
+        await waitFor(() => {
+            expect(claimReferralRewardMock).toHaveBeenCalledWith('invite_3_premium_7d')
+            expect(fetchProfileMock).toHaveBeenCalled()
+            expect(screen.getByTestId('reward-claimed-state')).toBeInTheDocument()
+        })
+    })
+
+    it('renders claimed state directly when server reports already claimed', async () => {
+        getReferralDashboardMock.mockResolvedValue({
+            ok: true,
+            referralCode: 'MOP-ABCDEF12',
+            totalReferrals: 3,
+            qualifyingReferrals: 3,
+            pendingReferrals: 0,
+            requiredReferrals: 3,
+            rewardDays: 7,
+            milestoneStatus: 'claimed',
+            isEligible: false,
+            isClaimed: true,
+            claimedAt: '2026-03-01T10:00:00.000Z',
+            premium: {
+                isPremium: true,
+                premiumExpiresAt: '2026-03-25T10:00:00.000Z'
+            }
+        })
+
+        render(
+            <MemoryRouter>
+                <Referrals />
+            </MemoryRouter>
+        )
+
+        expect(await screen.findByTestId('reward-claimed-state')).toBeInTheDocument()
         expect(screen.queryByTestId('claim-reward-button')).not.toBeInTheDocument()
     })
 })

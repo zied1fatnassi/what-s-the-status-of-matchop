@@ -10,6 +10,7 @@ import AuthToast from '../../components/AuthToast'
 import {
     INBOUND_REFERRAL_CODE_KEY,
     INBOUND_REFERRAL_SEEN_AT_KEY,
+    MY_REFERRAL_CODE_KEY,
     buildReferralInviteLink,
     isValidReferralCode,
     normalizeReferralCode,
@@ -57,10 +58,12 @@ function StudentSignup() {
     const [resendStatus, setResendStatus] = useState('')
     const [resendCooldown, setResendCooldown] = useState(0)
 
+    const [createdUserCode, setCreatedUserCode] = useState('')
+
     const inviteLink = useMemo(() => {
-        const myCode = resolveMyReferralCode(null)
+        const myCode = createdUserCode || readStorageString(MY_REFERRAL_CODE_KEY, '')
         return buildReferralInviteLink(myCode)
-    }, [])
+    }, [createdUserCode])
 
     useEffect(() => {
         if (location.pathname !== STUDENT_SIGNUP_PATH) {
@@ -166,6 +169,11 @@ function StudentSignup() {
             setReferralCode('')
             setShowInviteFollowup(true)
 
+            if (data?.user?.id) {
+                const userCode = resolveMyReferralCode(data.user.id)
+                setCreatedUserCode(userCode)
+            }
+
             if (needsEmailVerification) {
                 setShowEmailVerification(true)
             } else if (data?.user) {
@@ -191,7 +199,13 @@ function StudentSignup() {
             if (!navigator?.clipboard?.writeText) {
                 throw new Error('Clipboard API unavailable')
             }
-            await navigator.clipboard.writeText(inviteLink)
+            const activeCode = createdUserCode || readStorageString(MY_REFERRAL_CODE_KEY, '')
+            const targetLink = inviteLink || (activeCode ? buildReferralInviteLink(activeCode) : '')
+            if (!targetLink) {
+                setToast({ type: 'error', message: t('referrals.toast.copyFailed') })
+                return
+            }
+            await navigator.clipboard.writeText(targetLink)
             setToast({ type: 'success', message: t('referrals.toast.copyLinkSuccess') })
         } catch {
             setToast({ type: 'error', message: t('referrals.toast.copyFailed') })

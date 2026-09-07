@@ -1690,5 +1690,70 @@
         "exclusive": "MatchOp Exclusive",
         "leak": "Internal Leak",
         "bounty": "Bounty"
+    },
+    "referrals": {
+        "title": "Refer friends",
+        "subtitle": "Share your referral code and invite link to unlock rewards.",
+        "labels": {
+            "referralCode": "Your referral code",
+            "inviteLink": "Your invite link",
+            "share": "Share with friends",
+            "loadingCode": "Loading referral code...",
+            "loadingLink": "Invite link will appear once your code is ready.",
+            "pendingInvites": "{{count}} invite(s) pending email verification"
+        },
+        "actions": {
+            "copyCode": "Copy code",
+            "copyLink": "Copy link",
+            "shareWhatsApp": "Share on WhatsApp",
+            "shareEmail": "Share by Email"
+        },
+        "share": {
+            "whatsappTemplate": "Join me on MatchOp with code {{code}}. Sign up here: {{link}}",
+            "emailSubject": "Join me on MatchOp",
+            "emailBody": "Use my referral code {{code}} to join MatchOp.\n\nSign up here: {{link}}"
+        },
+        "rewards": {
+            "title": "Rewards",
+            "body": "Invite 3 friends who verify their accounts and unlock 7 days of MatchOp Premium."
+        },
+        "progress": {
+            "current": "{{invites}}/{{goal}} invites",
+            "stepsLabel": "Referral progress steps",
+            "steps": {
+                "inviteSent": "1 friend joined",
+                "signedUp": "2 friends joined",
+                "verified": "3 friends verified"
+            },
+            "neverUpdated": "No referrals yet",
+            "lastUpdated": "Updated {{timestamp}}"
+        },
+        "rewardUnlock": {
+            "claimAction": "Claim reward",
+            "claiming": "Claiming...",
+            "claimedTitle": "Reward claimed",
+            "claimedSubtitle": "7 days of MatchOp Premium active.",
+            "claimedToast": "Reward claimed! MatchOp Premium unlocked for 7 days."
+        },
+        "toast": {
+            "copyCodeSuccess": "Referral code copied.",
+            "copyLinkSuccess": "Invite link copied.",
+            "copyFailed": "Unable to copy right now. Please try again."
+        },
+        "signupApplied": "Referral code {{ref}} was applied to your signup.",
+        "signupFlow": {
+            "invitedTitle": "You were invited by a friend",
+            "invitedSubtitle": "Complete signup to unlock your referral benefit.",
+            "dismissAria": "Dismiss referral invitation banner",
+            "followupTitle": "Invite your friends too",
+            "followupSubtitle": "Share your invite link to unlock 7 days of Premium.",
+            "openReferrals": "Open Referrals",
+            "copyInviteLink": "Copy invite link"
+        },
+        "errors": {
+            "claimFailed": "Failed to claim reward. Please try again.",
+            "notEligible": "You need 3 qualifying referrals to claim this reward.",
+            "selfReferral": "You cannot refer yourself."
+        }
     }
 }

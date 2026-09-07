@@ -1,54 +1,55 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { Copy, Mail, MessageCircle, Users } from 'lucide-react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { CheckCircle, Copy, Loader2, Mail, MessageCircle, Sparkles, Users } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import AuthToast from '../../components/AuthToast'
 import { useAuth } from '../../context/AuthContext'
 import { track } from '../../lib/analytics'
-import { readStorageString, writeStorageString } from '../../lib/localStorageState'
 import { addNotification, NOTIFICATION_SCOPE_STUDENT } from '../../lib/notifications'
-import {
-    REFERRAL_PROGRESS_KEY,
-    buildReferralInviteLink,
-    resolveMyReferralCode,
-} from '../../lib/referrals'
+import { buildReferralInviteLink } from '../../lib/referrals'
+import { claimReferralReward, getReferralDashboard } from '../../lib/referralService'
 import './Referrals.css'
 
 const REFERRAL_GOAL = 3
-const REFERRAL_REWARD_CLAIMED_KEY = 'matchop_referral_reward_claimed'
-
-const clampInvites = (value) => Math.max(0, Math.min(REFERRAL_GOAL, value))
-
-function readStoredProgress() {
-    try {
-        const raw = localStorage.getItem(REFERRAL_PROGRESS_KEY)
-        if (!raw) {
-            return { invites: 0, lastUpdated: null }
-        }
-
-        const parsed = JSON.parse(raw)
-        const invites = clampInvites(Number(parsed?.invites) || 0)
-        const lastUpdated = typeof parsed?.lastUpdated === 'string' ? parsed.lastUpdated : null
-        return { invites, lastUpdated }
-    } catch {
-        return { invites: 0, lastUpdated: null }
-    }
-}
 
 function Referrals() {
     const { t } = useTranslation(undefined, { useSuspense: false })
-    const { user } = useAuth()
+    const { user, fetchProfile } = useAuth()
     const trackedViewed = useRef(false)
     const [toast, setToast] = useState(null)
-    const [referralCode, setReferralCode] = useState(() => resolveMyReferralCode(user?.id))
-    const [progress, setProgress] = useState(() => readStoredProgress())
-    const [rewardClaimed, setRewardClaimed] = useState(() => (
-        readStorageString(REFERRAL_REWARD_CLAIMED_KEY, 'false') === 'true'
-    ))
+
+    const [loading, setLoading] = useState(true)
+    const [referralCode, setReferralCode] = useState('')
+    const [qualifyingReferrals, setQualifyingReferrals] = useState(0)
+    const [pendingReferrals, setPendingReferrals] = useState(0)
+    const [totalReferrals, setTotalReferrals] = useState(0)
+    const [isEligible, setIsEligible] = useState(false)
+    const [rewardClaimed, setRewardClaimed] = useState(false)
+    const [premiumExpiresAt, setPremiumExpiresAt] = useState(null)
+    const [isClaiming, setIsClaiming] = useState(false)
+
+    const loadDashboard = useCallback(async () => {
+        setLoading(true)
+        try {
+            const data = await getReferralDashboard()
+            if (data.ok) {
+                setReferralCode(data.referralCode)
+                setQualifyingReferrals(data.qualifyingReferrals)
+                setPendingReferrals(data.pendingReferrals)
+                setTotalReferrals(data.totalReferrals)
+                setIsEligible(data.isEligible)
+                setRewardClaimed(data.isClaimed)
+                setPremiumExpiresAt(data.premium?.premiumExpiresAt || null)
+            }
+        } catch (err) {
+            console.error('[Referrals] Failed to load dashboard:', err)
+        } finally {
+            setLoading(false)
+        }
+    }, [])
 
     useEffect(() => {
-        const nextCode = resolveMyReferralCode(user?.id)
-        setReferralCode(nextCode)
-    }, [user?.id])
+        loadDashboard()
+    }, [loadDashboard, user?.id])
 
     useEffect(() => {
         if (!referralCode || trackedViewed.current) return
@@ -95,41 +96,61 @@ function Referrals() {
         }
     }
 
-    const updateProgress = (delta) => {
-        setProgress((prev) => {
-            const invites = clampInvites(prev.invites + delta)
-            const next = { invites, lastUpdated: new Date().toISOString() }
-            localStorage.setItem(REFERRAL_PROGRESS_KEY, JSON.stringify(next))
-            if (delta > 0 && invites !== prev.invites) {
+    const handleClaimReward = async () => {
+        if (qualifyingReferrals < REFERRAL_GOAL || rewardClaimed || isClaiming) return
+        setIsClaiming(true)
+        try {
+            const res = await claimReferralReward('invite_3_premium_7d')
+            if (res.ok) {
+                setRewardClaimed(true)
+                setIsEligible(false)
+                if (res.premiumExpiresAt) {
+                    setPremiumExpiresAt(res.premiumExpiresAt)
+                }
+
+                // Refresh AuthContext profile to immediately hydrate is_premium state
+                if (user?.id && typeof fetchProfile === 'function') {
+                    try {
+                        await fetchProfile(user.id, user)
+                    } catch (fetchErr) {
+                        console.warn('[Referrals] Profile refresh non-fatal error:', fetchErr)
+                    }
+                }
+
                 addNotification(NOTIFICATION_SCOPE_STUDENT, {
-                    title: 'Referral progress updated',
-                    body: `You are now at ${invites}/${REFERRAL_GOAL} referrals.`,
+                    title: 'Referral reward claimed',
+                    body: '7 days of MatchOp Premium have been activated on your account!',
                     read: false,
                 })
+
+                setToast({
+                    type: 'success',
+                    message: t('referrals.rewardUnlock.claimedToast')
+                })
+                track('referral_reward_claimed', { rewardDays: res.rewardDays || 7 })
+            } else {
+                setToast({
+                    type: 'error',
+                    message: res.message || t('referrals.errors.claimFailed')
+                })
             }
-            return next
-        })
+        } catch (err) {
+            console.error('[Referrals] Error claiming reward:', err)
+            setToast({
+                type: 'error',
+                message: t('referrals.errors.claimFailed')
+            })
+        } finally {
+            setIsClaiming(false)
+        }
     }
 
-    const handleClaimReward = () => {
-        if (progress.invites < REFERRAL_GOAL || rewardClaimed) return
-        writeStorageString(REFERRAL_REWARD_CLAIMED_KEY, 'true')
-        setRewardClaimed(true)
-        setToast({
-            type: 'success',
-            message: t('referrals.rewardUnlock.claimedToast')
-        })
-    }
-
-    const progressPercent = Math.round((progress.invites / REFERRAL_GOAL) * 100)
+    const progressPercent = Math.min(100, Math.round((qualifyingReferrals / REFERRAL_GOAL) * 100))
     const progressSteps = [
-        { key: 'inviteSent', completed: progress.invites >= 1 },
-        { key: 'signedUp', completed: progress.invites >= 2 },
-        { key: 'verified', completed: progress.invites >= 3 }
+        { key: 'inviteSent', completed: qualifyingReferrals >= 1 },
+        { key: 'signedUp', completed: qualifyingReferrals >= 2 },
+        { key: 'verified', completed: qualifyingReferrals >= 3 }
     ]
-    const formattedLastUpdated = progress.lastUpdated
-        ? new Date(progress.lastUpdated).toLocaleString()
-        : t('referrals.progress.neverUpdated')
 
     return (
         <section className="referrals-page">
@@ -152,7 +173,7 @@ function Referrals() {
                     <article className="referrals-card">
                         <h2>{t('referrals.labels.referralCode')}</h2>
                         <p className="referrals-mono" data-testid="referral-code-value">
-                            {referralCode || t('referrals.labels.loadingCode')}
+                            {loading ? t('referrals.labels.loadingCode') : (referralCode || t('referrals.labels.loadingCode'))}
                         </p>
                         <button
                             type="button"
@@ -169,7 +190,7 @@ function Referrals() {
                     <article className="referrals-card">
                         <h2>{t('referrals.labels.inviteLink')}</h2>
                         <p className="referrals-link" data-testid="referral-link-value">
-                            {inviteLink || t('referrals.labels.loadingLink')}
+                            {loading ? t('referrals.labels.loadingLink') : (inviteLink || t('referrals.labels.loadingLink'))}
                         </p>
                         <button
                             type="button"
@@ -208,12 +229,15 @@ function Referrals() {
                     </article>
 
                     <article className="referrals-card referrals-card--reward">
-                        <h2>{t('referrals.rewards.title')}</h2>
+                        <div className="referrals-reward-header">
+                            <h2>{t('referrals.rewards.title')}</h2>
+                            <Sparkles size={18} className="text-primary" />
+                        </div>
                         <p>{t('referrals.rewards.body')}</p>
-                        <span className="referrals-demo-badge">{t('referrals.progress.demoBadge')}</span>
+
                         <div className="referrals-progress-row">
                             <span className="referrals-progress-label">
-                                {t('referrals.progress.current', { invites: progress.invites, goal: REFERRAL_GOAL })}
+                                {t('referrals.progress.current', { invites: qualifyingReferrals, goal: REFERRAL_GOAL })}
                             </span>
                             <Users size={16} />
                         </div>
@@ -222,7 +246,7 @@ function Referrals() {
                             role="progressbar"
                             aria-valuemin={0}
                             aria-valuemax={REFERRAL_GOAL}
-                            aria-valuenow={progress.invites}
+                            aria-valuenow={qualifyingReferrals}
                         >
                             <span className="referrals-progress-fill" style={{ width: `${progressPercent}%` }} />
                         </div>
@@ -234,46 +258,46 @@ function Referrals() {
                                 </div>
                             ))}
                         </div>
-                        <p className="referrals-progress-hint">{t('referrals.progress.hint')}</p>
-                        <p className="referrals-progress-hint">{t('referrals.rewardUnlock.previewNote')}</p>
-                        <p className="referrals-progress-hint">
-                            {t('referrals.progress.lastUpdated', { timestamp: formattedLastUpdated })}
-                        </p>
 
-                        {progress.invites >= REFERRAL_GOAL && !rewardClaimed && (
+                        {pendingReferrals > 0 && (
+                            <p className="referrals-pending-notice text-sm text-muted mt-2">
+                                {t('referrals.labels.pendingInvites', { count: pendingReferrals })}
+                            </p>
+                        )}
+
+                        {(isEligible || (qualifyingReferrals >= REFERRAL_GOAL && !rewardClaimed)) && (
                             <button
                                 type="button"
-                                className="btn btn-primary"
+                                className="btn btn-primary mt-4"
                                 data-testid="claim-reward-button"
                                 onClick={handleClaimReward}
+                                disabled={isClaiming}
                             >
-                                {t('referrals.rewardUnlock.claimAction')}
+                                {isClaiming ? (
+                                    <>
+                                        <Loader2 size={16} className="spinner mr-2" />
+                                        {t('referrals.rewardUnlock.claiming')}
+                                    </>
+                                ) : (
+                                    t('referrals.rewardUnlock.claimAction')
+                                )}
                             </button>
                         )}
 
                         {rewardClaimed && (
-                            <div className="referrals-reward-claimed" data-testid="reward-claimed-state">
-                                <strong>{t('referrals.rewardUnlock.claimedTitle')}</strong>
+                            <div className="referrals-reward-claimed mt-4" data-testid="reward-claimed-state">
+                                <div className="flex items-center gap-2">
+                                    <CheckCircle size={18} className="text-success" />
+                                    <strong>{t('referrals.rewardUnlock.claimedTitle')}</strong>
+                                </div>
                                 <p>{t('referrals.rewardUnlock.claimedSubtitle')}</p>
-                            </div>
-                        )}
-
-                        {import.meta.env.DEV && (
-                            <div className="referrals-debug">
-                                <button
-                                    type="button"
-                                    className="btn btn-secondary"
-                                    onClick={() => updateProgress(-1)}
-                                >
-                                    {t('referrals.actions.decreaseInvite')}
-                                </button>
-                                <button
-                                    type="button"
-                                    className="btn btn-secondary"
-                                    onClick={() => updateProgress(1)}
-                                >
-                                    {t('referrals.actions.increaseInvite')}
-                                </button>
+                                {premiumExpiresAt && (
+                                    <p className="text-xs text-muted mt-1">
+                                        {t('referrals.progress.lastUpdated', {
+                                            timestamp: new Date(premiumExpiresAt).toLocaleDateString()
+                                        })}
+                                    </p>
+                                )}
                             </div>
                         )}
                     </article>
