@@ -2,12 +2,29 @@ greenhouse:
   - https://boards.greenhouse.io/discord
   - https://boards.greenhouse.io/scaleai
   - https://boards.greenhouse.io/vercel
+  - https://boards.greenhouse.io/datadog
+  - https://boards.greenhouse.io/figma
+  - https://boards.greenhouse.io/stripe
 
 lever:
   - https://jobs.lever.co/caseware
   - https://jobs.lever.co/dnb
+  - https://jobs.lever.co/spotify
+  - https://jobs.lever.co/miro
 
 workable:
   - https://apply.workable.com/blueground/
   - https://apply.workable.com/persado/
   - https://apply.workable.com/skroutz/
+  - https://apply.workable.com/doctolib/
+
+keejob:
+  - https://www.keejob.com/offres-emploi/metiers/informatique-nouvelles-technologies/
+  - https://www.keejob.com/offres-emploi/metiers/ingenierie/
+  - https://www.keejob.com/offres-emploi/types-de-contrat/stage-pfe/
+  - https://www.keejob.com/offres-emploi/
+
+europe_api:
+  - https://www.arbeitnow.com/api/job-board-api
+  - https://jobicy.com/api/v2/remote-jobs?count=50&geo=europe
+  - https://jobicy.com/api/v2/remote-jobs?count=50&geo=apac

@@ -112,15 +112,37 @@ We are looking for a motivated candidate to join us as **${title}**${department 
 
         setLoading(true)
         try {
-            const { data, error } = await supabase.from('offers').insert({
+            let finalLocation = 'Remote'
+            if (offer.locationType === 'remote') {
+                finalLocation = 'Remote'
+            } else if (offer.governorate && offer.location) {
+                finalLocation = `${offer.governorate}, ${offer.location}`
+            } else if (offer.location) {
+                finalLocation = offer.location
+            } else if (offer.governorate) {
+                finalLocation = offer.governorate
+            }
+
+            const payload = {
                 company_id: user.id,
                 title: offer.title,
                 description: offer.description,
                 req_skills: offer.skills,
-                location: offer.location || 'Remote',
+                location: finalLocation,
                 salary_range: offer.salary || 'Competitive',
-                status: 'active'
-            }).select('id').single()
+                status: 'active',
+                type: offer.type || 'Internship',
+                workplace_type: offer.locationType || 'onsite'
+            }
+
+            let { data, error } = await supabase.from('offers').insert(payload).select('id').single()
+            if (error && (error.message?.includes('type') || error.message?.includes('workplace_type'))) {
+                delete payload.type
+                delete payload.workplace_type
+                const retry = await supabase.from('offers').insert(payload).select('id').single()
+                data = retry.data
+                error = retry.error
+            }
 
             if (error) throw error
 

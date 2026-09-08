@@ -131,7 +131,7 @@ function OfferDetailModal({ offer, onClose, onApply }) {
 
                         {offer.isExternal ? (
                             <a
-                                href={offer.externalUrl}
+                                href={offer.externalUrl || `https://www.google.com/search?q=${encodeURIComponent(`${offer.company || ''} ${offer.title || ''} jobs`)}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="btn btn-primary"

@@ -11,6 +11,7 @@ import {
     isLimitReachedCode,
     isPremiumProfileActive
 } from '../lib/swipeLimit'
+import { resolveOpportunityType } from '../lib/opportunityTaxonomy'
 import { safeLogDebug, safeLogError, safeLogWarn } from '../lib/logger'
 
 const CACHE_TTL = 60000 // 60 seconds
@@ -152,7 +153,8 @@ function normalizeEdgeOffer(offer) {
         salary: offer.salary || 'Competitive',
         skills: Array.isArray(offer.skills) ? offer.skills : [],
         location: offer.location || 'Remote',
-        type: offer.type || 'Full-time',
+        type: offer.type || resolveOpportunityType(offer).labelEn,
+        companyLocation: offer.companyLocation || null,
         createdAt: offer.createdAt || null,
         isExternal: Boolean(offer.isExternal),
         externalJobId: offer.isExternal ? extractExternalJobId(offerId) : null,
@@ -272,7 +274,7 @@ async function fetchLegacyOffers(userId) {
     } else {
         const offersResult = await supabase
             .from('offers')
-            .select('*, companies!company_id(id, company_name, logo_url, industry)')
+            .select('*, companies!company_id(id, company_name, logo_url, industry, location)')
             .eq('status', 'active')
             .limit(FETCH_LIMIT)
 
@@ -281,8 +283,10 @@ async function fetchLegacyOffers(userId) {
                 .filter((offer) => !swipedOfferIds.has(offer.id))
                 .map((offer) => ({
                     ...offer,
+                    type: offer.type || resolveOpportunityType(offer).labelEn,
                     company: offer.companies?.company_name || 'Unknown Company',
                     companyLogo: offer.companies?.logo_url || null,
+                    companyLocation: offer.companies?.location || null,
                     industry: offer.companies?.industry || '',
                     salary: offer.salary_range || 'Competitive',
                     skills: offer.req_skills || [],
@@ -308,8 +312,9 @@ async function fetchLegacyOffers(userId) {
                 title: job.title,
                 company: job.company_name,
                 companyLogo: job.logo_url || job.logo || null,
+                companyLocation: null,
                 location: job.location,
-                type: job.job_type || job.type || 'Full-time',
+                type: job.job_type || job.type || resolveOpportunityType(job).labelEn,
                 salary: job.salary_range || 'Competitive',
                 description: job.description || '',
                 skills: [],

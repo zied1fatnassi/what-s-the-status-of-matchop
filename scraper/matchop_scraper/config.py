@@ -73,7 +73,7 @@ class ScraperConfig:
         supabase_url = os.getenv("SUPABASE_URL") or os.getenv("VITE_SUPABASE_URL") or ""
         supabase_key = os.getenv("SUPABASE_SERVICE_ROLE_KEY") or ""
         groq_key = os.getenv("GROQ_API_KEY") or ""
-        groq_model = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
+        groq_model = os.getenv("GROQ_MODEL", "qwen/qwen3.8-27b")
 
         seeds = _load_seed_config()
 

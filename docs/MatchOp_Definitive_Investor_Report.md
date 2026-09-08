@@ -92,7 +92,7 @@ To guarantee absolute institutional credibility and align with venture capital i
 | Core Purpose: Pre-Seed Commercial Validation & Acceleration Capital Evaluation                  |
 | Target Raise: 50,000 TND (Tunisian Dinars) / ~$16,200 USD                                       |
 | Technology Base: React 19 SPA | Supabase Cloud | pgvector Embeddings | Python Scrapling + Groq AI |
-| Founders / Team: Zied Fatnassi, Iheb Messabi, Hedi Ben Dhieb, Oussema N. Nabaoui, Wafei N. Nabaoui|
+| Founders / Team: Zied Fatnassi & Iheb Messabi (Owners & Co-Founders) | Strategic Collaborators: Hedi Ben Dhieb, Oussema N. Nabaoui, Wafei N. Nabaoui|
 | Operational Base: Mahdia, Republic of Tunisia (Hub)                                             |
 | Live Product Build: https://matchop.vercel.app                                                   |
 +--------------------------------------------------------------------------------------------------+
@@ -166,7 +166,7 @@ Management is raising **50,000 TND (~$16,200 USD)** in pre-seed validation capit
 | **Core Beachhead** | Junior tech & engineering recruitment in Tunisia (students, PFE, 0–2 years) | `[STRATEGIC RECOMMENDATION]` |
 | **Planned Expansions** | (1) Creative & Cultural Opportunities; (2) Civic & Volunteering Opportunities | `[FUTURE ROADMAP]` |
 | **Target Geographic Horizon** | Phase 1: Tunisia → Phase 2: Morocco → Phase 3: Algeria & Egypt → Phase 4: GCC | `[FUTURE ROADMAP]` |
-| **Primary Revenue Model** | B2B Shortlist Fees (280 TND/role) + B2B Subscriptions (690 TND/mo) | `[ASSUMPTION]` |
+| **Primary Revenue Model** | B2B Shortlist Fees (280 TND/role) + B2B Subscriptions (900 TND/yr) | `[ASSUMPTION]` |
 | **Secondary Revenue Model** | B2C Optional Premium (19 TND/mo) + Career Micro-tools (15–29 TND one-time) | `[ASSUMPTION]` |
 | **Primary 9-Month Milestone** | 10–20 paying B2B employers, 15+ verified hires, >60% shortlist acceptance | `[VALIDATION REQUIRED]` |
 
@@ -487,7 +487,7 @@ MatchOp operates a two-sided talent and opportunity exchange. However, a critica
 |                                     (85% - 90% of Total Revenue)                                 |
 |                                                                                                  |
 |   1. Transactional Shortlists: Pay-per-qualified-shortlist (280 TND per filled vacancy).          |
-|   2. Recurring Subscriptions: Growth Pro Recruiter packages (690 TND/month for active hiring).   |
+|   2. Recurring Subscriptions: Growth Pro Recruiter packages (900 TND/yrnth for active hiring).   |
 |   3. Enterprise Retainers: High-volume custom sourcing & campus branding (1,800 TND/month).      |
 +--------------------------------------------------------------------------------------------------+
                                                  |
@@ -523,7 +523,7 @@ While this tier exists in code, relying heavily on candidate subscriptions in Tu
 |                                    B2B COMMERCIAL PRICING TIERS                                  |
 +------------------------------+------------------------------+------------------------------------+
 | Tier 1: Pay-Per-Shortlist    | Tier 2: Growth Pro Recruiter | Tier 3: Enterprise Annual          |
-| 280 TND / role (~$90 USD)    | 690 TND / month (~$220 USD)  | 1,800 TND / month (~$580 USD)      |
+| 280 TND / role (~$90 USD)    | 900 TND / yrnth (~$220 USD)  | 900 TND / yrnth (~$580 USD)      |
 +------------------------------+------------------------------+------------------------------------+
 | - 1 Active Job Opening       | - Up to 3 Concurrent Openings| - Unlimited Active Postings        |
 | - Top 5–10 Curated Candidates| - Guaranteed 48h Shortlists  | - Dedicated Account Manager        |
@@ -660,7 +660,7 @@ MatchOp does not compete in a vacuum. It operates alongside global giants and le
 | **Primary Focus** | Global professionals (Mid-to-Senior) | Tunisia broad domestic job board | Pan-Arab & GCC corporate | Egypt white-collar | **North Africa Early-Career & Juniors** |
 | **Core Value Unit** | Ad impressions & candidate messaging | Unfiltered job board ad space | CV database access | ATS filtering packages | **Pre-screened Top 5–10 Shortlists** |
 | **Matching Tech** | Keyword / Enterprise Recruiter AI | Basic category & keyword search | Boolean keyword search | Machine learning filters | **384-dim Semantic Vector Embeddings** |
-| **Pricing for Employers** | Very High ($800+/seat/mo) | Opaque Packs (300–2,000+ TND) | High ($150–$990/mo) | Moderate ($16–$125/mo) | **Affordable (280 TND / 690 TND/mo)** |
+| **Pricing for Employers** | Very High ($800+/seat/mo) | Opaque Packs (300–2,000+ TND) | High ($150–$990/mo) | Moderate ($16–$125/mo) | **Affordable (280 TND/role / 900 TND/yr)** |
 | **Screening Labor** | 100% on Employer (20+ hrs) | 100% on Employer (25+ hrs) | 100% on Employer | Semi-automated | **Automated + QA Verification (<48h)** |
 | **Candidate UX** | Clunky web forms, desktop-first | 2000s desktop directory | Traditional portal | Modern web portal | **Mobile-First Vertical Swipe Feed** |
 | **Junior Candidate Fit** | Very Poor (Penalizes sparse CVs) | Average (Mass resume spam) | Poor | Moderate | **Engineered for Projects, Skills & Potential** |
@@ -948,8 +948,8 @@ The financial model is constructed across three scenarios (Conservative, Base, U
 | Financial Line Item | Year 1 | Year 2 | Year 3 |
 | :--- | :--- | :--- | :--- |
 | **B2B Shortlist Revenue (280 TND/role)** | 11,760 TND | 58,800 TND | 151,200 TND |
-| **B2B Subscription Revenue (690 TND/mo)** | 16,560 TND | 79,350 TND | 207,000 TND |
-| **B2C Career Micro-Tools (15–29 TND)** | 2,850 TND | 14,400 TND | 42,000 TND |
+| **B2B Subscription Revenue (900 TND/yr)** | 16,560 TND | 79,350 TND | 207,000 TND |
+| **B2C Student Premium Subscriptions (19/149 TND)** | 2,850 TND | 14,400 TND | 42,000 TND |
 | **TOTAL GROSS REVENUE** | **31,170 TND** | **152,550 TND** | **400,200 TND** |
 | Cost of Goods Sold (Hosting, Vector APIs, Konnect) | (3,400 TND) | (14,200 TND) | (34,000 TND) |
 | **GROSS PROFIT** | **27,770 TND** | **138,350 TND** | **366,200 TND** |

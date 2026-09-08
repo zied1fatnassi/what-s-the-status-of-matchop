@@ -120,7 +120,10 @@ export function useStudentProfile() {
                 setEducationError(eduError.code === '42501' ? 'Permission denied. Please re-login.' : 'Failed to load education')
             }
 
-            const finalProfile = profileData || {
+            const finalProfile = profileData ? {
+                ...profileData,
+                original_docx_url: profileData?.original_docx_url || ''
+            } : {
                 id: userId,
                 display_name: user.user_metadata?.name || user.email?.split('@')[0] || 'Student',
                 headline: '',
@@ -129,7 +132,8 @@ export function useStudentProfile() {
                 skills: [],
                 avatar_url: '',
                 open_to_work: false,
-                cv_url: ''
+                cv_url: '',
+                original_docx_url: ''
             }
 
             // Parse location to extract governorate if present
@@ -146,14 +150,36 @@ export function useStudentProfile() {
                 }
             }
 
+            // Fetch profile verification data (verified certifications & proofs)
+            let certsFromProfile = []
+            let expProofs = {}
+            try {
+                const { data: profileRow } = await supabase
+                    .from('profiles')
+                    .select('verification_data')
+                    .eq('id', userId)
+                    .maybeSingle()
+
+                certsFromProfile = profileRow?.verification_data?.certifications || []
+                expProofs = profileRow?.verification_data?.experience_proofs || {}
+            } catch (vErr) {
+                console.warn('[Profile] Could not fetch verification_data:', vErr)
+            }
+
+            const enrichedExperiences = (expData || []).map(exp => {
+                const proof = expProofs[exp.id]
+                return proof ? { ...exp, ...proof } : exp
+            })
+
             setProfile({
                 ...finalProfile,
                 governorate, // Add extracted governorate to state
                 location: city // Keep only city in location field for UI
             })
-            setExperiences(expData || [])
+            setExperiences(enrichedExperiences)
             setEducation(eduData || [])
-            calculateCompletion(finalProfile, expData || [], eduData || [])
+            setCertifications(certsFromProfile)
+            calculateCompletion(finalProfile, enrichedExperiences, eduData || [], certsFromProfile)
 
         } catch (err) {
             console.error('[Profile] Fatal error:', err)
@@ -183,7 +209,7 @@ export function useStudentProfile() {
             const { governorate, location } = updates
 
             // WHITELIST: Only send columns that exist in the DB
-            const validCols = ['display_name', 'bio', 'skills', 'avatar_url', 'headline', 'open_to_work', 'cv_url']
+            const validCols = ['display_name', 'bio', 'skills', 'avatar_url', 'headline', 'open_to_work', 'cv_url', 'original_docx_url']
             const dbUpdates = {}
 
             // Only include location when it was explicitly provided in the updates
@@ -455,20 +481,107 @@ export function useStudentProfile() {
     }
 
     // ========================================================================
-    // CERTIFICATIONS (LOCAL)
+    // CERTIFICATIONS (SUPABASE & VERIFICATION INTEGRATION)
     // ========================================================================
-    const addCertification = (cert) => {
-        const newCert = { id: crypto.randomUUID(), ...cert }
+    const addCertification = async (cert) => {
+        const newCert = {
+            id: cert.id || crypto.randomUUID(),
+            created_at: new Date().toISOString(),
+            ...cert
+        }
         const updated = [newCert, ...certifications]
         setCertifications(updated)
+
+        if (user?.id) {
+            try {
+                const { data: current } = await supabase
+                    .from('profiles')
+                    .select('verification_data')
+                    .eq('id', user.id)
+                    .maybeSingle()
+
+                const currentData = current?.verification_data || {}
+                await supabase
+                    .from('profiles')
+                    .update({
+                        verification_data: {
+                            ...currentData,
+                            certifications: updated
+                        }
+                    })
+                    .eq('id', user.id)
+            } catch (err) {
+                console.error('[addCertification] Failed to sync to profile:', err)
+            }
+        }
+
         calculateCompletion(profile, experiences, education, updated)
         return { error: null, data: newCert }
     }
 
-    const removeCertification = (id) => {
+    const removeCertification = async (id) => {
         const updated = certifications.filter(c => c.id !== id)
         setCertifications(updated)
+
+        if (user?.id) {
+            try {
+                const { data: current } = await supabase
+                    .from('profiles')
+                    .select('verification_data')
+                    .eq('id', user.id)
+                    .maybeSingle()
+
+                const currentData = current?.verification_data || {}
+                await supabase
+                    .from('profiles')
+                    .update({
+                        verification_data: {
+                            ...currentData,
+                            certifications: updated
+                        }
+                    })
+                    .eq('id', user.id)
+            } catch (err) {
+                console.error('[removeCertification] Failed to sync to profile:', err)
+            }
+        }
+
         calculateCompletion(profile, experiences, education, updated)
+        return { error: null }
+    }
+
+    const attachExperienceProof = async (experienceId, proofData) => {
+        const updatedExperiences = experiences.map(exp => {
+            if (exp.id === experienceId) {
+                return { ...exp, ...proofData }
+            }
+            return exp
+        })
+        setExperiences(updatedExperiences)
+
+        if (user?.id) {
+            try {
+                const { data: current } = await supabase
+                    .from('profiles')
+                    .select('verification_data')
+                    .eq('id', user.id)
+                    .maybeSingle()
+
+                const currentData = current?.verification_data || {}
+                const proofs = { ...(currentData.experience_proofs || {}), [experienceId]: proofData }
+                await supabase
+                    .from('profiles')
+                    .update({
+                        verification_data: {
+                            ...currentData,
+                            experience_proofs: proofs
+                        }
+                    })
+                    .eq('id', user.id)
+            } catch (err) {
+                console.error('[attachExperienceProof] Error:', err)
+            }
+        }
         return { error: null }
     }
 
@@ -556,6 +669,7 @@ export function useStudentProfile() {
         removeEducation,
         addCertification,
         removeCertification,
+        attachExperienceProof,
         addProject,
         removeProject,
         addLanguage,

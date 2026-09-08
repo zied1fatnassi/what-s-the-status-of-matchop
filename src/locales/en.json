@@ -1619,35 +1619,43 @@
         "preferences": {
             "title": "Adjust preferences",
             "closeAria": "Close preferences",
-            "previewCopy": "Preview: preferences are saved on this device.",
+            "previewCopy": "Fine-tune discovery with real geographical distance and verified offer types.",
+            "referenceLocationLabel": "Your reference location",
+            "referenceLocationPlaceholder": "e.g. Tunis, Sousse, Ariana",
+            "referenceLocationHint": "Distances are calculated in real km from this base location.",
             "locationQueryLabel": "Preferred location",
             "locationQueryPlaceholder": "City, region, or keyword",
-            "radiusLabel": "Search radius",
+            "radiusLabel": "Distance radius",
+            "radiusDisabledRemote": "Distance radius is disabled for remote-only roles.",
             "radius": {
                 "any": "Any distance",
+                "km15": "Within 15 km",
                 "km25": "Within 25 km",
                 "km50": "Within 50 km",
                 "km100": "Within 100 km",
                 "km250": "Within 250 km"
             },
             "locationMode": {
-                "label": "Location mode",
-                "all": "All",
-                "remote": "Remote-first",
-                "onsite": "Onsite / hybrid"
+                "label": "Workplace mode",
+                "all": "All (Remote & On-site)",
+                "remote": "Remote only",
+                "onsite": "On-site only"
             },
             "opportunityType": {
                 "label": "Opportunity type",
-                "all": "All",
-                "internship": "Internship",
-                "fullTime": "Full-time",
+                "all": "All types",
+                "internship": "Internship / Stage / PFE",
+                "fullTime": "Full-time / CDI",
                 "partTime": "Part-time",
-                "contract": "Contract"
+                "contract": "Contract / Freelance"
             },
-            "categoryLabel": "Category",
+            "categoryLabel": "Industry & Sector",
+            "includeUnspecifiedLabel": "Include offers with unspecified company location",
+            "matchingCount": "{{count}} matching opportunity",
+            "matchingCountPlural": "{{count}} matching opportunities",
             "actions": {
                 "reset": "Reset",
-                "save": "Save"
+                "save": "Apply preferences"
             }
         }
     },

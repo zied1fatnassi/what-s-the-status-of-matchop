@@ -32,7 +32,10 @@ export function AICVPersonalizationModal({
     const [phase, setPhase] = useState('upload')
     const [loadingExisting, setLoadingExisting] = useState(true)
     const [existingDocxPath, setExistingDocxPath] = useState(null)
+    const [existingCvPath, setExistingCvPath] = useState(null)
+    const [detectedSource, setDetectedSource] = useState('saved_docx') // 'saved_docx' | 'profile_data'
     const [useExisting, setUseExisting] = useState(true)
+    const [showUploadZone, setShowUploadZone] = useState(false)
     const [selectedFile, setSelectedFile] = useState(null)
     const [dragActive, setDragActive] = useState(false)
     const [errorMessage, setErrorMessage] = useState('')
@@ -46,7 +49,7 @@ export function AICVPersonalizationModal({
 
     const fileInputRef = useRef(null)
 
-    // Check if student already has a master original DOCX
+    // Check student's registered CV (docx or other) and profile data
     useEffect(() => {
         if (!isOpen || !user?.id) {
             setPhase('upload')
@@ -56,6 +59,7 @@ export function AICVPersonalizationModal({
             setPersonalizedCvPath(null)
             setPreviewPdfUrl(null)
             setProgressStep(1)
+            setShowUploadZone(false)
             return
         }
 
@@ -64,21 +68,50 @@ export function AICVPersonalizationModal({
 
         supabase
             .from('students')
-            .select('original_docx_url')
+            .select('original_docx_url, cv_url')
             .eq('id', user.id)
             .maybeSingle()
-            .then(({ data, error }) => {
+            .then(({ data }) => {
                 if (!isMounted) return
-                if (!error && data?.original_docx_url) {
-                    setExistingDocxPath(data.original_docx_url)
+                const docxUrl = data?.original_docx_url || ''
+                const cvUrl = data?.cv_url || ''
+
+                if (docxUrl) {
+                    setDetectedSource('saved_docx')
+                    setExistingDocxPath(docxUrl)
+                    setExistingCvPath(docxUrl)
+                    setUseExisting(true)
+                } else if (cvUrl && cvUrl.toLowerCase().endsWith('.docx')) {
+                    setDetectedSource('saved_docx')
+                    setExistingDocxPath(cvUrl)
+                    setExistingCvPath(cvUrl)
+                    setUseExisting(true)
+                    // Update original_docx_url in background
+                    supabase
+                        .from('students')
+                        .update({ original_docx_url: cvUrl })
+                        .eq('id', user.id)
+                        .then(() => {})
+                        .catch(() => {})
+                } else if (cvUrl) {
+                    setDetectedSource('profile_data')
+                    setExistingDocxPath(null)
+                    setExistingCvPath(cvUrl)
                     setUseExisting(true)
                 } else {
+                    setDetectedSource('profile_data')
                     setExistingDocxPath(null)
-                    setUseExisting(false)
+                    setExistingCvPath(null)
+                    setUseExisting(true)
                 }
             })
             .catch(() => {
-                if (isMounted) setExistingDocxPath(null)
+                if (isMounted) {
+                    setDetectedSource('profile_data')
+                    setExistingDocxPath(null)
+                    setExistingCvPath(null)
+                    setUseExisting(true)
+                }
             })
             .finally(() => {
                 if (isMounted) setLoadingExisting(false)
@@ -119,6 +152,7 @@ export function AICVPersonalizationModal({
 
         setSelectedFile(file)
         setUseExisting(false)
+        setShowUploadZone(true)
         return true
     }
 
@@ -140,6 +174,14 @@ export function AICVPersonalizationModal({
         setDragActive(false)
     }
 
+    // Direct apply with existing CV without AI personalization step
+    const handleDirectApply = () => {
+        const directPath = existingCvPath || existingDocxPath
+        if (directPath) {
+            onConfirmSend?.(directPath)
+        }
+    }
+
     // Step 2 generation runner
     const runPersonalization = async () => {
         if (!user?.id || !offer?.id) return
@@ -150,35 +192,45 @@ export function AICVPersonalizationModal({
         try {
             let extractedText = ''
 
-            // 1. Read DOCX text
-            if (useExisting && existingDocxPath) {
-                const signedUrl = await getSignedCVUrl(existingDocxPath, 600)
-                if (!signedUrl) {
-                    throw new Error("Impossible d'accéder au CV original enregistré. Veuillez téléverser un nouveau fichier .docx.")
-                }
-                const response = await fetch(signedUrl)
-                if (!response.ok) throw new Error('Erreur de téléchargement du CV original.')
-                const arrayBuffer = await response.arrayBuffer()
-                const { value } = await mammoth.extractRawText({ arrayBuffer })
-                extractedText = value || ''
-            } else if (selectedFile) {
+            // 1. Read DOCX text or fallback to profile data
+            if (selectedFile) {
                 const arrayBuffer = await selectedFile.arrayBuffer()
                 const { value } = await mammoth.extractRawText({ arrayBuffer })
                 extractedText = value || ''
 
-                // Save DOCX to storage and update student record
+                // Save DOCX to storage and update student record with both original_docx_url and cv_url
                 try {
                     const uploadedPath = await uploadStudentDocx(user.id, selectedFile)
                     await supabase
                         .from('students')
-                        .update({ original_docx_url: uploadedPath })
+                        .update({
+                            original_docx_url: uploadedPath,
+                            cv_url: uploadedPath
+                        })
                         .eq('id', user.id)
                     setExistingDocxPath(uploadedPath)
+                    setExistingCvPath(uploadedPath)
                 } catch (uploadErr) {
                     console.warn('[AICVPersonalizationModal] DOCX upload non-critical error:', uploadErr)
                 }
+            } else if (existingDocxPath && detectedSource === 'saved_docx') {
+                try {
+                    const signedUrl = await getSignedCVUrl(existingDocxPath, 600)
+                    if (signedUrl) {
+                        const response = await fetch(signedUrl)
+                        if (response.ok) {
+                            const arrayBuffer = await response.arrayBuffer()
+                            const { value } = await mammoth.extractRawText({ arrayBuffer })
+                            extractedText = value || ''
+                        }
+                    }
+                } catch (readErr) {
+                    console.warn('[AICVPersonalizationModal] Could not extract text from existing docx, will fallback to profile data:', readErr)
+                    extractedText = ''
+                }
             } else {
-                throw new Error('Veuillez sélectionner un fichier CV .docx.')
+                // Profile data mode or PDF: do not run mammoth, pass empty string to let edge function use profile
+                extractedText = ''
             }
 
             // 2. Call AI Personalization endpoint
@@ -234,12 +286,13 @@ export function AICVPersonalizationModal({
                 console.warn('[AICVPersonalizationModal] generate-pdf invocation error:', pdfInvokeErr)
             }
 
-            // Fallback: If edge function wasn't available, use the candidate's existing DOCX / CV path
+            // Fallback: If edge function wasn't available, use candidate's existing CV / DOCX path
             if (!storagePath) {
-                storagePath = existingDocxPath || (selectedFile ? `${user.id}/original_cv.docx` : null) || `${user.id}/personalized/${offer.id}/cv.pdf`
-                if (existingDocxPath) {
+                storagePath = existingDocxPath || existingCvPath || (selectedFile ? `${user.id}/original_cv.docx` : null) || `${user.id}/personalized/${offer.id}/cv.pdf`
+                const pathToPreview = existingCvPath || existingDocxPath
+                if (pathToPreview) {
                     try {
-                        previewUrl = await getSignedCVUrl(existingDocxPath, 600)
+                        previewUrl = await getSignedCVUrl(pathToPreview, 600)
                     } catch (e) {
                         console.warn('[AICVPersonalizationModal] Could not obtain signed URL for preview:', e)
                     }
@@ -258,7 +311,7 @@ export function AICVPersonalizationModal({
     }
 
     const handleConfirm = async () => {
-        const finalPath = personalizedCvPath || existingDocxPath
+        const finalPath = personalizedCvPath || existingDocxPath || existingCvPath
         if (!finalPath) return
         setIsSubmitting(true)
         try {
@@ -341,97 +394,120 @@ export function AICVPersonalizationModal({
                             </div>
                         </div>
 
-                        {/* CV Source Selector */}
+                        {/* CV Source Ready Card */}
                         <div className="ai-cv-source-section">
-                            <label className="ai-cv-section-label">
-                                Source de votre CV (Format Word .docx requis)
-                            </label>
-
                             {loadingExisting ? (
                                 <div className="ai-cv-loading-placeholder">
                                     <Loader2 size={20} className="animate-spin" />
-                                    <span>Vérification de votre CV enregistré...</span>
+                                    <span>Vérification de votre profil et CV...</span>
                                 </div>
-                            ) : existingDocxPath ? (
-                                <div className="ai-cv-existing-choice">
-                                    <div
-                                        className={`ai-cv-choice-card ${useExisting ? 'active' : ''}`}
-                                        onClick={() => setUseExisting(true)}
-                                    >
-                                        <div className="ai-cv-choice-radio">
-                                            <div className={`radio-dot ${useExisting ? 'checked' : ''}`} />
+                            ) : (
+                                <>
+                                    <div className="ai-cv-ready-card">
+                                        <div className="ai-cv-ready-icon">
+                                            <Sparkles size={20} />
                                         </div>
-                                        <div className="ai-cv-choice-info">
-                                            <div className="ai-cv-file-badge">
-                                                <FileText size={16} />
-                                                <span>CV original détecté (.docx)</span>
+                                        <div className="ai-cv-ready-info">
+                                            <div className="ai-cv-ready-title-row">
+                                                <strong>
+                                                    {existingDocxPath || existingCvPath
+                                                        ? 'CV de votre profil prêt'
+                                                        : 'Profil MatchOp synchronisé'}
+                                                </strong>
+                                                {existingDocxPath ? (
+                                                    <span className="ai-cv-badge ai-cv-badge--docx">
+                                                        <FileText size={13} /> CV original détecté (.docx)
+                                                    </span>
+                                                ) : existingCvPath ? (
+                                                    <span className="ai-cv-badge ai-cv-badge--pdf">
+                                                        <FileText size={13} /> CV profil (.pdf)
+                                                    </span>
+                                                ) : (
+                                                    <span className="ai-cv-badge ai-cv-badge--profile">
+                                                        <CheckCircle2 size={13} /> Profil MatchOp
+                                                    </span>
+                                                )}
                                             </div>
-                                            <p>Réutiliser votre CV déjà enregistré sur MatchOp</p>
+                                            <p className="ai-cv-ready-subtitle">
+                                                L&apos;IA adaptera votre profil aux exigences de ce poste.
+                                            </p>
                                         </div>
                                     </div>
 
-                                    <div
-                                        className={`ai-cv-choice-card ${!useExisting ? 'active' : ''}`}
-                                        onClick={() => {
-                                            setUseExisting(false)
-                                            if (!selectedFile) fileInputRef.current?.click()
-                                        }}
-                                    >
-                                        <div className="ai-cv-choice-radio">
-                                            <div className={`radio-dot ${!useExisting ? 'checked' : ''}`} />
-                                        </div>
-                                        <div className="ai-cv-choice-info">
-                                            <div className="ai-cv-file-badge">
-                                                <Upload size={16} />
-                                                <span>
-                                                    {selectedFile ? selectedFile.name : 'Téléverser un nouveau CV (.docx)'}
-                                                </span>
+                                    {/* Selected File Banner */}
+                                    {selectedFile && (
+                                        <div className="ai-cv-selected-file-banner">
+                                            <div className="flex items-center gap-2">
+                                                <CheckCircle2 size={16} className="text-success" />
+                                                <span>Fichier Word de remplacement : <strong>{selectedFile.name}</strong></span>
                                             </div>
-                                            <p>Remplacer pour cette offre avec un nouveau fichier Word</p>
+                                            <button
+                                                type="button"
+                                                className="ai-cv-clear-file-btn"
+                                                onClick={() => {
+                                                    setSelectedFile(null)
+                                                    setUseExisting(true)
+                                                    if (fileInputRef.current) fileInputRef.current.value = ''
+                                                }}
+                                                title="Annuler ce fichier"
+                                            >
+                                                <X size={14} />
+                                            </button>
                                         </div>
-                                    </div>
-                                </div>
-                            ) : null}
+                                    )}
 
-                            {(!existingDocxPath || !useExisting) && (
-                                <div
-                                    className={`ai-cv-dropzone ${dragActive ? 'drag-active' : ''} ${selectedFile ? 'has-file' : ''}`}
-                                    onDragOver={handleDragOver}
-                                    onDragLeave={handleDragLeave}
-                                    onDrop={handleDrop}
-                                    onClick={() => fileInputRef.current?.click()}
-                                >
-                                    <input
-                                        ref={fileInputRef}
-                                        type="file"
-                                        accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                                        className="ai-cv-hidden-input"
-                                        onChange={(e) => {
-                                            if (e.target.files && e.target.files[0]) {
-                                                handleFileValidation(e.target.files[0])
-                                            }
-                                        }}
-                                    />
-                                    <div className="ai-cv-dropzone-inner">
-                                        {selectedFile ? (
-                                            <>
-                                                <CheckCircle2 size={36} className="text-success" />
-                                                <span className="dropzone-filename">{selectedFile.name}</span>
-                                                <span className="dropzone-sub">
-                                                    {(selectedFile.size / (1024 * 1024)).toFixed(2)} Mo • Cliquez pour changer
-                                                </span>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <Upload size={36} className="dropzone-icon" />
-                                                <span className="dropzone-primary">
-                                                    Glissez votre CV au format <strong>.docx</strong> ici
-                                                </span>
-                                                <span className="dropzone-sub">ou cliquez pour parcourir vos fichiers</span>
-                                            </>
-                                        )}
+                                    {/* Discreet Toggle */}
+                                    <div className="ai-cv-replace-toggle-wrap">
+                                        <button
+                                            type="button"
+                                            className="ai-cv-toggle-upload-btn"
+                                            onClick={() => setShowUploadZone((prev) => !prev)}
+                                        >
+                                            {showUploadZone ? '✕ Masquer le téléversement' : 'Utiliser un autre fichier Word...'}
+                                        </button>
                                     </div>
-                                </div>
+
+                                    {(showUploadZone || selectedFile) && (
+                                        <div
+                                            className={`ai-cv-dropzone ${dragActive ? 'drag-active' : ''} ${selectedFile ? 'has-file' : ''}`}
+                                            onDragOver={handleDragOver}
+                                            onDragLeave={handleDragLeave}
+                                            onDrop={handleDrop}
+                                            onClick={() => fileInputRef.current?.click()}
+                                        >
+                                            <input
+                                                ref={fileInputRef}
+                                                type="file"
+                                                accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                                                className="ai-cv-hidden-input"
+                                                onChange={(e) => {
+                                                    if (e.target.files && e.target.files[0]) {
+                                                        handleFileValidation(e.target.files[0])
+                                                    }
+                                                }}
+                                            />
+                                            <div className="ai-cv-dropzone-inner">
+                                                {selectedFile ? (
+                                                    <>
+                                                        <CheckCircle2 size={36} className="text-success" />
+                                                        <span className="dropzone-filename">{selectedFile.name}</span>
+                                                        <span className="dropzone-sub">
+                                                            {(selectedFile.size / (1024 * 1024)).toFixed(2)} Mo • Cliquez pour changer
+                                                        </span>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <Upload size={36} className="dropzone-icon" />
+                                                        <span className="dropzone-primary">
+                                                            Glissez un fichier CV au format <strong>.docx</strong> ici
+                                                        </span>
+                                                        <span className="dropzone-sub">ou cliquez pour parcourir vos fichiers</span>
+                                                    </>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
+                                </>
                             )}
                         </div>
 
@@ -444,11 +520,22 @@ export function AICVPersonalizationModal({
                             >
                                 Annuler
                             </button>
+                            {(existingCvPath || existingDocxPath) && (
+                                <button
+                                    type="button"
+                                    className="btn btn-ghost btn-direct-apply"
+                                    onClick={handleDirectApply}
+                                    disabled={isSubmitting}
+                                >
+                                    <FileText size={16} />
+                                    <span>Postuler avec mon CV actuel</span>
+                                </button>
+                            )}
                             <button
                                 type="button"
                                 className="btn btn-primary btn-generate"
                                 onClick={runPersonalization}
-                                disabled={!useExisting && !selectedFile}
+                                disabled={isSubmitting || (!useExisting && !selectedFile)}
                             >
                                 <Sparkles size={16} />
                                 <span>Générer mon CV optimisé</span>
@@ -474,7 +561,11 @@ export function AICVPersonalizationModal({
                                 <div className="step-badge">
                                     {progressStep > 1 ? <CheckCircle2 size={16} /> : 1}
                                 </div>
-                                <span>Lecture et extraction du CV Word (.docx)...</span>
+                                <span>
+                                    {selectedFile || (existingDocxPath && detectedSource === 'saved_docx')
+                                        ? 'Lecture et extraction du CV Word (.docx)...'
+                                        : 'Synchronisation et analyse de votre profil MatchOp...'}
+                                </span>
                             </div>
 
                             <div className={`ai-cv-step-item ${progressStep >= 2 ? 'active' : ''} ${progressStep > 2 ? 'completed' : ''}`}>

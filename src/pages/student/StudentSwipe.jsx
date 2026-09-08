@@ -12,6 +12,7 @@ import PreferencesButton from '../../components/offers/PreferencesButton'
 import PreferencesDrawerOrModal from '../../components/offers/PreferencesDrawerOrModal'
 import AICVPersonalizationModal from '../../components/discovery/AICVPersonalizationModal'
 import Logo from '../../components/Logo'
+import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../context/AuthContext'
 import { useApplications } from '../../context/ApplicationContext'
 import { useJobOffers } from '../../hooks/useJobOffers'
@@ -19,6 +20,12 @@ import { useMatchListener } from '../../hooks/useMatchListener'
 import { usePremiumGate } from '../../hooks/usePremiumGate'
 import { isLimitReachedCode } from '../../lib/swipeLimit'
 import { readStorageJSON, writeStorageJSON } from '../../lib/localStorageState'
+import { evaluateOpportunityDistance } from '../../lib/geoDistance'
+import {
+    matchesOpportunityType,
+    matchesOpportunityCategory,
+    resolveOpportunityType
+} from '../../lib/opportunityTaxonomy'
 import './StudentSwipe.css'
 
 const DISCOVERY_SCOPE_STORAGE_KEY = 'matchop_discovery_scope'
@@ -29,13 +36,14 @@ const DEFAULT_SWIPE_PREFERENCES = {
     locationMode: 'all',
     opportunityType: 'all',
     category: 'all',
-    locationQuery: '',
+    referenceLocation: '',
     radiusKm: 'any',
+    includeUnspecifiedLocation: true
 }
 
 const LOCATION_MODE_VALUES = new Set(['all', 'remote', 'onsite'])
 const OPPORTUNITY_TYPE_VALUES = new Set(['all', 'internship', 'full-time', 'part-time', 'contract'])
-const RADIUS_VALUES = new Set(['any', '25', '50', '100', '250'])
+const RADIUS_VALUES = new Set(['any', '15', '25', '50', '100', '250'])
 
 function normalizeSwipePreferences(value) {
     if (!value || typeof value !== 'object') return DEFAULT_SWIPE_PREFERENCES
@@ -54,42 +62,76 @@ function normalizeSwipePreferences(value) {
         locationMode,
         opportunityType,
         category: `${value.category || 'all'}` || 'all',
-        locationQuery: `${value.locationQuery || ''}`,
+        referenceLocation: `${value.referenceLocation || value.locationQuery || ''}`.trim(),
         radiusKm,
+        includeUnspecifiedLocation: value.includeUnspecifiedLocation !== false
     }
 }
 
-function applySwipePreferences(rawOffers, preferences) {
+function applySwipePreferences(rawOffers, preferences, defaultOrigin = 'Tunis') {
     const offers = Array.isArray(rawOffers) ? rawOffers : []
     const locationMode = preferences?.locationMode || 'all'
     const opportunityType = preferences?.opportunityType || 'all'
     const category = preferences?.category || 'all'
-    const locationQuery = `${preferences?.locationQuery || ''}`.trim().toLowerCase()
+    const referenceLocation = (preferences?.referenceLocation || defaultOrigin || 'Tunis').trim()
     const radiusKm = `${preferences?.radiusKm || 'any'}`
+    const includeUnspecified = preferences?.includeUnspecifiedLocation !== false
+    const maxRadius = radiusKm !== 'any' ? Number(radiusKm) : null
 
-    return offers.filter((offer) => {
-        const locationLabel = `${offer?.location || ''}`.toLowerCase()
-        const offerType = `${offer?.type || ''}`.toLowerCase()
-        const offerCategory = `${offer?.industry || offer?.department || 'general'}`.toLowerCase()
-
-        if (locationMode === 'remote' && !locationLabel.includes('remote')) return false
-        if (locationMode === 'onsite' && locationLabel.includes('remote')) return false
-
-        if (opportunityType !== 'all' && !offerType.includes(opportunityType)) return false
-        if (category !== 'all' && offerCategory !== category.toLowerCase()) return false
-
-        if (locationQuery) {
-            const searchable = `${offer?.location || ''} ${offer?.company || ''} ${offer?.description || ''}`.toLowerCase()
-            if (radiusKm === '25' || radiusKm === '50') {
-                if (!searchable.includes(locationQuery)) return false
-            } else {
-                const tokens = locationQuery.split(/\s+/).filter(Boolean)
-                if (tokens.length > 0 && !tokens.some((token) => searchable.includes(token))) return false
+    return offers
+        .map((offer) => {
+            const evalDist = evaluateOpportunityDistance(
+                referenceLocation,
+                offer?.location,
+                offer?.companyLocation || offer?.companies?.location
+            )
+            const resolvedType = resolveOpportunityType(offer)
+            return {
+                ...offer,
+                distanceEvaluated: evalDist,
+                resolvedType
             }
-        }
+        })
+        .filter((offer) => {
+            // 1. Opportunity Type Filter
+            if (!matchesOpportunityType(offer, opportunityType)) {
+                return false
+            }
 
-        return true
-    })
+            // 2. Industry / Category Filter
+            if (!matchesOpportunityCategory(offer, category)) {
+                return false
+            }
+
+            const evalDist = offer.distanceEvaluated
+
+            // 3. Workplace mode
+            if (locationMode === 'remote' && !evalDist.isRemote) {
+                return false
+            }
+            if (locationMode === 'onsite' && evalDist.isRemote) {
+                return false
+            }
+
+            // 4. Unspecified location handling
+            if (evalDist.isUnspecified) {
+                if (locationMode === 'onsite' && !includeUnspecified) {
+                    return false
+                }
+                if (maxRadius !== null && !includeUnspecified) {
+                    return false
+                }
+            }
+
+            // 5. Radius constraint (for physical on-site/hybrid positions with known distance)
+            if (maxRadius !== null && !evalDist.isRemote && evalDist.distanceKm !== null) {
+                if (evalDist.distanceKm > maxRadius) {
+                    return false
+                }
+            }
+
+            return true
+        })
 }
 
 function StudentSwipe() {
@@ -111,7 +153,7 @@ function StudentSwipe() {
     } = useJobOffers()
     const { openPremiumUpsell } = useApplications()
     const { newMatch, clearMatch } = useMatchListener()
-    const { user: _user, isLoading: authLoading } = useAuth()
+    const { user, isLoading: authLoading } = useAuth()
     const { isPremium, requirePremium } = usePremiumGate({
         source: 'student_swipe',
         premiumEnabled: isPremiumEnabled
@@ -129,12 +171,31 @@ function StudentSwipe() {
     const [toastVariant, setToastVariant] = useState('application')
     const [showPreferencesModal, setShowPreferencesModal] = useState(false)
     const [personalizationOffer, setPersonalizationOffer] = useState(null)
+    const [studentLocation, setStudentLocation] = useState('')
     const [swipePreferences, setSwipePreferences] = useState(() => normalizeSwipePreferences(
         readStorageJSON(STUDENT_SWIPE_PREFERENCES_KEY, DEFAULT_SWIPE_PREFERENCES)
     ))
     const { t } = useTranslation(undefined, { useSuspense: false })
     const preloadedAssetUrlsRef = useRef(new Set())
     const modeInitializedRef = useRef(false)
+
+    // Load student profile location to use as default reference location for distance
+    useEffect(() => {
+        if (!user?.id) return
+        let isMounted = true
+        supabase
+            .from('students')
+            .select('location')
+            .eq('id', user.id)
+            .maybeSingle()
+            .then(({ data }) => {
+                if (isMounted && data?.location) {
+                    setStudentLocation(data.location)
+                }
+            })
+            .catch(() => {})
+        return () => { isMounted = false }
+    }, [user?.id])
 
     const canUsePremiumMode = isPremiumEnabled && (effectivePlan === 'premium' || isPremium)
     const showDiscoveryControls = isSwipeStackV2Enabled && isPremiumEnabled
@@ -146,6 +207,15 @@ function StudentSwipe() {
     const hasMoreOffers = currentIndex < offers.length
     const isLocalEmptyState = !hasMoreOffers && activeScope === 'local'
 
+    const activeFilterCount = useMemo(() => {
+        let count = 0
+        if (swipePreferences.locationMode !== 'all') count++
+        if (swipePreferences.opportunityType !== 'all') count++
+        if (swipePreferences.category !== 'all') count++
+        if (swipePreferences.radiusKm !== 'any') count++
+        return count
+    }, [swipePreferences])
+
     const categoryOptions = useMemo(() => {
         const categories = new Set(['all'])
         ;(realOffers || []).forEach((offer) => {
@@ -156,10 +226,10 @@ function StudentSwipe() {
     }, [realOffers])
 
     useEffect(() => {
-        const filteredOffers = applySwipePreferences(realOffers, swipePreferences)
+        const filteredOffers = applySwipePreferences(realOffers, swipePreferences, studentLocation)
         setOffers(filteredOffers)
         setCurrentIndex(0)
-    }, [realOffers, swipePreferences])
+    }, [realOffers, swipePreferences, studentLocation])
 
     useEffect(() => {
         writeStorageJSON(STUDENT_SWIPE_PREFERENCES_KEY, swipePreferences)
@@ -212,30 +282,48 @@ function StudentSwipe() {
     }
 
     const updateSwipePreference = (key, value) => {
-        const actionName = key === 'locationQuery'
-            ? 'change_preference_location'
-            : key === 'radiusKm'
-                ? 'change_preference_radius'
-                : 'change_preference_filter'
-
-        requirePremium(actionName, () => {
-            setSwipePreferences((prev) => ({
-                ...prev,
-                [key]: value
-            }))
-        }, {
-            reason: 'premium_discovery_controls',
-            isPremiumOverride: canUsePremiumMode
+        setSwipePreferences((prev) => {
+            const updated = { ...prev, [key]: value }
+            writeStorageJSON(STUDENT_SWIPE_PREFERENCES_KEY, updated)
+            return updated
         })
     }
 
     const resetSwipePreferences = () => {
-        requirePremium('change_preference_filter', () => {
-            setSwipePreferences(DEFAULT_SWIPE_PREFERENCES)
-        }, {
-            reason: 'premium_discovery_controls',
-            isPremiumOverride: canUsePremiumMode
-        })
+        const resetValues = {
+            ...DEFAULT_SWIPE_PREFERENCES,
+            referenceLocation: studentLocation || 'Tunis'
+        }
+        setSwipePreferences(resetValues)
+        writeStorageJSON(STUDENT_SWIPE_PREFERENCES_KEY, resetValues)
+    }
+
+    const handleSavePreferences = async (newPreferences) => {
+        const normalized = normalizeSwipePreferences(newPreferences)
+        setSwipePreferences(normalized)
+        writeStorageJSON(STUDENT_SWIPE_PREFERENCES_KEY, normalized)
+
+        // Sync to profiles.preferences in Supabase if logged in
+        if (user?.id) {
+            try {
+                await supabase
+                    .from('profiles')
+                    .update({
+                        preferences: {
+                            ...(user.preferences || {}),
+                            swipe_preferences: normalized,
+                            remoteOnly: normalized.locationMode === 'remote',
+                            opportunityType: normalized.opportunityType,
+                            category: normalized.category,
+                            referenceLocation: normalized.referenceLocation,
+                            radiusKm: normalized.radiusKm
+                        }
+                    })
+                    .eq('id', user.id)
+            } catch (err) {
+                console.warn('[StudentSwipe] Could not sync preferences to profile:', err)
+            }
+        }
     }
 
     useEffect(() => {
@@ -387,7 +475,21 @@ function StudentSwipe() {
         setCurrentIndex((prev) => prev + 1)
 
         try {
-            const swipeResult = await swipe(targetOffer, 'right', { personalizedCvUrl })
+            let finalCvUrl = personalizedCvUrl || null
+            if (!finalCvUrl && user?.id) {
+                try {
+                    const { data: studentData } = await supabase
+                        .from('students')
+                        .select('cv_url, original_docx_url')
+                        .eq('id', user.id)
+                        .maybeSingle()
+                    finalCvUrl = studentData?.cv_url || studentData?.original_docx_url || null
+                } catch (fetchCvErr) {
+                    console.warn('[StudentSwipe] Could not retrieve fallback CV URL:', fetchCvErr)
+                }
+            }
+
+            const swipeResult = await swipe(targetOffer, 'right', { personalizedCvUrl: finalCvUrl })
             if (isLimitReachedCode(swipeResult?.code)) {
                 openPremiumUpsell('daily_limit', {
                     used: swipeResult?.usage?.used ?? dailySwipeUsage?.used ?? null,
@@ -481,6 +583,7 @@ function StudentSwipe() {
                         <PreferencesButton
                             onClick={handleOpenPreferences}
                             disabled={loading}
+                            activeCount={activeFilterCount}
                         />
                     </div>
                 </div>
@@ -575,11 +678,13 @@ function StudentSwipe() {
             <PreferencesDrawerOrModal
                 isOpen={showPreferencesModal}
                 preferences={swipePreferences}
+                studentLocation={studentLocation}
                 categoryOptions={categoryOptions}
+                matchCount={offers.length}
                 onChange={updateSwipePreference}
                 onReset={resetSwipePreferences}
                 onClose={() => setShowPreferencesModal(false)}
-                onSave={() => setShowPreferencesModal(false)}
+                onSave={handleSavePreferences}
             />
 
             {showToast && (

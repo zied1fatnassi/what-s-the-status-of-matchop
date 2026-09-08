@@ -59,8 +59,9 @@ function VerticalOpportunityItem({
 
     const handleApplyClick = (e) => {
         e.stopPropagation()
-        if (isExternal && offer?.externalUrl) {
-            window.open(offer.externalUrl, '_blank', 'noopener,noreferrer')
+        if (isExternal) {
+            const targetUrl = offer?.externalUrl || `https://www.google.com/search?q=${encodeURIComponent(`${offer.company || ''} ${offer.title || ''} jobs`)}`
+            window.open(targetUrl, '_blank', 'noopener,noreferrer')
         }
         onApply?.(offer)
     }
@@ -186,7 +187,9 @@ function VerticalOpportunityItem({
                                 />
                             </div>
                             <span className="opportunity-type-pill">
-                                {offer.type || tr('Full-time', 'Temps plein')}
+                                {offer.resolvedType
+                                    ? tr(offer.resolvedType.labelEn, offer.resolvedType.labelFr)
+                                    : (offer.type || tr('Full-time', 'Temps plein'))}
                             </span>
                         </div>
 
@@ -208,9 +211,18 @@ function VerticalOpportunityItem({
 
                     {/* Quick Metadata Chips */}
                     <div className="opportunity-meta-chips">
-                        <div className="meta-chip">
+                        <div
+                            className="meta-chip"
+                            title={offer.distanceEvaluated?.isUnspecified ? tr('Company domiciliation not specified', 'Domiciliation de l’entreprise non renseignée') : undefined}
+                        >
                             <MapPin size={15} />
-                            <span>{offer.location || tr('Remote', 'À distance')}</span>
+                            <span>
+                                {offer.distanceEvaluated?.isRemote
+                                    ? tr('Remote · Anywhere', 'Télétravail')
+                                    : offer.distanceEvaluated?.distanceFormatted
+                                        ? `${offer.location || offer.distanceEvaluated?.locationDisplay} (${offer.distanceEvaluated.distanceFormatted})`
+                                        : (offer.location || tr('Location not specified', 'Localisation non renseignée'))}
+                            </span>
                         </div>
 
                         {offer.department && (

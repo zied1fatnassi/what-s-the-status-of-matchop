@@ -67,6 +67,7 @@ type NormalizedOpportunity = {
   isGlobal: boolean
   createdAt: string | null
   visaSponsorship: boolean | null
+  companyLocation?: string | null
 }
 
 type RankedOpportunity = NormalizedOpportunity & {
@@ -352,7 +353,7 @@ async function fetchOffers(
   fetchWindow: number,
 ) {
   const baseSelect =
-    'id, company_id, title, description, req_skills, location, salary_range, status, created_at, is_global, companies!company_id(company_name, logo_url, industry)'
+    'id, company_id, title, description, req_skills, location, salary_range, status, created_at, is_global, companies!company_id(company_name, logo_url, industry, location)'
 
   let query = supabase
     .from('offers')
@@ -376,7 +377,7 @@ async function fetchOffers(
   if (error && error.message?.toLowerCase().includes('is_global')) {
     let fallbackQuery = supabase
       .from('offers')
-      .select('id, company_id, title, description, req_skills, location, salary_range, status, created_at, companies!company_id(company_name, logo_url, industry)')
+      .select('id, company_id, title, description, req_skills, location, salary_range, status, created_at, companies!company_id(company_name, logo_url, industry, location)')
       .eq('status', 'active')
       .order('created_at', { ascending: false })
       .limit(fetchWindow)
@@ -643,6 +644,20 @@ serve(async (req) => {
       if (hasExpired(offer)) continue
 
       const company = (offer.companies as Record<string, unknown> | null) ?? {}
+      let offerType = String(offer.type ?? '').trim()
+      if (!offerType) {
+        const titleLower = String(offer.title ?? '').toLowerCase()
+        if (titleLower.includes('intern') || titleLower.includes('stage') || titleLower.includes('pfe') || titleLower.includes('alternan')) {
+          offerType = 'Internship'
+        } else if (titleLower.includes('part-time') || titleLower.includes('temps partiel')) {
+          offerType = 'Part-time'
+        } else if (titleLower.includes('contract') || titleLower.includes('freelance') || titleLower.includes('cdd')) {
+          offerType = 'Contract'
+        } else {
+          offerType = 'Full-time'
+        }
+      }
+
       const normalized: NormalizedOpportunity = {
         id: offerId,
         title: String(offer.title ?? ''),
@@ -653,13 +668,14 @@ serve(async (req) => {
         location: String(offer.location ?? ''),
         salary: String(offer.salary_range ?? 'Competitive'),
         skills: toStringArray(offer.req_skills),
-        type: 'Full-time',
+        type: offerType,
         isExternal: false,
         externalUrl: null,
         sourceWebsite: null,
         isGlobal: Boolean(offer.is_global),
         createdAt: offer.created_at ? String(offer.created_at) : null,
         visaSponsorship: typeof offer.visa_sponsorship === 'boolean' ? offer.visa_sponsorship : null,
+        companyLocation: company.location ? String(company.location) : null,
       }
 
       if (mode === 'standard' && !passesStandardLocalConstraints(normalized, localTokens)) {
@@ -681,6 +697,20 @@ serve(async (req) => {
       if (!baseId) continue
       if (hasExpired(job)) continue
 
+      let jobType = String(job.job_type ?? '').trim()
+      if (!jobType) {
+        const titleLower = String(job.title ?? '').toLowerCase()
+        if (titleLower.includes('intern') || titleLower.includes('stage') || titleLower.includes('pfe') || titleLower.includes('alternan')) {
+          jobType = 'Internship'
+        } else if (titleLower.includes('part-time') || titleLower.includes('temps partiel')) {
+          jobType = 'Part-time'
+        } else if (titleLower.includes('contract') || titleLower.includes('freelance') || titleLower.includes('cdd')) {
+          jobType = 'Contract'
+        } else {
+          jobType = 'Full-time'
+        }
+      }
+
       const normalized: NormalizedOpportunity = {
         id: `ext-${baseId}`,
         title: String(job.title ?? ''),
@@ -691,7 +721,7 @@ serve(async (req) => {
         location: String(job.location ?? ''),
         salary: String(job.salary_range ?? 'Competitive'),
         skills: toStringArray(job.tags),
-        type: String(job.job_type ?? 'Full-time'),
+        type: jobType,
         isExternal: true,
         externalUrl: job.original_url ? String(job.original_url) : null,
         sourceWebsite: job.source_website ? String(job.source_website) : null,

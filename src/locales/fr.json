@@ -1553,35 +1553,43 @@
         "preferences": {
             "title": "Ajuster les preferences",
             "closeAria": "Fermer les preferences",
-            "previewCopy": "Apercu : les preferences sont enregistrees sur cet appareil.",
+            "previewCopy": "Affinez votre decouverte avec de vraies distances kilometriques et des types de contrat reels.",
+            "referenceLocationLabel": "Votre localisation de reference",
+            "referenceLocationPlaceholder": "ex. Tunis, Sousse, Ariana",
+            "referenceLocationHint": "Les distances sont calculees en kilometres reels a partir de cette ville.",
             "locationQueryLabel": "Localisation preferee",
             "locationQueryPlaceholder": "Ville, region ou mot-cle",
-            "radiusLabel": "Rayon de recherche",
+            "radiusLabel": "Rayon de distance",
+            "radiusDisabledRemote": "Le rayon de distance est desactive pour le teletravail uniquement.",
             "radius": {
                 "any": "Toute distance",
+                "km15": "Dans 15 km",
                 "km25": "Dans 25 km",
                 "km50": "Dans 50 km",
                 "km100": "Dans 100 km",
                 "km250": "Dans 250 km"
             },
             "locationMode": {
-                "label": "Mode de localisation",
-                "all": "Toutes",
-                "remote": "Priorite remote",
-                "onsite": "Sur site / hybride"
+                "label": "Mode de travail",
+                "all": "Tous (Teletravail & Sur site)",
+                "remote": "Teletravail uniquement",
+                "onsite": "Sur site uniquement"
             },
             "opportunityType": {
                 "label": "Type d'opportunite",
-                "all": "Tous",
-                "internship": "Stage",
-                "fullTime": "Temps plein",
+                "all": "Tous les types",
+                "internship": "Stage / PFE",
+                "fullTime": "CDI / Temps plein",
                 "partTime": "Temps partiel",
-                "contract": "Contrat"
+                "contract": "Contrat / Freelance"
             },
-            "categoryLabel": "Categorie",
+            "categoryLabel": "Secteur & Industrie",
+            "includeUnspecifiedLabel": "Inclure les offres sans domiciliation renseignee",
+            "matchingCount": "{{count}} opportunite correspondante",
+            "matchingCountPlural": "{{count}} opportunites correspondantes",
             "actions": {
                 "reset": "Reinitialiser",
-                "save": "Enregistrer"
+                "save": "Appliquer les preferences"
             }
         }
     },

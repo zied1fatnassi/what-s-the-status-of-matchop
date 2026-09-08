@@ -2,7 +2,6 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import {
     INBOUND_REFERRAL_CODE_KEY,
     MY_REFERRAL_CODE_KEY,
-    buildReferralCodeFromUserId,
     buildReferralInviteLink,
     isValidReferralCode,
     normalizeReferralCode,

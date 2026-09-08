@@ -12,6 +12,7 @@ const mockOffer = {
 }
 
 const supabaseSelectMock = vi.fn()
+const supabaseUpdateMock = vi.fn()
 const supabaseFunctionsInvokeMock = vi.fn()
 
 vi.mock('../../context/AuthContext', () => ({
@@ -24,7 +25,8 @@ vi.mock('../../context/AuthContext', () => ({
 vi.mock('../../lib/supabase', () => ({
     supabase: {
         from: () => ({
-            select: (...args) => supabaseSelectMock(...args)
+            select: (...args) => supabaseSelectMock(...args),
+            update: (...args) => supabaseUpdateMock(...args)
         }),
         functions: {
             invoke: (...args) => supabaseFunctionsInvokeMock(...args)
@@ -51,10 +53,13 @@ describe('AICVPersonalizationModal', () => {
         supabaseSelectMock.mockReturnValue({
             eq: () => ({
                 maybeSingle: vi.fn().mockResolvedValue({
-                    data: { original_docx_url: 'student-123/original_cv.docx' },
+                    data: { original_docx_url: 'student-123/original_cv.docx', cv_url: 'student-123/original_cv.docx' },
                     error: null
                 })
             })
+        })
+        supabaseUpdateMock.mockReturnValue({
+            eq: vi.fn().mockReturnValue(Promise.resolve({ error: null }))
         })
     })
 
@@ -181,5 +186,207 @@ describe('AICVPersonalizationModal', () => {
         fireEvent.click(cancelBtn)
 
         expect(handleClose).toHaveBeenCalledTimes(1)
+    })
+
+    it('activates generate button immediately without extra upload when original_docx_url is present', async () => {
+        supabaseSelectMock.mockReturnValue({
+            eq: () => ({
+                maybeSingle: vi.fn().mockResolvedValue({
+                    data: { original_docx_url: 'student-123/master_cv.docx', cv_url: 'student-123/master_cv.docx' },
+                    error: null
+                })
+            })
+        })
+
+        render(
+            <AICVPersonalizationModal
+                isOpen={true}
+                offer={mockOffer}
+                onClose={vi.fn()}
+                onConfirmSend={vi.fn()}
+            />
+        )
+
+        await screen.findByText('CV de votre profil prêt')
+        const generateBtn = screen.getByRole('button', { name: /Générer mon CV optimisé/i })
+        expect(generateBtn).not.toBeDisabled()
+    })
+
+    it('allows optimizing from MatchOp profile without requiring docx when only cv_url (.pdf) is present', async () => {
+        supabaseSelectMock.mockReturnValue({
+            eq: () => ({
+                maybeSingle: vi.fn().mockResolvedValue({
+                    data: { original_docx_url: null, cv_url: 'student-123/profile.pdf' },
+                    error: null
+                })
+            })
+        })
+
+        supabaseFunctionsInvokeMock.mockImplementation((funcName) => {
+            if (funcName === 'personalize-cv') {
+                return Promise.resolve({
+                    data: {
+                        success: true,
+                        tailored_cv: {
+                            headline: 'Profil Synchronisé MatchOp',
+                            summary: 'Optimisé à partir du profil',
+                            highlighted_skills: ['React'],
+                            experiences: [],
+                            match_analysis: ['Adapté à partir du profil']
+                        }
+                    },
+                    error: null
+                })
+            }
+            if (funcName === 'generate-pdf') {
+                return Promise.resolve({
+                    data: {
+                        success: true,
+                        storage_path: 'personalized/student-123/offer-456/cv.pdf',
+                        signed_url: 'https://example.com/personalized-cv.pdf'
+                    },
+                    error: null
+                })
+            }
+            return Promise.resolve({ data: {}, error: null })
+        })
+
+        render(
+            <AICVPersonalizationModal
+                isOpen={true}
+                offer={mockOffer}
+                onClose={vi.fn()}
+                onConfirmSend={vi.fn()}
+            />
+        )
+
+        await screen.findByText('CV de votre profil prêt')
+        expect(screen.getByText(/CV profil \(\.pdf\)/i)).toBeInTheDocument()
+
+        const generateBtn = screen.getByRole('button', { name: /Générer mon CV optimisé/i })
+        expect(generateBtn).not.toBeDisabled()
+
+        fireEvent.click(generateBtn)
+
+        await screen.findByText('Profil Synchronisé MatchOp')
+        expect(supabaseFunctionsInvokeMock).toHaveBeenCalledWith('personalize-cv', {
+            body: {
+                offer_id: 'offer-456',
+                cv_text: '',
+                student_id: 'student-123'
+            }
+        })
+    })
+
+    it('triggers onConfirmSend directly with existing CV path when clicking "Postuler avec mon CV actuel"', async () => {
+        supabaseSelectMock.mockReturnValue({
+            eq: () => ({
+                maybeSingle: vi.fn().mockResolvedValue({
+                    data: { original_docx_url: null, cv_url: 'student-123/existing_cv.pdf' },
+                    error: null
+                })
+            })
+        })
+
+        const handleConfirmSend = vi.fn()
+
+        render(
+            <AICVPersonalizationModal
+                isOpen={true}
+                offer={mockOffer}
+                onClose={vi.fn()}
+                onConfirmSend={handleConfirmSend}
+            />
+        )
+
+        await screen.findByText('CV de votre profil prêt')
+        const directApplyBtn = screen.getByRole('button', { name: /Postuler avec mon CV actuel/i })
+        expect(directApplyBtn).toBeInTheDocument()
+
+        fireEvent.click(directApplyBtn)
+
+        expect(handleConfirmSend).toHaveBeenCalledTimes(1)
+        expect(handleConfirmSend).toHaveBeenCalledWith('student-123/existing_cv.pdf')
+        expect(supabaseFunctionsInvokeMock).not.toHaveBeenCalledWith('personalize-cv', expect.anything())
+    })
+
+    it('updates students.original_docx_url and cv_url in database after uploading a new docx', async () => {
+        supabaseSelectMock.mockReturnValue({
+            eq: () => ({
+                maybeSingle: vi.fn().mockResolvedValue({
+                    data: { original_docx_url: null, cv_url: null },
+                    error: null
+                })
+            })
+        })
+
+        const updateEqMock = vi.fn().mockResolvedValue({ error: null })
+        supabaseUpdateMock.mockReturnValue({ eq: updateEqMock })
+
+        supabaseFunctionsInvokeMock.mockImplementation((funcName) => {
+            if (funcName === 'personalize-cv') {
+                return Promise.resolve({
+                    data: {
+                        success: true,
+                        tailored_cv: {
+                            headline: 'Nouveau Profil Développeur',
+                            summary: 'Texte résumé',
+                            match_analysis: ['Profil adapté']
+                        }
+                    },
+                    error: null
+                })
+            }
+            if (funcName === 'generate-pdf') {
+                return Promise.resolve({
+                    data: {
+                        success: true,
+                        storage_path: 'student-123/personalized.pdf',
+                        signed_url: 'https://example.com/p.pdf'
+                    },
+                    error: null
+                })
+            }
+            return Promise.resolve({ data: {}, error: null })
+        })
+
+        const { container } = render(
+            <AICVPersonalizationModal
+                isOpen={true}
+                offer={mockOffer}
+                onClose={vi.fn()}
+                onConfirmSend={vi.fn()}
+            />
+        )
+
+        await screen.findByText('Profil MatchOp synchronisé')
+
+        // Click toggle to reveal file input
+        const toggleBtn = screen.getByRole('button', { name: /Utiliser un autre fichier Word/i })
+        fireEvent.click(toggleBtn)
+
+        const testDocx = new File(['mock binary content'], 'custom_resume.docx', {
+            type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        })
+        testDocx.arrayBuffer = vi.fn().mockResolvedValue(new ArrayBuffer(8))
+
+        const fileInput = container.querySelector('input[type="file"]')
+        expect(fileInput).toBeInTheDocument()
+
+        fireEvent.change(fileInput, { target: { files: [testDocx] } })
+
+        const matchingElements = await screen.findAllByText(/custom_resume\.docx/i)
+        expect(matchingElements.length).toBeGreaterThan(0)
+
+        const generateBtn = screen.getByRole('button', { name: /Générer mon CV optimisé/i })
+        fireEvent.click(generateBtn)
+
+        await screen.findByText('Nouveau Profil Développeur')
+
+        expect(supabaseUpdateMock).toHaveBeenCalledWith({
+            original_docx_url: 'student-123/original_cv.docx',
+            cv_url: 'student-123/original_cv.docx'
+        })
+        expect(updateEqMock).toHaveBeenCalledWith('id', 'student-123')
     })
 })

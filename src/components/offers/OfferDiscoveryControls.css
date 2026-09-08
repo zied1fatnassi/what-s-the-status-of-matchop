@@ -139,6 +139,27 @@
     cursor: not-allowed;
 }
 
+.offer-preferences-button.is-active {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: color-mix(in srgb, var(--primary) 12%, var(--surface-muted));
+}
+
+.offer-preferences-count-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: var(--radius-pill);
+    background: var(--primary);
+    color: #ffffff;
+    font-size: 0.68rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
 .offer-preferences-overlay {
     position: fixed;
     inset: 0;
@@ -148,17 +169,34 @@
     justify-content: center;
     padding: var(--space-3);
     background: var(--overlay-bg);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    animation: fadeInOverlay 0.18s ease-out;
+}
+
+@keyframes fadeInOverlay {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 .offer-preferences-modal {
-    width: min(560px, 100%);
+    width: min(540px, 100%);
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
     border-radius: var(--radius-xl);
     border: 1px solid var(--border);
     background: var(--surface);
-    box-shadow: var(--shadow-xl);
+    box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.28), 0 0 0 1px rgba(255, 255, 255, 0.05);
     padding: var(--space-4);
-    display: grid;
+    display: flex;
+    flex-direction: column;
     gap: var(--space-3);
+    animation: scaleInModal 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes scaleInModal {
+    from { transform: scale(0.96) translateY(6px); opacity: 0; }
+    to { transform: scale(1) translateY(0); opacity: 1; }
 }
 
 .offer-preferences-header {
@@ -168,14 +206,26 @@
     gap: var(--space-2);
 }
 
+.offer-preferences-title-group {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.offer-preferences-icon {
+    color: var(--primary);
+}
+
 .offer-preferences-header h3 {
     margin: 0;
+    font-size: 1.15rem;
+    font-weight: 700;
     color: var(--text-primary);
 }
 
 .offer-preferences-close {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -184,37 +234,175 @@
     background: var(--surface-2);
     color: var(--text-secondary);
     cursor: pointer;
+    transition: all var(--duration-fast);
+}
+
+.offer-preferences-close:hover {
+    color: var(--text-primary);
+    background: var(--surface-muted);
 }
 
 .offer-preferences-copy {
     margin: 0;
     color: var(--text-muted);
     font-size: 0.84rem;
+    line-height: 1.4;
+}
+
+.offer-preferences-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
 }
 
 .offer-preferences-field {
     display: grid;
-    gap: 0.35rem;
+    gap: 0.4rem;
     text-align: left;
     color: var(--text-secondary);
     font-size: 0.82rem;
     font-weight: 600;
 }
 
-.offer-preferences-field input,
-.offer-preferences-field select {
+.field-label-with-icon {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.offer-preferences-field.is-disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.location-picker-row {
+    display: grid;
+    grid-template-columns: 1fr 140px;
+    gap: 0.5rem;
+}
+
+.offer-preferences-input,
+.offer-preferences-select {
     min-height: 40px;
     border-radius: var(--radius-md);
     border: 1px solid var(--border);
     background: var(--surface-muted);
     color: var(--text-primary);
-    padding: 0 0.65rem;
+    padding: 0 0.75rem;
+    font-size: 0.86rem;
+    transition: border-color var(--duration-fast);
+}
+
+.offer-preferences-input:focus,
+.offer-preferences-select:focus {
+    border-color: var(--primary);
+    outline: none;
+}
+
+.location-quick-select {
+    font-size: 0.8rem;
+}
+
+.offer-preferences-hint {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 400;
+}
+
+.offer-preferences-hint.is-warning {
+    color: #f59e0b;
+}
+
+.segmented-control-group {
+    display: flex;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 2px;
+    background: var(--surface-muted);
+    gap: 2px;
+}
+
+.segmented-control-btn {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 0.45rem 0.6rem;
+    border-radius: calc(var(--radius-md) - 2px);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--duration-fast);
+    white-space: nowrap;
+    text-align: center;
+}
+
+.segmented-control-btn:hover {
+    color: var(--text-primary);
+}
+
+.segmented-control-btn.active {
+    background: var(--surface);
+    color: var(--text-primary);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    font-weight: 700;
+}
+
+[data-theme='dark'] .segmented-control-btn.active {
+    background: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+}
+
+.offer-preferences-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    cursor: pointer;
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    user-select: none;
+    padding: 0.2rem 0;
+}
+
+.offer-preferences-checkbox input[type='checkbox'] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--primary);
+    cursor: pointer;
+}
+
+.offer-preferences-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    margin-top: var(--space-1);
+    padding-top: var(--space-2);
+    border-top: 1px solid var(--border);
+}
+
+.offer-preferences-match-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #10b981;
 }
 
 .offer-preferences-actions {
     display: flex;
     justify-content: flex-end;
     gap: var(--space-2);
+    margin-left: auto;
+}
+
+.offer-preferences-btn-reset,
+.offer-preferences-btn-save {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.84rem;
 }
 
 @media (max-width: 540px) {
@@ -224,5 +412,22 @@
 
     .offer-preferences-button {
         width: 100%;
+    }
+
+    .location-picker-row {
+        grid-template-columns: 1fr;
+    }
+
+    .offer-preferences-footer {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .offer-preferences-actions {
+        width: 100%;
+    }
+
+    .offer-preferences-actions button {
+        flex: 1;
     }
 }
