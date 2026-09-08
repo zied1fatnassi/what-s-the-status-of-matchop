@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import logging
+import time
 from datetime import UTC, datetime
 
 from .config import ScraperConfig
@@ -34,6 +35,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--dry-run", action="store_true", help="Scrape and normalise without writing to Supabase.")
     parser.add_argument("--no-ai", action="store_true", help="Skip Groq AI extraction step.")
     parser.add_argument(
+        "--limit",
+        type=int,
+        default=0,
+        help="Maximum jobs to scrape per source (0 = unlimited).",
+    )
+    parser.add_argument(
         "--log-level",
         default="INFO",
         choices=["DEBUG", "INFO", "WARNING", "ERROR"],
@@ -49,7 +56,7 @@ def configure_logging(level: str) -> None:
     )
 
 
-def build_scraper(source_name: str, config: ScraperConfig):
+def build_scraper(source_name: str, config: ScraperConfig, max_jobs: int = 0):
     """Construct a scraper instance for the given source."""
     scraper_class = SOURCE_REGISTRY.get(source_name)
     if not scraper_class:
@@ -66,6 +73,7 @@ def build_scraper(source_name: str, config: ScraperConfig):
         delay=config.delay,
         impersonate=config.impersonate,
         stealth=config.stealth,
+        max_jobs=max_jobs,
     )
 
 
@@ -86,7 +94,7 @@ def main() -> int:
     # Build scrapers
     scrapers = []
     for source_name in args.sources:
-        scraper = build_scraper(source_name, config)
+        scraper = build_scraper(source_name, config, max_jobs=args.limit)
         if scraper is None:
             logger.info("Skipping %s — no seed URLs configured.", source_name)
             continue
@@ -113,6 +121,7 @@ def main() -> int:
                     api_key=config.groq_api_key,
                     model=config.groq_model,
                 )
+                time.sleep(1.0)
         elif args.no_ai:
             logger.info("Groq AI extraction skipped (--no-ai flag).")
         else:

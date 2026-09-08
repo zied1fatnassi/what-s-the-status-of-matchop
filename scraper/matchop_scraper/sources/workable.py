@@ -36,6 +36,8 @@ class WorkableScraper(BaseSourceScraper):
 
         with httpx.Client(timeout=self.timeout, follow_redirects=True) as client:
             for seed_url in self.seed_urls:
+                if self.max_jobs > 0 and len(result.jobs) >= self.max_jobs:
+                    break
                 account_subdomain = self._extract_account_subdomain(seed_url)
                 if not account_subdomain:
                     self.logger.warning("Could not infer Workable account from %s", seed_url)
@@ -50,10 +52,15 @@ class WorkableScraper(BaseSourceScraper):
                 # Politeness delay
                 self._polite_delay()
 
-                listing_response = client.post(
-                    f"https://apply.workable.com/api/v3/accounts/{account_subdomain}/jobs",
-                    json={},
-                )
+                try:
+                    listing_response = client.post(
+                        f"https://apply.workable.com/api/v3/accounts/{account_subdomain}/jobs",
+                        json={},
+                    )
+                except Exception as exc:
+                    self.logger.warning("Workable jobs API call failed for %s: %s", account_subdomain, exc)
+                    continue
+
                 if listing_response.status_code >= 400:
                     self.logger.warning(
                         "Workable jobs API for %s returned HTTP %s",
@@ -64,6 +71,8 @@ class WorkableScraper(BaseSourceScraper):
 
                 listing_payload = listing_response.json()
                 for listing in listing_payload.get("results", []):
+                    if self.max_jobs > 0 and len(result.jobs) >= self.max_jobs:
+                        break
                     shortcode = str(listing.get("shortcode") or "").strip()
                     if not shortcode:
                         continue
@@ -73,10 +82,14 @@ class WorkableScraper(BaseSourceScraper):
                     # Politeness delay between detail requests
                     self._polite_delay()
 
-                    detail_response = client.get(
-                        f"https://apply.workable.com/api/v2/accounts/{account_subdomain}/jobs/{shortcode}",
-                        params={"lng": listing.get("language") or "en"},
-                    )
+                    try:
+                        detail_response = client.get(
+                            f"https://apply.workable.com/api/v2/accounts/{account_subdomain}/jobs/{shortcode}",
+                            params={"lng": listing.get("language") or "en"},
+                        )
+                    except Exception as exc:
+                        self.logger.warning("Workable detail request failed for %s: %s", original_url, exc)
+                        continue
 
                     if detail_response.status_code in {404, 410}:
                         self.logger.info("Marking %s as expired.", original_url)

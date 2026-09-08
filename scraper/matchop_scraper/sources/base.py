@@ -52,6 +52,7 @@ class BaseSourceScraper(ABC):
         delay: float = 2.0,
         impersonate: str = "chrome",
         stealth: bool = True,
+        max_jobs: int = 0,
     ) -> None:
         self.seed_urls = seed_urls
         self.timeout = timeout
@@ -59,6 +60,7 @@ class BaseSourceScraper(ABC):
         self.delay = delay
         self.impersonate = impersonate
         self.stealth = stealth
+        self.max_jobs = max_jobs
         self._ua_index = 0
         self.logger = logging.getLogger(f"matchop_scraper.sources.{self.source_name.lower()}")
 
@@ -84,6 +86,8 @@ class BaseSourceScraper(ABC):
         seen_urls: set[str] = set()
 
         for seed_url in self.seed_urls:
+            if self.max_jobs > 0 and len(result.jobs) >= self.max_jobs:
+                break
             self.logger.info("Fetching seed page %s", seed_url)
             try:
                 seed_response = self.fetch(seed_url)
@@ -96,6 +100,8 @@ class BaseSourceScraper(ABC):
                 continue
 
             for job_url in self.discover_job_urls(seed_response, seed_url):
+                if self.max_jobs > 0 and len(result.jobs) >= self.max_jobs:
+                    break
                 if job_url in seen_urls:
                     continue
                 seen_urls.add(job_url)
