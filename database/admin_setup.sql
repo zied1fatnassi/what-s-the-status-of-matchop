@@ -45,7 +45,7 @@ INSERT INTO app_settings (id, settings)
 VALUES (1, '{
     "siteName": "MATCHOP",
     "siteDescription": "Match students with internship opportunities",
-    "contactEmail": "contact@matchop.com",
+    "contactEmail": "contact@matchop.tech",
     "maxOffersPerCompany": 50,
     "matchExpiryDays": 30,
     "enableEmailNotifications": true,

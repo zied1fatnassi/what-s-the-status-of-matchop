@@ -289,7 +289,7 @@ Optimize the candidate's CV specifically for this offer according to the system 
             headers: {
                 'Authorization': `Bearer ${apiKey}`,
                 'Content-Type': 'application/json',
-                'HTTP-Referer': 'https://matchop.vercel.app',
+                'HTTP-Referer': 'https://matchop.tech',
                 'X-Title': 'MatchOp CV Personalizer',
             },
             body: JSON.stringify({

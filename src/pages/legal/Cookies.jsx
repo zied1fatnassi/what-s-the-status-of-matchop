@@ -92,7 +92,7 @@ function Cookies() {
                         <h2>{t('cookiesPage.sections.contact.title')}</h2>
                         <p>
                             {t('cookiesPage.sections.contact.prefix')}{' '}
-                            <a href="mailto:legal@matchop.com">legal@matchop.com</a>
+                            <a href="mailto:contact@matchop.tech">contact@matchop.tech</a>
                         </p>
                     </div>
                 </div>

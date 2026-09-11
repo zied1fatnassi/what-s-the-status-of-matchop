@@ -2,13 +2,7 @@ import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { describe, expect, it, vi } from 'vitest'
 
-vi.mock('@vercel/speed-insights/react', () => ({
-    SpeedInsights: () => null
-}))
 
-vi.mock('@vercel/analytics/react', () => ({
-    Analytics: () => null
-}))
 
 vi.mock('./components/Navbar', () => ({
     default: () => null

@@ -57,27 +57,50 @@ CREATE TRIGGER on_auth_user_created_auto_confirm
 
 ## Solution B: Custom SMTP (Production Fix)
 
-Use this when you want **real** verification emails delivered to any address.
+Use this when you want **real** verification emails delivered to any address with zero drops and high deliverability.
 
-### Steps
+### Architecture Principle: Business Mailbox vs Transactional Email
 
-1. Choose an SMTP provider (Resend, SendGrid, Brevo, AWS SES, Postmark, etc.)
-2. Create an account and obtain SMTP credentials.
-3. In **Supabase Dashboard** → **Authentication** → **SMTP Settings** (or [Auth → SMTP](https://supabase.com/dashboard/project/_/auth/smtp)):
-   - Enable **Custom SMTP**
-   - Host, port, user, password (from your provider)
-   - Set **Sender email** (e.g. `no-reply@yourdomain.com`)
-   - Set **Sender name** (e.g. `MatchOp`)
-4. Save. Supabase Auth will now send emails via your SMTP provider.
+- **Business mailbox**: `contact@matchop.tech` (managed via OVHcloud EU, accessed via Webmail or mail client).
+- **Transactional sender**: `no-reply@matchop.tech` (sent via dedicated SMTP provider, with Reply-To set to `contact@matchop.tech`).
+- **Never** use personal email or shared webmail SMTP for high-volume automated application emails.
+
+### Recommended Provider: Resend (Official Supabase Partner)
+
+1. Create a free account at [Resend.com](https://resend.com/).
+2. Add your domain (`matchop.tech`) or sending subdomain (`mail.matchop.tech` / `send.matchop.tech`).
+3. Add the DNS records provided by Resend to your OVHcloud DNS Zone:
+   - DKIM (CNAME or TXT)
+   - SPF (TXT or subdomain include)
+   - DMARC (`_dmarc.matchop.tech` TXT: `v=DMARC1; p=none; rua=mailto:contact@matchop.tech; pct=100; adkim=r; aspf=r`)
+   - *Important:* Never create multiple root SPF records! Merge if using apex domain.
+4. Obtain your Resend API Key.
+5. In **Supabase Dashboard** → **Authentication** → **SMTP Settings**:
+   - Enable **Custom SMTP**: ON
+   - **Sender email**: `no-reply@matchop.tech`
+   - **Sender name**: `MatchOp`
+   - **Host**: `smtp.resend.com`
+   - **Port**: `465` (SSL) or `587` (TLS)
+   - **User**: `resend`
+   - **Password**: `[YOUR_RESEND_API_KEY]`
+6. In **Supabase Dashboard** → **Authentication** → **URL Configuration**:
+   - **Site URL**: `https://matchop.tech`
+   - **Additional Redirect URLs**:
+     - `https://matchop.tech/auth/callback`
+     - `https://matchop.tech/**`
+     - `https://www.matchop.tech/auth/callback`
+     - `https://matchop.vercel.app/auth/callback`
+     - `http://localhost:5173/auth/callback`
 
 ### If using auto-confirm + SMTP
 
 If you previously ran `auto_confirm_emails.sql` and now want real email verification:
 
-1. Remove the trigger in Supabase SQL Editor:
+1. Remove the trigger by running `database/disable_auto_confirm.sql` in the Supabase SQL Editor:
 
 ```sql
 DROP TRIGGER IF EXISTS on_auth_user_created_auto_confirm ON auth.users;
+DROP FUNCTION IF EXISTS public.handle_new_user_auto_confirm();
 ```
 
 2. Configure Custom SMTP as above.
@@ -89,5 +112,6 @@ DROP TRIGGER IF EXISTS on_auth_user_created_auto_confirm ON auth.users;
 | Scenario | What to do |
 |----------|------------|
 | Local dev / demo | Run `database/auto_confirm_emails.sql` |
-| Production with email verification | Configure Custom SMTP in Supabase Dashboard |
-| Emails still not arriving after SMTP | Check Auth logs, spam folder, provider logs |
+| Production with email verification | Configure Custom SMTP in Supabase Dashboard with `no-reply@matchop.tech` |
+| Disabling dev auto-confirm | Run `database/disable_auto_confirm.sql` in Supabase SQL Editor |
+| Emails still not arriving after SMTP | Check Auth logs, spam folder, Resend delivery logs |

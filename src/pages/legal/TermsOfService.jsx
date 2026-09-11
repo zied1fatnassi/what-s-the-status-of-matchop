@@ -107,7 +107,7 @@ function TermsOfService() {
                         <h2>{t('termsPage.sections.contact.title')}</h2>
                         <p>
                             {t('termsPage.sections.contact.prefix')}{' '}
-                            <a href="mailto:legal@matchop.com">legal@matchop.com</a>
+                            <a href="mailto:contact@matchop.tech">contact@matchop.tech</a>
                         </p>
                     </div>
                 </div>

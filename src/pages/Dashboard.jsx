@@ -38,7 +38,7 @@ const UnknownRoleFallback = ({ onSignOut, isSigningOut, email, tr }) => (
                         ? tr('Signing Out...', 'Deconnexion...')
                         : tr('Sign Out', 'Se deconnecter')}
                 </button>
-                <a href="mailto:support@matchop.com" className="btn btn-secondary">
+                <a href="mailto:contact@matchop.tech" className="btn btn-secondary">
                     {tr('Contact Support', 'Contacter le support')}
                 </a>
             </div>

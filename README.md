@@ -2,7 +2,7 @@
 
 > AI-powered vertical opportunity discovery feed connecting students with curated internships, jobs, and external ATS opportunities.
 
-**Live:** [matchop.vercel.app](https://matchop.vercel.app/)
+**Live:** [matchop.tech](https://matchop.tech/) (or [matchop.vercel.app](https://matchop.vercel.app/))
 
 ---
 

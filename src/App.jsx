@@ -1,8 +1,7 @@
 import { useState, useEffect, lazy, Suspense } from 'react'
 import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { SpeedInsights } from '@vercel/speed-insights/react'
-import { Analytics } from '@vercel/analytics/react'
+
 import Navbar from './components/Navbar'
 import ScrollToTop from './components/ScrollToTop'
 import AuthToast from './components/AuthToast'
@@ -72,16 +71,7 @@ const FORGOT_PASSWORD_ROUTE = '/forgot-password'
 const RESET_PASSWORD_ROUTE = '/reset-password'
 const toAppPath = (route) => route.startsWith('/') ? route : `/${route}`
 
-function shouldRenderVercelTelemetry() {
-  if (typeof window === 'undefined') return false
 
-  const host = window.location.hostname.toLowerCase()
-  const isLocalHost = host === 'localhost' || host === '127.0.0.1' || host === '0.0.0.0'
-  const isVercelHost = host.endsWith('.vercel.app') || host.endsWith('.vercel.sh') || host.endsWith('.vercel-dns.com')
-  const forceEnable = import.meta.env.VITE_ENABLE_VERCEL_ANALYTICS === 'true'
-
-  return !isLocalHost && (isVercelHost || forceEnable)
-}
 
 // Minimal loading fallback for route transitions
 const RouteLoadingFallback = () => (
@@ -129,7 +119,7 @@ function App() {
   const navigate = useNavigate()
   const { t } = useTranslation(undefined, { useSuspense: false })
   const { premiumUpsell, closePremiumUpsell } = useApplications()
-  const showVercelTelemetry = shouldRenderVercelTelemetry()
+
 
   const handleUpgrade = () => {
     closePremiumUpsell()
@@ -245,12 +235,7 @@ function App() {
 
       <div className={isLanding ? 'app-wrapper app-wrapper--landing' : isFeedRoute ? 'app-wrapper app-wrapper--feed' : 'app-wrapper'}>
         {!isFeedRoute && <Navbar isLanding={isLanding} />}
-        {showVercelTelemetry && (
-          <>
-            <SpeedInsights />
-            <Analytics />
-          </>
-        )}
+
 
         <main className={isLanding ? 'app-main app-main--landing' : isFeedRoute ? 'app-main app-main--feed' : 'app-main'}>
           <Suspense fallback={<RouteLoadingFallback />}>

@@ -119,7 +119,7 @@ function PrivacyPolicy() {
                         <h2>{t('privacyPage.sections.contact.title')}</h2>
                         <p>
                             {t('privacyPage.sections.contact.prefix')}{' '}
-                            <a href="mailto:privacy@matchop.com">privacy@matchop.com</a>
+                            <a href="mailto:contact@matchop.tech">contact@matchop.tech</a>
                         </p>
                     </div>
                 </div>

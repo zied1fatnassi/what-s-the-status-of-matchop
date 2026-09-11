@@ -129,7 +129,7 @@ Only output the improved bio text, nothing else.`
             headers: {
                 'Authorization': `Bearer ${apiKey}`,
                 'Content-Type': 'application/json',
-                'HTTP-Referer': 'https://matchop.vercel.app',
+                'HTTP-Referer': 'https://matchop.tech',
                 'X-Title': 'MatchOp Profile Polisher',
             },
             body: JSON.stringify({

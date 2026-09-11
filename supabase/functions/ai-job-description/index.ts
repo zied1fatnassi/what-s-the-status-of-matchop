@@ -129,7 +129,7 @@ Write in a ${tone} but energetic tone that appeals to young professionals.`
             headers: {
                 'Authorization': `Bearer ${apiKey}`,
                 'Content-Type': 'application/json',
-                'HTTP-Referer': 'https://matchop.vercel.app',
+                'HTTP-Referer': 'https://matchop.tech',
                 'X-Title': 'MatchOp Job Description Generator',
             },
             body: JSON.stringify({

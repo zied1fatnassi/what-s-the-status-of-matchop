@@ -1,0 +1,58 @@
+version: 1
+# ============================================
+# AWS Amplify Build Specification for MatchOp
+# React 19 + Vite SPA
+# ============================================
+
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - npm ci
+    build:
+      commands:
+        - npm run build
+  artifacts:
+    baseDirectory: dist
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*
+  customHeaders:
+    - pattern: '**/*'
+      headers:
+        - key: Strict-Transport-Security
+          value: 'max-age=63072000; includeSubDomains; preload'
+        - key: X-Content-Type-Options
+          value: 'nosniff'
+        - key: X-Frame-Options
+          value: 'DENY'
+        - key: Referrer-Policy
+          value: 'strict-origin-when-cross-origin'
+        - key: Permissions-Policy
+          value: 'camera=(), microphone=(), geolocation=(), payment=()'
+        - key: X-XSS-Protection
+          value: '0'
+        - key: Content-Security-Policy
+          value: >-
+            default-src 'self';
+            base-uri 'self';
+            frame-ancestors 'none';
+            object-src 'none';
+            form-action 'self';
+            script-src 'self';
+            style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+            font-src 'self' https://fonts.gstatic.com data:;
+            img-src 'self' data: blob: https:;
+            connect-src 'self' https://*.supabase.co wss://*.supabase.co;
+            frame-src 'none';
+            upgrade-insecure-requests
+    - pattern: '/assets/**'
+      headers:
+        - key: Cache-Control
+          value: 'public, max-age=31536000, immutable'
+    - pattern: '/index.html'
+      headers:
+        - key: Cache-Control
+          value: 'public, max-age=0, must-revalidate'
