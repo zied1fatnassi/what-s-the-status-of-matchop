@@ -153,7 +153,8 @@ additional_redirect_urls = [
   "http://localhost:5173/auth/callback",
   "https://matchop.vercel.app/auth/callback",
   "https://matchop.tech/auth/callback",
-  "https://www.matchop.tech/auth/callback"
+  "https://www.matchop.tech/auth/callback",
+  "https://main.d1y1mst8p5nat3.amplifyapp.com/auth/callback"
 ]
 # How long tokens are valid for, in seconds. Defaults to 3600 (1 hour), maximum 604,800 (1 week).
 jwt_expiry = 3600
