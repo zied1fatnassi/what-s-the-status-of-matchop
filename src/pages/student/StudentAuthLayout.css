@@ -1,0 +1,277 @@
+/* ===================================
+   STUDENT & COMPANY AUTH LAYOUT SYSTEM
+   Theme-Aware Glassmorphism & Bento Split Cards
+   ================================ */
+
+.student-auth-page {
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(1rem, 4vw, 2.5rem);
+    background: var(--bento-bg);
+}
+
+.student-auth-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    width: 100%;
+    max-width: 960px;
+    background: var(--bento-card);
+    border: 1px solid var(--bento-card-border);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-xl);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    overflow: hidden;
+    transition: box-shadow var(--duration-normal) var(--ease-in-out);
+}
+
+.student-auth-container--signup {
+    max-width: 1040px;
+}
+
+@media (min-width: 768px) {
+    .student-auth-container {
+        grid-template-columns: 1fr 1.45fr;
+        min-height: 520px;
+    }
+
+    .student-auth-container--signup {
+        min-height: 620px;
+    }
+}
+
+.student-auth-header {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 50%, var(--accent-purple) 100%);
+    padding: clamp(2rem, 4vw, 3.5rem);
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.student-auth-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 60%);
+    pointer-events: none;
+}
+
+.student-auth-header h1 {
+    color: #ffffff;
+    margin-bottom: 0.5rem;
+    font-size: clamp(1.6rem, 3.5vw, 2.25rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    position: relative;
+    z-index: 1;
+}
+
+.student-auth-header p {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: clamp(0.9rem, 1.8vw, 1.05rem);
+    max-width: 32ch;
+    margin-bottom: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.student-auth-icon-wrapper {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 1.25rem;
+    border-radius: var(--radius-2xl);
+    margin-bottom: 1.5rem;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    position: relative;
+    z-index: 1;
+}
+
+.student-auth-form-wrapper {
+    padding: clamp(1.5rem, 3.5vw, 3rem);
+    background: var(--bento-card);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.student-auth-group {
+    margin-bottom: 1.25rem;
+}
+
+.student-auth-group label {
+    display: block;
+    margin-bottom: 0.45rem;
+    font-weight: 600;
+    font-size: 0.88rem;
+    color: var(--text-primary);
+}
+
+.student-auth-input-wrapper {
+    position: relative;
+}
+
+.student-auth-input-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    pointer-events: none;
+    transition: color var(--duration-fast);
+}
+
+.student-auth-input-wrapper:focus-within .student-auth-input-icon {
+    color: var(--primary);
+}
+
+.student-auth-input-wrapper input,
+.student-auth-input-wrapper select {
+    padding-left: 2.85rem;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    color: var(--text-primary);
+    border-radius: var(--radius-xl);
+    width: 100%;
+}
+
+.student-auth-input-wrapper input:focus,
+.student-auth-input-wrapper select:focus {
+    background: var(--input-focus-bg);
+    border-color: var(--primary);
+}
+
+.student-auth-submit {
+    width: 100%;
+    justify-content: center;
+    margin-top: 0.75rem;
+    min-height: 48px;
+    font-size: 1rem;
+}
+
+.student-auth-footer {
+    margin-top: 1.5rem;
+    text-align: center;
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+}
+
+.student-auth-footer a {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.student-auth-footer a:hover {
+    text-decoration: underline;
+}
+
+.student-auth-forgot {
+    text-align: right;
+    margin-top: 0.5rem;
+}
+
+.student-auth-forgot a {
+    font-size: 0.85rem;
+    color: var(--primary);
+    font-weight: 500;
+}
+
+.student-auth-forgot a:hover {
+    text-decoration: underline;
+}
+
+.student-auth-split-fields {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+@media (min-width: 640px) {
+    .student-auth-split-fields {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.student-auth-verify-card {
+    width: 100%;
+    max-width: 600px;
+    background: var(--bento-card);
+    border: 1px solid var(--bento-card-border);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-xl);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+    padding: clamp(2rem, 5vw, 3.5rem);
+    text-align: center;
+}
+
+.student-auth-verify-icon {
+    color: var(--primary);
+}
+
+.student-auth-verify-copy {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-bottom: 0;
+}
+
+.student-auth-verify-hints {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    line-height: 1.6;
+    background: var(--surface-soft);
+    padding: 1rem;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-default);
+    width: 100%;
+}
+
+.student-auth-verify-hints p {
+    margin-bottom: 0.5rem;
+}
+
+.student-auth-verify-hints p:last-child {
+    margin-bottom: 0;
+}
+
+.student-auth-verify-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+    max-width: 320px;
+}
+
+.student-auth-feedback {
+    font-size: 0.88rem;
+    font-weight: 500;
+    margin-bottom: 0;
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius-md);
+}
+
+.student-auth-feedback.success {
+    color: var(--accent-green);
+    background: var(--status-approved-bg);
+}
+
+.student-auth-feedback.error {
+    color: var(--accent-red);
+    background: var(--status-rejected-bg);
+}

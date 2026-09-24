@@ -1,14 +1,99 @@
-# What a project can make again, and nobody needs to keep.
+# Dependency directories
 node_modules/
-.venv/
-venv/
-__pycache__/
-target/
+jspm_packages/
 vendor/
+
+# Environment variables
+.env
+.env.test
+.env.production
+.env.local
+.env*.local
+!.env.example
+
+# Build & cache outputs
+dist/
+build/Release/
+out/
+target/
+.next/
+.nuxt/
+.vuepress/dist/
+.cache/
+.parcel-cache/
+.turbo/
+.fusebox/
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+.tsbuildinfo
+.eslintcache
+.dynamodb/
+.serverless/
 .gradle/
 DerivedData/
-.next/cache/
-.turbo/
-.cache/
-.DS_Store
+
+# Logs & diagnostic reports
+logs
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+lib-cov
+coverage
+*.lcov
+.nyc_output
+.grunt
+bower_components
+.lock-wscript
+typings/
+.npm
+.node_repl_history
+*.tgz
+.yarn-integrity
+
+# Editor & OS files
+.idea
+.vscode
+.vscode-test
+.obsidian/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+Thumbs.db
+.vercel
+
+# Testing
+playwright-report
+test-results
+/output/
+.playwright-mcp/
+
+# Yarn v2
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+scraper/.venv/
+*.egg-info/

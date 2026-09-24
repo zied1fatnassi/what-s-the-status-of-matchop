@@ -1,0 +1,53 @@
+services:
+  # Development service - hot reload with Vite dev server
+  dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: matchop-dev
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./src:/app/src
+      - ./public:/app/public
+      - ./index.html:/app/index.html
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - VITE_SUPABASE_URL=${VITE_SUPABASE_URL}
+      - VITE_SUPABASE_ANON_KEY=${VITE_SUPABASE_ANON_KEY}
+      - VITE_DEBUG_WEBVITALS=${VITE_DEBUG_WEBVITALS:-false}
+      - VITE_E2E_MOCK_MODE=${VITE_E2E_MOCK_MODE:-false}
+      - VITE_SWIPE_STACK_V2=${VITE_SWIPE_STACK_V2:-false}
+      - VITE_STANDARD_DAILY_SWIPE_LIMIT=${VITE_STANDARD_DAILY_SWIPE_LIMIT:-20}
+    develop:
+      watch:
+        - action: sync
+          path: ./src
+          target: /app/src
+        - action: sync
+          path: ./public
+          target: /app/public
+        - action: rebuild
+          path: ./package.json
+
+  # Production service - optimized static server
+  prod:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: matchop-prod
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+
+volumes: {}

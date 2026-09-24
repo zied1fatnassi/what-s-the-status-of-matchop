@@ -1,0 +1,22 @@
+FROM python:3.11-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+WORKDIR /app
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends cron \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY scraper /app
+
+RUN python -m pip install --upgrade pip \
+    && pip install -e . \
+    && python -c "from scrapling.cli import install; install([], standalone_mode=False)"
+
+COPY scraper/docker/matchop-scraper.cron /etc/cron.d/matchop-scraper
+RUN chmod 0644 /etc/cron.d/matchop-scraper \
+    && crontab /etc/cron.d/matchop-scraper
+
+CMD ["cron", "-f"]

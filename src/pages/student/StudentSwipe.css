@@ -1,0 +1,272 @@
+/* ===================================
+   STUDENT DISCOVERY VERTICAL FEED PAGE
+   Full viewport (100vw x 100dvh), glassmorphism, responsive
+   ================================ */
+
+.vertical-feed-page {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    height: 100dvh;
+    min-height: 100dvh;
+    max-height: 100dvh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background: var(--bento-bg);
+    box-sizing: border-box;
+}
+
+/* Sleek Floating Top Discovery Header */
+.feed-top-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: calc(var(--safe-top, 0px) + 0.45rem) 0.85rem 0.35rem 0.85rem;
+    pointer-events: none;
+}
+
+.feed-top-bar__inner {
+    pointer-events: auto;
+    width: 100%;
+    max-width: 640px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.65rem;
+    background: var(--glass-surface);
+    backdrop-filter: blur(28px);
+    -webkit-backdrop-filter: blur(28px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-pill);
+    padding: 0 0.85rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06), 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme='dark'] .feed-top-bar__inner {
+    background: rgba(18, 20, 26, 0.86);
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 16px rgba(59, 130, 246, 0.06);
+}
+
+.feed-top-bar__brand {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    flex-shrink: 0;
+}
+
+.feed-brand-title {
+    font-size: 1.02rem;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.feed-top-bar__scope {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.feed-top-bar__actions {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.feed-notice-banner {
+    pointer-events: auto;
+    margin-top: 0.35rem;
+    max-width: 580px;
+    width: 100%;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    background: var(--glass-surface);
+    backdrop-filter: blur(16px);
+    border-left: 3px solid var(--primary);
+    border-radius: var(--radius-md);
+    padding: 0.4rem 0.75rem;
+    box-shadow: var(--shadow-sm);
+}
+
+@media (max-width: 520px) {
+    .feed-top-bar {
+        padding: calc(var(--safe-top, 0px) + 0.35rem) 0.5rem 0.25rem 0.5rem;
+    }
+
+    .feed-top-bar__inner {
+        height: 46px;
+        padding: 0 0.55rem;
+        gap: 0.35rem;
+    }
+
+    .feed-brand-title {
+        font-size: 0.92rem;
+    }
+
+    .feed-top-bar__actions .offer-preferences-button {
+        width: 32px;
+        height: 32px;
+        min-width: 32px;
+        padding: 0;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .feed-top-bar__actions .offer-preferences-button-text {
+        display: none;
+    }
+}
+
+/* Feed Stage Container - Generously reserves space for top bar and floating bottom nav */
+.feed-stage-container {
+    position: relative;
+    width: 100%;
+    flex: 1;
+    height: 100dvh;
+    max-height: 100dvh;
+    min-height: 0;
+    padding-top: calc(var(--safe-top, 0px) + 58px);
+    padding-bottom: calc(var(--safe-bottom, 0px) + 106px);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Empty State Experience */
+.feed-empty-state-screen {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    padding-bottom: 2rem;
+}
+
+.feed-empty-state-card {
+    width: 100%;
+    max-width: 440px;
+    padding: 2.2rem 1.8rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.85rem;
+    border-radius: var(--radius-2xl);
+    background: var(--glass-surface);
+    backdrop-filter: blur(28px);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-lg);
+    animation: fade-in-up 0.4s var(--ease-out);
+}
+
+[data-theme='dark'] .feed-empty-state-card {
+    background: rgba(28, 28, 33, 0.85);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.feed-empty-icon-glow {
+    width: 72px;
+    height: 72px;
+    border-radius: var(--radius-full);
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.25) 0%, transparent 70%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.25rem;
+}
+
+.empty-sparkle-icon {
+    color: var(--primary);
+    filter: drop-shadow(0 0 12px var(--primary-glow));
+}
+
+.feed-empty-state-card h2 {
+    margin: 0;
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+}
+
+.feed-empty-state-card p {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.55;
+    color: var(--text-secondary);
+}
+
+.feed-empty-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-top: 0.6rem;
+    width: 100%;
+}
+
+.feed-empty-actions .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.65rem 1.15rem;
+    font-size: 0.85rem;
+    border-radius: var(--radius-pill);
+}
+
+/* Loading & Error States */
+.vertical-feed-page.loading,
+.vertical-feed-page.error {
+    align-items: center;
+    justify-content: center;
+}
+
+.feed-loading-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    padding-bottom: 4rem;
+}
+
+.feed-loading-spinner-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.error-card {
+    max-width: 440px;
+    padding: 2rem;
+    text-align: center;
+}
+
+@keyframes fade-in-up {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

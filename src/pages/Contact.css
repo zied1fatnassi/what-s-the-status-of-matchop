@@ -1,0 +1,150 @@
+/* ===================================
+   CONTACT PAGE - BENTO EDITORIAL STYLING
+   ================================ */
+
+.contact-page {
+    padding: clamp(3rem, 6vw, 5rem) var(--space-4);
+    min-height: calc(100vh - var(--nav-height-desktop));
+}
+
+.contact-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: start;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+@media (min-width: 860px) {
+    .contact-grid {
+        grid-template-columns: 1fr 1.25fr;
+    }
+}
+
+.contact-info-panel {
+    display: flex;
+    flex-direction: column;
+}
+
+.contact-title {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 800;
+    margin-bottom: 0.75rem;
+    color: var(--text-primary);
+    letter-spacing: -0.03em;
+}
+
+.contact-subtitle {
+    font-size: clamp(1rem, 2vw, 1.15rem);
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: clamp(2rem, 4vw, 3rem);
+}
+
+.contact-info-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.contact-info-item {
+    display: flex;
+    align-items: center;
+    gap: 1.15rem;
+    padding: 1rem 1.25rem;
+    background: var(--bento-card);
+    border: 1px solid var(--bento-card-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+    transition: all var(--duration-normal) var(--ease-in-out);
+}
+
+.contact-info-item:hover {
+    transform: translateY(-2px);
+    border-color: var(--primary);
+    box-shadow: var(--shadow-md);
+}
+
+.contact-icon-box {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-lg);
+    background: rgba(59, 130, 246, 0.12);
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.contact-info-text h3 {
+    font-size: 0.92rem;
+    font-weight: 600;
+    margin-bottom: 0.15rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.contact-info-text p {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0;
+}
+
+.contact-form-card {
+    background: var(--bento-card);
+    border: 1px solid var(--bento-card-border);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-xl);
+    padding: clamp(1.75rem, 4vw, 3rem);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+.contact-form-group {
+    margin-bottom: 1.35rem;
+}
+
+.contact-form-group label {
+    display: block;
+    margin-bottom: 0.45rem;
+    font-weight: 600;
+    font-size: 0.88rem;
+    color: var(--text-primary);
+}
+
+.contact-submit-btn {
+    width: 100%;
+    min-height: 48px;
+    font-size: 1rem;
+    margin-top: 0.5rem;
+}
+
+.contact-success-box {
+    text-align: center;
+    padding: 2.5rem 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.contact-success-icon {
+    color: var(--accent-green);
+}
+
+.contact-success-box h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--text-primary);
+}
+
+.contact-success-box p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+}

@@ -1,0 +1,327 @@
+.intros-page {
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding: 0 0 var(--space-8);
+}
+
+.intros-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    margin-bottom: var(--space-5);
+}
+
+@media (min-width: 900px) {
+    .intros-header {
+        flex-direction: row;
+        align-items: flex-end;
+        justify-content: space-between;
+    }
+}
+
+.intros-header h1 {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin: 0;
+    color: var(--text-primary);
+}
+
+.intros-header p {
+    margin: var(--space-1) 0 0;
+    color: var(--text-secondary);
+}
+
+.intros-header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+}
+
+.intros-action-error {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: var(--space-4);
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--status-error-border);
+    color: var(--status-error-fg);
+    background: var(--status-error-bg);
+}
+
+.pending-pill {
+    border: 1px solid var(--border-strong);
+    background: var(--surface-elevated);
+    color: var(--text-primary);
+    border-radius: var(--radius-full);
+    padding: 0.35rem 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.intros-tabs {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px;
+    background: var(--surface-muted);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-4);
+    overflow-x: auto;
+}
+
+.intros-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border: 0;
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all var(--duration-fast);
+}
+
+.intros-tab:hover {
+    color: var(--text-primary);
+}
+
+.intros-tab.active {
+    background: var(--primary);
+    color: #fff;
+    box-shadow: var(--shadow-sm);
+}
+
+.intros-tab-count {
+    font-size: 0.75rem;
+    padding: 1px 6px;
+    border-radius: var(--radius-full);
+    background: rgba(255, 255, 255, 0.15);
+    color: inherit;
+}
+
+.intros-tab-count.highlight {
+    background: #ef4444;
+    color: #fff;
+}
+
+.intro-status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: var(--radius-full);
+    margin-bottom: var(--space-1);
+    align-self: flex-start;
+}
+
+.intro-status-pill--pending {
+    background: rgba(234, 179, 8, 0.15);
+    color: #facc15;
+    border: 1px solid rgba(234, 179, 8, 0.3);
+}
+
+.intro-status-pill--accepted {
+    background: rgba(34, 197, 94, 0.15);
+    color: #4ade80;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.intro-status-pill--declined {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.intros-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+}
+
+@media (min-width: 768px) {
+    .intros-grid {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: var(--space-5);
+    }
+}
+
+.intro-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-5);
+    border: 1px solid var(--border-subtle);
+    background: var(--surface-elevated);
+    transition: border-color var(--duration-fast) var(--ease-in-out), transform var(--duration-fast) var(--ease-in-out);
+}
+
+.intro-card:hover {
+    border-color: var(--border-strong);
+    transform: translateY(-2px);
+}
+
+.intro-card.processing {
+    opacity: 0.55;
+    pointer-events: none;
+}
+
+.intro-top {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-3);
+}
+
+.intro-avatar {
+    width: 54px;
+    height: 54px;
+    border-radius: var(--radius-full);
+    background: var(--primary);
+    color: var(--text-on-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.1rem;
+    overflow: hidden;
+}
+
+.intro-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.intro-score {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    border-radius: var(--radius-full);
+    background: var(--status-info-bg);
+    color: var(--status-info-fg);
+    padding: 0.3rem 0.7rem;
+    font-size: 0.8rem;
+}
+
+.intro-info h3 {
+    margin: 0;
+    color: var(--text-primary);
+}
+
+.intro-offer,
+.intro-location,
+.intro-expiry {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin: 0.15rem 0;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+.intro-expiry {
+    color: var(--status-warning-fg);
+}
+
+.intro-skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+}
+
+.intro-skills .skill-badge {
+    border-radius: var(--radius-full);
+    padding: 0.2rem 0.55rem;
+    background: var(--surface-muted);
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.intro-skills .skill-badge.more {
+    background: transparent;
+    border: 1px solid var(--border-subtle);
+}
+
+.intro-bio {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.88rem;
+    line-height: 1.45;
+}
+
+.intro-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-top: var(--space-2);
+}
+
+.intro-actions .btn {
+    flex: 1;
+    min-width: 112px;
+    justify-content: center;
+}
+
+.intro-actions .btn.btn-danger {
+    background: var(--status-error-bg);
+    color: var(--status-error-fg);
+    border: 1px solid var(--status-error-border);
+}
+
+.intros-loading,
+.intros-error,
+.no-intros {
+    text-align: center;
+    padding: var(--space-10);
+    max-width: 620px;
+    margin: 0 auto;
+}
+
+.intros-loading,
+.intros-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.intros-error h2,
+.no-intros h2 {
+    margin: 0;
+    color: var(--text-primary);
+}
+
+.intros-error p,
+.no-intros p,
+.intros-loading p {
+    margin: 0;
+    color: var(--text-secondary);
+}
+
+.no-intros .empty-icon {
+    color: var(--text-muted);
+    margin-bottom: var(--space-3);
+}
+
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}

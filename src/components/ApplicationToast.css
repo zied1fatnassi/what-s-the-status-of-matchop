@@ -1,0 +1,161 @@
+.application-toast {
+    position: fixed;
+    bottom: -120px;
+    left: 50%;
+    transform: translateX(-50%) scale(0.85);
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-4) var(--space-5);
+    background: linear-gradient(
+        135deg,
+        var(--accent-teal) 0%,
+        color-mix(in srgb, var(--accent-teal) 78%, black) 100%
+    );
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-xl);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    z-index: 2300;
+    opacity: 0;
+    cursor: pointer;
+    transition: bottom 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
+                opacity 0.35s ease-out,
+                transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+    max-width: min(520px, calc(100vw - (2 * var(--space-4))));
+}
+
+.application-toast.visible {
+    bottom: calc(var(--space-8) + var(--safe-bottom));
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+}
+
+.application-toast.exiting {
+    bottom: -120px;
+    opacity: 0;
+    transform: translateX(-50%) scale(0.9);
+}
+
+.application-toast .toast-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    color: white;
+    animation: applicationToastIconPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s both,
+               applicationToastPulse 1.2s ease-in-out 0.6s infinite;
+}
+
+.application-toast .toast-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+.application-toast .toast-title {
+    font-weight: 600;
+    color: white;
+    font-size: var(--font-size-base);
+}
+
+.application-toast .toast-message {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: var(--font-size-sm);
+}
+
+.application-toast .toast-message strong {
+    color: #90caf9;
+}
+
+.application-toast .toast-check {
+    color: #4caf50;
+    animation: applicationToastCheck 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s both;
+}
+
+@keyframes applicationToastIconPop {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    60% {
+        transform: scale(1.15);
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes applicationToastPulse {
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.08);
+    }
+}
+
+@keyframes applicationToastCheck {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@media (max-width: 480px) {
+    .application-toast {
+        left: var(--space-4);
+        right: var(--space-4);
+        transform: translateX(0) scale(0.85);
+        max-width: none;
+        padding: var(--space-3);
+    }
+
+    .application-toast.visible {
+        transform: translateX(0) scale(1);
+    }
+
+    .application-toast.exiting {
+        transform: translateX(0) scale(0.9);
+    }
+}
+
+.application-toast.external {
+    background: linear-gradient(135deg, #43a047 0%, #2e7d32 100%);
+}
+
+.application-toast.external .toast-message strong {
+    color: #c8e6c9;
+}
+
+.application-toast.favorites {
+    background: linear-gradient(
+        135deg,
+        var(--primary) 0%,
+        color-mix(in srgb, var(--primary) 78%, black) 100%
+    );
+}
+
+.application-toast.rejected {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.application-toast.rejected .toast-check {
+    color: rgba(255, 255, 255, 0.9);
+}

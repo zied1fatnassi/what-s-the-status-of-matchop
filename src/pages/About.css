@@ -1,0 +1,143 @@
+/* ===================================
+   ABOUT PAGE - BENTO EDITORIAL STYLING
+   ================================ */
+
+.about-page {
+    padding: clamp(3rem, 6vw, 5rem) var(--space-4);
+    min-height: calc(100vh - var(--nav-height-desktop));
+}
+
+.about-hero-card {
+    padding: clamp(2.5rem, 5vw, 4rem) clamp(1.5rem, 4vw, 3rem);
+    text-align: center;
+    margin-bottom: clamp(2rem, 4vw, 3rem);
+    background: var(--bento-card);
+    border: 1px solid var(--bento-card-border);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    overflow: hidden;
+}
+
+.about-hero-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 600px;
+    height: 300px;
+    background: radial-gradient(ellipse, var(--primary-glow) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.about-hero-title {
+    font-size: clamp(2rem, 5vw, 3.25rem);
+    font-weight: 800;
+    margin-bottom: 0.75rem;
+    color: var(--text-primary);
+    letter-spacing: -0.03em;
+}
+
+.about-hero-subtitle {
+    font-size: clamp(1.1rem, 2.5vw, 1.35rem);
+    color: var(--primary);
+    font-weight: 600;
+    margin: 0 auto 1.25rem;
+    max-width: 600px;
+}
+
+.about-hero-desc {
+    font-size: clamp(0.95rem, 1.8vw, 1.1rem);
+    color: var(--text-secondary);
+    max-width: 760px;
+    margin: 0 auto;
+    line-height: 1.7;
+}
+
+.about-bento-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: clamp(1.25rem, 2.5vw, 2rem);
+    margin-bottom: clamp(2rem, 4vw, 3rem);
+}
+
+.about-feature-card {
+    padding: clamp(1.75rem, 3vw, 2.5rem);
+    background: var(--bento-card);
+    border: 1px solid var(--bento-card-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+    transition: all var(--duration-normal) var(--ease-in-out);
+    display: flex;
+    flex-direction: column;
+}
+
+.about-feature-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-xl);
+    border-color: var(--primary);
+}
+
+.about-card-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.25rem;
+    flex-shrink: 0;
+}
+
+.about-card-icon--blue {
+    background: rgba(59, 130, 246, 0.12);
+    color: var(--primary);
+}
+
+.about-card-icon--purple {
+    background: rgba(167, 139, 250, 0.12);
+    color: var(--accent-purple);
+}
+
+.about-card-icon--teal {
+    background: rgba(20, 184, 166, 0.12);
+    color: var(--accent-teal);
+}
+
+.about-card-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.65rem;
+    color: var(--text-primary);
+}
+
+.about-card-desc {
+    color: var(--text-secondary);
+    font-size: 0.92rem;
+    line-height: 1.6;
+    margin-bottom: 0;
+}
+
+.about-cta-card {
+    padding: clamp(2rem, 4vw, 3rem);
+    background: var(--bento-card);
+    border: 1px solid var(--bento-card-border);
+    border-radius: var(--radius-2xl);
+    text-align: center;
+    box-shadow: var(--shadow-md);
+}
+
+.about-cta-title {
+    font-size: clamp(1.2rem, 2.5vw, 1.45rem);
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.45rem;
+}
+
+.about-cta-subtitle {
+    font-size: 1.05rem;
+    color: var(--primary);
+    font-weight: 600;
+    margin: 0;
+}

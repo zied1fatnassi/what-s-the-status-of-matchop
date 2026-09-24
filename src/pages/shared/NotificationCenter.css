@@ -1,0 +1,115 @@
+.notifications-page {
+    min-height: calc(100dvh - 80px);
+    padding: var(--space-6) var(--space-4);
+    background:
+        radial-gradient(circle at 16% 0%, color-mix(in srgb, var(--primary) 11%, transparent), transparent 48%),
+        radial-gradient(circle at 88% 100%, color-mix(in srgb, var(--accent-teal) 10%, transparent), transparent 46%),
+        var(--bento-bg);
+}
+
+.notifications-shell {
+    width: min(100%, 820px);
+    margin: 0 auto;
+    padding: var(--space-5);
+    border-radius: var(--radius-xl);
+    display: grid;
+    gap: var(--space-3);
+}
+
+.notifications-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+}
+
+.notifications-header h1 {
+    margin: 0;
+}
+
+.notifications-header p {
+    margin: 0.32rem 0 0;
+    color: var(--text-secondary);
+}
+
+.notifications-filters {
+    display: inline-flex;
+    gap: 0.35rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    padding: 0.2rem;
+    width: fit-content;
+}
+
+.notifications-filter {
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    border-radius: var(--radius-pill);
+    padding: 0.4rem 0.75rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.notifications-filter.active {
+    background: var(--surface-2);
+    color: var(--text-primary);
+}
+
+.notifications-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.55rem;
+}
+
+.notifications-item {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    color: var(--text-primary);
+    padding: 0.7rem 0.8rem;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-2);
+    text-align: left;
+    cursor: pointer;
+}
+
+.notifications-item.unread {
+    border-color: color-mix(in srgb, var(--primary) 45%, var(--border));
+    background: color-mix(in srgb, var(--primary) 8%, var(--surface));
+}
+
+.notifications-item strong {
+    display: block;
+    font-size: 0.9rem;
+}
+
+.notifications-item p {
+    margin: 0.3rem 0 0;
+    color: var(--text-secondary);
+    font-size: 0.82rem;
+}
+
+.notifications-item span {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    white-space: nowrap;
+}
+
+.notifications-empty {
+    border: 1px dashed var(--border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+    text-align: center;
+    color: var(--text-secondary);
+    display: grid;
+    gap: var(--space-2);
+    justify-items: center;
+}

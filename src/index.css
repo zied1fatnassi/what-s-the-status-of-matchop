@@ -1,0 +1,1057 @@
+/* ===================================
+   MATCHOP BENTO GRID DESIGN SYSTEM
+   Premium Dark/Light Theme with Robust Switching
+   ================================ */
+
+:root {
+  /* --- TYPOGRAPHY (Instrument Sans UI/Body + Instrument Serif Display) --- */
+  --font-sans: 'Instrument Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-serif: 'Instrument Serif', Georgia, serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* --- 1. BRAND COLORS (Preserved) --- */
+  --primary: #3b82f6;
+  --primary-hover: #60a5fa;
+  --primary-light: #93c5fd;
+  --primary-dark: #2563eb;
+  --primary-glow: rgba(59, 130, 246, 0.3);
+  --primary-rgb: 59, 130, 246;
+
+  /* Semantic Accents (Preserved) */
+  --accent-teal: #14b8a6;
+  --accent-purple: #a78bfa;
+  --accent-rose: #fb7185;
+  --accent-amber: #fbbf24;
+  --accent-green: #4ade80;
+  --accent-red: #ef4444;
+
+  /* --- 2. BENTO RADIUS (Pill-shaped, Heavy Border Radius) --- */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+  --radius-2xl: 1.5rem;
+  --radius-3xl: 1.875rem;
+  --radius-bento: 1.5rem;
+  --radius-pill: 9999px;
+  --radius-full: 9999px;
+
+  /* --- 3. SPACING SCALE --- */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+
+  /* --- 4. ANIMATION (Premium, Polished) --- */
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --ease-out: cubic-bezier(0.215, 0.61, 0.355, 1);
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-fast: 150ms;
+  --duration-normal: 300ms;
+  --duration-slow: 400ms;
+
+  /* --- 5. BENTO GRID LAYOUT --- */
+  --bento-gap: var(--space-4);
+  --bento-padding: var(--space-6);
+
+  /* --- 6. RESPONSIVE LAYOUT CONTRACT --- */
+  --nav-height-mobile: 70px;
+  --nav-height-desktop: 90px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --page-x-padding: clamp(0.75rem, 2.5vw, 1.5rem);
+  --content-max-width: 1280px;
+  --feed-max-width: 620px;
+  --touch-target-min: 44px;
+  --breakpoint-mobile-max: 767px;
+  --breakpoint-tablet-min: 768px;
+  --breakpoint-desktop-min: 1200px;
+}
+
+/* ===================================
+   LIGHT MODE (Default)
+   ================================ */
+:root,
+[data-theme='light'] {
+  /* Background */
+  --bento-bg: #f8fafc;
+  --bg-main: #f8fafc;
+  --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  
+  /* Card System */
+  --bento-card: #ffffff;
+  --bento-card-hover: #f1f5f9;
+  --bento-card-border: #e2e8f0;
+  --bento-card-border-subtle: rgba(0, 0, 0, 0.06);
+  
+  /* Glass Effects */
+  --glass-base: rgba(255, 255, 255, 0.85);
+  --glass-base-hover: rgba(255, 255, 255, 0.95);
+  --glass-surface: rgba(255, 255, 255, 0.9);
+  --glass-surface-hover: rgba(255, 255, 255, 1);
+  --glass-border: rgba(0, 0, 0, 0.08);
+  --glass-highlight: rgba(255, 255, 255, 0.9);
+  --glass-blur: 20px;
+  --glass-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  
+  /* Text Colors */
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-tertiary: #64748b;
+  --text-muted: #94a3b8;
+  --text-on-primary: #ffffff;
+
+  --surface-elevated: color-mix(in srgb, var(--bento-card) 96%, transparent);
+  --surface-soft: color-mix(in srgb, var(--bento-card) 90%, transparent);
+  --surface-muted: color-mix(in srgb, var(--bento-card) 84%, transparent);
+  --border-default: var(--bento-card-border-subtle);
+  --border-strong: color-mix(in srgb, var(--text-primary) 18%, transparent);
+  --overlay-bg: rgba(15, 23, 42, 0.52);
+
+  --status-pending-fg: #b45309;
+  --status-pending-bg: rgba(245, 158, 11, 0.14);
+  --status-pending-border: rgba(217, 119, 6, 0.35);
+  --status-approved-fg: #166534;
+  --status-approved-bg: rgba(34, 197, 94, 0.14);
+  --status-approved-border: rgba(22, 163, 74, 0.32);
+  --status-rejected-fg: #b91c1c;
+  --status-rejected-bg: rgba(239, 68, 68, 0.14);
+  --status-rejected-border: rgba(220, 38, 38, 0.32);
+
+  /* Semantic Theme Contract */
+  --bg: var(--bg-main);
+  --surface: var(--surface-elevated);
+  --surface-2: var(--surface-soft);
+  --text: var(--text-primary);
+  --border: var(--border-default);
+  --shadow: var(--shadow-md);
+  --danger: #b91c1c;
+  --success: #15803d;
+  --warning: #b45309;
+  
+  /* Input Fields */
+  --input-bg: #ffffff;
+  --input-border: #e2e8f0;
+  --input-focus-bg: #f8fafc;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 50px rgba(0, 0, 0, 0.12);
+  --shadow-glow: 0 0 30px rgba(59, 130, 246, 0.15);
+  
+  /* Neutral Scale */
+  --neutral-50: #f8fafc;
+  --neutral-100: #f1f5f9;
+  --neutral-200: #e2e8f0;
+  --neutral-300: #cbd5e1;
+  --neutral-400: #94a3b8;
+  --neutral-500: #64748b;
+  --neutral-600: #475569;
+  --neutral-700: #334155;
+  --neutral-800: #1e293b;
+  --neutral-900: #0f172a;
+
+  /* Scrollbar */
+  --scrollbar-track: #f1f5f9;
+  --scrollbar-thumb: #cbd5e1;
+  --scrollbar-thumb-hover: #94a3b8;
+}
+
+/* ===================================
+   DARK MODE
+   ================================ */
+[data-theme='dark'] {
+  /* Background */
+  --bento-bg: #0a0a0b;
+  --bg-main: #0a0a0b;
+  --bg-gradient: linear-gradient(135deg, #0a0a0b 0%, #141417 100%);
+  
+  /* Card System */
+  --bento-card: #1c1c21;
+  --bento-card-hover: #26262d;
+  --bento-card-border: #32323b;
+  --bento-card-border-subtle: rgba(255, 255, 255, 0.06);
+  
+  /* Glass Effects */
+  --glass-base: rgba(28, 28, 33, 0.9);
+  --glass-base-hover: rgba(38, 38, 45, 0.95);
+  --glass-surface: rgba(28, 28, 33, 0.85);
+  --glass-surface-hover: rgba(38, 38, 45, 0.9);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-highlight: rgba(255, 255, 255, 0.1);
+  --glass-blur: 20px;
+  --glass-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  
+  /* Text Colors */
+  --text-primary: #fafafa;
+  --text-secondary: #a1a1aa;
+  --text-tertiary: #71717a;
+  --text-muted: #52525b;
+  --text-on-primary: #ffffff;
+
+  --surface-elevated: color-mix(in srgb, var(--bento-card) 96%, transparent);
+  --surface-soft: color-mix(in srgb, var(--bento-card) 90%, transparent);
+  --surface-muted: color-mix(in srgb, var(--bento-card) 84%, transparent);
+  --border-default: var(--bento-card-border-subtle);
+  --border-strong: color-mix(in srgb, var(--text-primary) 24%, transparent);
+  --overlay-bg: rgba(0, 0, 0, 0.68);
+
+  --status-pending-fg: #fbbf24;
+  --status-pending-bg: rgba(251, 191, 36, 0.16);
+  --status-pending-border: rgba(245, 158, 11, 0.45);
+  --status-approved-fg: #86efac;
+  --status-approved-bg: rgba(34, 197, 94, 0.2);
+  --status-approved-border: rgba(34, 197, 94, 0.45);
+  --status-rejected-fg: #fca5a5;
+  --status-rejected-bg: rgba(239, 68, 68, 0.2);
+  --status-rejected-border: rgba(239, 68, 68, 0.45);
+
+  /* Semantic Theme Contract */
+  --bg: var(--bg-main);
+  --surface: var(--surface-elevated);
+  --surface-2: var(--surface-soft);
+  --text: var(--text-primary);
+  --border: var(--border-default);
+  --shadow: var(--shadow-md);
+  --danger: #b91c1c;
+  --success: #15803d;
+  --warning: #b45309;
+  
+  /* Input Fields */
+  --input-bg: #26262d;
+  --input-border: #32323b;
+  --input-focus-bg: #32323b;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.6);
+  --shadow-xl: 0 20px 50px rgba(0, 0, 0, 0.7);
+  --shadow-glow: 0 0 30px rgba(59, 130, 246, 0.2);
+  
+  /* Neutral Scale */
+  --neutral-50: #fafafa;
+  --neutral-100: #e4e4e8;
+  --neutral-200: #b8b8c2;
+  --neutral-300: #8e8e9a;
+  --neutral-400: #62626e;
+  --neutral-500: #45454f;
+  --neutral-600: #32323b;
+  --neutral-700: #26262d;
+  --neutral-800: #1c1c21;
+  --neutral-900: #141417;
+
+  /* Scrollbar */
+  --scrollbar-track: #141417;
+  --scrollbar-thumb: #32323b;
+  --scrollbar-thumb-hover: #45454f;
+}
+
+/* --- Base Reset (MOBILE-FIRST) --- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  overflow-x: hidden;
+  height: 100dvh;
+  height: -webkit-fill-available;
+  background: var(--bento-bg);
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bento-bg);
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 100dvh;
+  min-height: -webkit-fill-available;
+  overflow-x: hidden;
+  padding-top: var(--safe-top);
+  padding-bottom: var(--safe-bottom);
+  padding-left: var(--safe-left);
+  padding-right: var(--safe-right);
+  -webkit-overflow-scrolling: touch;
+}
+
+body.navbar-menu-open {
+  overflow: hidden;
+}
+
+body.overlay-open {
+  overflow: hidden;
+  overscroll-behavior: contain;
+}
+
+#root {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bento-bg);
+}
+
+/* --- Typography --- */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-sans);
+  color: var(--text-primary);
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+h1 { font-size: clamp(1.75rem, 6vw, 3rem); }
+h2 { font-size: clamp(1.5rem, 5vw, 2.25rem); }
+h3 { font-size: clamp(1.25rem, 4vw, 1.5rem); }
+h4 { font-size: clamp(1rem, 3vw, 1.25rem); }
+
+p {
+  color: var(--text-secondary);
+  margin-bottom: var(--space-4);
+  max-width: 65ch;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: color var(--duration-fast);
+}
+
+/* ===================================
+   BENTO CARD SYSTEM
+   ================================ */
+
+/* Standard Bento Card */
+.bento-card {
+  background: var(--bento-card);
+  border: 1px solid var(--bento-card-border-subtle);
+  border-radius: var(--radius-bento);
+  padding: var(--bento-padding);
+  transition: all var(--duration-normal) var(--ease-in-out);
+}
+
+.bento-card:hover {
+  background: var(--bento-card-hover);
+  border-color: var(--bento-card-border);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Legacy glass-card compatibility - now unified with Bento */
+.glass-card {
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-bento);
+  box-shadow: var(--shadow-md);
+  transition: all var(--duration-normal) var(--ease-in-out);
+}
+
+.glass-card:hover {
+  background: var(--glass-surface-hover);
+  border-color: var(--bento-card-border);
+  box-shadow: var(--shadow-lg);
+}
+
+@media (min-width: 768px) {
+  .glass-card:hover {
+    transform: translateY(-4px);
+  }
+}
+
+/* ===================================
+   BENTO GRID LAYOUTS
+   ================================ */
+
+/* Main Bento Grid Container */
+.bento-grid {
+  display: grid;
+  gap: var(--bento-gap);
+  padding: var(--space-4);
+}
+
+/* Dashboard Layout: Main Stage + Widgets */
+.bento-dashboard {
+  display: grid;
+  gap: var(--bento-gap);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .bento-dashboard {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: 1024px) {
+  .bento-dashboard {
+    grid-template-columns: 2fr 1fr;
+  }
+}
+
+/* Main Stage Card (Large Focus) */
+.bento-main {
+  grid-column: 1 / -1;
+  background: var(--bento-card);
+  border: 1px solid var(--bento-card-border-subtle);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-6);
+  min-height: 300px;
+}
+
+@media (min-width: 768px) {
+  .bento-main {
+    grid-column: 1 / 2;
+    grid-row: span 2;
+    padding: var(--space-8);
+  }
+}
+
+/* Widget Cards (Secondary) */
+.bento-widget {
+  background: var(--bento-card);
+  border: 1px solid var(--bento-card-border-subtle);
+  border-radius: var(--radius-xl);
+  padding: var(--space-5);
+  transition: all var(--duration-normal) var(--ease-in-out);
+}
+
+.bento-widget:hover {
+  background: var(--bento-card-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Sidebar Widgets Stack */
+.bento-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bento-gap);
+}
+
+/* Equal Grid (2x2, 3x3) */
+.bento-equal-grid {
+  display: grid;
+  gap: var(--bento-gap);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .bento-equal-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .bento-equal-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ===================================
+   BENTO INPUTS (Pill-shaped)
+   ================================ */
+.input,
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="search"],
+input[type="tel"],
+input[type="url"],
+select,
+textarea {
+  width: 100%;
+  padding: var(--space-3) var(--space-5);
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: var(--radius-xl);
+  color: var(--text-primary);
+  font-size: 16px;
+  font-family: inherit;
+  min-height: 48px;
+  transition: all var(--duration-normal) var(--ease-in-out);
+}
+
+.input:focus,
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: var(--input-focus-bg);
+  box-shadow: 0 0 0 3px var(--primary-glow);
+}
+
+.input::placeholder,
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-muted);
+}
+
+textarea {
+  border-radius: var(--radius-xl);
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* ===================================
+   BENTO BUTTONS (Pill-shaped)
+   ================================ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-6);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  border: none;
+  min-height: 44px;
+  transition: all var(--duration-normal) var(--ease-in-out);
+  white-space: nowrap;
+}
+
+.btn-sm {
+  padding: var(--space-2) var(--space-4);
+  font-size: 0.85rem;
+  min-height: 36px;
+}
+
+.btn-lg {
+  padding: var(--space-4) var(--space-8);
+  font-size: 1.1rem;
+  min-height: 52px;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: var(--text-on-primary);
+  box-shadow: 0 2px 8px var(--primary-glow);
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px var(--primary-glow);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px var(--primary-glow);
+}
+
+.btn-secondary {
+  background: var(--glass-surface);
+  border: 1px solid var(--glass-border);
+  color: var(--text-primary);
+  backdrop-filter: blur(8px);
+}
+
+.btn-secondary:hover {
+  background: var(--glass-surface-hover);
+  border-color: var(--primary);
+  color: var(--primary);
+  transform: translateY(-2px);
+}
+
+.btn-secondary:active {
+  transform: translateY(0);
+}
+
+/* Ghost/Outline Button */
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--glass-border);
+  color: var(--text-secondary);
+}
+
+.btn-ghost:hover {
+  background: var(--glass-surface);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* Utilities */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  /* Tighter container for readability */
+  margin: 0 auto;
+  /* MOBILE-FIRST: Start with mobile padding, scale up */
+  padding: 0 var(--space-4);
+}
+
+/* Responsive container padding */
+@media (min-width: 640px) {
+  .container {
+    padding: 0 var(--space-6);
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    padding: 0 var(--space-8);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s var(--ease-out) forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Scrollbar Polish - Theme Aware */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 4px;
+  transition: background var(--duration-normal) var(--ease-in-out);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+/* Firefox Scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+/* ===================================
+   PREMIUM ANIMATIONS
+   ================================ */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s var(--ease-in-out) forwards;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s var(--ease-in-out) forwards;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.3s var(--ease-in-out) forwards;
+}
+
+/* Hover Lift Effect */
+.hover-lift {
+  transition: transform var(--duration-normal) var(--ease-in-out),
+              box-shadow var(--duration-normal) var(--ease-in-out);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* ===================================
+   MOBILE-FIRST RESPONSIVE SYSTEM
+   ================================ */
+
+/* Disable transform animations on mobile (prevents stuck hover states) */
+@media (max-width: 767px) {
+  .glass-card:hover,
+  .bento-card:hover,
+  .bento-widget:hover,
+  .btn-primary:hover,
+  .btn-secondary:hover,
+  .hover-lift:hover {
+    transform: none;
+  }
+}
+
+/* MOBILE TOUCH TARGETS - Minimum 44px for accessibility */
+@media (max-width: 767px) {
+  .btn {
+    min-height: 44px;
+    padding: 0.75rem 1.5rem;
+  }
+  
+  .btn-sm {
+    min-height: 44px;
+    padding: 0.75rem 1.25rem;
+  }
+}
+
+/* MOBILE INPUTS - Prevent iOS zoom (16px minimum) */
+.input,
+select,
+textarea {
+  min-height: 48px;
+  font-size: 16px;
+}
+
+@media (min-width: 768px) {
+  .input,
+  select,
+  textarea {
+    min-height: 44px;
+    font-size: 1rem;
+  }
+}
+
+/* ===================================
+   MOBILE UTILITY CLASSES
+   ================================ */
+
+/* Responsive flex utilities */
+.flex-col-mobile {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 768px) {
+  .flex-col-mobile {
+    flex-direction: row;
+  }
+}
+
+/* Responsive grid utilities */
+.grid-mobile-1 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+}
+
+@media (min-width: 640px) {
+  .grid-mobile-1 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid-mobile-1 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Full-width on mobile, auto on larger */
+.w-full-mobile {
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .w-full-mobile {
+    width: auto;
+  }
+}
+
+/* Hide on mobile, show on desktop */
+.hide-mobile {
+  display: none !important;
+}
+
+@media (min-width: 768px) {
+  .hide-mobile {
+    display: flex !important;
+  }
+}
+
+/* Show on mobile, hide on desktop */
+.show-mobile {
+  display: flex !important;
+}
+
+@media (min-width: 768px) {
+  .show-mobile {
+    display: none !important;
+  }
+}
+
+/* Safe scroll padding for fixed headers */
+.page-with-navbar {
+  padding-top: calc(var(--nav-height-desktop) + var(--safe-top));
+}
+
+@media (max-width: 767px) {
+  .page-with-navbar {
+    padding-top: calc(var(--nav-height-mobile) + var(--safe-top));
+  }
+}
+
+/* ============================================================
+   APP MAIN CONTENT AREA
+   Replaces the inline style on <main> in App.jsx.
+   Accounts for fixed navbar height + mobile differences.
+   ============================================================ */
+/* When on landing: use theme background, no gradient rectangle */
+.app-wrapper--landing {
+  background: var(--bento-bg);
+}
+
+.app-main {
+  flex: 1;
+  width: 100%;
+  padding-top: calc(var(--nav-height-mobile) + var(--safe-top));
+}
+.app-main--landing {
+  padding-top: 0;
+}
+.footer-placeholder {
+  min-height: 280px;
+}
+@media (max-width: 768px) {
+  .footer-placeholder {
+    min-height: 340px;
+  }
+}
+
+@media (min-width: 768px) {
+  .app-main {
+    padding-top: calc(var(--nav-height-desktop) + var(--safe-top));
+  }
+  .app-main--landing {
+    padding-top: 0;
+  }
+}
+
+@media (max-width: 767px) {
+  body.navbar-menu-open,
+  body.overlay-open {
+    touch-action: none;
+  }
+}
+
+/* Shared page shells */
+.page-shell {
+  min-height: calc(100dvh - (var(--nav-height-mobile) + var(--safe-top)));
+  padding-bottom: var(--safe-bottom);
+}
+
+@media (min-width: 768px) {
+  .page-shell {
+    min-height: calc(100dvh - (var(--nav-height-desktop) + var(--safe-top)));
+  }
+}
+
+.page-shell--full {
+  min-height: 100dvh;
+}
+
+.content-shell {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding-left: var(--page-x-padding);
+  padding-right: var(--page-x-padding);
+}
+
+.sticky-under-navbar {
+  top: calc(var(--nav-height-mobile) + var(--safe-top));
+}
+
+@media (min-width: 768px) {
+  .sticky-under-navbar {
+    top: calc(var(--nav-height-desktop) + var(--safe-top));
+  }
+}
+
+.app-main,
+.page-shell,
+.content-shell {
+  overflow-x: clip;
+}
+
+/* ============================================================
+   UTILITY CLASSES
+   Provides the utility classes referenced throughout JSX files.
+   These were originally ghost Tailwind references (Tailwind is
+   NOT installed). This block makes them functional.
+   ============================================================ */
+
+/* Typography */
+.font-sans { font-family: var(--font-sans); }
+.font-serif { font-family: var(--font-serif); }
+.font-serif-accent {
+  font-family: var(--font-serif) !important;
+  font-style: italic !important;
+  font-weight: 400 !important;
+  letter-spacing: -0.01em;
+}
+.text-primary { color: var(--text-primary); }
+.text-muted { color: var(--text-muted); }
+.text-xs { font-size: 0.75rem; line-height: 1rem; }
+.text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+.text-base { font-size: 1rem; line-height: 1.5rem; }
+.text-lg { font-size: 1.125rem; line-height: 1.75rem; }
+.text-xl { font-size: 1.25rem; line-height: 1.75rem; }
+.text-2xl { font-size: 1.5rem; line-height: 2rem; }
+.text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+.text-4xl { font-size: 2.25rem; line-height: 2.5rem; }
+.text-5xl { font-size: 3rem; line-height: 1; }
+.text-6xl { font-size: 3.75rem; line-height: 1; }
+.font-normal { font-weight: 400; }
+.font-medium { font-weight: 500; }
+.font-semibold { font-weight: 600; }
+.font-bold { font-weight: 700; }
+.underline { text-decoration: underline; }
+.text-center { text-align: center; }
+.leading-tight { line-height: 1.25; }
+.leading-relaxed { line-height: 1.625; }
+
+/* Spacing - Margin */
+.m-0 { margin: 0; }
+.mt-1 { margin-top: 0.25rem; }
+.mt-2 { margin-top: 0.5rem; }
+.mt-3 { margin-top: 0.75rem; }
+.mt-4 { margin-top: 1rem; }
+.mt-6 { margin-top: 1.5rem; }
+.mt-8 { margin-top: 2rem; }
+.mb-1 { margin-bottom: 0.25rem; }
+.mb-2 { margin-bottom: 0.5rem; }
+.mb-3 { margin-bottom: 0.75rem; }
+.mb-4 { margin-bottom: 1rem; }
+.mb-6 { margin-bottom: 1.5rem; }
+.mb-8 { margin-bottom: 2rem; }
+.ml-1 { margin-left: 0.25rem; }
+.ml-2 { margin-left: 0.5rem; }
+.mr-1 { margin-right: 0.25rem; }
+.mr-2 { margin-right: 0.5rem; }
+.mx-auto { margin-left: auto; margin-right: auto; }
+
+/* Spacing - Padding */
+.p-2 { padding: 0.5rem; }
+.p-3 { padding: 0.75rem; }
+.p-4 { padding: 1rem; }
+.px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+.px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+.px-4 { padding-left: 1rem; padding-right: 1rem; }
+.py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+.py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+
+/* Flexbox */
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.gap-1 { gap: 0.25rem; }
+.gap-2 { gap: 0.5rem; }
+.gap-3 { gap: 0.75rem; }
+.gap-4 { gap: 1rem; }
+.flex-1 { flex: 1; }
+.flex-wrap { flex-wrap: wrap; }
+
+/* Width/Height */
+.w-full { width: 100%; }
+.h-full { height: 100%; }
+.min-h-screen {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* Colors */
+.text-red-500 { color: #ef4444; }
+.text-green-500 { color: #22c55e; }
+.text-yellow-500 { color: #eab308; }
+.text-blue-500 { color: #3b82f6; }
+.text-white { color: #ffffff; }
+.bg-red-500 { background-color: #ef4444; }
+.bg-green-500 { background-color: #22c55e; }
+
+/* Animation */
+.animate-spin {
+  animation: utility-spin 1s linear infinite;
+}
+@keyframes utility-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.animate-pulse {
+  animation: utility-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+@keyframes utility-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Misc */
+.rounded { border-radius: var(--radius-md, 0.5rem); }
+.rounded-full { border-radius: 9999px; }
+.shadow { box-shadow: var(--shadow-sm); }
+.overflow-hidden { overflow: hidden; }
+.truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border-width: 0; }

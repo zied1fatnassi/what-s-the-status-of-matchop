@@ -1,0 +1,62 @@
+.profile-referrals-card {
+    margin-top: var(--space-3);
+    margin-bottom: var(--space-4);
+    border: 1px solid var(--bento-card-border-subtle);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    padding: var(--space-3);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+}
+
+.profile-referrals-card-compact {
+    padding: var(--space-2) var(--space-3);
+}
+
+.profile-referrals-card-emphasized {
+    border-color: color-mix(in srgb, var(--accent-teal) 45%, var(--border));
+    background: color-mix(in srgb, var(--accent-teal) 10%, var(--surface-2));
+}
+
+.profile-referrals-content {
+    min-width: min(300px, 100%);
+}
+
+.profile-referrals-title-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+.profile-referrals-title-row h2 {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--text-primary);
+}
+
+.profile-referrals-content p {
+    margin: 0.25rem 0 0;
+    color: var(--text-secondary);
+    font-size: 0.84rem;
+}
+
+.profile-referrals-code {
+    margin-top: 0.45rem;
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.76rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    padding: 0.2rem 0.55rem;
+    color: var(--text-muted);
+}
+
+.profile-referrals-actions {
+    display: flex;
+    gap: var(--space-2);
+    align-items: center;
+    flex-wrap: wrap;
+}

@@ -1,0 +1,291 @@
+/* ===================================
+   OFFER DETAIL MODAL - MOBILE FIRST
+   ================================ */
+
+.offer-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--overlay-bg);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: flex-end; /* MOBILE: Slide from bottom */
+    justify-content: center;
+    z-index: 2200;
+    padding: 0;
+    padding-bottom: var(--safe-bottom);
+    animation: fadeIn 0.2s ease;
+}
+
+@media (min-width: 768px) {
+    .offer-modal-overlay {
+        align-items: center;
+        padding: var(--space-4);
+    }
+}
+
+.offer-modal {
+    background: linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--surface) 94%, var(--primary) 6%) 0%,
+        color-mix(in srgb, var(--surface-2) 94%, var(--accent-purple) 6%) 100%
+    );
+    border: 1px solid var(--glass-border);
+    /* MOBILE: Full-width, rounded top only */
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    max-width: 100%;
+    width: 100%;
+    max-height: 90vh;
+    max-height: 90dvh;
+    overflow-y: auto;
+    position: relative;
+    padding: var(--space-4);
+    padding-bottom: calc(var(--space-6) + var(--safe-bottom));
+    animation: slideUp 0.3s ease;
+}
+
+@media (min-width: 768px) {
+    .offer-modal {
+        border-radius: var(--radius-2xl);
+        max-width: min(550px, 100%);
+        max-height: 85vh;
+        max-height: 85dvh;
+        padding: var(--space-6);
+    }
+}
+
+.modal-close {
+    position: absolute;
+    top: var(--space-3);
+    right: var(--space-3);
+    padding: var(--space-2);
+    color: var(--text-secondary);
+    border-radius: 9999px;
+    transition: all var(--transition-fast);
+    z-index: 10;
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+@media (min-width: 768px) {
+    .modal-close {
+        top: var(--space-4);
+        right: var(--space-4);
+    }
+}
+
+.modal-close:hover {
+    color: var(--text-primary);
+    background: var(--surface-2);
+}
+
+/* Header - MOBILE FIRST */
+.offer-modal-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-3);
+}
+
+@media (min-width: 768px) {
+    .offer-modal-header {
+        gap: var(--space-4);
+        margin-bottom: var(--space-4);
+    }
+}
+
+.offer-modal-header .company-logo {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-lg);
+    background: var(--accent-gradient, linear-gradient(135deg, var(--primary) 0%, var(--accent-purple) 100%));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-on-primary);
+    flex-shrink: 0;
+}
+
+@media (min-width: 768px) {
+    .offer-modal-header .company-logo {
+        width: 64px;
+        height: 64px;
+        border-radius: var(--radius-xl);
+        font-size: 1.5rem;
+    }
+}
+
+.offer-modal-header .company-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: var(--radius-xl);
+}
+
+.company-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.company-name {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.offer-type-badge {
+    display: inline-block;
+    padding: var(--space-1) var(--space-3);
+    background: rgba(139, 92, 246, 0.2);
+    color: var(--primary-light);
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    border-radius: 9999px;
+    width: fit-content;
+}
+
+/* Title */
+.offer-title {
+    font-size: var(--font-size-2xl);
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: var(--space-5);
+}
+
+/* Quick Info - MOBILE FIRST: Single column on mobile */
+.offer-quick-info {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-4);
+}
+
+@media (min-width: 480px) {
+    .offer-quick-info {
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-3);
+        padding: var(--space-4);
+        border-radius: var(--radius-xl);
+        margin-bottom: var(--space-5);
+    }
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+}
+
+.info-item svg {
+    color: var(--primary-light);
+    flex-shrink: 0;
+}
+
+/* OfferDetailModal.css */
+
+/* Modal Actions - Updated to include report button */
+.offer-modal-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-3);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--glass-border);
+    margin-top: var(--space-6);
+}
+
+.offer-modal-actions .action-buttons {
+    display: flex;
+    gap: var(--space-3);
+}
+
+.offer-modal-actions .report-btn {
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.offer-modal-actions .report-btn:hover {
+    color: var(--accent-red);
+}
+
+/* Sections */
+.offer-section {
+    margin-bottom: var(--space-5);
+}
+
+.offer-section h4 {
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: var(--space-2);
+}
+
+.offer-section p {
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+    line-height: 1.7;
+}
+
+/* Skills */
+.offer-skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+}
+
+.offer-skills .skill-tag {
+    padding: var(--space-2) var(--space-3);
+    background: color-mix(in srgb, var(--primary) 14%, var(--surface));
+    color: var(--primary);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    border-radius: 9999px;
+    border: 1px solid color-mix(in srgb, var(--primary) 28%, var(--border));
+}
+
+.offer-modal-actions .btn {
+    flex: 1;
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+    .offer-modal {
+        max-height: 90dvh;
+        padding: var(--space-4);
+        padding-bottom: calc(var(--space-5) + var(--safe-bottom));
+    }
+
+    .offer-quick-info {
+        grid-template-columns: 1fr;
+    }
+
+    .offer-modal-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .offer-modal-actions .action-buttons {
+        width: 100%;
+    }
+}
+

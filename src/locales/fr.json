@@ -1,0 +1,1701 @@
+{
+    "common": {
+        "loading": "Chargement...",
+        "error": "Une erreur s'est produite",
+        "retry": "Réessayer",
+        "save": "Enregistrer",
+        "cancel": "Annuler",
+        "close": "Fermer",
+        "continue": "Continuer",
+        "back": "Retour",
+        "submit": "Soumettre"
+    },
+    "nav": {
+        "discover": "Découvrir",
+        "matches": "Matchs",
+        "personalizedPlan": "Plan personnalise",
+        "referrals": "Parrainage",
+        "payments": "Paiements",
+        "language": "Langue",
+        "theme": "Theme",
+        "notifications": "Notifications",
+        "profile": "Profil",
+        "newCandidates": "Candidats",
+        "candidates": "Candidats",
+        "archived": "Archives",
+        "myOffers": "Mes offres",
+        "postJob": "Publier",
+        "logout": "Déconnexion"
+    },
+    "footer": {
+        "tagline": "Connecter les talents aux opportunites\ngrace a une decouverte alimentee par l'IA.",
+        "sections": {
+            "company": "Entreprise",
+            "legal": "Juridique",
+            "appearance": "Apparence"
+        },
+        "links": {
+            "aboutUs": "A propos",
+            "contact": "Contact",
+            "termsOfService": "Conditions d'utilisation",
+            "privacyPolicy": "Politique de confidentialite",
+            "cookiePolicy": "Politique des cookies"
+        },
+        "theme": {
+            "light": "Clair",
+            "dark": "Sombre",
+            "auto": "Auto"
+        },
+        "rightsReserved": "© {{year}} MatchOp. Tous droits reserves."
+    },
+    "aboutPage": {
+        "title": "A propos de MatchOp",
+        "subtitle": "Revolutionner les opportunites pour les talents tunisiens.",
+        "description": "Fonde par les developpeurs full-stack et orateurs en leadership Iheb Massabi et Zied Fatnassi, MatchOp comble l'ecart entre les diplomes tunisiens ambitieux et des stages de haute qualite dans le monde entier. Nous avons cree cette plateforme basee sur l'IA a partir de nos propres frustrations - trouver des opportunites pertinentes malgre nos competences et notre motivation.",
+        "cards": {
+            "mission": {
+                "title": "Notre Mission",
+                "description": "Permettre a chaque etudiant tunisien de reveler son potentiel grace a un matching sans biais, axe sur les competences. Fini les candidatures sans fin ou les barrieres - place a de vraies connexions avec des entreprises qui valorisent l'excellence."
+            },
+            "whyStarted": {
+                "title": "Pourquoi Nous Avons Commence",
+                "description": "En tant qu'entrepreneurs ayant pris la parole sur le leadership et l'innovation, nous avons maitrise le developpement full-stack mais avons rencontre des blocages pour trouver des roles a la hauteur de notre potentiel. Aujourd'hui, MatchOp propose des offres verifiees et de qualite afin que les nouveaux diplomes decrochent stages et emplois plus rapidement - en Tunisie et a l'international."
+            },
+            "globalImpact": {
+                "title": "Portee Globale, Impact Local",
+                "description": "Nous connectons les esprits les plus brillants de Tunisie a des opportunites internationales a distance. Les competences n'ont pas de frontieres, nous non plus. Chaque etudiant et chaque entreprise sur notre plateforme est verifie pour garantir la confiance et la qualite."
+            }
+        },
+        "cta": {
+            "title": "Rejoignez le mouvement.",
+            "subtitle": "Trouvez votre prochaine opportunité avec MatchOp."
+        }
+    },
+    "contactPage": {
+        "title": "Contactez-nous",
+        "subtitle": "Vous avez des questions sur MatchOp ? Nous sommes la pour vous aider. Contactez notre equipe pour le support, les partenariats ou toute demande generale.",
+        "info": {
+            "emailLabel": "Ecrivez-nous",
+            "emailValue": "contact@matchop.tech",
+            "phoneLabel": "Appelez-nous",
+            "phoneValue": "+216 71 123 456",
+            "addressLabel": "Rendez-nous visite",
+            "addressValue": "5111 Avenue Mahdia, El Mourouj"
+        },
+        "success": {
+            "title": "Merci !",
+            "message": "Votre message a ete envoye avec succes. Nous vous repondrons des que possible.",
+            "sendAnother": "Envoyer un autre message"
+        },
+        "form": {
+            "nameLabel": "Votre nom",
+            "namePlaceholder": "ex. Sarah Smith",
+            "emailLabel": "Adresse e-mail",
+            "emailPlaceholder": "sarah@example.com",
+            "subjectLabel": "Sujet",
+            "subjectPlaceholder": "De quoi s'agit-il ?",
+            "messageLabel": "Message",
+            "messagePlaceholder": "Comment pouvons-nous vous aider ?",
+            "sending": "Envoi...",
+            "sendMessage": "Envoyer le message"
+        },
+        "errors": {
+            "requiredFields": "Veuillez remplir tous les champs.",
+            "invalidEmail": "Veuillez saisir une adresse e-mail valide."
+        }
+    },
+    "termsPage": {
+        "backToHome": "Retour a l'accueil",
+        "title": "Conditions d'utilisation",
+        "lastUpdated": "Derniere mise a jour : 20 decembre 2024",
+        "sections": {
+            "acceptance": {
+                "title": "1. Acceptation des Conditions",
+                "body": "En accedant et en utilisant MatchOp (\"la Plateforme\"), vous acceptez d'etre lie par ces Conditions d'utilisation. Si vous n'acceptez pas ces conditions, veuillez ne pas utiliser nos services."
+            },
+            "service": {
+                "title": "2. Description du Service",
+                "body": "MatchOp est une plateforme de mise en relation professionnelle qui connecte les etudiants et jeunes diplomes avec des entreprises en recherche de talents. Notre service comprend :",
+                "items": {
+                    "profile": "Creation et gestion de profil",
+                    "discovery": "Découverte d'opportunités dans votre flux",
+                    "matching": "Mise en relation entre etudiants et entreprises",
+                    "messaging": "Messagerie directe entre profils apparies"
+                }
+            },
+            "accounts": {
+                "title": "3. Comptes Utilisateur",
+                "registrationTitle": "3.1 Inscription",
+                "registrationBody": "Pour utiliser notre Plateforme, vous devez creer un compte avec des informations exactes et completes. Vous etes responsable de la confidentialite de vos identifiants.",
+                "typesTitle": "3.2 Types de Comptes",
+                "typesBody": "MatchOp propose deux types de comptes :",
+                "items": {
+                    "studentLabel": "Comptes Etudiant :",
+                    "studentBody": "Pour les personnes a la recherche d'opportunites professionnelles",
+                    "companyLabel": "Comptes Entreprise :",
+                    "companyBody": "Pour les organisations souhaitant recruter des talents"
+                }
+            },
+            "conduct": {
+                "title": "4. Conduite des Utilisateurs",
+                "body": "Les utilisateurs s'engagent a ne pas :",
+                "items": {
+                    "falseInfo": "Fournir des informations fausses ou trompeuses",
+                    "harassment": "Harceler, abuser ou nuire a d'autres utilisateurs",
+                    "unlawful": "Utiliser la Plateforme a des fins illegales",
+                    "unauthorizedAccess": "Tenter d'obtenir un acces non autorise a nos systemes",
+                    "spam": "Envoyer du spam ou des messages non sollicites"
+                }
+            },
+            "content": {
+                "title": "5. Contenu",
+                "body": "Vous conservez la propriete du contenu que vous soumettez a MatchOp. En publiant du contenu, vous nous accordez une licence non exclusive pour utiliser, afficher et distribuer ce contenu sur notre Plateforme."
+            },
+            "privacy": {
+                "title": "6. Confidentialite",
+                "prefix": "Votre vie privee est importante pour nous. Veuillez consulter notre",
+                "link": "Politique de Confidentialite",
+                "suffix": "pour comprendre comment nous collectons, utilisons et protegeons vos informations."
+            },
+            "termination": {
+                "title": "7. Resiliation",
+                "body": "Nous nous reservons le droit de suspendre ou de resilier les comptes qui enfreignent ces Conditions d'utilisation ou pour toute autre raison a notre discretion."
+            },
+            "disclaimers": {
+                "title": "8. Clauses de Non-Responsabilite",
+                "body": "MatchOp est fourni \"tel quel\" sans garantie d'aucune sorte. Nous ne garantissons pas que vous trouverez un emploi ou des candidats adaptes via notre Plateforme."
+            },
+            "liability": {
+                "title": "9. Limitation de Responsabilite",
+                "body": "Dans les limites autorisees par la loi, MatchOp ne pourra etre tenu responsable des dommages indirects, accessoires ou consecutifs decoulant de votre utilisation de la Plateforme."
+            },
+            "changes": {
+                "title": "10. Modifications des Conditions",
+                "body": "Nous pouvons mettre a jour ces Conditions d'utilisation de temps a autre. Nous informerons les utilisateurs des changements importants par e-mail ou via la Plateforme."
+            },
+            "contact": {
+                "title": "Contactez-nous",
+                "prefix": "Si vous avez des questions concernant ces Conditions d'utilisation, veuillez nous contacter a :"
+            }
+        }
+    },
+    "privacyPage": {
+        "backToHome": "Retour a l'accueil",
+        "title": "Politique de Confidentialite",
+        "lastUpdated": "Derniere mise a jour : 20 decembre 2024",
+        "sections": {
+            "introduction": {
+                "title": "1. Introduction",
+                "body": "Chez MatchOp, nous prenons votre vie privee au serieux. Cette Politique de Confidentialite explique comment nous collectons, utilisons, divulguons et protégeons vos informations lorsque vous utilisez notre plateforme de mise en relation professionnelle."
+            },
+            "collection": {
+                "title": "2. Informations Que Nous Collectons",
+                "personalTitle": "2.1 Informations Personnelles",
+                "personalBody": "Nous collectons les informations que vous fournissez directement, notamment :",
+                "personalItems": {
+                    "nameEmail": "Nom et adresse e-mail",
+                    "education": "Parcours academique (pour les etudiants)",
+                    "companyInfo": "Informations d'entreprise (pour les employeurs)",
+                    "profileDetails": "Details du profil, competences et experience",
+                    "messages": "Messages echanges via notre Plateforme"
+                },
+                "usageTitle": "2.2 Informations d'Utilisation",
+                "usageBody": "Nous collectons automatiquement certaines informations lorsque vous utilisez notre Plateforme :",
+                "usageItems": {
+                    "deviceBrowser": "Informations sur l'appareil et le navigateur",
+                    "ipLocation": "Adresse IP et donnees de localisation",
+                    "pagesFeatures": "Pages visitees et fonctionnalites utilisees",
+                    "swipeHistory": "Préférences de découverte et historique de matchs"
+                }
+            },
+            "usage": {
+                "title": "3. Comment Nous Utilisons Vos Informations",
+                "body": "Nous utilisons les informations collectees pour :",
+                "items": {
+                    "provideImprove": "Fournir et ameliorer nos services de matching",
+                    "accountManagement": "Creer et gerer votre compte",
+                    "facilitateConnections": "Faciliter les connexions entre etudiants et entreprises",
+                    "notifications": "Envoyer des notifications concernant les matchs et les messages",
+                    "analytics": "Analyser les usages pour ameliorer la Plateforme",
+                    "security": "Assurer la securite et prevenir la fraude"
+                }
+            },
+            "sharing": {
+                "title": "4. Partage des Informations",
+                "body": "Nous pouvons partager vos informations avec :",
+                "items": {
+                    "otherUsersLabel": "Autres Utilisateurs :",
+                    "otherUsersBody": "Les informations de profil sont visibles pour les correspondances potentielles",
+                    "providersLabel": "Prestataires de Services :",
+                    "providersBody": "Des tiers qui nous aident a exploiter la Plateforme",
+                    "legalLabel": "Exigences Legales :",
+                    "legalBody": "Lorsque la loi l'exige ou pour proteger nos droits"
+                },
+                "noSell": "Nous ne vendons pas vos informations personnelles a des tiers."
+            },
+            "security": {
+                "title": "5. Securite des Donnees",
+                "body": "Nous mettons en place des mesures de securite appropriees pour proteger vos informations, y compris le chiffrement, des serveurs securises et des evaluations regulieres. Toutefois, aucune methode de transmission sur Internet n'est securisee a 100%."
+            },
+            "rights": {
+                "title": "6. Vos Droits",
+                "body": "Vous avez le droit de :",
+                "items": {
+                    "access": "Acceder a vos donnees personnelles et les telecharger",
+                    "correct": "Corriger les informations inexactes",
+                    "delete": "Supprimer votre compte et les donnees associees",
+                    "optOut": "Vous opposer aux communications marketing",
+                    "portability": "Demander la portabilite des donnees"
+                }
+            },
+            "cookies": {
+                "title": "7. Cookies",
+                "body": "Nous utilisons des cookies et des technologies similaires pour ameliorer votre experience, analyser l'utilisation et personnaliser le contenu. Vous pouvez gerer vos preferences de cookies via les parametres de votre navigateur."
+            },
+            "children": {
+                "title": "8. Vie Privee des Enfants",
+                "body": "MatchOp n'est pas destine aux utilisateurs de moins de 16 ans. Nous ne collectons pas sciemment d'informations aupres d'enfants de moins de 16 ans."
+            },
+            "international": {
+                "title": "9. Utilisateurs Internationaux",
+                "body": "Si vous accedez a MatchOp depuis un pays autre que notre pays d'exploitation, vos informations peuvent etre transferees et traitees dans d'autres juridictions."
+            },
+            "changes": {
+                "title": "10. Modifications de Cette Politique",
+                "body": "Nous pouvons mettre a jour cette Politique de Confidentialite periodiquement. Nous vous informerons de tout changement important en publiant la nouvelle politique sur la Plateforme et en mettant a jour la date de \"Derniere mise a jour\"."
+            },
+            "contact": {
+                "title": "Contactez-nous",
+                "prefix": "Si vous avez des questions sur cette Politique de Confidentialite ou sur vos donnees, veuillez nous contacter a :"
+            }
+        }
+    },
+    "cookiesPage": {
+        "backToHome": "Retour a l'accueil",
+        "title": "Politique des Cookies",
+        "lastUpdated": "Derniere mise a jour : 15 fevrier 2026",
+        "sections": {
+            "whatAre": {
+                "title": "1. Que Sont les Cookies",
+                "body": "Les cookies sont de petits fichiers texte places sur votre ordinateur ou appareil mobile lorsque vous visitez un site web. Ils sont largement utilises pour faire fonctionner les sites plus efficacement et fournir des informations aux proprietaires du site. Les cookies permettent a un site de reconnaitre votre appareil et de memoriser des informations sur votre visite, comme vos preferences et vos parametres."
+            },
+            "howUse": {
+                "title": "2. Comment Nous Utilisons les Cookies",
+                "body": "MatchOp utilise des cookies et des technologies de suivi similaires pour ameliorer votre experience sur notre plateforme. Plus precisement, nous utilisons les cookies pour :",
+                "items": {
+                    "authenticateLabel": "Authentifier les utilisateurs :",
+                    "authenticateBody": "Vous garder connecte de maniere securisee lorsque vous naviguez entre les pages",
+                    "rememberLabel": "Memoriser les preferences :",
+                    "rememberBody": "Enregistrer votre langue, theme et parametres d'affichage",
+                    "performanceLabel": "Ameliorer les performances :",
+                    "performanceBody": "Comprendre vos interactions avec la plateforme afin d'optimiser la rapidite et la fiabilite",
+                    "analyzeLabel": "Analyser l'usage :",
+                    "analyzeBody": "Collecter des donnees anonymisees sur le trafic et l'adoption des fonctionnalites",
+                    "securityLabel": "Assurer la securite :",
+                    "securityBody": "Detecter et prevenir les activites frauduleuses via des jetons CSRF et la validation de session"
+                }
+            },
+            "types": {
+                "title": "3. Types de Cookies Que Nous Utilisons",
+                "essentialTitle": "3.1 Cookies Essentiels",
+                "essentialBody": "Ces cookies sont strictement necessaires au fonctionnement de notre plateforme. Ils permettent des fonctionnalites de base telles que l'authentification, la gestion de session et les fonctions de securite. Sans ces cookies, la plateforme ne peut pas fonctionner correctement. Les cookies essentiels ne peuvent pas etre desactives.",
+                "functionalTitle": "3.2 Cookies Fonctionnels",
+                "functionalBody": "Les cookies fonctionnels nous permettent de memoriser les choix que vous faites sur la plateforme, tels que votre langue preferee, le theme (mode clair ou sombre) et d'autres preferences d'affichage. Ces cookies ameliorent votre experience mais ne sont pas strictement necessaires au fonctionnement de la plateforme.",
+                "analyticsTitle": "3.3 Cookies d'Analyse",
+                "analyticsBody": "Nous pouvons utiliser des cookies d'analyse pour collecter des informations anonymisees sur la facon dont les visiteurs utilisent la plateforme. Cela nous aide a comprendre quelles pages sont les plus populaires, comment les utilisateurs naviguent et ou nous pouvons nous ameliorer. Toutes les donnees collectees sont agregees et anonymes."
+            },
+            "duration": {
+                "title": "4. Duree des Cookies",
+                "body": "Les cookies utilises sur MatchOp se repartissent en deux categories selon leur duree de vie :",
+                "items": {
+                    "sessionLabel": "Cookies de session :",
+                    "sessionBody": "Cookies temporaires supprimes lorsque vous fermez votre navigateur web. Ils sont principalement utilises pour l'authentification et la securite.",
+                    "persistentLabel": "Cookies persistants :",
+                    "persistentBody": "Cookies qui restent sur votre appareil pendant une duree definie ou jusqu'a leur suppression manuelle. Ils servent a memoriser vos preferences entre les visites."
+                }
+            },
+            "thirdParty": {
+                "title": "5. Cookies Tiers",
+                "body": "Notre plateforme peut utiliser des services tiers - tels que Supabase pour l'authentification et la gestion de base de donnees - qui definissent leurs propres cookies. Ces cookies tiers sont regis par les politiques de confidentialite de ces services. Nous ne controlons pas les cookies tiers et n'y avons pas acces."
+            },
+            "managing": {
+                "title": "6. Gestion de Vos Preferences de Cookies",
+                "body": "Vous avez un controle total sur les cookies stockes sur votre appareil. La plupart des navigateurs web vous permettent de gerer les cookies via leurs parametres. Vous pouvez :",
+                "items": {
+                    "viewDelete": "Voir et supprimer les cookies deja stockes sur votre appareil",
+                    "block": "Bloquer tous les cookies ou seulement les cookies tiers",
+                    "notify": "Configurer votre navigateur pour etre averti lorsqu'un cookie est defini",
+                    "autoClear": "Parametrer votre navigateur pour supprimer automatiquement les cookies a la fermeture",
+                    "note": "Veuillez noter que la desactivation des cookies essentiels peut vous empecher d'utiliser certaines fonctionnalites de la plateforme, y compris la connexion et l'acces a votre compte."
+                }
+            },
+            "changes": {
+                "title": "7. Modifications de Cette Politique",
+                "body": "Nous pouvons mettre a jour cette Politique des Cookies de temps a autre pour refleter les evolutions technologiques, legales ou de nos pratiques de donnees. Lorsque nous apportons des changements importants, nous vous en informerons en mettant a jour la date de \"Derniere mise a jour\" en haut de cette page."
+            },
+            "contact": {
+                "title": "Contactez-nous",
+                "prefix": "Si vous avez des questions sur notre utilisation des cookies ou cette politique, veuillez nous contacter a :"
+            }
+        }
+    },
+    "landing": {
+        "badge": "L'Avenir du Recrutement",
+        "heroTitle": "Match avec l'opportunité",
+        "heroHighlight": "Votre Carrière de Rêve",
+        "heroSubtitle": "Connectez étudiants et entreprises grâce à une expérience de matching intuitive. Trouvez le stage parfait ou découvrez des talents exceptionnels.",
+        "ctaStudent": "Je suis Étudiant",
+        "ctaCompany": "Je suis une Entreprise",
+        "statsStudents": "Beta etudiants",
+        "statsCompanies": "Beta entreprises",
+        "statsMatches": "Lancement plateforme",
+        "howItWorks": "Comment fonctionne MatchOp",
+        "step1Title": "Créez Votre Profil",
+        "step1Desc": "Construisez un profil attractif présentant vos compétences, expériences et ce que vous recherchez.",
+        "step2Title": "Explorez & Exprimez votre intérêt",
+        "step2Desc": "Parcourez les opportunités recommandées chaque jour par l'IA dans votre flux. Exprimez votre intérêt et connectez-vous avec les recruteurs.",
+        "step3Title": "Connectez & Discutez",
+        "step3Desc": "En cas d'intérêt mutuel, démarrez une conversation et franchissez l'étape suivante de votre carrière.",
+        "forStudents": "Pour les Étudiants",
+        "forStudentsTitle": "Trouvez les Opportunités Qui Vous Correspondent",
+        "forStudentsDesc": "Arrêtez de parcourir des listes d'offres sans fin. Notre matching intelligent vous montre uniquement les opportunités les plus pertinentes selon vos compétences.",
+        "forCompanies": "Pour les Entreprises",
+        "forCompaniesTitle": "Recrutez des Talents Exceptionnels Plus Vite",
+        "forCompaniesDesc": "Éliminez le bruit et connectez-vous directement avec les candidats vraiment intéressés par vos opportunités. La qualité avant la quantité.",
+        "ctaTitle": "Prêt à Transformer Votre Parcours Professionnel ?",
+        "ctaSubtitle": "Rejoignez notre beta privee et contribuez a construire une plateforme de recrutement transparente.",
+        "signupStudent": "S'inscrire comme Étudiant",
+        "signupCompany": "S'inscrire comme Entreprise",
+        "footer": "Connecter les talents aux opportunités",
+        "statsStudentsValue": "Prive",
+        "statsCompaniesValue": "Invitation",
+        "statsMatchesValue": "Dec 2025"
+    },
+    "auth": {
+        "createAccount": "Créer un Compte",
+        "companyAccount": "Compte Entreprise",
+        "alreadyHaveAccount": "Déjà un compte ?",
+        "signIn": "Se connecter",
+        "fullName": "Nom Complet",
+        "email": "Adresse Email",
+        "password": "Mot de passe",
+        "companyName": "Nom de l'Entreprise",
+        "workEmail": "Email Professionnel",
+        "university": "Université",
+        "major": "Spécialité",
+        "graduationYear": "Année de Diplôme Prévue",
+        "selectYear": "Sélectionnez l'année",
+        "website": "Site Web",
+        "industry": "Secteur",
+        "selectIndustry": "Sélectionnez le secteur",
+        "companySize": "Taille de l'Entreprise",
+        "selectSize": "Sélectionnez la taille",
+        "termsAgree": "En vous inscrivant, vous acceptez nos",
+        "termsOfService": "Conditions d'Utilisation",
+        "and": "et",
+        "privacyPolicy": "Politique de Confidentialité",
+        "studentSignup": {
+            "title": "Rejoignez MatchOp",
+            "subtitle": "Lancez votre parcours professionnel aujourd'hui",
+            "nameLabel": "Nom complet",
+            "namePlaceholder": "ex. Ahmed Ben Ali",
+            "emailLabel": "Adresse email",
+            "emailPlaceholder": "student@university.tn",
+            "passwordLabel": "Mot de passe",
+            "passwordPlaceholder": "Creez un mot de passe fort",
+            "passwordStrengthPlaceholder": "Force du mot de passe",
+            "universityLabel": "Universite",
+            "universityPlaceholder": "Selectionnez une universite",
+            "majorLabel": "Specialite",
+            "majorPlaceholder": "ex. CS",
+            "graduationYearLabel": "Annee de diplomation",
+            "graduationYearPlaceholder": "2026",
+            "submit": "Creer un compte",
+            "submitting": "Creation du compte...",
+            "alreadyHaveAccount": "Vous avez deja un compte ?",
+            "signIn": "Se connecter",
+            "verification": {
+                "title": "Verifiez votre email",
+                "sentPrefix": "Nous avons envoye un lien de verification a",
+                "sentSuffix": "Cliquez sur le lien pour activer votre compte.",
+                "spamHint": "Verifiez votre dossier spam/courrier indesirable, l'email peut y arriver.",
+                "arrivalHint": "L'email peut prendre jusqu'a 2 minutes pour arriver.",
+                "preauthorizedHint": "Toujours rien ? L'email par defaut Supabase fonctionne seulement pour les adresses pre-autorisees.",
+                "setupHintPrefix": "Executez",
+                "setupHintMiddle": "dans l'editeur SQL Supabase, ou configurez un SMTP personnalise. Voir",
+                "goToLogin": "Aller a la connexion",
+                "resendButton": "Renvoyer l'email de verification",
+                "resendSending": "Envoi...",
+                "resendIn": "Renvoyer dans {{seconds}}s",
+                "resendSuccess": "Email de verification renvoye.",
+                "resendError": "Echec du renvoi. Veuillez reessayer plus tard.",
+                "resendRateLimit": "Trop de requetes. Veuillez patienter une minute avant de redemander un email."
+            },
+            "errors": {
+                "completeAllFields": "Veuillez completer tous les champs (Universite, Specialite, Annee de diplomation)."
+            }
+        },
+        "companySignup": {
+            "visualTitle": "Trouvez les Meilleurs Talents",
+            "visualSubtitle": "Connectez-vous avec des etudiants et diplomes motives et prets a s'investir",
+            "features": {
+                "preQualifiedCandidates": "Candidats pre-qualifies",
+                "reducedTimeToHire": "Recrutement accelere",
+                "directMessaging": "Messagerie directe"
+            },
+            "title": "Compte Entreprise",
+            "alreadyRegistered": "Deja inscrit ?",
+            "signIn": "Se connecter",
+            "steps": {
+                "account": "Compte",
+                "company": "Entreprise"
+            },
+            "companyNameLabel": "Nom de l'entreprise",
+            "companyNamePlaceholder": "Sofrecom Tunisie, Vermeg",
+            "workEmailLabel": "Email professionnel",
+            "workEmailPlaceholder": "rh@sofrecom.tn",
+            "passwordLabel": "Mot de passe",
+            "passwordPlaceholder": "Creez un mot de passe fort",
+            "passwordStrengthHint": "Min. 8 caracteres avec majuscule, minuscule, chiffre et caractere special",
+            "passwordStrengthLabels": {
+                "weak": "Faible",
+                "fair": "Moyen",
+                "good": "Bon",
+                "strong": "Fort"
+            },
+            "websiteOptionalLabel": "Site web (optionnel)",
+            "websitePlaceholder": "https://sofrecom.tn",
+            "industryLabel": "Secteur d'activite",
+            "industryPlaceholder": "Selectionnez un secteur",
+            "industries": {
+                "technology": "Technologie",
+                "finance": "Finance",
+                "healthcare": "Sante",
+                "education": "Education",
+                "retail": "Commerce",
+                "manufacturing": "Industrie",
+                "consulting": "Conseil",
+                "other": "Autre"
+            },
+            "sizeLabel": "Taille de l'entreprise",
+            "sizePlaceholder": "Selectionnez une taille",
+            "companySizes": {
+                "size1to10": "1-10 employes",
+                "size11to50": "11-50 employes",
+                "size51to200": "51-200 employes",
+                "size201to500": "201-500 employes",
+                "size500plus": "500+ employes"
+            },
+            "buttons": {
+                "continue": "Continuer",
+                "createAccount": "Creer un compte",
+                "creatingAccount": "Creation du compte...",
+                "back": "Retour"
+            },
+            "verification": {
+                "visualTitle": "Verifiez votre boite mail",
+                "visualSubtitle": "Nous avons envoye un lien de verification a votre adresse",
+                "title": "Verifiez votre email",
+                "sentTo": "Nous avons envoye un email de verification a :",
+                "spamHint": "Verifiez votre dossier spam/courrier indesirable, l'email peut y arriver.",
+                "arrivalHint": "L'email peut prendre jusqu'a 2 minutes pour arriver.",
+                "preauthorizedHint": "Toujours rien ? L'email par defaut Supabase fonctionne seulement pour les adresses pre-autorisees.",
+                "setupHintPrefix": "Executez",
+                "setupHintMiddle": "dans l'editeur SQL Supabase, ou configurez un SMTP personnalise - voir",
+                "goToLogin": "Aller a la connexion",
+                "resendButton": "Renvoyer l'email de verification",
+                "resendSending": "Envoi...",
+                "resendIn": "Renvoyer dans {{seconds}}s",
+                "resendSuccess": "Email de verification renvoye !",
+                "resendError": "Echec du renvoi. Veuillez reessayer plus tard.",
+                "resendRateLimit": "Trop de requetes. Veuillez patienter une minute avant de redemander un email."
+            },
+            "errors": {
+                "companyNameRequired": "Le nom de l'entreprise est obligatoire.",
+                "companyNameMinLength": "Le nom de l'entreprise doit contenir au moins 2 caracteres.",
+                "companyNameMaxLength": "Le nom de l'entreprise doit contenir moins de 100 caracteres.",
+                "emailRequired": "L'adresse email est obligatoire.",
+                "invalidEmail": "Veuillez entrer une adresse email valide.",
+                "passwordRequired": "Le mot de passe est obligatoire.",
+                "passwordMinLength": "Le mot de passe doit contenir au moins 8 caracteres.",
+                "passwordUppercase": "Le mot de passe doit contenir au moins une majuscule.",
+                "passwordLowercase": "Le mot de passe doit contenir au moins une minuscule.",
+                "passwordNumber": "Le mot de passe doit contenir au moins un chiffre.",
+                "passwordSpecial": "Le mot de passe doit contenir au moins un caractere special.",
+                "completeRequiredFields": "Veuillez renseigner tous les champs obligatoires.",
+                "invalidCredentials": "Email ou mot de passe invalide. Veuillez reessayer.",
+                "emailNotConfirmed": "Veuillez verifier votre email avant de vous connecter.",
+                "userAlreadyExists": "Un compte avec cet email existe deja. Connectez-vous plutot.",
+                "weakPassword": "Le mot de passe ne respecte pas les exigences de securite.",
+                "tooManyAttempts": "Trop de tentatives. Veuillez patienter avant de reessayer.",
+                "emailSendError": "Impossible d'envoyer l'email de confirmation. Verifiez vos parametres SMTP Supabase ou executez database/auto_confirm_emails.sql.",
+                "signupDisabled": "Les inscriptions sont temporairement desactivees.",
+                "generic": "Une erreur est survenue lors de l'inscription. Veuillez reessayer."
+            }
+        }
+    },
+    "profile": {
+        "completeProfile": "Complétez Votre Profil",
+        "profileSubtitle": "Aidez les entreprises à comprendre qui vous êtes et ce que vous recherchez",
+        "companyProfile": "Profil Entreprise",
+        "companySubtitle": "Présentez votre entreprise et sa culture aux candidats",
+        "aboutYou": "À Propos de Vous",
+        "aboutCompany": "À Propos de Votre Entreprise",
+        "bio": "Bio",
+        "bioPlaceholder": "Parlez aux entreprises de vous, vos objectifs et ce qui vous rend unique...",
+        "description": "Description",
+        "descPlaceholder": "Expliquez ce qui rend votre entreprise spéciale...",
+        "location": "Localisation",
+        "headquarters": "Siège Social",
+        "experience": "Expérience",
+        "skills": "Compétences",
+        "skillsDesc": "Ajoutez jusqu'à 10 compétences qui illustrent votre expertise",
+        "companyCulture": "Culture d'Entreprise",
+        "cultureDesc": "Comment est-ce de travailler ici ?",
+        "benefits": "Avantages & Bénéfices",
+        "benefitsDesc": "Sélectionnez les avantages que vous offrez aux employés",
+        "links": "Liens",
+        "socialLinks": "Réseaux Sociaux",
+        "saveAndStart": "Enregistrer & Commencer à explorer",
+        "saveAndPost": "Enregistrer & Publier Votre Première Offre"
+    },
+    "swipe": {
+        "like": "J'AIME",
+        "pass": "PASSER",
+        "allCaughtUp": "Vous êtes à jour !",
+        "noMoreOffers": "Vous avez vu toutes les opportunités disponibles. Revenez plus tard pour de nouveaux matchs.",
+        "startOver": "Recommencer"
+    },
+    "match": {
+        "itsAMatch": "C'est un Match !",
+        "companyInterested": "{company} est intéressée par votre profil !",
+        "candidateInterested": "{name} est intéressé(e) par votre offre !",
+        "sendMessage": "Envoyer un Message",
+        "keepSwiping": "Continuer à explorer"
+    },
+    "matches": {
+        "yourMatches": "Vos matchs",
+        "studentsSubtitle": "Entreprises interessees par votre profil",
+        "externalTitle": "Matchs externes",
+        "externalSubtitle": "Opportunites externes sauvegardees, prêtes pour postuler sur le site source.",
+        "companiesSubtitle": "Candidats qui ont matche avec vos opportunites",
+        "loading": "Chargement de vos matchs...",
+        "loadError": "Echec du chargement des matchs",
+        "recently": "Recent",
+        "savedOn": "Sauvegarde le {{date}}",
+        "unknownCandidate": "Candidat inconnu",
+        "unknownCompany": "Entreprise inconnue",
+        "studentFallback": "Etudiant",
+        "jobOpportunity": "Opportunite d'emploi",
+        "remote": "Teletravail",
+        "noMatchesYet": "Pas encore de matchs",
+        "noExternalMatchesYet": "Pas encore de matchs externes",
+        "companyEmptyDesc": "Quand vous matchez avec des candidats, ils apparaitront ici !",
+        "externalEmptyDesc": "Postulez ou sauvegardez des opportunites externes depuis le fil de decouverte pour les suivre ici.",
+        "keepSwipingTip": "Continuez a explorer le fil pour trouver votre opportunite parfaite !",
+        "startSwiping": "Explorer les opportunites",
+        "viewCandidates": "Voir les candidats",
+        "startConversation": "Demarrez la conversation !",
+        "applyOn": "Postuler sur {{source}}",
+        "applyUnavailable": "Lien de candidature indisponible",
+        "externalSourceFallback": "la source",
+        "statusUpdateFailed": "Impossible de mettre a jour cette opportunite externe pour le moment.",
+        "statusTabs": {
+            "ariaLabel": "Filtres du statut des candidatures externes",
+            "saved": "Sauvegardees",
+            "applied": "Postulees",
+            "archived": "Archivees"
+        },
+        "statuses": {
+            "applied": "Postulee",
+            "interview": "Entretien",
+            "rejected": "Rejetee",
+            "archived": "Archivee"
+        },
+        "statusDates": {
+            "appliedOn": "Postulee le {{date}}",
+            "interviewOn": "Entretien le {{date}}",
+            "rejectedOn": "Rejetee le {{date}}",
+            "archivedOn": "Archivee le {{date}}"
+        },
+        "actions": {
+            "markAsApplied": "Marquer comme postulee (externe)",
+            "moveToInterview": "Passer a entretien",
+            "markAsFollowedUp": "Marquer comme relancee",
+            "archive": "Archiver"
+        },
+        "nudges": {
+            "followUpNow": "Relancez maintenant",
+            "noResponseAfter14Days": "Aucune reponse apres 14 jours"
+        },
+        "priority": {
+            "high": "Priorite haute",
+            "medium": "Moyenne"
+        },
+        "focus": {
+            "title": "Votre focus du jour"
+        },
+        "insights": {
+            "title": "Indicateurs de candidature",
+            "applications": "Candidatures",
+            "interviews": "Entretiens",
+            "conversion": "Conversion"
+        },
+        "followUpSummary": "Vous avez {{count}} candidatures a relancer",
+        "externalTrackingTooltip": "Cette offre est externe. Vous suivez votre candidature manuellement.",
+        "externalEmptyStates": {
+            "savedTitle": "Aucun match externe sauvegarde",
+            "savedDescription": "Exprimez votre intérêt ou sauvegardez des opportunités depuis votre flux pour les suivre ici.",
+            "appliedTitle": "Aucune candidature suivie pour le moment",
+            "appliedDescription": "Marquez les offres sauvegardees comme postulees pour suivre les entretiens et les resultats ici.",
+            "archivedTitle": "Aucune offre externe archivee",
+            "archivedDescription": "Les opportunites externes archivees apparaitront ici."
+        },
+        "tabs": {
+            "navigationAria": "Navigation des matchs",
+            "matches": "Matchs",
+            "externalMatches": "Matchs externes"
+        }
+    },
+    "chat": {
+        "online": "En ligne",
+        "offline": "Hors ligne",
+        "typeMessage": "Écrivez un message...",
+        "today": "Aujourd'hui"
+    },
+    "conversationHub": {
+        "title": "Conversations",
+        "subtitle": "Gerez tous les messages candidat-entreprise au meme endroit.",
+        "searchLabel": "Rechercher des conversations",
+        "searchPlaceholder": "Rechercher par personne, offre ou message...",
+        "filterLabel": "Filtres de conversation",
+        "filters": {
+            "all": "Tous",
+            "active": "Actives",
+            "archived": "Archivees"
+        },
+        "loading": "Chargement des conversations...",
+        "loadingMessages": "Chargement des messages...",
+        "retry": "Reessayer",
+        "emptyResults": "Aucune conversation ne correspond au filtre.",
+        "emptyArchived": "Aucune conversation archivee.",
+        "pickConversation": "Selectionnez une conversation pour envoyer un message.",
+        "threadNotFoundTitle": "Conversation indisponible",
+        "threadNotFound": "Cette conversation n'existe pas ou n'est plus disponible.",
+        "backToMatches": "Retour aux matchs",
+        "backToInbox": "Retour a la boite",
+        "typeMessage": "Ecrivez un message...",
+        "send": "Envoyer",
+        "archived": "Archive",
+        "archivedNotice": "Ce match est archive. La messagerie est en lecture seule.",
+        "noMessagesYet": "Aucun message pour le moment."
+    },
+    "candidates": {
+        "title": "Candidats",
+        "subtitle": "{{count}} candidats interesses par vos offres",
+        "loading": "Chargement des candidats...",
+        "loadError": "Echec du chargement des candidats",
+        "filter": "Filtrer",
+        "filterCandidates": "Filtrer les candidats",
+        "skillsLabel": "Competences (separees par des virgules)",
+        "skillsPlaceholder": "React, Python, IA",
+        "locationLabel": "Ville",
+        "locationPlaceholder": "Tunis",
+        "applyFilters": "Appliquer les filtres",
+        "clearAll": "Tout effacer",
+        "clearFilters": "Effacer les filtres",
+        "interested": "Interesse",
+        "appliedFor": "Postule pour",
+        "pass": "Refuser",
+        "acceptCreateMatch": "Accepter - Creer un match",
+        "noCandidates": "Pas encore de candidats",
+        "noCandidatesDesc": "Les candidats interesses par vos offres apparaitront ici."
+    },
+    "companyWorkflow": {
+        "common": {
+            "unknownCandidate": "Candidat",
+            "unknownOffer": "Offre"
+        },
+        "newCandidates": {
+            "title": "Candidats",
+            "subtitle": "Revoyez les nouveaux interets et decidez qui passe en match.",
+            "pendingCount": "{{count}} en attente",
+            "loading": "Chargement des candidats...",
+            "loadError": "Impossible de charger les candidats.",
+            "emptyTitle": "Aucun candidat pour le moment",
+            "emptyDescription": "Les etudiants interesses par vos offres apparaitront ici.",
+            "openOffers": "Voir les offres actives",
+            "actions": {
+                "refresh": "Actualiser",
+                "message": "Message",
+                "archive": "Archiver",
+                "reject": "Rejeter"
+            },
+            "meta": {
+                "forOffer": "Pour {{offer}}",
+                "expiresIn": "Expire dans {{time}}",
+                "matchScore": "{{score}}% de match"
+            }
+        },
+        "matches": {
+            "title": "Matchs",
+            "subtitle": "Matchs mutuels actifs prets pour la conversation.",
+            "loading": "Chargement des matchs...",
+            "loadError": "Impossible de charger les matchs.",
+            "emptyTitle": "Aucun match actif",
+            "emptyDescription": "Acceptez des candidats pour ouvrir des conversations.",
+            "reviewCandidates": "Voir les candidats",
+            "actions": {
+                "refresh": "Actualiser",
+                "message": "Message",
+                "archive": "Archiver",
+                "reject": "Rejeter"
+            },
+            "meta": {
+                "matchedOn": "Match le {{date}}",
+                "skills": "Competences"
+            }
+        },
+        "archived": {
+            "title": "Fermes / Archives",
+            "subtitle": "Candidats rejetes, expires et archives.",
+            "previewNote": "Apercu : les raisons sont enregistrees uniquement sur cet appareil.",
+            "loading": "Chargement des elements archives...",
+            "loadError": "Impossible de charger les elements archives.",
+            "emptyTitle": "Aucun element archive",
+            "emptyDescription": "Les candidats archives et rejetes apparaitront ici.",
+            "filters": {
+                "all": "Tous",
+                "intro": "Candidats",
+                "match": "Matchs"
+            },
+            "reasonFilter": {
+                "label": "Filtrer par raison",
+                "ariaLabel": "Filtrer les matchs archives par raison d'echec",
+                "all": "Tous"
+            },
+            "reasonPrompt": "Pourquoi ca a echoue ?",
+            "failReasons": {
+                "notFit": "Pas un bon fit",
+                "noResponse": "Pas de reponse",
+                "wrongLocation": "Mauvaise localisation",
+                "skillGap": "Ecart de competences",
+                "other": "Autre"
+            },
+            "labels": {
+                "intro": "Candidat",
+                "match": "Match",
+                "declined": "Rejete",
+                "expired": "Expire",
+                "archived": "Archive",
+                "closedOn": "Ferme le {{date}}",
+                "offer": "Offre"
+            },
+            "actions": {
+                "message": "Message",
+                "reconsider": "Reconsiderer"
+            }
+        }
+    },
+    "companyOffers": {
+        "title": "Mes offres",
+        "subtitle": "Gerez vos offres publiees et suivez les performances du funnel.",
+        "loading": "Chargement des offres...",
+        "filters": {
+            "searchLabel": "Rechercher des offres",
+            "searchPlaceholder": "Rechercher par titre...",
+            "statusLabel": "Statut",
+            "statusAll": "Tous les statuts",
+            "statusActive": "Active",
+            "statusClosed": "Fermee"
+        },
+        "analytics": {
+            "lifetimeTitle": "Depuis le debut",
+            "last30Title": "30 derniers jours",
+            "totalOffers": "Total offres",
+            "activeOffers": "Offres actives",
+            "closedOffers": "Offres fermees",
+            "rightSwipes": "Candidatures reçues",
+            "pendingIntros": "Intros en attente",
+            "acceptedIntros": "Intros acceptees",
+            "matches": "Matchs",
+            "matchRate": "Taux de match",
+            "closeRate": "Taux de fermeture"
+        },
+        "charts": {
+            "trendTitle": "Tendance sur 30 jours",
+            "funnelTitle": "Vue funnel des offres"
+        },
+        "table": {
+            "title": "Offre",
+            "status": "Statut",
+            "location": "Lieu",
+            "created": "Cree le",
+            "rightSwipes": "Candidatures reçues",
+            "matches": "Matchs",
+            "matchRate": "Taux de match",
+            "actions": "Actions"
+        },
+        "status": {
+            "active": "Active",
+            "closed": "Fermee"
+        },
+        "actions": {
+            "refresh": "Actualiser",
+            "postOffer": "Publier une offre",
+            "edit": "Modifier",
+            "close": "Fermer",
+            "reopen": "Reouvrir",
+            "delete": "Supprimer",
+            "cancel": "Annuler",
+            "save": "Enregistrer",
+            "saving": "Enregistrement...",
+            "deleting": "Suppression..."
+        },
+        "form": {
+            "title": "Titre",
+            "description": "Description",
+            "skills": "Competences requises",
+            "skillsPlaceholder": "React, Node.js, SQL",
+            "location": "Lieu",
+            "salary": "Fourchette salariale",
+            "status": "Statut"
+        },
+        "validation": {
+            "titleRequired": "Le titre de l'offre est obligatoire."
+        },
+        "modals": {
+            "editTitle": "Modifier l'offre",
+            "deleteTitle": "Supprimer l'offre",
+            "deleteWarning": "Vous allez supprimer definitivement \"{{title}}\".",
+            "deleteImpact": "Cette action est irreversible et peut aussi supprimer des donnees liees selon les contraintes de base.",
+            "deleteConfirmLabel": "Tapez le titre de l'offre pour confirmer",
+            "deleteConfirmPlaceholder": "Saisissez le titre exact",
+            "deleteConfirmHint": "La suppression est activee uniquement si le titre saisi correspond exactement."
+        },
+        "empty": {
+            "title": "Aucune offre trouvee",
+            "description": "Publiez votre premiere offre pour commencer a attirer des candidats."
+        },
+        "error": {
+            "loadFailed": "Impossible de charger les offres"
+        },
+        "pagination": {
+            "previous": "Precedent",
+            "next": "Suivant",
+            "pageOf": "Page {{page}} sur {{totalPages}}"
+        }
+    },
+    "postJob": {
+        "title": "Publier une Nouvelle Opportunité",
+        "subtitle": "Créez une offre d'emploi attractive pour attirer les meilleurs talents",
+        "basicInfo": "Informations de Base",
+        "jobTitle": "Intitulé du Poste",
+        "titlePlaceholder": "Stage de fin d'etudes - Developpeur Full Stack",
+        "department": "Département",
+        "departmentPlaceholder": "Technologies de l'information, Marketing...",
+        "type": "Type",
+        "jobTypes": {
+            "internship": "Stage",
+            "fullTime": "Temps plein",
+            "partTime": "Temps partiel",
+            "contract": "Contrat"
+        },
+        "jobDescription": "Description du Poste",
+        "magicRewrite": "Reecriture magique",
+        "magicRewriteTooltip": "Generer une description IA a partir du titre du poste",
+        "generating": "Generation...",
+        "descriptionPlaceholder": "Decrivez le role, les responsabilites et ce que le candidat apprendra... Ou cliquez sur 'Reecriture magique' pour generer avec l'IA.",
+        "requirements": "Prérequis",
+        "requirementsPlaceholder": "Listez les qualifications et l'experience requises...",
+        "locationCompensation": "Lieu & Rémunération",
+        "onsite": "Sur site",
+        "remote": "Télétravail",
+        "hybrid": "Hybride",
+        "locationLabel": "Ville",
+        "governoratePlaceholder": "Gouvernorat",
+        "cityPlaceholder": "Ville",
+        "citySelectGovernorateFirst": "Selectionnez d'abord un gouvernorat",
+        "compensation": "Rémunération",
+        "compensationPlaceholder": "1500 TND / mois",
+        "duration": "Durée",
+        "durationPlaceholder": "3 mois, 6 mois, indeterminee",
+        "requiredSkills": "Compétences Requises",
+        "addSkill": "Ajouter une compétence...",
+        "noSkillsAdded": "Aucune compétence ajoutée",
+        "publish": "Publier l'Opportunité",
+        "publishing": "Publication...",
+        "successTitle": "Succes !",
+        "successMessage": "Votre opportunite a ete publiee.",
+        "errors": {
+            "enterTitleFirst": "Veuillez d'abord saisir un titre de poste",
+            "failedGenerateDescription": "Echec de la generation de description",
+            "aiUnavailableFallback": "Le service IA est indisponible. Un modele intelligent a ete insere ; modifiez-le selon vos besoins.",
+            "failedPost": "Echec de publication de l'offre : {{message}}"
+        }
+    },
+    "premiumUpsell": {
+        "badge": "Premium",
+        "closeAria": "Fermer la fenetre de mise a niveau Premium",
+        "featuresAria": "Avantages du plan Premium",
+        "reasons": {
+            "premium_discovery_controls": {
+                "title": "Debloquez les opportunites globales",
+                "subtitle": "Passez à Premium pour la portée globale, des matchs plus rapides, une découverte illimitée et des préférences avancées."
+            },
+            "global_discovery": {
+                "title": "Les opportunites globales sont Premium",
+                "subtitle": "Passez a Premium pour debloquer la decouverte internationale."
+            },
+            "personalized_mode": {
+                "title": "Le plan personnalise est Premium",
+                "subtitle": "Passez a Premium pour debloquer les recommandations personnalisees."
+            },
+            "daily_limit": {
+                "title": "Limite quotidienne de découverte atteinte",
+                "subtitle": "Passez à Premium pour une découverte illimitée et plus de matchs."
+            },
+            "daily_swipe_limit": {
+                "title": "Limite quotidienne de découverte atteinte",
+                "subtitle": "Vous avez atteint la limite standard de découverte aujourd'hui."
+            },
+            "generic": {
+                "title": "Passez a Premium",
+                "subtitle": "Débloquez l'expérience complète de découverte."
+            }
+        },
+        "features": {
+            "unlimitedSwipes": "Découverte quotidienne illimitée",
+            "unlimitedDiscovery": "Découverte quotidienne illimitée",
+            "globalReach": "Portee globale",
+            "fasterMatches": "Matchs plus rapides",
+            "advancedPreferences": "Preferences avancees et controle de localisation",
+            "personalizedStack": "Pile hyper personnalisee"
+        },
+        "actions": {
+            "upgrade": "Passer a Premium",
+            "notNow": "Pas maintenant"
+        }
+    },
+    "premium": {
+        "eyebrow": "Premium",
+        "subtitle": "Payez avec D17, televersez votre preuve, puis activez Premium apres approbation.",
+        "statusLabel": "Statut",
+        "statusValues": {
+            "free": "Gratuit",
+            "premium": "Premium",
+            "expired": "Expire"
+        },
+        "refresh": "Actualiser le statut",
+        "refreshing": "Actualisation...",
+        "planSectionTitle": "Choisissez votre plan",
+        "planNotes": {
+            "monthly": "Facturation mensuelle flexible",
+            "yearly": "Facture annuellement, economisez plus"
+        },
+        "benefitsTitle": "Ce que vous debloquez",
+        "faqTitle": "FAQ",
+        "upgradeAction": "Mettre a niveau",
+        "backToSwipe": "Retour au flux",
+        "backToFeed": "Retour au flux",
+        "headlines": {
+            "global_discovery": "Debloquez les opportunites internationales",
+            "daily_limit": "Débloquez la découverte illimitée",
+            "daily_swipe_limit": "Débloquez la découverte illimitée",
+            "personalized_mode": "Debloquez les matchs personnalises",
+            "expired": "Renouvelez votre acces Premium",
+            "default": "Mise a niveau Premium"
+        },
+        "faq": {
+            "whenAvailable": {
+                "question": "Comment fonctionne l'activation Premium ?",
+                "answer": "Apres creation de la demande D17 et televersement de la preuve, un admin valide puis active Premium."
+            },
+            "accountAndMatches": {
+                "question": "Mon compte et mes matchs seront-ils conserves ?",
+                "answer": "Oui. Votre profil, votre historique et vos matchs restent inchangés. Premium ajoute des fonctions de découverte."
+            },
+            "switchPlans": {
+                "question": "Puis-je changer de plan plus tard ?",
+                "answer": "Oui. Vous pouvez choisir mensuel ou annuel avant de creer une nouvelle demande de paiement."
+            },
+            "whatIncludes": {
+                "question": "Que comprend Premium ?",
+                "answer": "Premium débloque les opportunités globales, le matching personnalisé et une découverte illimitée."
+            }
+        },
+        "toasts": {
+            "statusRefreshed": "Statut actualise",
+            "refreshError": "Impossible d'actualiser le statut pour le moment"
+        },
+        "aria": {
+            "planSelector": "Selecteur de plan",
+            "benefits": "Avantages Premium",
+            "faq": "Questions frequentes"
+        }
+    },
+    "checkout": {
+        "eyebrow": "Paiement",
+        "title": "Payer avec D17",
+        "subtitle": "Creez votre demande de paiement, effectuez le transfert sur D17, puis televersez votre preuve pour revision admin.",
+        "aria": {
+            "planSummary": "Resume du plan",
+            "methods": "Instructions de paiement D17",
+            "currentRequest": "Demande en cours",
+            "status": "Statut du paiement",
+            "steps": "Etapes du paiement"
+        },
+        "statusBanner": {
+            "title": "Statut actuel"
+        },
+        "summary": {
+            "title": "Plan selectionne",
+            "source": "Source"
+        },
+        "steps": {
+            "pay": {
+                "title": "Payer via D17",
+                "description": "Utilisez le numero, le montant et la reference ci-dessous pendant le transfert."
+            },
+            "upload": {
+                "title": "Televerser la preuve",
+                "description": "Televersez la preuve de paiement pour permettre la verification admin."
+            },
+            "wait": {
+                "title": "Attendre l'approbation",
+                "description": "Apres approbation, actualisez votre statut pour confirmer l'activation Premium."
+            }
+        },
+        "methods": {
+            "title": "Details du transfert D17",
+            "receiverPhone": "Telephone receveur",
+            "amount": "Montant",
+            "reference": "Reference"
+        },
+        "actions": {
+            "createRequest": "Creer la demande de paiement",
+            "createRequestAgain": "Creer une nouvelle demande",
+            "creating": "Creation...",
+            "refreshStatus": "Actualiser le statut",
+            "goToPremium": "Aller a Premium",
+            "viewPayments": "Voir mes paiements",
+            "backToPremium": "Retour a Premium"
+        },
+        "status": {
+            "pending": {
+                "label": "En attente",
+                "detail": "En attente de revision admin. Televersez votre preuve si ce n'est pas encore fait.",
+                "detailWithProof": "Preuve televersee. Votre demande est dans la file de revision admin."
+            },
+            "approved": {
+                "label": "Approuve",
+                "detail": "Paiement approuve. Premium devrait etre actif apres actualisation du statut."
+            },
+            "rejected": {
+                "label": "Refuse",
+                "detail": "Paiement refuse. Consultez la note admin et soumettez une nouvelle demande."
+            },
+            "reverted": {
+                "label": "Annule",
+                "detail": "Cette approbation a ete annulee par un admin. Creez une nouvelle demande pour continuer."
+            }
+        },
+        "notes": {
+            "premiumActive": "Premium est deja actif sur votre compte.",
+            "proofUploadedPending": "Preuve televersee avec succes. Vous serez notifie apres la revision admin.",
+            "rejectedNextStep": "Votre demande a ete refusee. Creez une nouvelle demande et televersez une preuve plus claire.",
+            "revertedNextStep": "Cette approbation a ete annulee. Creez une nouvelle demande et televersez la preuve a nouveau."
+        },
+        "nextSteps": "Prochaine etape: gardez cette page ouverte jusqu'au televersement de la preuve, puis verifiez le statut depuis Mes paiements.",
+        "nextStepsPendingNoProof": "Prochaine etape: effectuez le transfert D17, puis televersez votre preuve de paiement.",
+        "nextStepsPendingWithProof": "Prochaine etape: votre preuve est televersee. Actualisez le statut en attendant la revision admin.",
+        "nextStepsApproved": "Prochaine etape: allez sur Premium et actualisez le statut de votre compte.",
+        "nextStepsRejected": "Prochaine etape: creez une nouvelle demande de paiement et televersez une preuve valide.",
+        "nextStepsReverted": "Prochaine etape: creez une nouvelle demande puis soumettez la preuve pour revision admin.",
+        "request": {
+            "title": "Demande actuelle",
+            "notUploaded": "Pas encore televerse",
+            "fields": {
+                "reference": "Reference",
+                "plan": "Plan",
+                "amount": "Montant",
+                "created": "Cree le",
+                "proofPath": "Chemin de la preuve",
+                "adminNote": "Note admin"
+            }
+        },
+        "proofUpload": {
+            "label": "Televerser la preuve de paiement (image ou PDF)",
+            "hint": "Formats pris en charge: image ou PDF. Taille recommandee: 10 Mo max.",
+            "uploadAction": "Televerser la preuve",
+            "uploading": "Televersement..."
+        },
+        "toasts": {
+            "pendingExists": "Vous avez deja une demande de paiement en attente. Televersez la preuve ou attendez la revision.",
+            "requestCreated": "Demande de paiement creee. Continuez en televersant la preuve.",
+            "proofUploaded": "Preuve televersee. Votre demande est en attente de revision."
+        },
+        "errors": {
+            "loadRequests": "Impossible de charger les demandes de paiement pour le moment.",
+            "unsupportedProofType": "Type de fichier non pris en charge. Televersez uniquement une image ou un PDF.",
+            "cooldownActive": "Vous avez cree une demande en attente recemment. Veuillez patienter avant d'en creer une autre.",
+            "uploadFailed": "Echec du televersement de la preuve.",
+            "proofPathUpdateFailed": "Echec de la mise a jour du chemin de preuve."
+        }
+    },
+    "checkoutSuccess": {
+        "title": "Paiement soumis",
+        "subtitle": "Votre demande est soumise. Actualisez votre statut apres approbation admin pour confirmer l'activation Premium.",
+        "refresh": "Actualiser le statut",
+        "refreshing": "Actualisation...",
+        "backToDiscovery": "Retour a la decouverte",
+        "toasts": {
+            "statusRefreshed": "Statut actualise",
+            "refreshError": "Impossible d'actualiser le statut pour le moment"
+        }
+    },
+    "checkoutCancel": {
+        "title": "Paiement annule",
+        "subtitle": "Aucun changement n'a ete effectue. Vous pouvez revenir a Premium a tout moment.",
+        "backToPremium": "Retour a Premium"
+    },
+    "adminPayments": {
+        "title": "Revision des paiements D17",
+        "subtitle": "Examinez les demandes de paiement et approuvez ou refusez les soumissions.",
+        "sectionTitle": "Demandes de paiement",
+        "previewNote": "Apercu : les presets d'extension Premium sont simules sur cet appareil.",
+        "previewPlanValue": "{{plan}} jusqu'au {{until}} (Apercu)",
+        "refresh": "Actualiser",
+        "loading": "Chargement des demandes...",
+        "empty": "Aucune demande trouvee.",
+        "searchPlaceholder": "Rechercher par email, ID utilisateur ou reference",
+        "searchAria": "Rechercher des demandes de paiement",
+        "filterAria": "Filtrer les demandes par statut",
+        "filters": {
+            "all": "Tous les statuts",
+            "pending": "En attente",
+            "approved": "Approuve",
+            "rejected": "Refuse",
+            "reverted": "Annule"
+        },
+        "quickFilters": {
+            "ariaLabel": "Filtres rapides des paiements",
+            "needsProof": "Besoin de preuve",
+            "pendingOver24h": "En attente > 24h",
+            "repeatedAttempts": "Tentatives repetees"
+        },
+        "planPresets": {
+            "month": "1 mois",
+            "year": "1 an"
+        },
+        "counts": {
+            "all": "{{count}} demandes",
+            "filtered": "{{count}} demandes {{status}}"
+        },
+        "columns": {
+            "user": "Utilisateur",
+            "plan": "Plan",
+            "amount": "Montant",
+            "status": "Statut",
+            "created": "Cree le",
+            "actions": "Actions"
+        },
+        "actions": {
+            "viewProof": "Voir la preuve",
+            "downloadProof": "Telecharger la preuve",
+            "viewAudit": "Voir l'audit",
+            "copyReference": "Copier la reference",
+            "copied": "Copie",
+            "exportCsv": "Exporter CSV",
+            "approve": "Approuver",
+            "approveExtendMonth": "Approuver + etendre Premium (1 mois)",
+            "approveExtendYear": "Approuver + etendre Premium (1 an)",
+            "reject": "Refuser",
+            "revert": "Annuler",
+            "undoApproval": "Annuler l'approbation",
+            "showDetails": "Details",
+            "hideDetails": "Masquer"
+        },
+        "auditActions": {
+            "created": "Cree",
+            "updated": "Mis a jour",
+            "approved": "Approuve",
+            "rejected": "Refuse",
+            "reverted": "Annule",
+            "proof_uploaded": "Preuve televersee"
+        },
+        "fields": {
+            "reference": "Reference",
+            "userId": "ID utilisateur",
+            "d17Phone": "Telephone D17",
+            "proofPath": "Chemin de preuve",
+            "reviewedAt": "Revise le",
+            "adminNote": "Note admin",
+            "previewPremium": "Override Premium",
+            "addNote": "Note admin (optionnelle)",
+            "notePlaceholder": "Ajouter une note pour cette decision"
+        },
+        "proofModal": {
+            "title": "Apercu de la preuve",
+            "closeAria": "Fermer l'apercu de preuve",
+            "iframeTitle": "Apercu de la preuve de paiement"
+        },
+        "auditModal": {
+            "title": "Historique d'audit",
+            "closeAria": "Fermer l'historique d'audit",
+            "paymentRequestId": "Demande de paiement",
+            "loading": "Chargement de l'historique...",
+            "empty": "Aucune entree d'audit pour le moment.",
+            "actor": "Acteur"
+        },
+        "revertConfirm": {
+            "title": "Annuler l'approbation",
+            "body": "Etes-vous sur ? Cela retirera le Premium accorde par cette approbation."
+        },
+        "toasts": {
+            "requestUpdated": "Demande {{status}}.",
+            "referenceCopied": "Reference copiee.",
+            "csvExported": "CSV filtre exporte.",
+            "proofOpened": "Preuve ouverte dans un nouvel onglet.",
+            "previewPremiumExtended": "Approuve. Extension Premium appliquee pour {{plan}} jusqu'au {{until}} (Apercu)."
+        },
+        "errors": {
+            "loadFailed": "Impossible de charger les demandes de paiement.",
+            "openProofFailed": "Impossible d'ouvrir la preuve.",
+            "copyReferenceFailed": "Impossible de copier la reference.",
+            "auditLoadFailed": "Impossible de charger l'historique d'audit."
+        }
+    },
+    "notifications": {
+        "title": "Notifications",
+        "subtitle": "Suivez vos dernieres mises a jour d'activite.",
+        "empty": "Aucune notification pour le moment.",
+        "filters": {
+            "ariaLabel": "Filtres des notifications",
+            "all": "Toutes",
+            "unread": "Non lues"
+        },
+        "actions": {
+            "markAllRead": "Tout marquer comme lu"
+        }
+    },
+    "payments": {
+        "title": "Mes paiements",
+        "subtitle": "Suivez vos demandes D17 et leur statut.",
+        "premiumStatus": "Statut Premium",
+        "loading": "Chargement des demandes de paiement...",
+        "empty": "Aucune demande de paiement pour le moment.",
+        "planAmount": "Plan {{planId}} - {{amount}} {{currency}}",
+        "pendingHint": "En attente de revision admin. Televersez la preuve dans le checkout si necessaire.",
+        "labels": {
+            "submitted": "Soumis",
+            "d17": "D17",
+            "reviewed": "Revise"
+        },
+        "actions": {
+            "refresh": "Actualiser",
+            "openCheckout": "Ouvrir le checkout",
+            "viewProof": "Voir la preuve",
+            "viewHistory": "Voir l'historique",
+            "hideHistory": "Masquer l'historique"
+        },
+        "history": {
+            "loading": "Chargement de l'historique...",
+            "empty": "Aucun historique pour le moment."
+        },
+        "errors": {
+            "loadFailed": "Impossible de charger l'historique des paiements.",
+            "previewFailed": "Impossible d'afficher la preuve.",
+            "auditLoadFailed": "Impossible de charger la chronologie des paiements."
+        }
+    },
+    "referrals": {
+        "title": "Inviter des amis",
+        "subtitle": "Partagez votre code et votre lien d'invitation pour debloquer des recompenses.",
+        "labels": {
+            "referralCode": "Votre code de parrainage",
+            "inviteLink": "Votre lien d'invitation",
+            "share": "Partager avec des amis",
+            "loadingCode": "Generation du code de parrainage...",
+            "loadingLink": "Le lien apparaitra des que le code sera pret."
+        },
+        "actions": {
+            "copyCode": "Copier le code",
+            "copyLink": "Copier le lien",
+            "shareWhatsApp": "Partager sur WhatsApp",
+            "shareEmail": "Partager par e-mail",
+            "increaseInvite": "+ Invite",
+            "decreaseInvite": "- Invite"
+        },
+        "share": {
+            "whatsappTemplate": "Rejoins-moi sur MatchOp avec le code {{code}}. Inscription: {{link}}",
+            "emailSubject": "Rejoins-moi sur MatchOp",
+            "emailBody": "Utilise mon code de parrainage {{code}} pour rejoindre MatchOp.\n\nInscription: {{link}}"
+        },
+        "rewards": {
+            "title": "Recompenses",
+            "body": "Invitez 3 amis pour debloquer 7 jours Premium."
+        },
+        "progress": {
+            "current": "{{invites}}/{{goal}} invitations",
+            "hint": "La progression demo est stockee localement sur cet appareil.",
+            "demoBadge": "Mode demo",
+            "neverUpdated": "Pas encore mis a jour",
+            "lastUpdated": "Derniere mise a jour : {{timestamp}}",
+            "stepsLabel": "Etapes du cycle de parrainage",
+            "steps": {
+                "inviteSent": "Invitation envoyee",
+                "signedUp": "Inscription effectuee",
+                "verified": "Verification terminee"
+            }
+        },
+        "toast": {
+            "copyCodeSuccess": "Code de parrainage copie.",
+            "copyLinkSuccess": "Lien d'invitation copie.",
+            "copyFailed": "Impossible de copier pour le moment. Reessayez."
+        },
+        "rewardUnlock": {
+            "claimAction": "Reclamer la recompense",
+            "claimedTitle": "Recompense reclamee",
+            "claimedSubtitle": "Apercu Premium debloque (Apercu).",
+            "claimedToast": "Recompense reclamee.",
+            "previewNote": "Apercu : la progression de parrainage est simulee jusqu'a la verification backend."
+        },
+        "signupAttribution": "Code de parrainage detecte : {{ref}}",
+        "signupApplied": "Le code de parrainage {{ref}} a ete applique a votre inscription.",
+        "signupFlow": {
+            "invitedTitle": "Un ami vous a invite 🎁",
+            "invitedSubtitle": "Terminez l'inscription pour debloquer votre avantage de parrainage (Apercu)",
+            "dismissAria": "Fermer la banniere d'invitation parrainage",
+            "followupTitle": "Invitez vos amis aussi",
+            "followupSubtitle": "Partagez votre lien d'invitation pour debloquer des avantages de parrainage (Apercu).",
+            "openReferrals": "Ouvrir Parrainage",
+            "copyInviteLink": "Copier le lien d'invitation"
+        },
+        "cta": {
+            "sectionAria": "Banniere de parrainage",
+            "title": "Invitez et debloquez des recompenses",
+            "body": "Partagez votre code avec des amis et suivez la progression demo.",
+            "action": "Ouvrir parrainage"
+        }
+    },
+    "companyProfile": {
+        "loading": "Chargement du profil entreprise...",
+        "title": "Profil Entreprise",
+        "subtitle": "Presentez votre entreprise et sa culture aux candidats",
+        "companyFallbackName": "Votre entreprise",
+        "photo": {
+            "chooseLogo": "Choisir le logo de l'entreprise",
+            "uploadLogo": "Televerser le logo de l'entreprise",
+            "uploadingLogo": "Televersement du logo..."
+        },
+        "sections": {
+            "about": "A propos de l'entreprise",
+            "culture": "Culture d'entreprise",
+            "benefits": "Avantages et Benefices",
+            "social": "Reseaux Sociaux"
+        },
+        "fields": {
+            "companyName": "Nom de l'entreprise",
+            "description": "Description",
+            "descriptionPlaceholder": "Decrivez votre entreprise, votre mission et ce qui rend votre equipe unique...",
+            "headquarters": "Siege social",
+            "website": "Site web",
+            "websitePlaceholder": "https://votre-entreprise.com",
+            "culturePrompt": "Decrivez votre environnement de travail, la dynamique de l'equipe et ce qui rend votre culture unique...",
+            "culturePlaceholder": "Expliquez aux candidats ce que c'est de travailler avec votre equipe...",
+            "platform": "Plateforme",
+            "selectPlatform": "Selectionnez une plateforme",
+            "socialLinksEmpty": "Aucun lien social ajoute"
+        },
+        "location": {
+            "governoratePlaceholder": "Gouvernorat",
+            "cityPlaceholder": "Ville",
+            "citySelectGovernorateFirst": "Selectionnez d'abord un gouvernorat"
+        },
+        "actions": {
+            "edit": "Modifier",
+            "lock": "Verrouiller",
+            "updateWebsite": "Mettre a jour le site",
+            "updating": "Mise a jour...",
+            "add": "Ajouter",
+            "remove": "Supprimer",
+            "saveProfile": "Enregistrer le profil",
+            "saving": "Enregistrement..."
+        },
+        "benefitsDescription": "Selectionnez les avantages que vous offrez aux employes",
+        "socialDescription": "Selectionnez et ajoutez les reseaux sociaux de votre entreprise.",
+        "social": {
+            "fallbackPlatform": "plateforme",
+            "platforms": {
+                "instagram": "Instagram",
+                "linkedin": "LinkedIn",
+                "facebook": "Facebook",
+                "x": "X"
+            },
+            "placeholders": {
+                "instagram": "https://instagram.com/votre-entreprise",
+                "linkedin": "https://linkedin.com/company/votre-entreprise",
+                "facebook": "https://facebook.com/votre-entreprise",
+                "x": "https://x.com/votre-entreprise"
+            }
+        },
+        "benefitsOptions": {
+            "remoteWork": "Teletravail",
+            "healthInsurance": "Assurance sante",
+            "flexibleHours": "Horaires flexibles",
+            "k401": "401k",
+            "stockOptions": "Stock options",
+            "gymMembership": "Abonnement salle de sport",
+            "paidTimeOff": "Conges payes",
+            "learningBudget": "Budget formation",
+            "freeLunch": "Dejeuner offert",
+            "parentalLeave": "Conge parental"
+        },
+        "messages": {
+            "noProfile": "Aucun profil entreprise trouve pour ce compte.",
+            "loadFailed": "Echec du chargement du profil entreprise.",
+            "logoUploaded": "Logo televerse avec succes.",
+            "websiteUpdated": "Site web mis a jour avec succes.",
+            "websiteUpdateFailed": "Echec de la mise a jour du site web.",
+            "saved": "Profil enregistre avec succes.",
+            "saveFailed": "Echec de l'enregistrement du profil."
+        },
+        "validation": {
+            "companyNameRequired": "Le nom de l'entreprise est requis.",
+            "validUrlRequired": "Veuillez saisir une URL valide commencant par http:// ou https://",
+            "validPlatformUrl": "Veuillez saisir une URL valide pour {{platform}}."
+        },
+        "errors": {
+            "logoTooLarge": "Le logo est trop volumineux. Taille maximale: 5 Mo.",
+            "uploadDeniedByRls": "Televersement refuse. Verifiez vos permissions ou la politique de securite des lignes.",
+            "uploadFailedDefault": "Echec du televersement du logo."
+        }
+    },
+    "appAuth": {
+        "emailVerifiedSuccess": "Email verifie avec succes. Vous pouvez maintenant vous connecter.",
+        "resetLinkConfirmed": "Lien de reinitialisation confirme. Veuillez definir votre nouveau mot de passe.",
+        "welcomeBackSignedIn": "Bon retour ! Vous etes maintenant connecte.",
+        "authenticationFailed": "Echec de l'authentification",
+        "verificationLinkExpired": "Le lien de verification a expire. Veuillez en demander un nouveau.",
+        "accessDenied": "Acces refuse. Veuillez reessayer ou demander un nouveau lien."
+    },
+    "routeGuards": {
+        "checkingAccess": "Verification de l'acces...",
+        "sessionExpired": "Session expiree, veuillez vous reconnecter.",
+        "goToLogin": "Aller a la connexion"
+    },
+    "uiAria": {
+        "closeNotification": "Fermer la notification",
+        "changeLanguage": "Changer la langue",
+        "switchToLightMode": "Passer au mode clair",
+        "switchToDarkMode": "Passer au mode sombre",
+        "openNavigationMenu": "Ouvrir le menu de navigation",
+        "closeNavigationMenu": "Fermer le menu de navigation",
+        "unreadNotifications": "{{count}} notifications non lues"
+    },
+    "studentSwipe": {
+        "controls": {
+            "preferences": "Preferences",
+            "preferencesAria": "Ouvrir les preferences Premium"
+        },
+        "actions": {
+            "joinWaitlist": "Rejoindre la liste d'attente",
+            "renewPremium": "Renouveler Premium",
+            "upgradeToUnlockGlobal": "Passez a Premium pour debloquer Global"
+        },
+        "toasts": {
+            "applicationSent": "Candidature envoyee !",
+            "notInterested": "Pas interesse",
+            "addedToFavorites": "Ajoute aux favoris",
+            "externalSaved": "Opportunite sauvegardee. Postulez sur {{source}}"
+        },
+        "loading": {
+            "findingBestJobs": "Recherche des meilleures opportunites pour vous..."
+        },
+        "error": {
+            "title": "Oups ! Une erreur s'est produite.",
+            "tryAgain": "Reessayer"
+        },
+        "stack": {
+            "discoveryScopeAria": "Portee de decouverte",
+            "localLabel": "Local",
+            "freeBadge": "Gratuit",
+            "localDescription": "Opportunites locales / regionales",
+            "globalLabel": "Global",
+            "premiumBadge": "Premium",
+            "expiredBadge": "Expire",
+            "globalDescription": "Opportunites internationales (Premium)",
+            "globalTeaserAria": "Apercu des opportunites globales",
+            "globalTeaserTitle": "Apercu : opportunites globales",
+            "globalExpiredStatus": "Votre acces Premium a expire.",
+            "features": {
+                "globalReach": "Portee globale",
+                "fasterMatches": "Matchs plus rapides",
+                "unlimitedSwipes": "Découverte illimitée"
+            }
+        },
+        "empty": {
+            "noOffersNearbyTitle": "Aucune offre a proximite.",
+            "noOffersNearbyBody": "Essayez de mettre a jour vos preferences ou passez en mode Global.",
+            "adjustPreferences": "Ajuster les preferences",
+            "switchToGlobal": "Passer en Global",
+            "globalPremiumLockAria": "Verrou Premium global",
+            "globalIsPremium": "Global est Premium",
+            "globalBenefits": {
+                "accessGlobalOpportunities": "Accedez aux opportunites globales",
+                "reachCompaniesFaster": "Atteignez plus d'entreprises plus vite",
+                "unlimitedDiscovery": "Debloquez la decouverte illimitee"
+            },
+            "unlockPremium": "Debloquer Premium",
+            "refreshJobs": "Actualiser les offres"
+        },
+        "preferences": {
+            "title": "Ajuster les preferences",
+            "closeAria": "Fermer les preferences",
+            "previewCopy": "Affinez votre decouverte avec de vraies distances kilometriques et des types de contrat reels.",
+            "referenceLocationLabel": "Votre localisation de reference",
+            "referenceLocationPlaceholder": "ex. Tunis, Sousse, Ariana",
+            "referenceLocationHint": "Les distances sont calculees en kilometres reels a partir de cette ville.",
+            "locationQueryLabel": "Localisation preferee",
+            "locationQueryPlaceholder": "Ville, region ou mot-cle",
+            "radiusLabel": "Rayon de distance",
+            "radiusDisabledRemote": "Le rayon de distance est desactive pour le teletravail uniquement.",
+            "radius": {
+                "any": "Toute distance",
+                "km15": "Dans 15 km",
+                "km25": "Dans 25 km",
+                "km50": "Dans 50 km",
+                "km100": "Dans 100 km",
+                "km250": "Dans 250 km"
+            },
+            "locationMode": {
+                "label": "Mode de travail",
+                "all": "Tous (Teletravail & Sur site)",
+                "remote": "Teletravail uniquement",
+                "onsite": "Sur site uniquement"
+            },
+            "opportunityType": {
+                "label": "Type d'opportunite",
+                "all": "Tous les types",
+                "internship": "Stage / PFE",
+                "fullTime": "CDI / Temps plein",
+                "partTime": "Temps partiel",
+                "contract": "Contrat / Freelance"
+            },
+            "categoryLabel": "Secteur & Industrie",
+            "includeUnspecifiedLabel": "Inclure les offres sans domiciliation renseignee",
+            "matchingCount": "{{count}} opportunite correspondante",
+            "matchingCountPlural": "{{count}} opportunites correspondantes",
+            "actions": {
+                "reset": "Reinitialiser",
+                "save": "Appliquer les preferences"
+            }
+        }
+    },
+    "studentProfile": {
+        "referrals": {
+            "ariaLabel": "Recompenses et parrainage",
+            "title": "Recompenses & Parrainage",
+            "subtitle": "Partagez votre lien d'invitation et suivez la progression depuis votre compte.",
+            "codeLabel": "Code",
+            "copyInviteLink": "Copier le lien d'invitation",
+            "copyInviteLinkDone": "Lien copie",
+            "openReferrals": "Ouvrir Parrainage"
+        }
+    },
+    "useJobOffers": {
+        "profilePreparingError": "Le profil de votre compte est encore en preparation. Veuillez actualiser dans un instant.",
+        "profilePreparingNotice": "Si cela continue, deconnectez-vous puis reconnectez-vous.",
+        "premiumUpgradeRequired": "Le mode Premium necessite une mise a niveau.",
+        "personalizedUnavailableNotice": "La pile personnalisee est indisponible pour le moment. Opportunites standard affichees.",
+        "loadOffersFailed": "Impossible de charger les opportunites",
+        "notAuthenticated": "Non authentifie",
+        "dailyLimitReached": "Limite quotidienne de découverte atteinte",
+        "recordSwipeFailed": "Échec de l'enregistrement de l'action",
+        "saveExternalMatchFailed": "Impossible de sauvegarder l'opportunite externe"
+    },
+    "missingConfig": {
+        "title": "Configuration manquante",
+        "subtitle": "MatchOp ne peut pas demarrer car les variables d'environnement Supabase requises ne sont pas definies.",
+        "requiredVariables": "Variables requises :",
+        "instructionsPrefix": "Copiez",
+        "instructionsMiddle": "vers",
+        "instructionsSuffix": "puis ajoutez des valeurs valides et redemarrez l'application."
+    },
+    "empty": {
+        "noMatches": "Pas encore de matchs",
+        "noCandidates": "Pas encore de candidats",
+        "noOffers": "Aucune offre disponible"
+    },
+    "badges": {
+        "exclusive": "Exclusivité MatchOp",
+        "leak": "Fuite Interne",
+        "bounty": "Prime"
+    },
+    "referrals": {
+        "title": "Inviter des amis",
+        "subtitle": "Partagez votre code de parrainage et votre lien d'invitation pour débloquer des récompenses.",
+        "labels": {
+            "referralCode": "Votre code de parrainage",
+            "inviteLink": "Votre lien d'invitation",
+            "share": "Partager avec vos amis",
+            "loadingCode": "Chargement du code...",
+            "loadingLink": "Le lien apparaîtra dès que votre code sera prêt.",
+            "pendingInvites": "{{count}} invitation(s) en attente de vérification d'e-mail"
+        },
+        "actions": {
+            "copyCode": "Copier le code",
+            "copyLink": "Copier le lien",
+            "shareWhatsApp": "Partager sur WhatsApp",
+            "shareEmail": "Partager par e-mail"
+        },
+        "share": {
+            "whatsappTemplate": "Rejoins-moi sur MatchOp avec le code {{code}}. Inscris-toi ici : {{link}}",
+            "emailSubject": "Rejoins-moi sur MatchOp",
+            "emailBody": "Utilise mon code de parrainage {{code}} pour rejoindre MatchOp.\n\nInscris-toi ici : {{link}}"
+        },
+        "rewards": {
+            "title": "Récompenses",
+            "body": "Invitez 3 amis qui vérifient leur compte et débloquez 7 jours de MatchOp Premium."
+        },
+        "progress": {
+            "current": "{{invites}}/{{goal}} invitations",
+            "stepsLabel": "Étapes de progression du parrainage",
+            "steps": {
+                "inviteSent": "1 ami inscrit",
+                "signedUp": "2 amis inscrits",
+                "verified": "3 amis vérifiés"
+            },
+            "neverUpdated": "Aucune invitation pour l'instant",
+            "lastUpdated": "Mis à jour le {{timestamp}}"
+        },
+        "rewardUnlock": {
+            "claimAction": "Réclamer la récompense",
+            "claiming": "Réclamation...",
+            "claimedTitle": "Récompense réclamée",
+            "claimedSubtitle": "7 jours de MatchOp Premium activés.",
+            "claimedToast": "Récompense réclamée ! MatchOp Premium débloqué pour 7 jours."
+        },
+        "toast": {
+            "copyCodeSuccess": "Code de parrainage copié.",
+            "copyLinkSuccess": "Lien d'invitation copié.",
+            "copyFailed": "Impossible de copier pour le moment. Veuillez réessayer."
+        },
+        "signupApplied": "Le code de parrainage {{ref}} a été appliqué à votre inscription.",
+        "signupFlow": {
+            "invitedTitle": "Vous avez été invité par un ami",
+            "invitedSubtitle": "Complétez votre inscription pour débloquer votre avantage.",
+            "dismissAria": "Fermer la bannière de parrainage",
+            "followupTitle": "Invitez vos amis vous aussi",
+            "followupSubtitle": "Partagez votre lien d'invitation pour débloquer 7 jours de Premium.",
+            "openReferrals": "Ouvrir les parrainages",
+            "copyInviteLink": "Copier le lien d'invitation"
+        },
+        "errors": {
+            "claimFailed": "Échec de la réclamation. Veuillez réessayer.",
+            "notEligible": "Vous devez avoir 3 invitations qualifiées pour réclamer cette récompense.",
+            "selfReferral": "Vous ne pouvez pas vous auto-parrainer."
+        }
+    }
+}

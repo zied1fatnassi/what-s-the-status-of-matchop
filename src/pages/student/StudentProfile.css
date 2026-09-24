@@ -1,0 +1,639 @@
+/* ===================================
+   STUDENT PROFILE - BENTO GRID LAYOUT
+   Theme-Aware with Premium Styling
+   ================================ */
+
+.profile-page {
+    padding-top: 0;
+    padding-bottom: var(--space-8);
+    min-height: 100dvh;
+    background: var(--bento-bg);
+}
+
+/* Keep preview modal fixed to viewport center on mobile by avoiding transformed containing block */
+.profile-page.animate-fade-in-up {
+    transform: none !important;
+}
+
+@media (min-width: 768px) {
+    .profile-page {
+        padding-top: 0;
+        padding-bottom: var(--space-12);
+    }
+}
+
+.profile-container {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 0 var(--space-3);
+}
+
+@media (min-width: 768px) {
+    .profile-container {
+        max-width: 900px;
+        padding: 0 var(--space-4);
+    }
+}
+
+/* Profile Header - Bento Main Card */
+.profile-header {
+    text-align: center;
+    margin-bottom: var(--space-6);
+    position: relative;
+    background: var(--bento-card);
+    border: 1px solid var(--bento-card-border-subtle);
+    border-radius: var(--radius-xl);
+    padding: var(--space-4);
+    box-shadow: var(--shadow-md);
+    transition: all var(--duration-normal) var(--ease-in-out);
+}
+
+.profile-header:hover {
+    box-shadow: var(--shadow-lg);
+    border-color: var(--bento-card-border);
+}
+
+@media (min-width: 768px) {
+    .profile-header {
+        margin-bottom: var(--space-12);
+        border-radius: var(--radius-2xl);
+        padding: var(--space-8);
+    }
+}
+
+.profile-header h1 {
+    font-size: clamp(1.5rem, 5vw, 2.5rem);
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: var(--space-2);
+}
+
+.completion-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    background: var(--glass-surface);
+    border: 1px solid var(--accent-teal);
+    color: var(--accent-teal);
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-pill);
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-top: var(--space-2);
+}
+
+.profile-header-actions {
+    margin-top: var(--space-3);
+    display: flex;
+    justify-content: center;
+}
+
+.profile-payments-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.completion-bar-wrapper {
+    height: 6px;
+    background: var(--glass-border);
+    border-radius: var(--radius-pill);
+    overflow: hidden;
+    margin-top: var(--space-6);
+    position: relative;
+}
+
+.completion-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-teal), var(--primary));
+    border-radius: var(--radius-pill);
+    transition: width 1s var(--ease-in-out);
+}
+
+/* Photo Section - MOBILE FIRST */
+.photo-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-6);
+}
+
+@media (min-width: 768px) {
+    .photo-section {
+        gap: var(--space-4);
+        margin-bottom: var(--space-8);
+    }
+}
+
+.avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 3px solid var(--glass-border);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: transform 0.3s;
+    position: relative;
+    overflow: hidden;
+    background: var(--bg-main);
+}
+
+@media (min-width: 768px) {
+    .avatar {
+        width: 120px;
+        height: 120px;
+        border: 4px solid var(--glass-border);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+}
+
+.avatar:hover {
+    transform: scale(1.05);
+    border-color: var(--primary);
+}
+
+.avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s;
+    color: white;
+}
+
+.avatar:hover .avatar-overlay {
+    opacity: 1;
+}
+
+.avatar-hint {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-top: var(--space-2);
+}
+
+.field {
+    margin-bottom: var(--space-6);
+}
+
+.field label {
+    display: block;
+    margin-bottom: var(--space-2);
+    font-weight: 500;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.field input[type="text"],
+.field textarea,
+.field select {
+    width: 100%;
+    padding: 1rem;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: var(--radius-lg);
+    color: var(--text-primary);
+    font-size: 1rem;
+    transition: all 0.2s;
+}
+
+.field input:focus,
+.field textarea:focus {
+    background: var(--input-bg);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+    outline: none;
+}
+
+/* Skills Tags - Pill Shape */
+.skills-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
+}
+
+.skill-chip {
+    background: var(--glass-surface);
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-pill);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    border: 1px solid var(--glass-border);
+    transition: all var(--duration-normal) var(--ease-in-out);
+    color: var(--primary);
+}
+
+.skill-chip:hover {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.skill-chip button {
+    display: flex;
+    align-items: center;
+    color: inherit;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-weight: bold;
+    transition: color var(--duration-fast) var(--ease-in-out);
+}
+
+.skill-chip button:hover {
+    color: var(--accent-red);
+}
+
+/* Items List (Experience, Edu) - Bento Widgets */
+.items-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.item-card {
+    background: var(--bento-card);
+    padding: var(--space-4);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--bento-card-border-subtle);
+    display: flex;
+    gap: var(--space-4);
+    position: relative;
+    transition: all var(--duration-normal) var(--ease-in-out);
+}
+
+.item-card:hover {
+    background: var(--bento-card-hover);
+    border-color: var(--bento-card-border);
+    transform: translateX(4px);
+    box-shadow: var(--shadow-md);
+}
+
+.item-icon {
+    width: 48px;
+    height: 48px;
+    background: var(--glass-surface);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary);
+    flex-shrink: 0;
+}
+
+.item-info {
+    flex: 1;
+}
+
+.item-info h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+}
+
+.item-subtitle {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-bottom: 0.25rem;
+}
+
+.item-meta {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.item-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--primary);
+    font-size: 0.85rem;
+    margin-top: 4px;
+}
+
+.delete-btn {
+    color: var(--text-muted);
+    padding: 0.5rem;
+    border-radius: var(--radius-md);
+    opacity: 0;
+    transition: all 0.2s;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+}
+
+.item-card:hover .delete-btn {
+    opacity: 1;
+}
+
+.delete-btn:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--accent-red);
+}
+
+/* Add Forms in Sections */
+.add-form {
+    margin-top: var(--space-6);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--glass-border);
+    animation: fadeInUp 0.3s ease-out;
+}
+
+.add-form h4 {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 1.1rem;
+    margin-bottom: var(--space-4);
+    color: var(--text-primary);
+}
+
+/* Form Grid - MOBILE FIRST: Single column on mobile */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+}
+
+@media (min-width: 640px) {
+    .form-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-4);
+    }
+}
+
+.add-item-btn {
+    width: 100%;
+    padding: 0.875rem;
+    background: var(--input-bg);
+    border: 1px dashed var(--glass-border);
+    border-radius: var(--radius-lg);
+    color: var(--text-secondary);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.add-item-btn:hover {
+    background: rgba(37, 99, 235, 0.05);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+    .profile-page {
+        padding-top: 0;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .item-card {
+        flex-direction: column;
+        gap: var(--space-3);
+    }
+
+    .item-icon {
+        width: 40px;
+        height: 40px;
+    }
+
+    .delete-btn {
+        opacity: 1;
+        align-self: flex-end;
+    }
+}
+
+/* Profile Form (Company) */
+.profile-form {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: var(--space-8);
+    background: var(--glass-surface);
+    backdrop-filter: blur(12px);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--glass-border);
+}
+
+.profile-header p {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+}
+
+.photo-section {
+    display: flex;
+    align-items: center;
+    gap: var(--space-6);
+    padding-bottom: var(--space-6);
+    border-bottom: 1px solid var(--glass-border);
+    margin-bottom: var(--space-6);
+}
+
+.photo-upload {
+    position: relative;
+    cursor: pointer;
+}
+
+.photo-placeholder {
+    width: 100px;
+    height: 100px;
+    border-radius: var(--radius-full);
+    background: var(--input-bg);
+    border: 2px dashed var(--glass-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+}
+
+.photo-edit-btn {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-full);
+    background: var(--primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid white;
+    cursor: pointer;
+}
+
+.photo-info h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: var(--space-1);
+    color: var(--text-primary);
+}
+
+.photo-info p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.form-section {
+    margin-bottom: var(--space-8);
+}
+
+.section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: var(--space-2);
+    color: var(--text-primary);
+}
+
+.section-description {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: var(--space-4);
+}
+
+.input-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+}
+
+.input-label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--text-primary);
+}
+
+.char-count {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-align: right;
+    display: block;
+    margin-top: var(--space-1);
+}
+
+.selected-skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    min-height: 44px;
+    padding: var(--space-3);
+    background: var(--input-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-4);
+}
+
+.skill-tag.selected {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-1) var(--space-3);
+    background: var(--primary);
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border-radius: var(--radius-full);
+}
+
+.skill-tag.selected button {
+    display: flex;
+    padding: 2px;
+    border-radius: var(--radius-full);
+    color: white;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.skill-tag.selected button:hover {
+    opacity: 1;
+}
+
+.no-skills {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.skill-suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+}
+
+.skill-suggestion {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-3);
+    background: rgba(37, 99, 235, 0.1);
+    color: var(--primary);
+    font-size: 0.9rem;
+    font-weight: 500;
+    border-radius: var(--radius-full);
+    border: 1px solid transparent;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.skill-suggestion:hover {
+    background: rgba(37, 99, 235, 0.2);
+    border-color: var(--primary);
+}
+
+.form-actions {
+    display: flex;
+    justify-content: center;
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--glass-border);
+}
+
+@media (max-width: 640px) {
+    .profile-form {
+        padding: var(--space-6);
+    }
+
+    .photo-section {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .input-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+.input-hint {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: var(--space-1);
+}
+
+.btn.saved {
+    background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
+    color: white;
+}
